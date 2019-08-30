@@ -17,6 +17,7 @@ import java.util.Arrays;
 import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.opengl.GL11.GL_REPEAT;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 
 public class LoadStaticModel {
@@ -73,7 +74,7 @@ public class LoadStaticModel {
             String textPath = path.dataString();
             temp = textPath;
             if (textPath.length() > 0) {
-                ambient.setup(null, directory + textPath, GL_SRGB_ALPHA, GL_REPEAT);
+                ambient.setup(null, directory + textPath, GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
                 ambientMap.setType("ambientMap");
                 ambientMap.setPath(directory + textPath);
                 ambientMap.setId(ambient.getTextureID());
@@ -86,7 +87,7 @@ public class LoadStaticModel {
             textPath = path.dataString();
             temp = textPath;
             if (textPath.length() > 0) {
-                diffuse.setup(null, directory + textPath, GL_SRGB_ALPHA, GL_REPEAT);
+                diffuse.setup(null, directory + textPath, GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
                 diffuseMap.setType("diffuseMap");
                 diffuseMap.setPath(directory + textPath);
                 diffuseMap.setId(diffuse.getTextureID());
@@ -97,7 +98,7 @@ public class LoadStaticModel {
             textPath = path.dataString();
             temp = textPath;
             if (textPath.length() > 0) {
-                specular.setup(null, directory + textPath, GL_SRGB_ALPHA, GL_REPEAT);
+                specular.setup(null, directory + textPath, GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
                 specularMap.setType("specularMap");
                 specularMap.setPath(directory + textPath);
                 specularMap.setId(specular.getTextureID());
@@ -109,7 +110,7 @@ public class LoadStaticModel {
             aiGetMaterialTexture(aiMaterial, aiTextureType_DISPLACEMENT, 0, path, (IntBuffer) null, null, null, null, null, null);
             textPath = path.dataString();
             if (textPath.length() > 0 && !textPath.equals(temp)) {
-                displace.setup(null, directory + textPath, GL_SRGB_ALPHA, GL_REPEAT);
+                displace.setup(null, directory + textPath, GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
                 displaceMap.setType("displaceMap");
                 displaceMap.setPath(directory + textPath);
                 displaceMap.setId(displace.getTextureID());
@@ -121,7 +122,7 @@ public class LoadStaticModel {
             aiGetMaterialTexture(aiMaterial, aiTextureType_HEIGHT, 0, path, (IntBuffer) null, null, null, null, null, null);
             textPath = path.dataString();
             if (textPath.length() > 0 && !textPath.equals(temp)) {
-                normal.setup(null, directory + textPath, GL_RGBA, GL_REPEAT);
+                normal.setup(null, directory + textPath, GL_RGBA, GL_CLAMP_TO_EDGE);
                 normalMap.setType("normalMap");
                 normalMap.setPath(directory + textPath);
                 normalMap.setId(normal.getTextureID());

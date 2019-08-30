@@ -6,8 +6,10 @@ import ru.phoenix.core.buffer.fbo.MultisampleFrameBuffer;
 import ru.phoenix.core.buffer.fbo.OutputFrameBuffer;
 import ru.phoenix.core.buffer.vbo.NormalizedDeviceCoordinates;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
+import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
+import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
@@ -23,6 +25,7 @@ import static org.lwjgl.opengles.GLES30.GL_DRAW_FRAMEBUFFER;
 public class BaseRenderFrame implements Framework {
     private FrameBufferObject multisample;
     private FrameBufferObject render;
+    private FrameBufferObject shadow;
 
     private VertexBufferObject ndcVbo;
     private Shader ndcShader;
@@ -74,6 +77,25 @@ public class BaseRenderFrame implements Framework {
         glBindFramebuffer(GL_FRAMEBUFFER, multisample.getFrameBuffer());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        if(scene.getShader() != null && shadow != null) {
+            scene.getShader().useProgram();
+            scene.getShader().setUniformBlock("matrices", 0);
+            scene.getShader().setUniform("viewPos", Camera.getInstance().getPerspective().getViewMatrix());
+            Matrix4f[] matrix = null;
+            if (scene.getLights() != null) {
+                matrix = scene.getLights().get(0).getLightSpaceMatrix();
+            }
+            assert matrix != null;
+            scene.getShader().setUniform("lightSpaceMatrix", matrix[0]);
+            glActiveTexture(GL_TEXTURE5);
+            glBindTexture(GL_TEXTURE_2D, shadow.getTexture());
+            scene.getShader().setUniform("shadowMap", 5);
+            scene.getShader().setUniform("directLight.position", scene.getLights().get(0).getPosition());
+            scene.getShader().setUniform("directLight.ambient", scene.getLights().get(0).getAmbient());
+            scene.getShader().setUniform("directLight.diffuse", scene.getLights().get(0).getDiffuse());
+            scene.getShader().setUniform("directLight.specular", scene.getLights().get(0).getSpecular());
+        }
+
         scene.draw();
 
         glBindFramebuffer(GL_FRAMEBUFFER,0);
@@ -123,7 +145,7 @@ public class BaseRenderFrame implements Framework {
 
     @Override
     public void setFbo(FrameBufferObject fbo) {
-
+        shadow = fbo;
     }
 
     @Override

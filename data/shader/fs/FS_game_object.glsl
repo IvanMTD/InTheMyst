@@ -69,10 +69,10 @@ void main() {
     if(onTarget == 1){
         fragment_color = targetHighlight();
     }else{
-        //vec3 result = getDirectLight(directLight, normal, viewDirection);
-        //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-        //fragment_color = vec4(result, alpha);
-        fragment_color = texture(material.diffuseMap,fs_in.TexCoords);
+        vec3 result = getDirectLight(directLight, normal, viewDirection);
+        float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+        fragment_color = vec4(result, alpha);
+        //fragment_color = texture(material.diffuseMap,fs_in.TexCoords);
     }
 
     vec4 rgba = texture(material.diffuseMap,fs_in.TexCoords);
@@ -114,9 +114,9 @@ vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection){
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
     // комбинируем результаты
-    vec3 ambient  = light.ambient  * vec3(texture(material.ambientMap, fs_in.TexCoords));
+    vec3 ambient  = light.ambient  * vec3(texture(material.diffuseMap, fs_in.TexCoords));
     vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuseMap, fs_in.TexCoords));
-    vec3 specular = light.specular * spec * vec3(texture(material.specularMap, fs_in.TexCoords));
+    vec3 specular = light.specular * spec * vec3(texture(material.diffuseMap, fs_in.TexCoords));
 
     float shadow = ShadowCalculation(fs_in.FragPosLightSpace, lightDir, normal);
     vec3 lighting = ambient + (1.0 - shadow) * (diffuse + specular);

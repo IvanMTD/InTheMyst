@@ -1,6 +1,9 @@
 package ru.phoenix.game.scene;
 
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.logic.lighting.Light;
+
+import java.util.List;
 
 public interface Scene {
     public void init();
@@ -12,4 +15,6 @@ public interface Scene {
     public int getId();
     public boolean isActive();
     public boolean isInit();
+    public List<Light> getLights();
+    public Shader getShader();
 }

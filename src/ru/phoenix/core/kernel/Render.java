@@ -3,6 +3,7 @@ package ru.phoenix.core.kernel;
 import ru.phoenix.core.config.*;
 import ru.phoenix.core.frame.BaseRenderFrame;
 import ru.phoenix.core.frame.Framework;
+import ru.phoenix.core.frame.ShadowRenderFrame;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
 
@@ -12,6 +13,7 @@ public class Render {
     private Window window;
 
     private Framework baseRenderFrame;
+    private Framework shadowRenderFrame;
 
     private boolean stopRender;
     private boolean firstStart;
@@ -21,16 +23,20 @@ public class Render {
     Render(){
         window = Window.getInstance();
         baseRenderFrame = new BaseRenderFrame(3);
+        shadowRenderFrame = new ShadowRenderFrame();
         stopRender = false;
         firstStart = true;
     }
 
     public void init(){
         baseRenderFrame.init();
+        shadowRenderFrame.init();
     }
 
     public void render(Scene scene){
         if(SceneControl.isReinit()){
+            shadowRenderFrame = new ShadowRenderFrame();
+            shadowRenderFrame.init();
             baseRenderFrame = new BaseRenderFrame(3);
             baseRenderFrame.init();
             stopRender = true;
@@ -40,6 +46,10 @@ public class Render {
         Default.clearScreen();
 
         if (!stopRender) {
+            if (scene.getLights() != null) {
+                shadowRenderFrame.draw(scene);
+                baseRenderFrame.setFbo(shadowRenderFrame.getFbo());
+            }
             baseRenderFrame.draw(scene);
         } else {
             if (firstStart) {

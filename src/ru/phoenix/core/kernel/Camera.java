@@ -37,6 +37,9 @@ public class Camera {
     private float offset;
 
     private boolean cameraControlLock;
+    private float turnCounter;
+    private boolean stopTurn;
+    private boolean turnButtonBlock;
 
     public static Camera getInstance(){
         if(instance == null){
@@ -59,6 +62,9 @@ public class Camera {
     }
 
     private void init(){
+        turnCounter = 0.0f;
+        stopTurn = false;
+        turnButtonBlock = false;
         DoubleBuffer lx = BufferUtils.createDoubleBuffer(1);
         DoubleBuffer ly = BufferUtils.createDoubleBuffer(1);
         glfwGetCursorPos(Window.getInstance().getWindow(),lx,ly);
@@ -146,20 +152,42 @@ public class Camera {
 
         zoomInOut();
 
-        if (Input.getInstance().isPressed(GLFW_KEY_Q)) {
-            turn = -2.0f;
-        }else if (Input.getInstance().isPressed(GLFW_KEY_E)) {
-            turn = 2.0f;
+        if(!turnButtonBlock) {
+            if (Input.getInstance().isPressed(GLFW_KEY_Q)) {
+                turn = -2.0f;
+                stopTurn = false;
+                turnButtonBlock = true;
+            } else if (Input.getInstance().isPressed(GLFW_KEY_E)) {
+                turn = 2.0f;
+                stopTurn = false;
+                turnButtonBlock = true;
+            }
+        }
+
+        float temp = turnCounter;
+        turnCounter += turn;
+        if(turnCounter >= 90.0f){
+            turn = turnCounter - temp;
+            stopTurn = true;
+        }else if(turnCounter <= -90.0f){
+            turn = turnCounter - temp;
+            stopTurn = true;
         }
 
         yaw -= turn;
-        if(yaw <= -45.0f){
+        if(stopTurn){
+            turnCounter = 0.0f;
+            turn = 0.0f;
+            turnButtonBlock = false;
+        }
+
+        /*if(yaw <= -45.0f){
             yaw = -45.0f;
             turn = 0.0f;
         }else if(yaw >= 45.0f){
             yaw = 45.0f;
             turn = 0.0f;
-        }
+        }*/
 
         direction.setX((float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))));
         direction.setY((float) Math.sin(Math.toRadians(pitch)));
