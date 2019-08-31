@@ -52,11 +52,11 @@ public class TerraElement {
             result *= -1.0f;
         }
 
-        if(0.45f <= Math.abs(result - Math.round(result)) && Math.abs(result - Math.round(result)) <= 0.55f){
+        if(0.49f <= Math.abs(result - Math.round(result)) && Math.abs(result - Math.round(result)) <= 0.51f){
             if(height > 0){
-                result = Math.round(result) - 0.5f;
+                result = (float)Math.ceil(result) - 0.5f;
             }else if(height < 0){
-                result = Math.round(result) + 0.5f;
+                result = (float)Math.floor(result) + 0.5f;
             }
         }else{
             result = Math.round(result);

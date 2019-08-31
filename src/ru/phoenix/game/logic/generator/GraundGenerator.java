@@ -7,24 +7,24 @@ import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.block.type.*;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.content.stage.random.RandomArena;
+import ru.phoenix.game.logic.generator.component.GridElement;
 import ru.phoenix.game.logic.generator.component.TerraElement;
 
 import java.util.*;
 
-import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
-import static ru.phoenix.core.config.Constants.PLAIN_MAP;
-import static ru.phoenix.core.config.Constants.RIVER_MAP;
+import static ru.phoenix.core.config.Constants.*;
 
 public class GraundGenerator {
 
-    private static List<Vector3f> gridPositions = new ArrayList<>();
+    private static List<GridElement> gridElements = new ArrayList<>();
 
-    private static Block dirt_main = null;
-    private static Block grass_main = null;
-    private static Block snow_main = null;
-    private static Block mountain_dirt_main = null;
-    private static Block snow_rock_main = null;
-    private static Block rock_main = null;
+    private static Block dirt_main              = null;
+    private static Block grass_main             = null;
+    private static Block snow_main              = null;
+    private static Block mountain_dirt_main     = null;
+    private static Block snow_rock_main         = null;
+    private static Block rock_main              = null;
+    private static Block grass_flower_main      = null;
 
     private static int mapWidthOffset;
     private static int mapHeightOffset;
@@ -39,16 +39,18 @@ public class GraundGenerator {
         List<Block> blocks = new ArrayList<>();
 
         if(seed == PLAIN_MAP){
-            gridPositions.clear();
+            gridElements.clear();
             int maxAmount = (int)Math.round(1.0f + Math.random() * 3.0f);
-            int maxRadius = area / (int)Math.round(10 + Math.random() * 30);
+            int maxRadius = area / (int)Math.round(5.0f + Math.random() * 15.0f);
             int maxHeight = 1;
             List<TerraElement> elements = new ArrayList<>(generateTerraElement(maxAmount,maxRadius,maxHeight));
 
             Block dirt = new Dirt((Dirt)dirt_main);
             Block grass = new Grass((Grass)grass_main);
+            Block grassFlower = new GrassFlower((GrassFlower) grass_flower_main);
             List<Matrix4f>dirtInstanceMatrix = new ArrayList<>();
             List<Matrix4f>grassInstanceMatrix = new ArrayList<>();
+            List<Matrix4f>grassFlowerInstanceMatrix = new ArrayList<>();
 
             for(int z = -mapHeightOffset; z <= mapHeightOffset; z++){
                 for(int x= -mapWidthOffset; x <= mapWidthOffset; x++){
@@ -58,22 +60,54 @@ public class GraundGenerator {
 
                     Projection projection = new Projection();
                     Vector3f position = closestElement.getTerraEffect(blockPosition);
+                    checkMapBorder(position);
                     projection.setTranslation(position);
 
+                    int check = 0;
+                    float chance = 1.0f + (float)Math.random() * 30.0f;
                     if(position.getY() >= 0) {
-                        grassInstanceMatrix.add(projection.getModelMatrix());
+                        if(Math.random() * 100.0f <= chance){
+                            check = 2;
+                            float angle = 0.0f;
+                            int random = (int)(Math.random() * 4.0f);
+                            switch (random){
+                                case 0:
+                                    angle = 90.0f;
+                                    break;
+                                case 1:
+                                    angle = 180.0f;
+                                    break;
+                                case 2:
+                                    angle = 270.0f;
+                                    break;
+                                default:
+                                    angle = 0.0f;
+                            }
+                            projection.setRotation(angle,new Vector3f(0.0f,1.0f,0.0f));
+                            grassFlowerInstanceMatrix.add(projection.getModelMatrix());
+                        }else {
+                            check = 1;
+                            grassInstanceMatrix.add(projection.getModelMatrix());
+                        }
                     }else{
+                        check = 0;
                         dirtInstanceMatrix.add(projection.getModelMatrix());
                     }
 
-                    gridPositions.add(position);
+                    if(check == 0){
+                        gridElements.add(new GridElement(position,dirt));
+                    }else if(check == 1){
+                        gridElements.add(new GridElement(position,grass));
+                    }else if(check == 2){
+                        gridElements.add(new GridElement(position,grassFlower));
+                    }
                 }
             }
 
-            for(Vector3f gridPosition : gridPositions){
-                for(int y = (int)gridPosition.getY() - 1; y >= -3; y--){
+            for(GridElement grid : gridElements){
+                for(float y = grid.getPosition().getY() - 1.0f; y >= -3.0f; y--){
                     Projection projection = new Projection();
-                    Vector3f position = new Vector3f(gridPosition.getX(),y,gridPosition.getZ());
+                    Vector3f position = new Vector3f(grid.getPosition().getX(),y,grid.getPosition().getZ());
                     projection.setTranslation(position);
                     dirtInstanceMatrix.add(projection.getModelMatrix());
                 }
@@ -89,13 +123,19 @@ public class GraundGenerator {
                 grassMatrix[i] = grassInstanceMatrix.get(i);
             }
 
+            Matrix4f[] grassFlowerMatrix = new Matrix4f[grassFlowerInstanceMatrix.size()];
+            for(int i=0; i<grassFlowerMatrix.length; i++){
+                grassFlowerMatrix[i] = grassFlowerInstanceMatrix.get(i);
+            }
+
             dirt.setInstanceMatrix(dirtMatrix);
             grass.setInstanceMatrix(grassMatrix);
-            blocks = new ArrayList<>(Arrays.asList(dirt,grass));
+            grassFlower.setInstanceMatrix(grassFlowerMatrix);
+            blocks = new ArrayList<>(Arrays.asList(dirt,grass,grassFlower));
         }else if(seed == MOUNTAIN_MAP){
-            gridPositions.clear();
-            int maxAmount = (int)Math.round(2.0f + Math.random() * 5.0f);
-            int maxRadius = area / (int)Math.round(5 + Math.random() * 20);
+            gridElements.clear();
+            int maxAmount = (int)Math.round(3.0f + Math.random() * 10.0f);
+            int maxRadius = area / (int)Math.round(10.0f + Math.random() * 50.0f);
             int maxHeight = 3;
             List<TerraElement> elements = new ArrayList<>(generateTerraElement(maxAmount,maxRadius,maxHeight));
 
@@ -117,31 +157,42 @@ public class GraundGenerator {
 
                     Projection projection = new Projection();
                     Vector3f position = closestElement.getTerraEffect(blockPosition);
+                    checkMapBorder(position);
                     projection.setTranslation(position);
 
-                    if(position.getY() >= -1) {
-                        if(position.getY() >= 1){
+                    int check = 0;
+                    if(position.getY() >= -2) {
+                        if(position.getY() >= -1){
                             snowRockInstanceMatrix.add(projection.getModelMatrix());
+                            check = 1;
                         }else {
                             snowInstanceMatrix.add(projection.getModelMatrix());
+                            check = 2;
                         }
                     }else{
                         dirtInstanceMatrix.add(projection.getModelMatrix());
+                        check = 0;
                     }
 
-                    gridPositions.add(position);
+                    if(check == 0){
+                        gridElements.add(new GridElement(position,dirt));
+                    }else if(check == 1){
+                        gridElements.add(new GridElement(position,snowRock));
+                    }else if(check == 2){
+                        gridElements.add(new GridElement(position,snow));
+                    }
                 }
             }
 
-            for(Vector3f gridPosition : gridPositions){
-                for(int y = (int)gridPosition.getY() - 1; y >= -3; y--){
+            for(GridElement grid : gridElements){
+                for(float y = grid.getPosition().getY() - 1.0f; y >= -3.0f; y--){
                     Projection projection = new Projection();
-                    Vector3f position = new Vector3f(gridPosition.getX(),y,gridPosition.getZ());
+                    Vector3f position = new Vector3f(grid.getPosition().getX(), y, grid.getPosition().getZ());
                     projection.setTranslation(position);
-                    if(y > -1){
-                        rockInstanceMatrix.add(projection.getModelMatrix());
-                    }else {
+                    if(grid.getBlock().getType() == BLOCK_COLD_DIRT || grid.getBlock().getType() == BLOCK_DIRT_SNOW){
                         dirtInstanceMatrix.add(projection.getModelMatrix());
+                    }else if(grid.getBlock().getType() == BLOCK_ROCK_SNOW){
+                        rockInstanceMatrix.add(projection.getModelMatrix());
                     }
                 }
             }
@@ -198,6 +249,9 @@ public class GraundGenerator {
         }
         if(rock_main == null){
             rock_main = new Rock();
+        }
+        if(grass_flower_main == null){
+            grass_flower_main = new GrassFlower();
         }
     }
 
@@ -263,5 +317,18 @@ public class GraundGenerator {
         });
 
         return elements.get(0);
+    }
+
+    private static void checkMapBorder(Vector3f blockPosition){
+        int mx = mapWidthOffset;
+        int mz = mapHeightOffset;
+        int x = (int)blockPosition.getX();
+        int z = (int)blockPosition.getZ();
+        if(x == -mx || x == mx || z == -mz || z == mz){
+            float y = blockPosition.getY();
+            if(Math.abs(Math.round(y) - y) == 0.5f){
+                blockPosition.setY(blockPosition.getY() + 0.5f);
+            }
+        }
     }
 }

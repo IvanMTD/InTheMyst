@@ -6,4 +6,5 @@ import ru.phoenix.core.shader.Shader;
 public interface Block {
     public void draw(Shader shader);
     public void setInstanceMatrix(Matrix4f[] matrix);
+    public int getType();
 }

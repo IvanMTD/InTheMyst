@@ -1,6 +1,16 @@
 package ru.phoenix.core.config;
 
 public class Constants {
+
+    // block types
+    public static final int BLOCK_DIRT          = 0x13200;
+    public static final int BLOCK_DIRT_GRASS    = 0x13201;
+    public static final int BLOCK_DIRT_SNOW     = 0x13202;
+    public static final int BLOCK_COLD_DIRT     = 0x13203;
+    public static final int BLOCK_ROCK          = 0x13204;
+    public static final int BLOCK_ROCK_SNOW     = 0x13205;
+    public static final int BLOCK_GRASS_FLOWER  = 0x13206;
+
     // generator seed
     public static final int PLAIN_MAP           = 0x13101;
     public static final int MOUNTAIN_MAP        = 0x13102;

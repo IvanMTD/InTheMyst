@@ -23,6 +23,8 @@ public abstract class BlockControl {
     private Projection projection;
     private Vector3f position;
 
+    private int type;
+
     // конструкторы
     public BlockControl(){
         projection = new Projection();
@@ -110,6 +112,14 @@ public abstract class BlockControl {
             mesh.draw();
             glDisable(GL_CULL_FACE);
         }
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    protected void setType(int type) {
+        this.type = type;
     }
 
     protected List<Mesh> getMeshes(){
