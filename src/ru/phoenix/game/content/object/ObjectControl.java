@@ -1,0 +1,148 @@
+package ru.phoenix.game.content.object;
+
+import ru.phoenix.core.loader.ImageAnimLoader;
+import ru.phoenix.core.loader.sprite.ImageAnimation;
+import ru.phoenix.core.loader.texture.Texture;
+import ru.phoenix.core.math.Matrix4f;
+import ru.phoenix.core.math.Projection;
+import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.core.shader.Shader;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static ru.phoenix.core.config.Constants.GROUP_A;
+
+public abstract class ObjectControl {
+    private List<Texture> textures;
+    private ImageAnimation sprite;
+
+    private Projection projection;
+    private Vector3f position;
+    private int currentTexture;
+
+    private float distance;
+    private float id;
+    private boolean onTarget;
+
+    private int count;
+    private boolean instance;
+
+    private boolean animated;
+
+    public ObjectControl(){
+        textures = new ArrayList<>();
+        projection = new Projection();
+        position = new Vector3f();
+        currentTexture = 1;
+        distance = 0;
+        count = 0;
+        instance = false;
+        animated = false;
+    }
+
+    protected void setup(List<Texture> textures, int row, int column, float width, float height, int textureIndex, Vector3f position, Matrix4f[] matrix){
+        this.textures = new ArrayList<>(textures);
+
+        currentTexture = textureIndex;
+
+        if(matrix != null){
+            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,matrix);
+            instance = true;
+        }else {
+            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,null);
+            instance = false;
+        }
+
+        if(position != null) {
+            this.position = position;
+            projection.getModelMatrix().identity();
+            projection.setTranslation(position);
+        }
+
+        int num = (int)Math.round(Math.random() * row);
+        for(int i=0; i<num; i++){
+            sprite.nextFrame();
+        }
+        if(!animated){
+            int num2 = (int)Math.round(Math.random() * column);
+            sprite.setCurrentAnimation(num2);
+        }
+    }
+
+    protected void setAnimated(boolean animated) {
+        this.animated = animated;
+    }
+
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
+    public Vector3f getPosition(){
+        return position;
+    }
+
+    public void setPosition(Vector3f position){
+        this.position = position;
+        projection.getModelMatrix().identity();
+        projection.setTranslation(position);
+    }
+
+    public float getId() {
+        return id;
+    }
+
+    public void setId(float id) {
+        this.id = id;
+    }
+
+    public boolean isOnTarget() {
+        return onTarget;
+    }
+
+    public void setOnTarget(boolean onTarget) {
+        this.onTarget = onTarget;
+    }
+
+    public boolean isInstance() {
+        return instance;
+    }
+
+    public void draw(Shader shader){
+        if(instance) {
+            sprite.updateInstanceMatrix();
+        }
+        // setUniforms
+        shader.useProgram();
+        // глобальный юниформ
+        shader.setUniformBlock("matrices",0);
+        // контролеры
+        shader.setUniform("instance",sprite.getVbo().isInstances() ? 1 : 0);
+        // доп данные
+        shader.setUniform("model_m",projection.getModelMatrix());
+        shader.setUniform("group",GROUP_A);
+        shader.setUniform("id",id);
+        shader.setUniform("onTarget", isOnTarget() ? 1 : 0);
+        // end
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures.get(currentTexture).getTextureID());
+        shader.setUniform("image",0);
+        sprite.draw();
+
+        if(animated) {
+            if (count > 5.0f + Math.random() * 15.0f) {
+                sprite.nextFrame();
+                count = 0;
+            }
+            count++;
+        }
+    }
+}
