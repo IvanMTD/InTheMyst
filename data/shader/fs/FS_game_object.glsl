@@ -72,7 +72,6 @@ void main() {
         vec3 result = getDirectLight(directLight, normal, viewDirection);
         float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
         fragment_color = vec4(result, alpha);
-        //fragment_color = texture(material.diffuseMap,fs_in.TexCoords);
     }
 
     vec4 rgba = texture(material.diffuseMap,fs_in.TexCoords);

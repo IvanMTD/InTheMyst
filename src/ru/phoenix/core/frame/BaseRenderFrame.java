@@ -139,6 +139,7 @@ public class BaseRenderFrame implements Framework {
         ndcShader.setUniform("main_texture",0);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1));
+        //glBindTexture(GL_TEXTURE_2D, shadow.getTexture());
         ndcShader.setUniform("blur_texture",1);
         ndcVbo.draw();
     }

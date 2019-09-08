@@ -79,5 +79,6 @@ void main(){
     // gamma correction
     mapped = pow(mapped, vec3(1.0 / gamma));
     fragment_color = vec4(mapped, 1.0);
+    //fragment_color = texture(blur_texture,texture_coord);
 }
 

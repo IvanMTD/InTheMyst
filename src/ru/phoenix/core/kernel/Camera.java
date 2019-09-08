@@ -5,14 +5,16 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.game.logic.generator.component.GridElement;
 
 import java.nio.DoubleBuffer;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {
     //constant
-    private static final float MAX_DIST = 10.0f;
+    private static final float MAX_DIST = 40.0f;
     private static final float MIN_DIST = 3.5f;
     private static final float SCROLL_SENS = 1.1f;
 
@@ -104,7 +106,7 @@ public class Camera {
         setOrtho();
     }
 
-    public void update(float fieldWidth, float fieldHeight, boolean mouseScrollStop){
+    public void update(float fieldWidth, float fieldHeight, boolean mouseScrollStop, List<GridElement> gridElements){
         updateViewMatrix();
         float movementSpeedX = 0.05f;
         float movementSpeedY = 0.088f;
@@ -146,6 +148,35 @@ public class Camera {
                     lastCursorPos2 = new Vector2f(currentCursorPosition);
                 }else{
                     lastCursorPos2 = new Vector2f(Input.getInstance().getCursorPosition());
+                }
+            }
+
+            Vector3f currentCameraLookPos = Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse()));
+            currentCameraLookPos.setY(currentCameraLookPos.getY());
+
+
+            float offset = 0.5f;
+            float spOffset = 0.025f;
+
+            for(GridElement grid : gridElements){
+                if(grid.getPosition().getX() - offset <= currentCameraLookPos.getX() && currentCameraLookPos.getX() <= grid.getPosition().getX() + offset){
+                    if(grid.getPosition().getZ() - offset <= currentCameraLookPos.getZ() && currentCameraLookPos.getZ() <= grid.getPosition().getZ() + offset){
+                        if(currentCameraLookPos.getY() != grid.getCurrentHeight()){
+                            //if((float)Math.round(grid.getPosition().getY()) - grid.getPosition().getY() != 0.5f){
+                                if (currentCameraLookPos.getY() < grid.getCurrentHeight()) {
+                                    Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
+                                    if(Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() >= grid.getCurrentHeight()){
+                                        Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() - spOffset);
+                                    }
+                                } else {
+                                    Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() - spOffset);
+                                    if(Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() <= grid.getCurrentHeight()){
+                                        Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
+                                    }
+                                }
+                            //}
+                        }
+                    }
                 }
             }
         }
@@ -196,31 +227,31 @@ public class Camera {
         pos = pos.add(front.normalize().mul(hypotenuse)).add(direction.normalize().mul(-hypotenuse));
         front = direction.normalize();
 
-        if(getPos().add(getFront().mul(getHypotenuse())).getX() < -fieldWidth/2){
+        if(getPos().add(getFront().mul(getHypotenuse())).getX() < 0.0f){
             Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
             Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
-            Vector3f stop = new Vector3f(-fieldWidth/2,stopPoint.getY(),stopPoint.getZ()).add(ray);
+            Vector3f stop = new Vector3f(0.0f,stopPoint.getY(),stopPoint.getZ()).add(ray);
             setPos(stop);
         }
 
-        if(getPos().add(getFront().mul(getHypotenuse())).getX() > fieldWidth/2){
+        if(getPos().add(getFront().mul(getHypotenuse())).getX() > fieldWidth){
             Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
             Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
-            Vector3f stop = new Vector3f(fieldWidth/2,stopPoint.getY(),stopPoint.getZ()).add(ray);
+            Vector3f stop = new Vector3f(fieldWidth,stopPoint.getY(),stopPoint.getZ()).add(ray);
             setPos(stop);
         }
 
-        if(getPos().add(getFront().mul(getHypotenuse())).getZ() < -fieldHeight/2){
+        if(getPos().add(getFront().mul(getHypotenuse())).getZ() < 0.0f){
             Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
             Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
-            Vector3f stop = new Vector3f(stopPoint.getX(),stopPoint.getY(),-fieldHeight/2).add(ray);
+            Vector3f stop = new Vector3f(stopPoint.getX(),stopPoint.getY(),0.0f).add(ray);
             setPos(stop);
         }
 
-        if(getPos().add(getFront().mul(getHypotenuse())).getZ() > fieldHeight/2){
+        if(getPos().add(getFront().mul(getHypotenuse())).getZ() > fieldHeight){
             Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
             Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
-            Vector3f stop = new Vector3f(stopPoint.getX(),stopPoint.getY(),fieldHeight/2).add(ray);
+            Vector3f stop = new Vector3f(stopPoint.getX(),stopPoint.getY(),fieldHeight).add(ray);
             setPos(stop);
         }
 

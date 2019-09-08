@@ -3,11 +3,9 @@ package ru.phoenix.game.scene.batlle;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
-import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.logic.generator.GraundGenerator;
-import ru.phoenix.game.logic.lighting.DirectLight;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.scene.Scene;
 
@@ -21,6 +19,7 @@ import static ru.phoenix.core.config.Constants.PLAIN_MAP;
 public class BattleScene implements Scene {
 
     private Shader shader3D;
+    private Shader shaderSprite;
 
     private boolean active;
     private boolean init;
@@ -31,34 +30,28 @@ public class BattleScene implements Scene {
 
     private int index;
 
-    private List<Light> lights;
-
     public BattleScene(){
         tapStop = false;
         active = false;
         init = false;
         shader3D = new Shader();
+        shaderSprite = new Shader();
         index = 0;
-        lights = new ArrayList<>();
     }
 
     @Override
     public void init(){
         init = true;
+
         shader3D.createVertexShader("VS_game_object.glsl");
         shader3D.createFragmentShader("FS_game_object.glsl");
         shader3D.createProgram();
-        battleGraund = GraundGenerator.generateMap(PLAIN_MAP);
 
-        Light directLight = new DirectLight(
-                new Vector3f(5.0f,20.0f,5.0f), // position
-                new Vector3f(0.2f,0.2f,0.2f), // ambient
-                new Vector3f(1.0f,1.0f,1.0f), // diffuse
-                new Vector3f(1.0f,1.0f,1.0f), // specular
-                30
-        );
+        shaderSprite.createVertexShader("VS_sprite.glsl");
+        shaderSprite.createFragmentShader("FS_sprite.glsl");
+        shaderSprite.createProgram();
 
-        lights.add(directLight);
+        battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
     }
 
     @Override
@@ -68,7 +61,7 @@ public class BattleScene implements Scene {
 
     @Override
     public void update(){
-        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false);
+        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false, battleGraund.getGridElements());
 
         boolean tap = false;
 
@@ -83,35 +76,9 @@ public class BattleScene implements Scene {
 
         if(tap){
             if(index == 0) {
-
-                lights.clear();
-                Light directLight = new DirectLight(
-                        new Vector3f(5.0f,20.0f,5.0f), // position
-                        new Vector3f(0.2f,0.2f,0.2f), // ambient
-                        new Vector3f(1.0f,1.0f,1.0f), // diffuse
-                        new Vector3f(1.0f,1.0f,1.0f), // specular
-                        30
-                );
-
-                lights.add(directLight);
-
-                battleGraund = GraundGenerator.generateMap(MOUNTAIN_MAP);
+                battleGraund = GraundGenerator.useMapGenerator(MOUNTAIN_MAP);
             }else if(index == 1){
-
-                lights.clear();
-                float x = (float)((-battleGraund.getMapX() / 2) + Math.random() * ((battleGraund.getMapX() / 2) * 2));
-                float y = (float)((-battleGraund.getMapZ() / 2) + Math.random() * ((battleGraund.getMapZ() / 2) * 2));
-                Light directLight = new DirectLight(
-                        new Vector3f(x,(float)(10.0f + Math.random() * 20.0f),y), // position
-                        new Vector3f(0.2f,0.2f,0.2f), // ambient
-                        new Vector3f(1.0f,1.0f,1.0f), // diffuse
-                        new Vector3f(1.0f,1.0f,1.0f), // specular
-                        30
-                );
-
-                lights.add(directLight);
-
-                battleGraund = GraundGenerator.generateMap(PLAIN_MAP);
+                battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
             }
 
             index++;
@@ -124,6 +91,7 @@ public class BattleScene implements Scene {
     @Override
     public void draw(){
         battleGraund.draw(shader3D);
+        battleGraund.drawSprites(shaderSprite);
     }
 
     @Override
@@ -153,7 +121,7 @@ public class BattleScene implements Scene {
 
     @Override
     public List<Light> getLights() {
-        return lights;
+        return battleGraund.getDirectLight();
     }
 
     @Override

@@ -52,7 +52,7 @@ public class TerraElement {
             result *= -1.0f;
         }
 
-        if(0.49f <= Math.abs(result - Math.round(result)) && Math.abs(result - Math.round(result)) <= 0.51f){
+        if(0.4f <= Math.abs(result - Math.round(result)) && Math.abs(result - Math.round(result)) <= 0.6f){
             if(height > 0){
                 result = (float)Math.ceil(result) - 0.5f;
             }else if(height < 0){
@@ -63,6 +63,10 @@ public class TerraElement {
         }
 
         return result;
+    }
+
+    public int getHeight(){
+        return height;
     }
 
     public float getDistance() {

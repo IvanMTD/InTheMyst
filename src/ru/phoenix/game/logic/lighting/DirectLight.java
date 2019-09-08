@@ -15,7 +15,10 @@ public class DirectLight implements Light {
     private Matrix4f[] lightSpaceMatrix;
     private int shadowMapSize;
 
-    public DirectLight(Vector3f position, Vector3f ambient, Vector3f diffuse, Vector3f specular, int shadowMapSize){
+    private int mapX;
+    private int mapZ;
+
+    public DirectLight(Vector3f position, Vector3f ambient, Vector3f diffuse, Vector3f specular, int shadowMapSize, int mapX, int mapZ){
         lightSpaceMatrix = new Matrix4f[]{
                 new Matrix4f()
         };
@@ -24,13 +27,15 @@ public class DirectLight implements Light {
         setAmbient(ambient);
         setDiffuse(diffuse);
         setSpecular(specular);
+        setMapX(mapX);
+        setMapZ(mapZ);
         createLightSpaceMatrix();
     }
 
     private void createLightSpaceMatrix(){
         Projection projection = new Projection();
-        projection.setOrtho(-shadowMapSize,shadowMapSize,-shadowMapSize,shadowMapSize, WindowConfig.getInstance().getNear(), WindowConfig.getInstance().getFar());
-        projection.setView(position,new Vector3f(0.0f,0.0f,0.0f),new Vector3f(0.0f,1.0f,0.0f));
+        projection.setOrtho(-shadowMapSize,shadowMapSize,-shadowMapSize,shadowMapSize, WindowConfig.getInstance().getNear(), WindowConfig.getInstance().getFar() * 2.0f);
+        projection.setView(position,new Vector3f(mapX / 2,0.0f,mapZ / 2),new Vector3f(0.0f,1.0f,0.0f));
         lightSpaceMatrix[0].setMatrix(projection.getProjection().mul(projection.getViewMatrix()));
     }
 
@@ -107,5 +112,13 @@ public class DirectLight implements Light {
     @Override
     public void setLightSpaceMatrix(Matrix4f[] lightSpaceMatrix) {
         this.lightSpaceMatrix = lightSpaceMatrix;
+    }
+
+    private void setMapX(int mapX) {
+        this.mapX = mapX;
+    }
+
+    private void setMapZ(int mapZ) {
+        this.mapZ = mapZ;
     }
 }

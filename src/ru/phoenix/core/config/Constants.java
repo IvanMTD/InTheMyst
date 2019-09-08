@@ -10,6 +10,10 @@ public class Constants {
     public static final int BLOCK_ROCK          = 0x13204;
     public static final int BLOCK_ROCK_SNOW     = 0x13205;
     public static final int BLOCK_GRASS_FLOWER  = 0x13206;
+    // block stone
+    public static final int BLOCK_STONE_SMALL   = 0x13300;
+    public static final int BLOCK_STONE_MEDIUM  = 0x13301;
+    public static final int BLOCK_STONE_BIG     = 0x13302;
 
     // generator seed
     public static final int PLAIN_MAP           = 0x13101;

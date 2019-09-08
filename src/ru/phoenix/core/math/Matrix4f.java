@@ -345,6 +345,10 @@ public class Matrix4f {
         return m[x][y];
     }
 
+    public Vector3f getPositionVector(){
+        return new Vector3f(get(0,3),get(1,3),get(2,3));
+    }
+
     public static void matrixInfo(Matrix4f matrix){
         System.out.println(matrix.get(0,0) + " " + matrix.get(0,1) + " " + matrix.get(0,2) + " " + matrix.get(0,3));
         System.out.println(matrix.get(1,0) + " " + matrix.get(1,1) + " " + matrix.get(1,2) + " " + matrix.get(1,3));

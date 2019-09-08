@@ -7,11 +7,15 @@ public class GridElement {
     private Vector3f position;
     private Block block;
     private float currentHeight;
+    private boolean bevel;
+    private boolean blocked;
 
-    public GridElement(Vector3f position, Block block) {
+    public GridElement(Vector3f position, Block block, boolean bevel, boolean blocked) {
         setBlock(block);
         setPosition(position);
         setCurrentHeight(position.getY());
+        setBevel(bevel);
+        setBlocked(blocked);
     }
 
     public Vector3f getPosition() {
@@ -34,7 +38,23 @@ public class GridElement {
         return currentHeight;
     }
 
-    private void setCurrentHeight(float currentHeight) {
+    public void setCurrentHeight(float currentHeight) {
         this.currentHeight = currentHeight;
+    }
+
+    public boolean isBevel() {
+        return bevel;
+    }
+
+    private void setBevel(boolean bevel) {
+        this.bevel = bevel;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    private void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }
