@@ -27,6 +27,7 @@ public class LittleThing extends ObjectControl implements Object {
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
+        setShadow(true);
         setAnimated(false);
     }
 
@@ -36,6 +37,7 @@ public class LittleThing extends ObjectControl implements Object {
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
+        setShadow(true);
         setAnimated(false);
     }
 

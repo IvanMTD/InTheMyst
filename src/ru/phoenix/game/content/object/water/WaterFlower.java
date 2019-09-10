@@ -26,6 +26,7 @@ public class WaterFlower extends ObjectControl implements Object {
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
+        setShadow(true);
         setAnimated(false);
     }
 
@@ -35,6 +36,7 @@ public class WaterFlower extends ObjectControl implements Object {
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
+        setShadow(true);
         setAnimated(false);
     }
 
