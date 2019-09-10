@@ -86,7 +86,7 @@ public abstract class BattleGraundControl {
 
     public void drawShadowSprites(Shader shader){
         for(Object object : sprites){
-            if(object.isBoard()){
+            if(object.isShadow()){
                 object.draw(shader);
             }
         }

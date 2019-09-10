@@ -37,6 +37,7 @@ public class Bush extends ObjectControl implements Object {
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
+        setShadow(true);
         setAnimated(true);
     }
 
@@ -46,6 +47,7 @@ public class Bush extends ObjectControl implements Object {
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
+        setShadow(true);
         setAnimated(true);
     }
 
@@ -66,6 +68,7 @@ public class Bush extends ObjectControl implements Object {
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
+        setShadow(true);
         setAnimated(true);
     }
 

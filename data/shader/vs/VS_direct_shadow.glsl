@@ -11,6 +11,8 @@ layout (location = 5) in ivec4 l_bone_id;
 layout (location = 6) in vec4 l_bone_w;
 layout (location = 7) in mat4 l_instance_m;
 
+out vec2 texCoord;
+
 // контролеры
 uniform int instance;
 uniform int animated;
@@ -29,6 +31,8 @@ void main(){
 
     vec3 sunRight_worldspace = {directLightViewMatrix[0][0], directLightViewMatrix[1][0], directLightViewMatrix[2][0]};
     vec3 sunUp_worldspace = {directLightViewMatrix[0][1], directLightViewMatrix[1][1], directLightViewMatrix[2][1]};
+
+    texCoord = l_tex;
 
     if(instance == 1){
         if(animated == 1){
@@ -72,7 +76,7 @@ void main(){
                 vec3 particleCenter_wordspace = {model_m[0][2],model_m[1][2],model_m[2][2]};
                 vec3 particleUp_wordspace = {model_m[0][1],model_m[1][1],model_m[2][1]};
                 vec3 result = particleCenter_wordspace + (sunRight_worldspace * l_pos.x * billboardSize.x + sunUp_worldspace * l_pos.y  * billboardSize.y);
-                result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
+                result = vec3(result.x + xOffset,result.y + 0.1f + yOffset,result.z - 1.0f + zOffset);
                 gl_Position = lightSpaceMatrix * model_m * vec4(result,1.0f);
             }else{
                 gl_Position = lightSpaceMatrix * model_m * vec4(l_pos, 1.0);

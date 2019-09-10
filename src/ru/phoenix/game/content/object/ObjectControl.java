@@ -36,6 +36,7 @@ public abstract class ObjectControl {
     private boolean animated;
     private boolean onTarget;
     private boolean board;
+    private boolean shadow;
 
     public ObjectControl(){
         textures = new ArrayList<>();
@@ -49,6 +50,7 @@ public abstract class ObjectControl {
         zOffset = 0.0f;
         instance = false;
         animated = false;
+        shadow = false;
     }
 
     protected void setup(List<Texture> textures, int row, int column, float width, float height, int textureIndex, Vector3f position, Matrix4f[] matrix){
@@ -157,6 +159,14 @@ public abstract class ObjectControl {
 
     public boolean isInstance() {
         return instance;
+    }
+
+    public boolean isShadow() {
+        return shadow;
+    }
+
+    public void setShadow(boolean shadow) {
+        this.shadow = shadow;
     }
 
     protected float getxOffset() {
