@@ -15,6 +15,13 @@ public class Constants {
     public static final int BLOCK_STONE_MEDIUM  = 0x13301;
     public static final int BLOCK_STONE_BIG     = 0x13302;
 
+    // map info
+    public static final int LEFT_BOARD          = 0x00001;
+    public static final int RIGHT_BOARD         = 0x00002;
+    public static final int UP_BOARD            = 0x00003;
+    public static final int DOWN_BOARD          = 0x00004;
+    public static final int CENTER_BOARD        = 0x00005;
+
     // generator seed
     public static final int PLAIN_MAP           = 0x13101;
     public static final int MOUNTAIN_MAP        = 0x13102;

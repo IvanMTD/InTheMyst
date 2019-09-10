@@ -37,7 +37,7 @@ public abstract class BattleGraundControl {
     protected void initLight(){
         float x = (float)(Math.random() * mapX);
         float z = (float)(Math.random() * mapZ);
-        float y = (mapX + mapZ) / 4.0f;
+        float y = (mapX + mapZ) / 2.0f;
         Light directLight = new DirectLight(
                 new Vector3f(x,y,z), // position
                 new Vector3f(0.2f,0.2f,0.2f), // ambient
@@ -48,6 +48,12 @@ public abstract class BattleGraundControl {
                 mapZ
         );
         directLights.add(directLight);
+    }
+
+    public void update(){
+        for(Object object : sprites){
+            object.update();
+        }
     }
 
     public void draw(Shader shader){
@@ -75,6 +81,14 @@ public abstract class BattleGraundControl {
 
         for(Object object : sprites){
             object.draw(shader);
+        }
+    }
+
+    public void drawShadowSprites(Shader shader){
+        for(Object object : sprites){
+            if(object.isBoard()){
+                object.draw(shader);
+            }
         }
     }
 

@@ -36,6 +36,7 @@ public class Tree extends ObjectControl implements Object {
         textures = new ArrayList<>(Arrays.asList(tree_1,tree_2,tree_3,tree_4, tree_5));
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 
@@ -44,6 +45,7 @@ public class Tree extends ObjectControl implements Object {
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 
@@ -60,6 +62,7 @@ public class Tree extends ObjectControl implements Object {
         }
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 

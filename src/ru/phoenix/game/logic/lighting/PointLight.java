@@ -130,4 +130,14 @@ public class PointLight implements Light {
     public void setLightSpaceMatrix(Matrix4f[] lightSpaceMatrix) {
         this.lightSpaceMatrix = lightSpaceMatrix;
     }
+
+    @Override
+    public Matrix4f getDirectLightViewMatrix() {
+        return null;
+    }
+
+    @Override
+    public void setDirectLightViewMatrix(Matrix4f directLightViewMatrix) {
+
+    }
 }

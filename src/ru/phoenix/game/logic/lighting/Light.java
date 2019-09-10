@@ -26,4 +26,7 @@ public interface Light {
 
     public Matrix4f[] getLightSpaceMatrix();
     public void setLightSpaceMatrix(Matrix4f[] lightSpaceMatrix);
+
+    public Matrix4f getDirectLightViewMatrix();
+    public void setDirectLightViewMatrix(Matrix4f directLightViewMatrix);
 }

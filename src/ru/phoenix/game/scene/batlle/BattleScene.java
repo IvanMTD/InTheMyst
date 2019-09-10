@@ -1,15 +1,18 @@
 package ru.phoenix.game.scene.batlle;
 
 import ru.phoenix.core.config.Constants;
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
+import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.object.Object;
+import ru.phoenix.game.content.object.water.WaterLine;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.logic.generator.GraundGenerator;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.scene.Scene;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
@@ -30,6 +33,9 @@ public class BattleScene implements Scene {
 
     private int index;
 
+    private boolean switchControl;
+    private float count;
+
     public BattleScene(){
         tapStop = false;
         active = false;
@@ -37,6 +43,8 @@ public class BattleScene implements Scene {
         shader3D = new Shader();
         shaderSprite = new Shader();
         index = 0;
+        switchControl = false;
+        count = 0.0f;
     }
 
     @Override
@@ -61,6 +69,23 @@ public class BattleScene implements Scene {
 
     @Override
     public void update(){
+
+        if(switchControl){
+            count+=0.0005f;
+            Default.setOffset(count);
+            if(count >= 0.05f){
+                switchControl = !switchControl;
+            }
+        }else{
+            count-=0.0005f;
+            Default.setOffset(count);
+            if(count <= -0.05f){
+                switchControl = !switchControl;
+            }
+        }
+
+        battleGraund.update();
+
         Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false, battleGraund.getGridElements());
 
         boolean tap = false;
@@ -97,6 +122,7 @@ public class BattleScene implements Scene {
     @Override
     public void draw(Shader shader){
         battleGraund.draw(shader);
+        battleGraund.drawShadowSprites(shader);
     }
 
     @Override

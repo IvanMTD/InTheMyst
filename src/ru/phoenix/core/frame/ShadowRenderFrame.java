@@ -42,6 +42,8 @@ public class ShadowRenderFrame implements Framework {
         shader.useProgram();
         Matrix4f[] matrix = scene.getLights().get(0).getLightSpaceMatrix();
         shader.setUniform("lightSpaceMatrix",matrix[0]);
+        Matrix4f mat = scene.getLights().get(0).getDirectLightViewMatrix();
+        shader.setUniform("directLightViewMatrix",mat);
         scene.draw(shader);
 
         glBindFramebuffer(GL_FRAMEBUFFER,0);

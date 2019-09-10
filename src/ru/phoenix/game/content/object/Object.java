@@ -2,6 +2,7 @@ package ru.phoenix.game.content.object;
 
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.math.Matrix4f;
+import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 
@@ -21,4 +22,6 @@ public interface Object {
     public boolean isOnTarget();
     public boolean isInstance();
     public void draw(Shader shader);
+    public boolean isBoard();
+    public void setProjection(Projection projection);
 }

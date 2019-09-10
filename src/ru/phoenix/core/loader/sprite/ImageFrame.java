@@ -55,7 +55,7 @@ public class ImageFrame {
             sortingData.sort(new Comparator<SortArray>() {
                 @Override
                 public int compare(SortArray o1, SortArray o2) {
-                    return o1.getCondition() < o2.getCondition() ? 1 : -1;
+                    return o1.getCondition() < o2.getCondition() ? 0 : -1;
                 }
             });
 

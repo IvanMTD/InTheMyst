@@ -3,7 +3,6 @@ package ru.phoenix.game.content.object.passive;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Matrix4f;
-import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
@@ -15,7 +14,6 @@ import java.util.List;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
-import static ru.phoenix.core.config.Constants.PLAIN_MAP;
 
 public class Weed extends ObjectControl implements Object {
 
@@ -34,6 +32,7 @@ public class Weed extends ObjectControl implements Object {
         textures = new ArrayList<>(Arrays.asList(weed_grass_1, weed_grass_2, weed_grass_3,weed_grass_4));
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 
@@ -42,6 +41,21 @@ public class Weed extends ObjectControl implements Object {
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
+        setAnimated(true);
+    }
+
+    public Weed(Weed object, float height){
+        super();
+        this.textures = new ArrayList<>(object.getTextures());
+        if(height <= -0.5f){
+            Texture texture = textures.get(2);
+            textures.clear();
+            textures.add(texture);
+        }
+        setId(0.0f);
+        setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 
@@ -54,6 +68,7 @@ public class Weed extends ObjectControl implements Object {
         }
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 

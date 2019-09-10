@@ -36,6 +36,7 @@ public class Bush extends ObjectControl implements Object {
         textures = new ArrayList<>(Arrays.asList(bush_1,bush_2,bush_3,bush_4,bush_5));
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 
@@ -44,6 +45,7 @@ public class Bush extends ObjectControl implements Object {
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 
@@ -63,6 +65,7 @@ public class Bush extends ObjectControl implements Object {
         }
         setId(0.0f);
         setOnTarget(false);
+        setBoard(true);
         setAnimated(true);
     }
 

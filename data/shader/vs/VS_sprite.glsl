@@ -17,31 +17,46 @@ layout (row_major, std140) uniform matrices{
 
 // контролеры
 uniform int instance;
-
+uniform int board;
 
 // доп данные
 uniform mat4 model_m;
+uniform float xOffset;
+uniform float yOffset;
+uniform float zOffset;
 
 out vec2 textureCoord;
+out flat int isBoard;
 
 void main() {
     vec3 cameraRight_worldspace = {view_m[0][0], view_m[1][0], view_m[2][0]};
     vec3 cameraUp_worldspace = {view_m[0][1], view_m[1][1], view_m[2][1]};
+    isBoard = board;
 
     if(instance == 1){
-        vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
-        vec3 particleCenter_wordspace = {l_instance_m[0][2],l_instance_m[1][2],l_instance_m[2][2]};
-        vec3 particleUp_wordspace = {l_instance_m[0][1],l_instance_m[1][1],l_instance_m[2][1]};
-        vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + cameraUp_worldspace * l_pos.y  * billboardSize.y);
-        result = vec3(result.x,result.y,result.z - 1.0f);
-        gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
+        if(board == 1){
+            vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
+            vec3 particleCenter_wordspace = {l_instance_m[0][2],l_instance_m[1][2],l_instance_m[2][2]};
+            vec3 particleUp_wordspace = {l_instance_m[0][1],l_instance_m[1][1],l_instance_m[2][1]};
+            vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + cameraUp_worldspace * l_pos.y  * billboardSize.y);
+            result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
+            gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
+        }else{
+            vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
+            gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
+        }
     }else{
-        vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
-        vec3 particleCenter_wordspace = {model_m[0][2],model_m[1][2],model_m[2][2]};
-        vec3 particleUp_wordspace = {model_m[0][1],model_m[1][1],model_m[2][1]};
-        vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + cameraUp_worldspace * l_pos.y  * billboardSize.y);
-        result = vec3(result.x,result.y,result.z - 1.0f);
-        gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
+        if(board == 1){
+            vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
+            vec3 particleCenter_wordspace = {model_m[0][2],model_m[1][2],model_m[2][2]};
+            vec3 particleUp_wordspace = {model_m[0][1],model_m[1][1],model_m[2][1]};
+            vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + cameraUp_worldspace * l_pos.y  * billboardSize.y);
+            result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
+            gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
+        }else{
+            vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
+            gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
+        }
     }
     textureCoord = l_tex;
 }
