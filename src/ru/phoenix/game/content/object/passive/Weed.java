@@ -14,6 +14,7 @@ import java.util.List;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
+import static ru.phoenix.core.config.Constants.PLAIN_MAP;
 
 public class Weed extends ObjectControl implements Object {
 
@@ -25,11 +26,13 @@ public class Weed extends ObjectControl implements Object {
         Texture weed_grass_2 = new Texture2D();
         Texture weed_grass_3 = new Texture2D();
         Texture weed_grass_4 = new Texture2D();
+        Texture weed_grass_5 = new Texture2D();
         weed_grass_1.setup(null,"./data/content/texture/grass/grass01.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         weed_grass_2.setup(null,"./data/content/texture/grass/grass02.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        weed_grass_3.setup(null,"./data/content/texture/grass/grass04.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        weed_grass_4.setup(null,"./data/content/texture/grass/grass05.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        textures = new ArrayList<>(Arrays.asList(weed_grass_1, weed_grass_2, weed_grass_3,weed_grass_4));
+        weed_grass_3.setup(null,"./data/content/texture/grass/grass03.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        weed_grass_4.setup(null,"./data/content/texture/grass/grass04.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        weed_grass_5.setup(null,"./data/content/texture/grass/grass05.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        textures = new ArrayList<>(Arrays.asList(weed_grass_1, weed_grass_2, weed_grass_3,weed_grass_4,weed_grass_5));
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
@@ -63,7 +66,11 @@ public class Weed extends ObjectControl implements Object {
         super();
         this.textures = new ArrayList<>(object.getTextures());
         if(seed == MOUNTAIN_MAP){
-            textures.remove(3);
+            Texture texture = new Texture2D();
+            texture = textures.get(2);
+            textures.clear();
+            textures.add(texture);
+        }else if(seed == PLAIN_MAP){
             textures.remove(2);
         }
         setId(0.0f);

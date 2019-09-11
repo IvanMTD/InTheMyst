@@ -4,11 +4,14 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.block.Block;
 
 public class GridElement {
+    // block info
     private Vector3f position;
     private Block block;
     private float currentHeight;
+    // block control
     private boolean bevel;
     private boolean blocked;
+    private boolean water;
 
     public GridElement(Vector3f position, Block block, boolean bevel, boolean blocked) {
         setBlock(block);
@@ -54,7 +57,15 @@ public class GridElement {
         return blocked;
     }
 
-    private void setBlocked(boolean blocked) {
+    public void setBlocked(boolean blocked) {
         this.blocked = blocked;
+    }
+
+    public boolean isWater() {
+        return water;
+    }
+
+    public void setWater(boolean water) {
+        this.water = water;
     }
 }

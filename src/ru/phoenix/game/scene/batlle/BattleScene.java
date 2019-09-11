@@ -7,15 +7,18 @@ import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.object.Object;
+import ru.phoenix.game.content.object.active.Person;
 import ru.phoenix.game.content.object.water.WaterLine;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.logic.generator.GraundGenerator;
+import ru.phoenix.game.logic.generator.component.GridElement;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.scene.Scene;
 
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static org.lwjgl.opengl.GL11.glStencilMask;
 import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
 import static ru.phoenix.core.config.Constants.PLAIN_MAP;
 
@@ -60,6 +63,13 @@ public class BattleScene implements Scene {
         shaderSprite.createProgram();
 
         battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
+
+        Object person = new Person(Constants.ID_PERSON_GEHARD);
+        person.init(null);
+        Vector3f pos = GraundGenerator.getRandomPos();
+        pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
+        person.setPosition(pos);
+        battleGraund.getSprites().add(person);
     }
 
     @Override
@@ -102,8 +112,20 @@ public class BattleScene implements Scene {
         if(tap){
             if(index == 0) {
                 battleGraund = GraundGenerator.useMapGenerator(MOUNTAIN_MAP);
+                Object person = new Person(Constants.ID_PERSON_GEHARD);
+                person.init(null);
+                Vector3f pos = GraundGenerator.getRandomPos();
+                pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
+                person.setPosition(pos);
+                battleGraund.getSprites().add(person);
             }else if(index == 1){
                 battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
+                Object person = new Person(Constants.ID_PERSON_GEHARD);
+                person.init(null);
+                Vector3f pos = GraundGenerator.getRandomPos();
+                pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
+                person.setPosition(pos);
+                battleGraund.getSprites().add(person);
             }
 
             index++;

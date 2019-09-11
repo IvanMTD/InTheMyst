@@ -11,8 +11,7 @@ import ru.phoenix.core.shader.Shader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static ru.phoenix.core.config.Constants.GROUP_A;
@@ -37,6 +36,7 @@ public abstract class ObjectControl {
     private boolean onTarget;
     private boolean board;
     private boolean shadow;
+    private boolean active;
 
     public ObjectControl(){
         textures = new ArrayList<>();
@@ -51,6 +51,7 @@ public abstract class ObjectControl {
         instance = false;
         animated = false;
         shadow = false;
+        active = false;
     }
 
     protected void setup(List<Texture> textures, int row, int column, float width, float height, int textureIndex, Vector3f position, Matrix4f[] matrix){
@@ -59,10 +60,10 @@ public abstract class ObjectControl {
         currentTexture = textureIndex;
 
         if(matrix != null){
-            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,matrix,false);
+            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,matrix,0);
             instance = true;
         }else {
-            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,null,false);
+            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,null,0);
             instance = false;
         }
 
@@ -82,16 +83,16 @@ public abstract class ObjectControl {
         }
     }
 
-    protected void setup(List<Texture> textures, int row, int column, float width, float height, int textureIndex, Vector3f position, Matrix4f[] matrix, boolean centerPos){
+    protected void setup(List<Texture> textures, int row, int column, float width, float height, int textureIndex, Vector3f position, Matrix4f[] matrix, int mode){
         this.textures = new ArrayList<>(textures);
 
         currentTexture = textureIndex;
 
         if(matrix != null){
-            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,matrix,centerPos);
+            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,matrix,mode);
             instance = true;
         }else {
-            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,null,centerPos);
+            sprite = ImageAnimLoader.load(textures.get(currentTexture), row, column, width, height,null,mode);
             instance = false;
         }
 
@@ -165,8 +166,16 @@ public abstract class ObjectControl {
         return shadow;
     }
 
-    public void setShadow(boolean shadow) {
+    protected void setShadow(boolean shadow) {
         this.shadow = shadow;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    protected void setActive(boolean active) {
+        this.active = active;
     }
 
     protected float getxOffset() {
@@ -209,6 +218,7 @@ public abstract class ObjectControl {
         shader.setUniform("instance",sprite.getVbo().isInstances() ? 1 : 0);
         shader.setUniform("animated",0);
         shader.setUniform("board",isBoard() ? 1 : 0);
+        shader.setUniform("isActive",isActive() ? 1 : 0);
         // доп данные
         shader.setUniform("model_m",projection.getModelMatrix());
         shader.setUniform("xOffset",xOffset);
@@ -221,6 +231,7 @@ public abstract class ObjectControl {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures.get(currentTexture).getTextureID());
         shader.setUniform("image",0);
+
         sprite.draw();
 
         if(animated) {

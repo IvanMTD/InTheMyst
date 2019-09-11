@@ -67,7 +67,11 @@ public abstract class BattleGraundControl {
             if (!sprites.get(0).isInstance()) {
                 for (Object object : sprites) {
                     float distance = Camera.getInstance().getPos().sub(object.getPosition()).length();
-                    object.setDistance(distance);
+                    if(object.isActive()){
+                        object.setDistance(distance + 0.1f);
+                    }else {
+                        object.setDistance(distance);
+                    }
                 }
 
                 sprites.sort(new Comparator<Object>() {
@@ -106,5 +110,9 @@ public abstract class BattleGraundControl {
 
     public List<Light> getDirectLight() {
         return directLights;
+    }
+
+    public List<Object> getSprites(){
+        return sprites;
     }
 }

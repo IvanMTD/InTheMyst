@@ -55,9 +55,9 @@ public class WaterLine extends ObjectControl implements Object {
         float objectWidth = 1.0f;
         float objectHeight = 1.0f;
         if(matrix != null){
-            setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),matrix, true);
+            setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),matrix, 1);
         }else{
-            setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),null, true);
+            setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),null, 1);
         }
     }
 

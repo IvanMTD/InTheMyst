@@ -18,6 +18,7 @@ layout (row_major, std140) uniform matrices{
 // контролеры
 uniform int instance;
 uniform int board;
+uniform int isActive;
 
 // доп данные
 uniform mat4 model_m;
@@ -31,6 +32,7 @@ out flat int isBoard;
 void main() {
     vec3 cameraRight_worldspace = {view_m[0][0], view_m[1][0], view_m[2][0]};
     vec3 cameraUp_worldspace = {view_m[0][1], view_m[1][1], view_m[2][1]};
+    vec3 cameraCenter_worldspace = {view_m[0][2], view_m[1][2], view_m[2][2]};
     isBoard = board;
 
     if(instance == 1){
@@ -52,6 +54,12 @@ void main() {
             vec3 particleUp_wordspace = {model_m[0][1],model_m[1][1],model_m[2][1]};
             vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + cameraUp_worldspace * l_pos.y  * billboardSize.y);
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
+
+            if(isActive == 1){
+                vec3 somePos = cameraCenter_worldspace + (cameraCenter_worldspace - result) * -1.01f;
+                result = vec3(somePos.x,result.y,somePos.z);
+            }
+
             gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);

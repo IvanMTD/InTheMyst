@@ -34,6 +34,9 @@ public class Constants {
     public static final int SCENE_BATTLE        = 0x13000;
     public static final int SCENE_LOADING       = 0x14000;
 
+    // person id
+    public static final float ID_PERSON_GEHARD  = 0.12001f;
+
     // group RGB
     public static final int GROUP_R             = 0x20001;
     public static final int GROUP_G             = 0x20002;

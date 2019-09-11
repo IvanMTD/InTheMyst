@@ -22,6 +22,7 @@ public interface Object {
     public boolean isOnTarget();
     public boolean isInstance();
     public boolean isShadow();
+    public boolean isActive();
     public void draw(Shader shader);
     public boolean isBoard();
     public void setProjection(Projection projection);

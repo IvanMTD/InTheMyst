@@ -8,6 +8,7 @@ import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
+import static org.lwjgl.opengl.GL11.*;
 
 public class Render {
     private Window window;
@@ -43,6 +44,7 @@ public class Render {
             SceneControl.setLoading(true);
         }
 
+        glStencilOp(GL_KEEP, GL_REPLACE, GL_KEEP);
         Default.clearScreen();
 
         if (!stopRender) {

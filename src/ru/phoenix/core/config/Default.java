@@ -1,10 +1,13 @@
 package ru.phoenix.core.config;
 
 import static org.lwjgl.opengl.GL11.*;
+import static ru.phoenix.core.config.Constants.ID_PERSON_GEHARD;
 
 public class Default {
 
-    public static float offset;
+    private static float offset;
+
+    private static final String GH_IDLE_STAND = "./data/content/texture/person/idle_gh_stand.png";
 
     public static void init() {
         glEnable(GL_DEPTH_TEST);
@@ -27,5 +30,12 @@ public class Default {
 
     public static void setOffset(float offset) {
         Default.offset = offset;
+    }
+
+    public static String getStandIdle(float id){
+        if(id == ID_PERSON_GEHARD){
+            return GH_IDLE_STAND;
+        }
+        return null;
     }
 }

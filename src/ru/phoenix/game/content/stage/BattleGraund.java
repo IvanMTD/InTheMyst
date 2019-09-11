@@ -15,5 +15,6 @@ public interface BattleGraund {
     public int getMapX();
     public int getMapZ();
     public List<GridElement> getGridElements();
+    public List<Object> getSprites();
     public List<Light> getDirectLight();
 }
