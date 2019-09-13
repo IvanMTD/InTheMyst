@@ -35,6 +35,16 @@ public class WaterLine extends ObjectControl implements Object {
         offsetInfo = CENTER_BOARD;
     }
 
+    public WaterLine(WaterLine object, int offsetInfo){
+        super();
+        textures = new ArrayList<>(object.getTextures());
+        setId(0.0f);
+        setOnTarget(false);
+        setBoard(false);
+        setAnimated(true);
+        this.offsetInfo = offsetInfo;
+    }
+
     public WaterLine(int offsetInfo){
         super();
         Texture waterLine = new Texture2D();
@@ -64,7 +74,6 @@ public class WaterLine extends ObjectControl implements Object {
     @Override
     public void update(){
         if(offsetInfo == CENTER_BOARD) {
-            setPosition(Camera.getInstance().getPos());
             setyOffset(Default.getOffset());
         }else if(offsetInfo == LEFT_BOARD){
             setxOffset(-Default.getOffset());

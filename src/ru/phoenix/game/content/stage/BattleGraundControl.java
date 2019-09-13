@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.stage;
 
+import ru.phoenix.core.config.Time;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
@@ -18,18 +19,27 @@ public abstract class BattleGraundControl {
     private List<Light> directLights;
     private List<Block> blocks;
     private List<Object> sprites;
+    private List<Object> water;
     private int mapX;
     private int mapZ;
+
+    private int tempSecond;
 
     public BattleGraundControl(){
         blocks = new ArrayList<>();
         directLights = new ArrayList<>();
+        tempSecond = Time.getSecond();
     }
 
-    protected void setBlocks(List<GridElement> gridElements, List<Block> blocks, List<Object> sprites, int mapX, int mapZ){
+    protected void setBlocks(List<GridElement> gridElements, List<Block> blocks, List<Object> water, List<Object> sprites, int mapX, int mapZ){
         this.gridElements = new ArrayList<>(gridElements);
         this.blocks = new ArrayList<>(blocks);
         this.sprites = new ArrayList<>(sprites);
+        if(water == null){
+            this.water = new ArrayList<>();
+        }else {
+            this.water = new ArrayList<>(water);
+        }
         this.mapX = mapX;
         this.mapZ = mapZ;
     }
@@ -51,7 +61,21 @@ public abstract class BattleGraundControl {
     }
 
     public void update(){
+
+        if(tempSecond != Time.getSecond()){
+            for(Object object : sprites){
+                if(object.isActive()){
+
+                }
+            }
+        }
+        tempSecond = Time.getSecond();
+
         for(Object object : sprites){
+            object.update();
+        }
+
+        for(Object object : water){
             object.update();
         }
     }
@@ -84,6 +108,12 @@ public abstract class BattleGraundControl {
         }
 
         for(Object object : sprites){
+            object.draw(shader);
+        }
+    }
+
+    public void drawWater(Shader shader){
+        for(Object object : water){
             object.draw(shader);
         }
     }

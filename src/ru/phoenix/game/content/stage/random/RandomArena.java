@@ -9,9 +9,9 @@ import ru.phoenix.game.logic.generator.component.GridElement;
 import java.util.List;
 
 public class RandomArena extends BattleGraundControl implements BattleGraund {
-    public RandomArena(List<GridElement> gridElements, List<Block> blocks, List<Object> sprites, int mapX, int mapZ){
+    public RandomArena(List<GridElement> gridElements, List<Block> blocks, List<Object> sprites, List<Object> water, int mapX, int mapZ){
         super();
-        setBlocks(gridElements, blocks, sprites, mapX, mapZ);
+        setBlocks(gridElements, blocks, water, sprites, mapX, mapZ);
         initLight();
     }
 }

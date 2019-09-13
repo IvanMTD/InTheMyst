@@ -1,24 +1,26 @@
 package ru.phoenix.game.scene.batlle;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengles.GLES20;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.config.Time;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.active.Person;
-import ru.phoenix.game.content.object.water.WaterLine;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.logic.generator.GraundGenerator;
-import ru.phoenix.game.logic.generator.component.GridElement;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.scene.Scene;
 
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
-import static org.lwjgl.opengl.GL11.glStencilMask;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengles.GLES20.GL_ALWAYS;
 import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
 import static ru.phoenix.core.config.Constants.PLAIN_MAP;
 
@@ -39,6 +41,8 @@ public class BattleScene implements Scene {
     private boolean switchControl;
     private float count;
 
+    private int tempSecond;
+
     public BattleScene(){
         tapStop = false;
         active = false;
@@ -48,6 +52,7 @@ public class BattleScene implements Scene {
         index = 0;
         switchControl = false;
         count = 0.0f;
+        tempSecond = Time.getSecond();
     }
 
     @Override
@@ -79,7 +84,9 @@ public class BattleScene implements Scene {
 
     @Override
     public void update(){
-
+        // обновляем камеру
+        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false);
+        // обнавляем движение волн
         if(switchControl){
             count+=0.0005f;
             Default.setOffset(count);
@@ -93,11 +100,10 @@ public class BattleScene implements Scene {
                 switchControl = !switchControl;
             }
         }
-
+        // обновляем все объекты сцены
         battleGraund.update();
 
-        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false, battleGraund.getGridElements());
-
+        // ТЕСТОВЫЙ ТРИГЕР!!!
         boolean tap = false;
 
         if(!tapStop){
@@ -139,6 +145,7 @@ public class BattleScene implements Scene {
     public void draw(){
         battleGraund.draw(shader3D);
         battleGraund.drawSprites(shaderSprite);
+        battleGraund.drawWater(shaderSprite);
     }
 
     @Override

@@ -66,6 +66,7 @@ public class GraundGenerator {
 
         List<Block> blocks = new ArrayList<>();
         List<Object> sprites = new ArrayList<>();
+        List<Object> water = new ArrayList<>();
 
         int height = 0;
 
@@ -118,7 +119,12 @@ public class GraundGenerator {
 
         List<Matrix4f> weedInstanceList = new ArrayList<>();
         List<Matrix4f> treeInstanceList = new ArrayList<>();
+
         List<Matrix4f> waterLineInstanceList = new ArrayList<>();
+        List<Matrix4f> waterLineLeftInstanceList = new ArrayList<>();
+        List<Matrix4f> waterLineRightInstanceList = new ArrayList<>();
+        List<Matrix4f> waterLineUpInstanceList = new ArrayList<>();
+        List<Matrix4f> waterLineDownInstanceList = new ArrayList<>();
 
         for(Vector3f position : finalPos){
             Projection projection = new Projection();
@@ -211,44 +217,40 @@ public class GraundGenerator {
                         }
 
                         if(position.getX() == 0.0f){ // left
-                            Vector3f p = new Vector3f(position.getX() - 0.495f,position.getY() + (-0.25f),position.getZ());
-                            Projection rp = new Projection();
-                            rp.setTranslation(p);
-                            rp.setRotation(-90.0f,new Vector3f(0.0f,0.0f,1.0f));
-                            Object wl = new WaterLine(LEFT_BOARD);
-                            wl.init(null);
-                            wl.setProjection(rp);
-                            sprites.add(wl);
+                            for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
+                                Vector3f p = new Vector3f(position.getX() - 0.495f, someY, position.getZ());
+                                Projection rp = new Projection();
+                                rp.setTranslation(p);
+                                rp.setRotation(-90.0f, new Vector3f(0.0f, 0.0f, 1.0f));
+                                waterLineLeftInstanceList.add(rp.getModelMatrix());
+                            }
                         }
                         if(position.getX() == mapWidthOffset * 2){ // right
-                            Vector3f p = new Vector3f(position.getX() + 0.495f,position.getY() + (-0.25f),position.getZ());
-                            Projection rp = new Projection();
-                            rp.setTranslation(p);
-                            rp.setRotation(90.0f,new Vector3f(0.0f,0.0f,1.0f));
-                            Object wl = new WaterLine(RIGHT_BOARD);
-                            wl.init(null);
-                            wl.setProjection(rp);
-                            sprites.add(wl);
+                            for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
+                                Vector3f p = new Vector3f(position.getX() + 0.495f, someY, position.getZ());
+                                Projection rp = new Projection();
+                                rp.setTranslation(p);
+                                rp.setRotation(90.0f, new Vector3f(0.0f, 0.0f, 1.0f));
+                                waterLineRightInstanceList.add(rp.getModelMatrix());
+                            }
                         }
                         if(position.getZ() == 0.0f){ // down
-                            Vector3f p = new Vector3f(position.getX(),position.getY() + (-0.25f),position.getZ() - 0.495f);
-                            Projection rp = new Projection();
-                            rp.setTranslation(p);
-                            rp.setRotation(-90.0f,new Vector3f(1.0f,0.0f,0.0f));
-                            Object wl = new WaterLine(DOWN_BOARD);
-                            wl.init(null);
-                            wl.setProjection(rp);
-                            sprites.add(wl);
+                            for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
+                                Vector3f p = new Vector3f(position.getX(), someY, position.getZ() - 0.495f);
+                                Projection rp = new Projection();
+                                rp.setTranslation(p);
+                                rp.setRotation(-90.0f, new Vector3f(1.0f, 0.0f, 0.0f));
+                                waterLineDownInstanceList.add(rp.getModelMatrix());
+                            }
                         }
                         if(position.getZ() == mapHeightOffset * 2){ // up
-                            Vector3f p = new Vector3f(position.getX(),position.getY() + (-0.25f),position.getZ() + 0.495f);
-                            Projection rp = new Projection();
-                            rp.setTranslation(p);
-                            rp.setRotation(90.0f,new Vector3f(1.0f,0.0f,0.0f));
-                            Object wl = new WaterLine(UP_BOARD);
-                            wl.init(null);
-                            wl.setProjection(rp);
-                            sprites.add(wl);
+                            for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
+                                Vector3f p = new Vector3f(position.getX(), someY, position.getZ() + 0.495f);
+                                Projection rp = new Projection();
+                                rp.setTranslation(p);
+                                rp.setRotation(90.0f, new Vector3f(1.0f, 0.0f, 0.0f));
+                                waterLineUpInstanceList.add(rp.getModelMatrix());
+                            }
                         }
 
                         Vector3f leftPos = new Vector3f(position.getX() - 1.0f, 0.0f, position.getZ());
@@ -260,19 +262,19 @@ public class GraundGenerator {
 
                         for(GridElement grid : gridElements){
                             if(grid.getPosition().equals(leftPos)){
-                                if(grid.getCurrentHeight() > position.getY()){
+                                if(grid.getCurrentHeight() >= 0){
                                     checkInfo++;
                                 }
                             }else if(grid.getPosition().equals(rightPos)){
-                                if(grid.getCurrentHeight() > position.getY()){
+                                if(grid.getCurrentHeight() >= 0){
                                     checkInfo++;
                                 }
                             }else if(grid.getPosition().equals(upPos)){
-                                if(grid.getCurrentHeight() > position.getY()){
+                                if(grid.getCurrentHeight() >= 0){
                                     checkInfo++;
                                 }
                             }else if(grid.getPosition().equals(downPos)){
-                                if(grid.getCurrentHeight() > position.getY()){
+                                if(grid.getCurrentHeight() >= 0){
                                     checkInfo++;
                                 }
                             }
@@ -691,14 +693,23 @@ public class GraundGenerator {
 
         weed_main.init(getInstanceMatrix(weedInstanceList));
         tree_main.init(getInstanceMatrix(treeInstanceList));
+
         water_line_main.init(getInstanceMatrix(waterLineInstanceList));
+        Object waterLine_left = new WaterLine((WaterLine)water_line_main,LEFT_BOARD);
+        waterLine_left.init(getInstanceMatrix(waterLineLeftInstanceList));
+        Object waterLine_right = new WaterLine((WaterLine)water_line_main,RIGHT_BOARD);
+        waterLine_right.init(getInstanceMatrix(waterLineRightInstanceList));
+        Object waterLine_down = new WaterLine((WaterLine)water_line_main,DOWN_BOARD);
+        waterLine_down.init(getInstanceMatrix(waterLineDownInstanceList));
+        Object waterLine_up = new WaterLine((WaterLine)water_line_main,UP_BOARD);
+        waterLine_up.init(getInstanceMatrix(waterLineUpInstanceList));
 
         blocks = new ArrayList<>(Arrays.asList(dirt,grass,grassFlower,coldDirt,snow,rock,rockSnow,bevelGrass,smallStone,smallStoneDirt,mediumStone,mediumStoneDirt,bigStone,bigStoneDirt,smallStoneSnow,mediumStoneSnow,bigStoneSnow));
-        sprites.add(water_line_main);
+        water = new ArrayList<>(Arrays.asList(waterLine_left,waterLine_right,waterLine_down,waterLine_up,water_line_main));
 
-        int mapX = mapWidthOffset * 2 + 1;
-        int mapZ = mapHeightOffset * 2 + 1;
-        return new RandomArena(gridElements, blocks, sprites, mapX, mapZ);
+        int mapX = mapWidthOffset * 2;
+        int mapZ = mapHeightOffset * 2;
+        return new RandomArena(gridElements, blocks, sprites, water, mapX, mapZ);
     }
 
     private static void initBlocks(){
@@ -1086,5 +1097,9 @@ public class GraundGenerator {
             matrix[i] = matrixList.get(i);
         }
         return matrix;
+    }
+
+    public static List<GridElement> getGridElements(){
+        return gridElements;
     }
 }

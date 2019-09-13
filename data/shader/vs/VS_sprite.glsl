@@ -40,7 +40,7 @@ void main() {
             vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
             vec3 particleCenter_wordspace = {l_instance_m[0][2],l_instance_m[1][2],l_instance_m[2][2]};
             vec3 particleUp_wordspace = {l_instance_m[0][1],l_instance_m[1][1],l_instance_m[2][1]};
-            vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + cameraUp_worldspace * l_pos.y  * billboardSize.y);
+            vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + particleUp_wordspace * l_pos.y  * billboardSize.y);
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
         }else{
@@ -52,7 +52,7 @@ void main() {
             vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
             vec3 particleCenter_wordspace = {model_m[0][2],model_m[1][2],model_m[2][2]};
             vec3 particleUp_wordspace = {model_m[0][1],model_m[1][1],model_m[2][1]};
-            vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + cameraUp_worldspace * l_pos.y  * billboardSize.y);
+            vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + particleUp_wordspace * l_pos.y  * billboardSize.y);
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
 
             if(isActive == 1){

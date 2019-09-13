@@ -26,6 +26,7 @@ public abstract class ObjectControl {
     private int currentTexture;
     private float distance;
     private float id;
+    private int group;
     private int count;
     private float xOffset;
     private float yOffset;
@@ -52,6 +53,7 @@ public abstract class ObjectControl {
         animated = false;
         shadow = false;
         active = false;
+        group = GROUP_A;
     }
 
     protected void setup(List<Texture> textures, int row, int column, float width, float height, int textureIndex, Vector3f position, Matrix4f[] matrix){
@@ -206,6 +208,14 @@ public abstract class ObjectControl {
         this.projection = projection;
     }
 
+    private int getGroup() {
+        return group;
+    }
+
+    protected void setGroup(int group) {
+        this.group = group;
+    }
+
     public void draw(Shader shader){
         if(instance) {
             sprite.updateInstanceMatrix();
@@ -224,7 +234,7 @@ public abstract class ObjectControl {
         shader.setUniform("xOffset",xOffset);
         shader.setUniform("yOffset",yOffset);
         shader.setUniform("zOffset",zOffset);
-        shader.setUniform("group",GROUP_A);
+        shader.setUniform("group",group);
         shader.setUniform("id",id);
         shader.setUniform("onTarget", isOnTarget() ? 1 : 0);
         // end

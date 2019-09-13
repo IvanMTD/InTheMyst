@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.game.logic.generator.GraundGenerator;
 import ru.phoenix.game.logic.generator.component.GridElement;
 
 import java.nio.DoubleBuffer;
@@ -14,8 +15,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {
     //constant
-    private static final float MAX_DIST = 15.0f;
-    private static final float MIN_DIST = 3.5f;
+    private static final float MAX_DIST = 20.0f;
+    private static final float MIN_DIST = 10.0f;
     private static final float SCROLL_SENS = 1.1f;
 
     private static Camera instance = null;
@@ -74,9 +75,9 @@ public class Camera {
         lastCursorPos2 = null;
 
         turn = 0.0f;
-        fov = 45.0f;
+        fov = 30.0f;
         yaw = 45.0f;
-        pitch = -45.0f;
+        pitch = -30.0f;
         offset = 0.0f;
         cameraControlLock = false;
 
@@ -106,7 +107,7 @@ public class Camera {
         setOrtho();
     }
 
-    public void update(float fieldWidth, float fieldHeight, boolean mouseScrollStop, List<GridElement> gridElements){
+    public void update(float fieldWidth, float fieldHeight, boolean mouseScrollStop){
         updateViewMatrix();
         float movementSpeedX = 0.05f;
         float movementSpeedY = 0.088f;
@@ -158,7 +159,7 @@ public class Camera {
             float offset = 0.5f;
             float spOffset = 0.025f;
 
-            for(GridElement grid : gridElements){
+            for(GridElement grid : GraundGenerator.getGridElements()){
                 if(grid.getPosition().getX() - offset <= currentCameraLookPos.getX() && currentCameraLookPos.getX() <= grid.getPosition().getX() + offset){
                     if(grid.getPosition().getZ() - offset <= currentCameraLookPos.getZ() && currentCameraLookPos.getZ() <= grid.getPosition().getZ() + offset){
                         if(currentCameraLookPos.getY() != grid.getCurrentHeight()){

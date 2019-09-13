@@ -7,14 +7,15 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
+import ru.phoenix.game.logic.element.Pixel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
+import static ru.phoenix.core.config.Constants.GROUP_R;
 
 public class Person extends ObjectControl implements Object {
 
@@ -35,6 +36,7 @@ public class Person extends ObjectControl implements Object {
         person_stand.setup(null, Default.getStandIdle(id),GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
 
         textures = new ArrayList<>(Arrays.asList(person_stand));
+        setGroup(GROUP_R);
         setId(id);
         setOnTarget(false);
         setBoard(true);
@@ -46,6 +48,7 @@ public class Person extends ObjectControl implements Object {
     public Person(Person object){
         super();
         textures = new ArrayList<>(object.getTextures());
+        setGroup(GROUP_R);
         setId(object.getId());
         setOnTarget(false);
         setBoard(true);
@@ -67,7 +70,12 @@ public class Person extends ObjectControl implements Object {
     }
 
     public void update(){
-
+        float id = Pixel.getPixel().getX();
+        if(id == getId()){
+            setOnTarget(true);
+        }else{
+            setOnTarget(false);
+        }
     }
 
     public List<Texture> getTextures(){
