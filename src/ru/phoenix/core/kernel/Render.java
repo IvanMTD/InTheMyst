@@ -43,8 +43,7 @@ public class Render {
             stopRender = true;
             SceneControl.setLoading(true);
         }
-
-        glStencilOp(GL_KEEP, GL_REPLACE, GL_KEEP);
+        
         Default.clearScreen();
 
         if (!stopRender) {

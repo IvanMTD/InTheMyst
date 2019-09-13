@@ -1,7 +1,6 @@
 package ru.phoenix.core.loader.sprite;
 
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
-import ru.phoenix.core.math.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;

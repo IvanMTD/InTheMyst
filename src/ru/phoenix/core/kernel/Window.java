@@ -34,6 +34,7 @@ public class Window {
     }
 
     public void create (int width, int height, boolean isFullScrean){
+
         setWidth(width);
         setHeight(height);
         setGamma(WindowConfig.getInstance().getGamma());

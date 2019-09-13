@@ -56,7 +56,7 @@ void main() {
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
 
             if(isActive == 1){
-                vec3 somePos = cameraCenter_worldspace + (cameraCenter_worldspace - result) * -1.01f;
+                vec3 somePos = cameraCenter_worldspace + (cameraCenter_worldspace - result) * -1.02f;
                 result = vec3(somePos.x,result.y,somePos.z);
             }
 

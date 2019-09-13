@@ -1,12 +1,14 @@
 package ru.phoenix.game.content.object.active;
 
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.config.Time;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
+import ru.phoenix.game.content.object.active.property.Characteristic;
 import ru.phoenix.game.logic.element.Pixel;
 
 import java.util.ArrayList;
@@ -28,14 +30,21 @@ public class Person extends ObjectControl implements Object {
 
     private List<Texture> textures;
 
+    private Characteristic characteristic;
+
+    private int sampleData;
+    private boolean action;
+
     // конструкторы
     public Person(float id){
         super();
+
         Texture person_stand = new Texture2D();
-
         person_stand.setup(null, Default.getStandIdle(id),GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-
         textures = new ArrayList<>(Arrays.asList(person_stand));
+
+        characteristic = new Characteristic();
+
         setGroup(GROUP_R);
         setId(id);
         setOnTarget(false);
@@ -43,11 +52,18 @@ public class Person extends ObjectControl implements Object {
         setShadow(true);
         setAnimated(true);
         setActive(true);
+
+        action = false;
+        sampleData = Time.getSecond();
     }
 
     public Person(Person object){
         super();
+
         textures = new ArrayList<>(object.getTextures());
+
+        characteristic = new Characteristic();
+
         setGroup(GROUP_R);
         setId(object.getId());
         setOnTarget(false);
@@ -55,6 +71,9 @@ public class Person extends ObjectControl implements Object {
         setShadow(true);
         setAnimated(true);
         setActive(true);
+
+        action = false;
+        sampleData = Time.getSecond();
     }
 
     // методы
@@ -65,11 +84,28 @@ public class Person extends ObjectControl implements Object {
         int row = 3;
         int column = 1;
         float objectWidth = 2.0f;
-        float objectHeight = (texHei / column) * objectWidth / (texWid / row);
+        float objectHeight = (texHei / (float)column) * objectWidth / (texWid / (float)row);
         setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),null);
     }
 
     public void update(){
+
+        if(Default.isWait()){
+            if(action) {
+
+            }
+        }else{
+            if(sampleData != Time.getSecond()){
+                characteristic.setInitiative(characteristic.getInitiative() + characteristic.getSpeed());
+                if(characteristic.getInitiative() >= 100){
+                    characteristic.setInitiative(0);
+                    this.action = true;
+                    Default.setWait(true);
+                }
+            }
+            sampleData = Time.getSecond();
+        }
+
         float id = Pixel.getPixel().getX();
         if(id == getId()){
             setOnTarget(true);

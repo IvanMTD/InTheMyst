@@ -1,10 +1,7 @@
 package ru.phoenix.game.scene.batlle;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengles.GLES20;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
-import ru.phoenix.core.config.Time;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.math.Vector3f;
@@ -19,8 +16,6 @@ import ru.phoenix.game.scene.Scene;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengles.GLES20.GL_ALWAYS;
 import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
 import static ru.phoenix.core.config.Constants.PLAIN_MAP;
 
@@ -41,8 +36,6 @@ public class BattleScene implements Scene {
     private boolean switchControl;
     private float count;
 
-    private int tempSecond;
-
     public BattleScene(){
         tapStop = false;
         active = false;
@@ -52,7 +45,6 @@ public class BattleScene implements Scene {
         index = 0;
         switchControl = false;
         count = 0.0f;
-        tempSecond = Time.getSecond();
     }
 
     @Override
@@ -75,6 +67,7 @@ public class BattleScene implements Scene {
         pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
         person.setPosition(pos);
         battleGraund.getSprites().add(person);
+        Default.setWait(false);
     }
 
     @Override
@@ -124,6 +117,7 @@ public class BattleScene implements Scene {
                 pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
                 person.setPosition(pos);
                 battleGraund.getSprites().add(person);
+                Default.setWait(false);
             }else if(index == 1){
                 battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
                 Object person = new Person(Constants.ID_PERSON_GEHARD);
@@ -132,6 +126,7 @@ public class BattleScene implements Scene {
                 pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
                 person.setPosition(pos);
                 battleGraund.getSprites().add(person);
+                Default.setWait(false);
             }
 
             index++;

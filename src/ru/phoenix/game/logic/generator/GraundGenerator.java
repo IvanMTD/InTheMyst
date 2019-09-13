@@ -90,7 +90,7 @@ public class GraundGenerator {
         Block bigStoneSnow = new BigStoneSnow((BigStoneSnow)stone_big_snow_main);
 
         if(seed == PLAIN_MAP){
-            height = 1;
+            height = 2;
         }else if(seed == MOUNTAIN_MAP){
             height = 5;
         }
@@ -798,9 +798,11 @@ public class GraundGenerator {
         List<Vector3f> map = new ArrayList<>();
         Perlin2D perlin = new Perlin2D(seed);
 
+        float num = 20.0f +  (float)Math.random() * 80.0f;
+
         for(int x = 0; x <= mapWidthOffset * 2; x++) {
             for(int z = 0; z <= mapHeightOffset * 2; z++) {
-                float value = perlin.getNoise(x/50f,z/50f,8,0.5f);
+                float value = perlin.getNoise(x/num,z/num,8,0.5f);
                 int n = (int)(value * 255 + 128) & 255;
                 float result = ((float)n / 255.0f);
                 float y = (result + result - 1.0f) * (float)height * 2;
