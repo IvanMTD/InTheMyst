@@ -32,6 +32,7 @@ public class WaterLine extends ObjectControl implements Object {
         setOnTarget(false);
         setBoard(false);
         setAnimated(true);
+        setWater(true);
         offsetInfo = CENTER_BOARD;
     }
 
@@ -42,6 +43,7 @@ public class WaterLine extends ObjectControl implements Object {
         setOnTarget(false);
         setBoard(false);
         setAnimated(true);
+        setWater(true);
         this.offsetInfo = offsetInfo;
     }
 
@@ -54,6 +56,7 @@ public class WaterLine extends ObjectControl implements Object {
         setOnTarget(false);
         setBoard(false);
         setAnimated(true);
+        setWater(true);
         this.offsetInfo = offsetInfo;
     }
 

@@ -38,6 +38,7 @@ public abstract class ObjectControl {
     private boolean board;
     private boolean shadow;
     private boolean active;
+    private boolean water;
 
     public ObjectControl(){
         textures = new ArrayList<>();
@@ -53,6 +54,7 @@ public abstract class ObjectControl {
         animated = false;
         shadow = false;
         active = false;
+        water = false;
         group = GROUP_A;
     }
 
@@ -180,6 +182,14 @@ public abstract class ObjectControl {
         this.active = active;
     }
 
+    protected void setWater(boolean water){
+        this.water = water;
+    }
+
+    private boolean isWater(){
+        return water;
+    }
+
     protected float getxOffset() {
         return xOffset;
     }
@@ -237,6 +247,7 @@ public abstract class ObjectControl {
         shader.setUniform("group",group);
         shader.setUniform("id",id);
         shader.setUniform("onTarget", isOnTarget() ? 1 : 0);
+        shader.setUniform("water", isWater() ? 1 : 0);
         // end
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures.get(currentTexture).getTextureID());

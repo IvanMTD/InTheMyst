@@ -43,7 +43,7 @@ public class Render {
             stopRender = true;
             SceneControl.setLoading(true);
         }
-        
+
         Default.clearScreen();
 
         if (!stopRender) {

@@ -11,28 +11,30 @@ layout (location = 2) out vec4 bright_color;
 
 
 in vec2 textureCoord;
-in flat int isBoard;
 
 uniform sampler2D image;
 uniform int group;
 uniform float id;
 uniform int onTarget;
+uniform int water;
+uniform int board;
 
 vec4 targetHighlight(vec4 rgba);
 
 void main(){
     // обробатываем текстуру
     vec4 rgba = texture(image,textureCoord);
-    if(rgba.a < 1.0f && isBoard == 1){
+    if(rgba.a < 1.0f && board == 1){
         discard;
     }
     // Расчитываем цвет фрагмента
     if(onTarget == 1){
         fragment_color = targetHighlight(rgba);
     }else{
-        fragment_color = rgba;
-        if(isBoard == 0){
+        if(water == 1){
             fragment_color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
+        }else{
+            fragment_color = rgba;
         }
     }
 

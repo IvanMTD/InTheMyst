@@ -10,6 +10,7 @@ import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.active.Person;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.logic.generator.GraundGenerator;
+import ru.phoenix.game.logic.generator.component.GridElement;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.scene.Scene;
 
@@ -139,6 +140,9 @@ public class BattleScene implements Scene {
     @Override
     public void draw(){
         battleGraund.draw(shader3D);
+        for(GridElement grid : battleGraund.getGridElements()){
+            grid.draw(shaderSprite);
+        }
         battleGraund.drawSprites(shaderSprite);
         battleGraund.drawWater(shaderSprite);
     }

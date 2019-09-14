@@ -1,24 +1,99 @@
 package ru.phoenix.game.logic.generator.component;
 
+import ru.phoenix.core.buffer.vbo.MeshConfig;
+import ru.phoenix.core.buffer.vbo.VertexBufferObject;
+import ru.phoenix.core.loader.texture.Texture;
+import ru.phoenix.core.loader.texture.Texture2D;
+import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.block.Block;
 
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
+import static ru.phoenix.core.config.Constants.GROUP_G;
+
 public class GridElement {
+    // vbo
+    private boolean visible;
+    private VertexBufferObject vbo;
+    private Projection projection;
+    // textures
+    private Texture grayZona;
+    private Texture redZona;
+    private Texture greenZona;
+    private Texture texture;
+    // recognize info
+    private float id;
+    private boolean target;
     // block info
     private Vector3f position;
     private Block block;
     private float currentHeight;
     // block control
     private boolean bevel;
+    private float bevelDirection;
     private boolean blocked;
     private boolean water;
 
-    public GridElement(Vector3f position, Block block, boolean bevel, boolean blocked) {
+    public GridElement(Vector3f position, Block block, boolean bevel, float bevelDirection, boolean blocked, Texture gray, Texture red, Texture green) {
+
+        grayZona = gray;
+        redZona = red;
+        greenZona = green;
+
+        vbo = new MeshConfig();
+        projection = new Projection();
+        texture = new Texture2D();
+        setVisible(true);
         setBlock(block);
         setPosition(position);
         setCurrentHeight(position.getY());
-        setBevel(bevel);
+        setBevel(bevel,bevelDirection);
         setBlocked(blocked);
+        id = 0.0f;
+        target = false;
+
+        float[] pos = new float[]{
+                -0.5f,  0.01f,  0.5f,
+                -0.5f,  0.01f, -0.5f,
+                 0.5f,  0.01f, -0.5f,
+                 0.5f,  0.01f,  0.5f
+        };
+
+        float[] tex = new float[]{
+                0.0f,1.0f,
+                0.0f,0.0f,
+                1.0f,0.0f,
+                1.0f,1.0f
+        };
+
+        int[] indices = new int[]{
+                0,1,2,
+                0,2,3
+        };
+
+        vbo.allocate(pos,null,tex,null,null,null,null,null,indices);
+
+        projection.getModelMatrix().identity();
+        projection.setTranslation(getPosition());
+        if(bevel){
+            projection.setRotation(this.bevelDirection, new Vector3f(0.0f, 1.0f, 0.0f));
+            projection.setRotation(45.0f, new Vector3f(1.0f, 0.0f, 0.0f));
+        }
+        setGrayZona();
+    }
+
+    public float getId() {
+        return id;
+    }
+
+    public void setId(float id) {
+        this.id = id;
     }
 
     public Vector3f getPosition() {
@@ -43,14 +118,21 @@ public class GridElement {
 
     public void setCurrentHeight(float currentHeight) {
         this.currentHeight = currentHeight;
+        projection.getModelMatrix().identity();
+        projection.setTranslation(new Vector3f(position.getX(),getCurrentHeight(),position.getZ()));
+        if(bevel){
+            projection.setRotation(bevelDirection, new Vector3f(0.0f, 1.0f, 0.0f));
+            projection.setRotation(45.0f, new Vector3f(1.0f, 0.0f, 0.0f));
+        }
     }
 
     public boolean isBevel() {
         return bevel;
     }
 
-    private void setBevel(boolean bevel) {
+    private void setBevel(boolean bevel, float bevelDirection) {
         this.bevel = bevel;
+        this.bevelDirection = bevelDirection;
     }
 
     public boolean isBlocked() {
@@ -67,5 +149,60 @@ public class GridElement {
 
     public void setWater(boolean water) {
         this.water = water;
+    }
+
+    public boolean isTarget() {
+        return target;
+    }
+
+    public void setTarget(boolean target) {
+        this.target = target;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public void setGrayZona(){
+        texture = grayZona;
+    }
+
+    public void setRedZona(){
+        texture = redZona;
+    }
+
+    public void setGreenZona(){
+        texture = greenZona;
+    }
+
+    public void draw(Shader shader){
+        if(isVisible()) {
+            shader.useProgram();
+            // глобальный юниформ
+            shader.setUniformBlock("matrices", 0);
+            // контролеры
+            shader.setUniform("instance", 0);
+            shader.setUniform("animated", 0);
+            shader.setUniform("board", 0);
+            shader.setUniform("isActive", 0);
+            // доп данные
+            shader.setUniform("model_m", projection.getModelMatrix());
+            shader.setUniform("xOffset", 0.0f);
+            shader.setUniform("yOffset", 0.0f);
+            shader.setUniform("zOffset", 0.0f);
+            shader.setUniform("group", GROUP_G);
+            shader.setUniform("id", id);
+            shader.setUniform("onTarget", isTarget() ? 1 : 0);
+            shader.setUniform("water",0);
+            // end
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+            shader.setUniform("image", 0);
+            vbo.draw();
+        }
     }
 }

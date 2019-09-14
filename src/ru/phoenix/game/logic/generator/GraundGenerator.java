@@ -1,5 +1,7 @@
 package ru.phoenix.game.logic.generator;
 
+import ru.phoenix.core.loader.texture.Texture;
+import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Perlin2D;
 import ru.phoenix.core.math.Projection;
@@ -20,11 +22,17 @@ import ru.phoenix.game.logic.generator.component.GridElement;
 
 import java.util.*;
 
+import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
+import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.*;
 
 public class GraundGenerator {
 
     private static List<GridElement> gridElements = new ArrayList<>();
+
+    private static Texture grayZona             = null;
+    private static Texture redZona              = null;
+    private static Texture greenZona            = null;
 
     private static Block dirt_main              = null;
     private static Block grass_main             = null;
@@ -56,10 +64,13 @@ public class GraundGenerator {
     private static int mapWidthOffset;
     private static int mapHeightOffset;
 
+    private static float angleRotation = 0.0f;
+
     public static BattleGraund useMapGenerator(int seed){
 
         gridElements.clear();
 
+        initTexture();
         initBlocks();
         initSprite();
         generateMapSize();
@@ -90,7 +101,7 @@ public class GraundGenerator {
         Block bigStoneSnow = new BigStoneSnow((BigStoneSnow)stone_big_snow_main);
 
         if(seed == PLAIN_MAP){
-            height = 2;
+            height = 1;
         }else if(seed == MOUNTAIN_MAP){
             height = 5;
         }
@@ -154,7 +165,7 @@ public class GraundGenerator {
                         dirtInstanceList.add(projection.getModelMatrix());
                     }
 
-                    gridElements.add(new GridElement(position, dirt, bevel,false));
+                    gridElements.add(new GridElement(position, dirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
 
                     if(!bevel && (Math.random() * 100.0f <= 1.0f)){
                         int coin = (int)Math.round(Math.random() * 3.0);
@@ -296,7 +307,7 @@ public class GraundGenerator {
                             bevel = tryGenerateTilt(position,finalPos,projection);
                         }
                         grassFlowerInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, grassFlower, bevel,false));
+                        gridElements.add(new GridElement(position, grassFlower, bevel,angleRotation,false,grayZona,redZona,greenZona));
                         if(!bevel && (Math.random() * 100.0f <= 5.0f)){
                             int coin = (int)Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -396,7 +407,7 @@ public class GraundGenerator {
                             }
                         }
                         grassInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, grass, bevel, tree));
+                        gridElements.add(new GridElement(position, grass, bevel,angleRotation, tree,grayZona,redZona,greenZona));
                     }
                 }
             } else if (seed == MOUNTAIN_MAP) {
@@ -434,7 +445,7 @@ public class GraundGenerator {
                             tree = true;
                         }
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, coldDirt, false,tree));
+                        gridElements.add(new GridElement(position, coldDirt, false,angleRotation,tree,grayZona,redZona,greenZona));
                     }else if ((Math.random() * 100.0f <= Math.random() * 10.0f) && !bevel) {
                         Vector3f spritePos = new Vector3f(position.getX(), position.getY(), position.getZ());
                         Projection spriteProjection = new Projection();
@@ -445,10 +456,10 @@ public class GraundGenerator {
                         weed.setPosition(position);
                         sprites.add(weed);
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, coldDirt, false,false));
+                        gridElements.add(new GridElement(position, coldDirt, false,angleRotation,false,grayZona,redZona,greenZona));
                     }else if(Math.random() * 100.0f <= 1.0f){
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, coldDirt, bevel,false));
+                        gridElements.add(new GridElement(position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
                         if(!bevel) {
                             int coin = (int) Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -493,7 +504,7 @@ public class GraundGenerator {
                         }
                     }else{
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, coldDirt, bevel,false));
+                        gridElements.add(new GridElement(position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
                     }
                 } else if(-2.0f < position.getY() && position.getY() <= 0.0f){
                     if((Math.random() * 100.0f <= 2.0f) && !checkMapBorder(position) && !bevel){
@@ -525,10 +536,10 @@ public class GraundGenerator {
                             tree = true;
                         }
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, snow, false,tree));
+                        gridElements.add(new GridElement(position, snow, false,angleRotation,tree,grayZona,redZona,greenZona));
                     }else if(Math.random() * 100.0f <= 1.0f){
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, snow, bevel,false));
+                        gridElements.add(new GridElement(position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona));
                         if(!bevel) {
                             int coin = (int) Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -573,11 +584,11 @@ public class GraundGenerator {
                         }
                     }else{
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, snow, bevel,false));
+                        gridElements.add(new GridElement(position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona));
                     }
                 } else if(position.getY() > 0.0f){
                     rockSnowInstanceList.add(projection.getModelMatrix());
-                    gridElements.add(new GridElement(position, rockSnow, bevel,false));
+                    gridElements.add(new GridElement(position, rockSnow, bevel,angleRotation,false,grayZona,redZona,greenZona));
                     if(!bevel && Math.random() * 100.0f <= 1.0f){
                         int coin = (int)Math.round(Math.random() * 3.0);
                         float angle = 0.0f;
@@ -712,6 +723,23 @@ public class GraundGenerator {
         return new RandomArena(gridElements, blocks, sprites, water, mapX, mapZ);
     }
 
+    private static void initTexture(){
+        if(grayZona == null){
+            grayZona = new Texture2D();
+            grayZona.setup(null,"./data/content/texture/zona/grid_element_gray.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        }
+
+        if(redZona == null){
+            redZona = new Texture2D();
+            redZona.setup(null,"./data/content/texture/zona/grid_element_red.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        }
+
+        if(greenZona == null){
+            greenZona = new Texture2D();
+            greenZona.setup(null,"./data/content/texture/zona/grid_element_green.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        }
+    }
+
     private static void initBlocks(){
         if(dirt_main == null){
             dirt_main = new Dirt();
@@ -798,7 +826,7 @@ public class GraundGenerator {
         List<Vector3f> map = new ArrayList<>();
         Perlin2D perlin = new Perlin2D(seed);
 
-        float num = 20.0f +  (float)Math.random() * 80.0f;
+        float num = 20.0f + (float)Math.random() * 80.0f;
 
         for(int x = 0; x <= mapWidthOffset * 2; x++) {
             for(int z = 0; z <= mapHeightOffset * 2; z++) {
@@ -907,25 +935,29 @@ public class GraundGenerator {
 
             if(direction.getX() == -1){
                 projection.setScaling(new Vector3f(trans_max, trans_max, trans_min));
-                projection.setRotation(90.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                angleRotation = 90.0f;
+                projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                 projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                 bevel = true;
             }
             if(direction.getX() == 1){
                 projection.setScaling(new Vector3f(trans_max, trans_max, trans_min));
-                projection.setRotation(270.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                angleRotation = 270.0f;
+                projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                 projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                 bevel = true;
             }
             if(direction.getZ() == -1){
                 projection.setScaling(new Vector3f(trans_min, trans_max, trans_max));
-                projection.setRotation(0.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                angleRotation = 0.0f;
+                projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                 projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                 bevel = true;
             }
             if(direction.getZ() == 1){
                 projection.setScaling(new Vector3f(trans_min, trans_max, trans_max));
-                projection.setRotation(180.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                angleRotation = 180.0f;
+                projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                 projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                 bevel = true;
             }
@@ -950,25 +982,29 @@ public class GraundGenerator {
             if(check > 0) {
                 if (direction.getX() == -1) {
                     projection.setScaling(new Vector3f(trans_max, trans_max, trans_min));
-                    projection.setRotation(90.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                    angleRotation = 90.0f;
+                    projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                     projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                     bevel = true;
                 }
                 if (direction.getX() == 1) {
                     projection.setScaling(new Vector3f(trans_max, trans_max, trans_min));
-                    projection.setRotation(270.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                    angleRotation = 270.0f;
+                    projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                     projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                     bevel = true;
                 }
                 if (direction.getZ() == -1) {
                     projection.setScaling(new Vector3f(trans_min, trans_max, trans_max));
-                    projection.setRotation(0.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                    angleRotation = 0.0f;
+                    projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                     projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                     bevel = true;
                 }
                 if (direction.getZ() == 1) {
                     projection.setScaling(new Vector3f(trans_min, trans_max, trans_max));
-                    projection.setRotation(180.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                    angleRotation = 180.0f;
+                    projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                     projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                     bevel = true;
                 }
@@ -997,25 +1033,29 @@ public class GraundGenerator {
             if(check > 0) {
                 if (direction.getX() == -1) {
                     projection.setScaling(new Vector3f(trans_max, trans_max, trans_min));
-                    projection.setRotation(90.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                    angleRotation = 90.0f;
+                    projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                     projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                     bevel = true;
                 }
                 if (direction.getX() == 1) {
                     projection.setScaling(new Vector3f(trans_max, trans_max, trans_min));
-                    projection.setRotation(270.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                    angleRotation = 270.0f;
+                    projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                     projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                     bevel = true;
                 }
                 if (direction.getZ() == -1) {
                     projection.setScaling(new Vector3f(trans_min, trans_max, trans_max));
-                    projection.setRotation(0.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                    angleRotation = 0.0f;
+                    projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                     projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                     bevel = true;
                 }
                 if (direction.getZ() == 1) {
                     projection.setScaling(new Vector3f(trans_min, trans_max, trans_max));
-                    projection.setRotation(180.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                    angleRotation = 180.0f;
+                    projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                     projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                     bevel = true;
                 }
@@ -1029,25 +1069,29 @@ public class GraundGenerator {
 
             if(direction.getX() == 1){
                 projection.setScaling(new Vector3f(trans_max, trans_max, trans_min));
-                projection.setRotation(90.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                angleRotation = 90.0f;
+                projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                 projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                 bevel = true;
             }
             if(direction.getX() == -1){
                 projection.setScaling(new Vector3f(trans_max, trans_max, trans_min));
-                projection.setRotation(270.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                angleRotation = 270.0f;
+                projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                 projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                 bevel = true;
             }
             if(direction.getZ() == 1){
                 projection.setScaling(new Vector3f(trans_min, trans_max, trans_max));
-                projection.setRotation(0.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                angleRotation = 0.0f;
+                projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                 projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                 bevel = true;
             }
             if(direction.getZ() == -1){
                 projection.setScaling(new Vector3f(trans_min, trans_max, trans_max));
-                projection.setRotation(180.0f, new Vector3f(0.0f, 1.0f, 0.0f));
+                angleRotation = 180.0f;
+                projection.setRotation(angleRotation, new Vector3f(0.0f, 1.0f, 0.0f));
                 projection.setRotation(angle, new Vector3f(1.0f, 0.0f, 0.0f));
                 bevel = true;
             }

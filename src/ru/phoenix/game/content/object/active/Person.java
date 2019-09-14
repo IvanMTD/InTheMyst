@@ -52,7 +52,6 @@ public class Person extends ObjectControl implements Object {
         setShadow(true);
         setAnimated(true);
         setActive(true);
-
         action = false;
         sampleData = Time.getSecond();
     }
@@ -71,7 +70,6 @@ public class Person extends ObjectControl implements Object {
         setShadow(true);
         setAnimated(true);
         setActive(true);
-
         action = false;
         sampleData = Time.getSecond();
     }
@@ -84,7 +82,7 @@ public class Person extends ObjectControl implements Object {
         int row = 3;
         int column = 1;
         float objectWidth = 2.0f;
-        float objectHeight = (texHei / (float)column) * objectWidth / (texWid / (float)row);
+        float objectHeight = (texHei / column) * objectWidth / (texWid / row);
         setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),null);
     }
 
