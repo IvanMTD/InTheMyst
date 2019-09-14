@@ -18,7 +18,7 @@ import ru.phoenix.game.content.object.water.WaterFlower;
 import ru.phoenix.game.content.object.water.WaterLine;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.content.stage.random.RandomArena;
-import ru.phoenix.game.logic.generator.component.GridElement;
+import ru.phoenix.game.logic.element.GridElement;
 
 import java.util.*;
 
@@ -67,6 +67,8 @@ public class GraundGenerator {
     private static float angleRotation = 0.0f;
 
     public static BattleGraund useMapGenerator(int seed){
+
+        float gridId = 0.1f;
 
         gridElements.clear();
 
@@ -138,6 +140,7 @@ public class GraundGenerator {
         List<Matrix4f> waterLineDownInstanceList = new ArrayList<>();
 
         for(Vector3f position : finalPos){
+            gridId += 0.0001f;
             Projection projection = new Projection();
             float num = Math.abs(Math.round(position.getY()) - position.getY());
             boolean check = false;
@@ -165,7 +168,7 @@ public class GraundGenerator {
                         dirtInstanceList.add(projection.getModelMatrix());
                     }
 
-                    gridElements.add(new GridElement(position, dirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                    gridElements.add(new GridElement(gridId,position, dirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
 
                     if(!bevel && (Math.random() * 100.0f <= 1.0f)){
                         int coin = (int)Math.round(Math.random() * 3.0);
@@ -307,7 +310,7 @@ public class GraundGenerator {
                             bevel = tryGenerateTilt(position,finalPos,projection);
                         }
                         grassFlowerInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, grassFlower, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, grassFlower, bevel,angleRotation,false,grayZona,redZona,greenZona));
                         if(!bevel && (Math.random() * 100.0f <= 5.0f)){
                             int coin = (int)Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -407,7 +410,7 @@ public class GraundGenerator {
                             }
                         }
                         grassInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, grass, bevel,angleRotation, tree,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, grass, bevel,angleRotation, tree,grayZona,redZona,greenZona));
                     }
                 }
             } else if (seed == MOUNTAIN_MAP) {
@@ -445,7 +448,7 @@ public class GraundGenerator {
                             tree = true;
                         }
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, coldDirt, false,angleRotation,tree,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, coldDirt, false,angleRotation,tree,grayZona,redZona,greenZona));
                     }else if ((Math.random() * 100.0f <= Math.random() * 10.0f) && !bevel) {
                         Vector3f spritePos = new Vector3f(position.getX(), position.getY(), position.getZ());
                         Projection spriteProjection = new Projection();
@@ -456,10 +459,10 @@ public class GraundGenerator {
                         weed.setPosition(position);
                         sprites.add(weed);
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, coldDirt, false,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, coldDirt, false,angleRotation,false,grayZona,redZona,greenZona));
                     }else if(Math.random() * 100.0f <= 1.0f){
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
                         if(!bevel) {
                             int coin = (int) Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -504,7 +507,7 @@ public class GraundGenerator {
                         }
                     }else{
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
                     }
                 } else if(-2.0f < position.getY() && position.getY() <= 0.0f){
                     if((Math.random() * 100.0f <= 2.0f) && !checkMapBorder(position) && !bevel){
@@ -536,10 +539,10 @@ public class GraundGenerator {
                             tree = true;
                         }
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, snow, false,angleRotation,tree,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, snow, false,angleRotation,tree,grayZona,redZona,greenZona));
                     }else if(Math.random() * 100.0f <= 1.0f){
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona));
                         if(!bevel) {
                             int coin = (int) Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -584,11 +587,11 @@ public class GraundGenerator {
                         }
                     }else{
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona));
                     }
                 } else if(position.getY() > 0.0f){
                     rockSnowInstanceList.add(projection.getModelMatrix());
-                    gridElements.add(new GridElement(position, rockSnow, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                    gridElements.add(new GridElement(gridId,position, rockSnow, bevel,angleRotation,false,grayZona,redZona,greenZona));
                     if(!bevel && Math.random() * 100.0f <= 1.0f){
                         int coin = (int)Math.round(Math.random() * 3.0);
                         float angle = 0.0f;
@@ -643,6 +646,7 @@ public class GraundGenerator {
                         if(distance <= 2.0f){
                             for(int k=0; k<sprites.size(); k++){
                                 if(sprites.get(k).getPosition().equals(gridElements.get(i).getPosition())){
+                                    gridElements.get(i).setBlocked(false);
                                     sprites.remove(k);
                                     break;
                                 }
@@ -659,6 +663,7 @@ public class GraundGenerator {
                     if(gridElements.get(j).isBlocked() && (gridElements.get(i).getPosition().sub(gridElements.get(j).getPosition()).length() <= 3.0f)){
                         for(int k=0; k<sprites.size();k++){
                             if(gridElements.get(j).getPosition().equals(sprites.get(k).getPosition())){
+                                gridElements.get(j).setBlocked(false);
                                 sprites.remove(k);
                                 break;
                             }
@@ -1147,5 +1152,9 @@ public class GraundGenerator {
 
     public static List<GridElement> getGridElements(){
         return gridElements;
+    }
+
+    public static void updateGridElements(List<GridElement> gridElements){
+        GraundGenerator.gridElements = new ArrayList<>(gridElements);
     }
 }

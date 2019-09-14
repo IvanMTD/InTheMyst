@@ -10,10 +10,11 @@ import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.active.Person;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.logic.generator.GraundGenerator;
-import ru.phoenix.game.logic.generator.component.GridElement;
+import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.scene.Scene;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
@@ -80,6 +81,25 @@ public class BattleScene implements Scene {
     public void update(){
         // обновляем камеру
         Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false);
+
+        // Обновляем информацию в сетке
+        for(GridElement element : battleGraund.getGridElements()){
+            if(element.isVisible()){
+                float distance = new Vector3f(Camera.getInstance().getPos().sub(element.getPosition())).length();
+                element.setDistance(distance);
+                element.update();
+            }
+        }
+
+        battleGraund.getGridElements().sort(new Comparator<GridElement>() {
+            @Override
+            public int compare(GridElement o1, GridElement o2) {
+                return o1.getDistance() < o2.getDistance() ? 0 : -1;
+            }
+        });
+
+        GraundGenerator.updateGridElements(battleGraund.getGridElements());
+
         // обнавляем движение волн
         if(switchControl){
             count+=0.0005f;
@@ -141,10 +161,17 @@ public class BattleScene implements Scene {
     public void draw(){
         battleGraund.draw(shader3D);
         for(GridElement grid : battleGraund.getGridElements()){
-            grid.draw(shaderSprite);
+            if(grid.getCurrentHeight() < -0.5f) {
+                grid.draw(shaderSprite);
+            }
         }
         battleGraund.drawSprites(shaderSprite);
         battleGraund.drawWater(shaderSprite);
+        for(GridElement grid : battleGraund.getGridElements()){
+            if(grid.getCurrentHeight() >= -0.5f) {
+                grid.draw(shaderSprite);
+            }
+        }
     }
 
     @Override

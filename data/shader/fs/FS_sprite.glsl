@@ -42,9 +42,9 @@ void main(){
     if(group == R){
         select_color = vec4(id, 0.0f, 0.0f, rgba.a);
     }else if(group == G){
-        select_color = vec4(0.0f, id, 0.0f, rgba.a);
+        select_color = vec4(0.0f, id, 0.0f, 1.0f);
     }else if(group == B){
-        select_color = vec4(0.0f, 0.0f, id, rgba.a);
+        select_color = vec4(0.0f, 0.0f, id, 1.0f);
     }else if(group == A){
         select_color = vec4(0.0f, 0.0f, 0.0f, id);
     }

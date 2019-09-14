@@ -1,4 +1,4 @@
-package ru.phoenix.game.logic.generator.component;
+package ru.phoenix.game.logic.element;
 
 import ru.phoenix.core.math.Vector3f;
 

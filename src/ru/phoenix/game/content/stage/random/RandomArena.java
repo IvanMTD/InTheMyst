@@ -4,7 +4,7 @@ import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.content.stage.BattleGraundControl;
-import ru.phoenix.game.logic.generator.component.GridElement;
+import ru.phoenix.game.logic.element.GridElement;
 
 import java.util.List;
 

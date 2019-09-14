@@ -5,7 +5,6 @@ import static ru.phoenix.core.config.Constants.ID_PERSON_GEHARD;
 
 public class Default {
 
-    private static boolean wait;
     private static float offset;
     private static boolean wait;
 
@@ -24,14 +23,6 @@ public class Default {
         glClearColor(0.2f,0.4f,0.5f,1.0f);
         glClearDepth(1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    }
-
-    public static boolean isWait() {
-        return wait;
-    }
-
-    public static void setWait(boolean wait) {
-        Default.wait = wait;
     }
 
     public static float getOffset() {

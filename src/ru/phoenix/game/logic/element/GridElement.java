@@ -1,4 +1,4 @@
-package ru.phoenix.game.logic.generator.component;
+package ru.phoenix.game.logic.element;
 
 import ru.phoenix.core.buffer.vbo.MeshConfig;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
@@ -8,13 +8,12 @@ import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.block.Block;
+import ru.phoenix.game.logic.element.Pixel;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.GROUP_G;
 
 public class GridElement {
@@ -31,6 +30,7 @@ public class GridElement {
     private float id;
     private boolean target;
     // block info
+    private float distance;
     private Vector3f position;
     private Block block;
     private float currentHeight;
@@ -40,8 +40,7 @@ public class GridElement {
     private boolean blocked;
     private boolean water;
 
-    public GridElement(Vector3f position, Block block, boolean bevel, float bevelDirection, boolean blocked, Texture gray, Texture red, Texture green) {
-
+    public GridElement(float id, Vector3f position, Block block, boolean bevel, float bevelDirection, boolean blocked, Texture gray, Texture red, Texture green) {
         grayZona = gray;
         redZona = red;
         greenZona = green;
@@ -49,13 +48,13 @@ public class GridElement {
         vbo = new MeshConfig();
         projection = new Projection();
         texture = new Texture2D();
-        setVisible(true);
+        setVisible(false);
         setBlock(block);
         setPosition(position);
         setCurrentHeight(position.getY());
         setBevel(bevel,bevelDirection);
         setBlocked(blocked);
-        id = 0.0f;
+        setId(id);
         target = false;
 
         float[] pos = new float[]{
@@ -86,6 +85,24 @@ public class GridElement {
             projection.setRotation(45.0f, new Vector3f(1.0f, 0.0f, 0.0f));
         }
         setGrayZona();
+    }
+
+    public void update(){
+        if(Pixel.getPixel().getY() == id){
+            setTarget(true);
+            setGreenZona();
+        }else{
+            setTarget(false);
+            setGrayZona();
+        }
+    }
+
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
     }
 
     public float getId() {
@@ -195,7 +212,7 @@ public class GridElement {
             shader.setUniform("yOffset", 0.0f);
             shader.setUniform("zOffset", 0.0f);
             shader.setUniform("group", GROUP_G);
-            shader.setUniform("id", id);
+            shader.setUniform("id", getId());
             shader.setUniform("onTarget", isTarget() ? 1 : 0);
             shader.setUniform("water",0);
             // end

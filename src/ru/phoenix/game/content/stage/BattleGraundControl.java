@@ -6,7 +6,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.object.Object;
-import ru.phoenix.game.logic.generator.component.GridElement;
+import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.lighting.DirectLight;
 import ru.phoenix.game.logic.lighting.Light;
 

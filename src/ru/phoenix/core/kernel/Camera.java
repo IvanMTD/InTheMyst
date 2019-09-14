@@ -6,10 +6,9 @@ import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.logic.generator.GraundGenerator;
-import ru.phoenix.game.logic.generator.component.GridElement;
+import ru.phoenix.game.logic.element.GridElement;
 
 import java.nio.DoubleBuffer;
-import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
