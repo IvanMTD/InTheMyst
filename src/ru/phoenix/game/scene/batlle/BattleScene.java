@@ -75,6 +75,7 @@ public class BattleScene implements Scene {
         pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
         person.setPosition(pos);
         battleGraund.getSprites().add(person);
+        Default.setWait(false);
     }
 
     @Override
@@ -124,6 +125,7 @@ public class BattleScene implements Scene {
                 pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
                 person.setPosition(pos);
                 battleGraund.getSprites().add(person);
+                Default.setWait(false);
             }else if(index == 1){
                 battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
                 Object person = new Person(Constants.ID_PERSON_GEHARD);
@@ -132,6 +134,7 @@ public class BattleScene implements Scene {
                 pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
                 person.setPosition(pos);
                 battleGraund.getSprites().add(person);
+                Default.setWait(false);
             }
 
             index++;

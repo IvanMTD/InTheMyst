@@ -6,6 +6,7 @@ import static ru.phoenix.core.config.Constants.ID_PERSON_GEHARD;
 public class Default {
 
     private static float offset;
+    private static boolean wait;
 
     private static final String GH_IDLE_STAND = "./data/content/texture/person/idle_gh_stand.png";
 
@@ -30,6 +31,14 @@ public class Default {
 
     public static void setOffset(float offset) {
         Default.offset = offset;
+    }
+
+    public static boolean isWait() {
+        return wait;
+    }
+
+    public static void setWait(boolean wait) {
+        Default.wait = wait;
     }
 
     public static String getStandIdle(float id){
