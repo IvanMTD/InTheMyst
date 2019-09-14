@@ -27,13 +27,11 @@ uniform float yOffset;
 uniform float zOffset;
 
 out vec2 textureCoord;
-out flat int isBoard;
 
 void main() {
     vec3 cameraRight_worldspace = {view_m[0][0], view_m[1][0], view_m[2][0]};
     vec3 cameraUp_worldspace = {view_m[0][1], view_m[1][1], view_m[2][1]};
     vec3 cameraCenter_worldspace = {view_m[0][2], view_m[1][2], view_m[2][2]};
-    isBoard = board;
 
     if(instance == 1){
         if(board == 1){
