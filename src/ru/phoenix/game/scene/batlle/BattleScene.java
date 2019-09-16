@@ -117,6 +117,9 @@ public class BattleScene implements Scene {
         // обновляем все объекты сцены
         battleGraund.update();
 
+        battleGraund.getGridElements().clear();
+        battleGraund.getGridElements().addAll(GraundGenerator.getGridElements());
+
         // ТЕСТОВЫЙ ТРИГЕР!!!
         boolean tap = false;
 

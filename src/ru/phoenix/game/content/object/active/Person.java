@@ -10,6 +10,7 @@ import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
 import ru.phoenix.game.content.object.active.property.Characteristic;
 import ru.phoenix.game.logic.element.Pixel;
+import ru.phoenix.game.logic.movement.GridMaster;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,13 +32,16 @@ public class Person extends ObjectControl implements Object {
     private List<Texture> textures;
 
     private Characteristic characteristic;
+    private GridMaster gridMaster;
 
     private int sampleData;
     private boolean action;
+    private int step;
 
     // конструкторы
     public Person(float id){
         super();
+        gridMaster = new GridMaster();
 
         Texture person_stand = new Texture2D();
         person_stand.setup(null, Default.getStandIdle(id),GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
@@ -58,6 +62,7 @@ public class Person extends ObjectControl implements Object {
 
     public Person(Person object){
         super();
+        gridMaster = new GridMaster();
 
         textures = new ArrayList<>(object.getTextures());
 
@@ -76,6 +81,7 @@ public class Person extends ObjectControl implements Object {
 
     // методы
     public void init(Matrix4f[] matrix){
+        step = 0;
         int currentTexture = 0;
         int texWid = textures.get(currentTexture).getWidth();
         int texHei = textures.get(currentTexture).getHeight();
@@ -90,7 +96,11 @@ public class Person extends ObjectControl implements Object {
 
         if(Default.isWait()){
             if(action) {
-
+                if(step == 0){
+                    gridMaster.preperMove(getPosition(),characteristic);
+                    gridMaster.start();
+                    step++;
+                }
             }
         }else{
             if(sampleData != Time.getSecond()){

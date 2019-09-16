@@ -232,7 +232,7 @@ public class GraundGenerator {
 
                         if(position.getX() == 0.0f){ // left
                             for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                                Vector3f p = new Vector3f(position.getX() - 0.495f, someY, position.getZ());
+                                Vector3f p = new Vector3f(position.getX() - 0.49f, someY, position.getZ());
                                 Projection rp = new Projection();
                                 rp.setTranslation(p);
                                 rp.setRotation(-90.0f, new Vector3f(0.0f, 0.0f, 1.0f));
@@ -241,7 +241,7 @@ public class GraundGenerator {
                         }
                         if(position.getX() == mapWidthOffset * 2){ // right
                             for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                                Vector3f p = new Vector3f(position.getX() + 0.495f, someY, position.getZ());
+                                Vector3f p = new Vector3f(position.getX() + 0.49f, someY, position.getZ());
                                 Projection rp = new Projection();
                                 rp.setTranslation(p);
                                 rp.setRotation(90.0f, new Vector3f(0.0f, 0.0f, 1.0f));
@@ -250,7 +250,7 @@ public class GraundGenerator {
                         }
                         if(position.getZ() == 0.0f){ // down
                             for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                                Vector3f p = new Vector3f(position.getX(), someY, position.getZ() - 0.495f);
+                                Vector3f p = new Vector3f(position.getX(), someY, position.getZ() - 0.49f);
                                 Projection rp = new Projection();
                                 rp.setTranslation(p);
                                 rp.setRotation(-90.0f, new Vector3f(1.0f, 0.0f, 0.0f));
@@ -259,7 +259,7 @@ public class GraundGenerator {
                         }
                         if(position.getZ() == mapHeightOffset * 2){ // up
                             for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                                Vector3f p = new Vector3f(position.getX(), someY, position.getZ() + 0.495f);
+                                Vector3f p = new Vector3f(position.getX(), someY, position.getZ() + 0.49f);
                                 Projection rp = new Projection();
                                 rp.setTranslation(p);
                                 rp.setRotation(90.0f, new Vector3f(1.0f, 0.0f, 0.0f));
@@ -852,7 +852,7 @@ public class GraundGenerator {
     }
 
     private static boolean tryGenerateTilt(Vector3f position, List<Vector3f> positions, Projection projection){
-        
+
         float trans_max = 1.42f;
         float trans_min = 0.999f;
 

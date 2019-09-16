@@ -3,14 +3,24 @@ package ru.phoenix.game.content.object.active.property;
 public class Characteristic {
     private int initiative;
     private int speed;
-    private int actionPoint;
+    private int totalActionPoint;
+    private int curentActionPoint;
     private int jump;
 
     public Characteristic(){
         initiative = 0;
         speed = 15;
-        actionPoint = 6;
+        totalActionPoint = 6;
+        curentActionPoint = 6;
         jump = 1;
+    }
+
+    public Characteristic(Characteristic characteristic){
+        initiative = characteristic.getInitiative();
+        speed = characteristic.getSpeed();
+        totalActionPoint = characteristic.getTotalActionPoint();
+        curentActionPoint = characteristic.getCurentActionPoint();
+        jump = characteristic.getJump();
     }
 
     public int getInitiative() {
@@ -29,12 +39,20 @@ public class Characteristic {
         this.speed = speed;
     }
 
-    public int getActionPoint() {
-        return actionPoint;
+    public int getTotalActionPoint() {
+        return totalActionPoint;
     }
 
-    public void setActionPoint(int actionPoint) {
-        this.actionPoint = actionPoint;
+    public void setTotalActionPoint(int totalActionPoint) {
+        this.totalActionPoint = totalActionPoint;
+    }
+
+    public int getCurentActionPoint() {
+        return curentActionPoint;
+    }
+
+    public void setCurentActionPoint(int curentActionPoint) {
+        this.curentActionPoint = curentActionPoint;
     }
 
     public int getJump() {
