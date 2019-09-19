@@ -38,6 +38,7 @@ public class GridElement {
     private float bevelDirection;
     private boolean blocked;
     private boolean water;
+    private boolean wayPoint;
 
     public GridElement(float id, Vector3f position, Block block, boolean bevel, float bevelDirection, boolean blocked, Texture gray, Texture red, Texture green) {
         grayZona = gray;
@@ -53,6 +54,7 @@ public class GridElement {
         setCurrentHeight(position.getY());
         setBevel(bevel,bevelDirection);
         setBlocked(blocked);
+        setWayPoint(false);
         setId(id);
         target = false;
 
@@ -89,10 +91,8 @@ public class GridElement {
     public void update(){
         if(Pixel.getPixel().getY() == id){
             setTarget(true);
-            setGreenZona();
         }else{
             setTarget(false);
-            setGrayZona();
         }
     }
 
@@ -183,6 +183,14 @@ public class GridElement {
         this.visible = visible;
     }
 
+    public boolean isWayPoint() {
+        return wayPoint;
+    }
+
+    public void setWayPoint(boolean wayPoint) {
+        this.wayPoint = wayPoint;
+    }
+
     public void setGrayZona(){
         texture = grayZona;
     }
@@ -197,6 +205,11 @@ public class GridElement {
 
     public void draw(Shader shader){
         if(isVisible()) {
+            if(isWayPoint() || isTarget()){
+                setGreenZona();
+            }else{
+                setGrayZona();
+            }
             shader.useProgram();
             // глобальный юниформ
             shader.setUniformBlock("matrices", 0);

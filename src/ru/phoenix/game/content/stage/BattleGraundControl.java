@@ -61,16 +61,6 @@ public abstract class BattleGraundControl {
     }
 
     public void update(){
-
-        if(tempSecond != Time.getSecond()){
-            for(Object object : sprites){
-                if(object.isActive()){
-
-                }
-            }
-        }
-        tempSecond = Time.getSecond();
-
         for(Object object : sprites){
             object.update();
         }

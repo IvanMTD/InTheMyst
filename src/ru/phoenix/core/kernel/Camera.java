@@ -75,7 +75,7 @@ public class Camera {
 
         turn = 0.0f;
         fov = 20.0f;
-        yaw = 45.0f;
+        yaw = 46.0f;
         pitch = -30.0f;
         offset = 0.0f;
         cameraControlLock = false;
@@ -85,7 +85,7 @@ public class Camera {
 
         direction = new Vector3f();
         hypotenuse = 10.0f;
-        cathetus = (float)Math.sin(Math.toRadians(45.0f)) * hypotenuse;
+        cathetus = (float)Math.sin(Math.toRadians(Math.abs(pitch))) * hypotenuse;
 
 
         // Установка позиции!

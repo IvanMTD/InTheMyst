@@ -3,101 +3,158 @@ package ru.phoenix.game.logic.movement;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.active.property.Characteristic;
 import ru.phoenix.game.logic.element.GridElement;
+import ru.phoenix.game.logic.element.GridNode;
 import ru.phoenix.game.logic.generator.GraundGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+
 public class GridMaster extends Thread {
 
-    private int action;
-    private List<Vector3f> gridPosition;
-    private Vector3f mainPosition;
+    private Vector3f startPosition;
+    private Vector3f finishPosition;
     private Characteristic characteristic;
 
+    private int event;
+
     public GridMaster(){
-        action = 0;
-        gridPosition = new ArrayList<>();
-        mainPosition = new Vector3f();
+        startPosition = new Vector3f();
         characteristic = new Characteristic();
+        event = 0;
     }
 
-    public void preperMove(Vector3f mainPosition, Characteristic characteristic){
-        this.mainPosition = new Vector3f(mainPosition);
-        this.characteristic = new Characteristic(characteristic);
-        action = 1;
+    public void createMoveGrid(Vector3f start, Characteristic characteristic){
+        setStartPosition(start);
+        setCharacteristic(characteristic);
+        event = 1;
+    }
+
+    public void createPath(Vector3f start, Vector3f finish, Characteristic characteristic){
+        setStartPosition(start);
+        setFinishPosition(finish);
+        setCharacteristic(characteristic);
+        event = 2;
     }
 
     public void run(){
-        if(action == 1) {
-            gridPosition.clear();
-            int step = 0;
-            List<Vector3f> startPos = new ArrayList<>();
-            startPos.add(mainPosition);
-            while (step < characteristic.getCurentActionPoint()) {
-                step++;
-                List<Vector3f> tempPos = new ArrayList<>();
-                for (Vector3f start : startPos) {
-                    Vector3f left = new Vector3f(start.getX() - 1.0f, start.getY(), start.getZ());
-                    if (checkPosition(left, characteristic)) {
-                        gridPosition.add(left);
-                        tempPos.add(left);
-                    }
-                    Vector3f right = new Vector3f(start.getX() + 1.0f, start.getY(), start.getZ());
-                    if (checkPosition(right, characteristic)) {
-                        gridPosition.add(right);
-                        tempPos.add(right);
-                    }
-                    Vector3f up = new Vector3f(start.getX(), start.getY(), start.getZ() + 1.0f);
-                    if (checkPosition(up, characteristic)) {
-                        gridPosition.add(up);
-                        tempPos.add(up);
-                    }
-                    Vector3f down = new Vector3f(start.getX(), start.getY(), start.getZ() - 1.0f);
-                    if (checkPosition(down, characteristic)) {
-                        gridPosition.add(down);
-                        tempPos.add(down);
-                    }
-                }
-                startPos.clear();
-                startPos.addAll(tempPos);
-            }
-
-            for (int i = 0; i < gridPosition.size() - 1; i++) {
-                for (int j = i + 1; j < gridPosition.size(); j++) {
-                    if (gridPosition.get(i).equals(gridPosition.get(j))) {
-                        gridPosition.remove(j);
+        if(event == 1){
+            float time1 = (float)glfwGetTime();
+            GridNode root = new GridNode(getStartPosition(),0);
+            root.setParent(null);
+            root.initGrid(getCharacteristic(),1);
+            List<Vector3f> positions = new ArrayList<>();
+            root.getAllPosition(positions);
+            System.out.println("Всего найдено позиций: " + positions.size());
+            for(int i=0; i<positions.size() - 1; i++){
+                for(int j=i+1; j<positions.size(); j++){
+                    if(positions.get(i).equals(positions.get(j))){
+                        positions.remove(j);
                         j--;
                     }
                 }
             }
+            System.out.println("Всего позиций после чистки: " + positions.size());
+            System.out.println("Всего потраченно времени: " + ((float)glfwGetTime() - time1));
+
+            for(GridElement element : GraundGenerator.getGridElements()){
+                element.setVisible(false);
+                element.setWayPoint(false);
+                for(Vector3f position : positions){
+                    if(element.getPosition().equals(position)){
+                        element.setVisible(true);
+                    }
+                }
+            }
+
+            GraundGenerator.setRoot(root);
+        }else if(event == 2){
+
+            for(GridElement element : GraundGenerator.getGridElements()){
+                element.setWayPoint(false);
+            }
+
+            GridNode root = GraundGenerator.getRoot();
+            List<GridNode> nodes = new ArrayList<>();
+            root.findNodes(getFinishPosition(),nodes);
+
+            int minStep = characteristic.getTotalActionPoint();
+            for(GridNode node : nodes){
+                if(minStep > node.getStep()){
+                    minStep = node.getStep();
+                }
+            }
+
+            List<GridNode> finalNodes = new ArrayList<>();
+            for(GridNode node : nodes){
+                if(node.getStep() == minStep){
+                    finalNodes.add(node);
+                }
+            }
+
+            if(finalNodes.size() == 1){
+                GridNode node = finalNodes.get(0);
+                List<Vector3f> reversePoint = new ArrayList<>();
+                while(node.getParent() != null){
+                    reversePoint.add(node.getPosition());
+                    node = node.getParent();
+                }
+
+                List<Vector3f> points = new ArrayList<>();
+                for(int i=reversePoint.size() - 1; i >= 0; i--){
+                    points.add(reversePoint.get(i));
+                }
+
+                GraundGenerator.setWayPoints(points);
+            }else{
+                GridNode node = finalNodes.get(finalNodes.size() / 4);
+
+                List<Vector3f> reversePoint = new ArrayList<>();
+                while(node.getParent() != null){
+                    reversePoint.add(node.getPosition());
+                    node = node.getParent();
+                }
+
+                List<Vector3f> points = new ArrayList<>();
+                for(int i=reversePoint.size() - 1; i >= 0; i--){
+                    points.add(reversePoint.get(i));
+                }
+
+                GraundGenerator.setWayPoints(points);
+            }
 
             for (GridElement element : GraundGenerator.getGridElements()) {
-                for (Vector3f position : gridPosition) {
-                    if (element.getPosition().equals(position)) {
-                        element.setVisible(true);
+                for (Vector3f point : GraundGenerator.getWayPoints()) {
+                    if (element.getPosition().equals(point)) {
+                        element.setWayPoint(true);
                     }
                 }
             }
         }
     }
 
-    private boolean checkPosition(Vector3f somePosition, Characteristic characteristic){
-        boolean check = false;
-        float min = somePosition.getY() - characteristic.getJump();
-        float max = somePosition.getY() + characteristic.getJump();
+    public Vector3f getStartPosition() {
+        return startPosition;
+    }
 
-        for(GridElement element : GraundGenerator.getGridElements()){
-            if(element.getPosition().equals(somePosition)){
-                if(!element.isBlocked()){
-                    if(min <= element.getCurrentHeight() && element.getCurrentHeight() <= max){
-                        somePosition.setY(element.getCurrentHeight());
-                        check = true;
-                    }
-                }
-            }
-        }
+    public void setStartPosition(Vector3f startPosition) {
+        this.startPosition = startPosition;
+    }
 
-        return check;
+    public Vector3f getFinishPosition() {
+        return finishPosition;
+    }
+
+    public void setFinishPosition(Vector3f finishPosition) {
+        this.finishPosition = finishPosition;
+    }
+
+    public Characteristic getCharacteristic() {
+        return characteristic;
+    }
+
+    public void setCharacteristic(Characteristic characteristic) {
+        this.characteristic = characteristic;
     }
 }
