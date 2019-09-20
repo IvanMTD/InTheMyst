@@ -6,6 +6,7 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
+import ru.phoenix.game.logic.element.GridElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,7 +90,7 @@ public class Bush extends ObjectControl implements Object {
     }
 
     @Override
-    public void update(){
+    public void update(List<GridElement> gridElements){
 
     }
 

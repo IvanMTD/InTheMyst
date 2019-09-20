@@ -5,13 +5,14 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.logic.element.GridElement;
 
 import java.util.List;
 
 public interface Object {
 
     public void init(Matrix4f[] matrix);
-    public void update();
+    public void update(List<GridElement> gridElements);
     public List<Texture> getTextures();
 
     public float getDistance();

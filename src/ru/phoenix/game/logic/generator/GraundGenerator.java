@@ -19,7 +19,6 @@ import ru.phoenix.game.content.object.water.WaterLine;
 import ru.phoenix.game.content.stage.BattleGraund;
 import ru.phoenix.game.content.stage.random.RandomArena;
 import ru.phoenix.game.logic.element.GridElement;
-import ru.phoenix.game.logic.element.GridNode;
 
 import java.util.*;
 
@@ -30,8 +29,6 @@ import static ru.phoenix.core.config.Constants.*;
 public class GraundGenerator {
 
     private static List<GridElement> gridElements = new ArrayList<>();
-    private static List<Vector3f> wayPoints = new ArrayList<>();
-    private static GridNode root;
 
     private static Texture grayZona             = null;
     private static Texture redZona              = null;
@@ -1151,29 +1148,5 @@ public class GraundGenerator {
             matrix[i] = matrixList.get(i);
         }
         return matrix;
-    }
-
-    public static List<GridElement> getGridElements(){
-        return gridElements;
-    }
-
-    public static void updateGridElements(List<GridElement> gridElements){
-        GraundGenerator.gridElements = new ArrayList<>(gridElements);
-    }
-
-    public static List<Vector3f> getWayPoints() {
-        return wayPoints;
-    }
-
-    public static void setWayPoints(List<Vector3f> wayPoints) {
-        GraundGenerator.wayPoints = wayPoints;
-    }
-
-    public static void setRoot(GridNode root){
-        GraundGenerator.root = root;
-    }
-
-    public static GridNode getRoot(){
-        return root;
     }
 }

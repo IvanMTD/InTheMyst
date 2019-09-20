@@ -61,6 +61,7 @@ public class BattleScene implements Scene {
         shaderSprite.createFragmentShader("FS_sprite.glsl");
         shaderSprite.createProgram();
 
+        // ГЕНЕРАЦИЯ
         battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
 
         Object person = new Person(Constants.ID_PERSON_GEHARD);
@@ -70,6 +71,7 @@ public class BattleScene implements Scene {
         person.setPosition(pos);
         battleGraund.getSprites().add(person);
         Default.setWait(false);
+        // КОНЕЦ ГЕНЕРАЦИИ
     }
 
     @Override
@@ -80,7 +82,7 @@ public class BattleScene implements Scene {
     @Override
     public void update(){
         // обновляем камеру
-        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false);
+        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false,battleGraund.getGridElements());
 
         // Обновляем информацию в сетке
         for(GridElement element : battleGraund.getGridElements()){
@@ -98,8 +100,6 @@ public class BattleScene implements Scene {
             }
         });
 
-        GraundGenerator.updateGridElements(battleGraund.getGridElements());
-
         // обнавляем движение волн
         if(switchControl){
             count+=0.0005f;
@@ -116,9 +116,6 @@ public class BattleScene implements Scene {
         }
         // обновляем все объекты сцены
         battleGraund.update();
-
-        battleGraund.getGridElements().clear();
-        battleGraund.getGridElements().addAll(GraundGenerator.getGridElements());
 
         // ТЕСТОВЫЙ ТРИГЕР!!!
         boolean tap = false;

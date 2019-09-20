@@ -2,7 +2,6 @@ package ru.phoenix.game.content.object.active;
 
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
-import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Matrix4f;
@@ -12,20 +11,19 @@ import ru.phoenix.game.content.object.ObjectControl;
 import ru.phoenix.game.content.object.active.property.Characteristic;
 import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.Pixel;
-import ru.phoenix.game.logic.generator.GraundGenerator;
-import ru.phoenix.game.logic.movement.GridMaster;
 import ru.phoenix.game.logic.movement.MoveAnimation;
+import ru.phoenix.game.logic.movement.PathfindingAlgorithm;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.GROUP_R;
 
 public class Person extends ObjectControl implements Object {
+    private int event;
+    private final int PREPARED_ACTION       = 0x90001;
+    private final int CRATE_AREA            = 0x90002;
 
     /*
     IDLE TEXTURES ARRAYS NUMBER
@@ -39,9 +37,8 @@ public class Person extends ObjectControl implements Object {
     // control
     private int sampleData;
     private boolean action;
-    private int step;
 
-    private GridMaster gridMaster;
+    private PathfindingAlgorithm pathfindingAlgorithm;
     private MoveAnimation moveAnimation;
 
     // конструкторы
@@ -63,7 +60,7 @@ public class Person extends ObjectControl implements Object {
         setActive(true);
         action = false;
         sampleData = Time.getSecond();
-        gridMaster = new GridMaster();
+        pathfindingAlgorithm = new PathfindingAlgorithm();
         moveAnimation = new MoveAnimation();
     }
 
@@ -83,13 +80,13 @@ public class Person extends ObjectControl implements Object {
         setActive(true);
         action = false;
         sampleData = Time.getSecond();
-        gridMaster = new GridMaster();
+        pathfindingAlgorithm = new PathfindingAlgorithm();
         moveAnimation = new MoveAnimation();
     }
 
     // методы
     public void init(Matrix4f[] matrix){
-        step = 0;
+        event = 0;
         int currentTexture = 0;
         int texWid = textures.get(currentTexture).getWidth();
         int texHei = textures.get(currentTexture).getHeight();
@@ -100,67 +97,20 @@ public class Person extends ObjectControl implements Object {
         setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),null);
     }
 
-    public void update(){
-
+    public void update(List<GridElement> gridElements){
         if(Default.isWait()){
             if(action) {
-                if(step == 0){
-                    gridMaster.createMoveGrid(getPosition(),characteristic);
-                    gridMaster.run();
-                    step++;
-                }else if(step == 1){
-                    Vector3f finishPos = null;
-                    for(GridElement element : GraundGenerator.getGridElements()){
-                        if(element.isTarget()){
-                            finishPos = new Vector3f(element.getPosition());
-                        }
-                    }
-
-                    if(finishPos != null) {
-                        if(!gridMaster.isAlive()) {
-                            gridMaster.createPath(getPosition(), finishPos, characteristic);
-                            gridMaster.run();
-                        }
-                        if(Input.getInstance().isMousePressed(GLFW_MOUSE_BUTTON_LEFT)){
-                            for(GridElement element : GraundGenerator.getGridElements()){
-                                if(element.getPosition().equals(getPosition())){
-                                    element.setBlocked(false);
-                                }
-                            }
-                            step++;
-                            moveAnimation.setup(getPosition(),GraundGenerator.getWayPoints());
-                        }
-                    }else{
-                        for(GridElement element : GraundGenerator.getGridElements()){
-                            element.setWayPoint(false);
-                        }
-                        GraundGenerator.getWayPoints().clear();
-                    }
-                }else if(step == 2){
-                    Vector3f pos = new Vector3f();
-                    boolean end = moveAnimation.move(pos,characteristic);
-                    setPosition(pos);
-                    if(end){
-                        for(GridElement element : GraundGenerator.getGridElements()){
-                            if(element.getPosition().equals(getPosition())){
-                                element.setBlocked(true);
-                            }
-                        }
-                        if(characteristic.getCurentActionPoint() != 0) {
-                            step = 0;
-                        }else {
-                            step++;
-                        }
-                    }
-                }else if(step == 3){
-                    Default.setWait(false);
-                    this.action = false;
-                    step = 0;
-                    characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
-                    for(GridElement element : GraundGenerator.getGridElements()){
-                        element.setVisible(false);
-                        element.setWayPoint(false);
-                    }
+                switch (event){
+                    case PREPARED_ACTION:
+                        pathfindingAlgorithm.setup(gridElements,characteristic);
+                        pathfindingAlgorithm.run();
+                        event = CRATE_AREA;
+                        break;
+                    case CRATE_AREA:
+                        pathfindingAlgorithm.setup(getPosition());
+                        pathfindingAlgorithm.run();
+                        event = 0;
+                        break;
                 }
             }
         }else{
@@ -169,6 +119,7 @@ public class Person extends ObjectControl implements Object {
                 if(characteristic.getInitiative() >= 100){
                     characteristic.setInitiative(0);
                     this.action = true;
+                    event = PREPARED_ACTION;
                     Default.setWait(true);
                 }
             }

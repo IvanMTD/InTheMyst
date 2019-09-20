@@ -16,6 +16,9 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static ru.phoenix.core.config.Constants.GROUP_G;
 
 public class GridElement {
+    // came from
+    private GridElement element;
+    private int step;
     // vbo
     private boolean visible;
     private VertexBufferObject vbo;
@@ -39,11 +42,21 @@ public class GridElement {
     private boolean blocked;
     private boolean water;
     private boolean wayPoint;
+    // can go
+    private boolean left;
+    private boolean right;
+    private boolean up;
+    private boolean down;
 
     public GridElement(float id, Vector3f position, Block block, boolean bevel, float bevelDirection, boolean blocked, Texture gray, Texture red, Texture green) {
         grayZona = gray;
         redZona = red;
         greenZona = green;
+
+        setLeft(false);
+        setUp(false);
+        setRight(false);
+        setDown(false);
 
         vbo = new MeshConfig();
         projection = new Projection();
@@ -132,6 +145,38 @@ public class GridElement {
         return currentHeight;
     }
 
+    public boolean isLeft() {
+        return left;
+    }
+
+    public void setLeft(boolean left) {
+        this.left = left;
+    }
+
+    public boolean isRight() {
+        return right;
+    }
+
+    public void setRight(boolean right) {
+        this.right = right;
+    }
+
+    public boolean isUp() {
+        return up;
+    }
+
+    public void setUp(boolean up) {
+        this.up = up;
+    }
+
+    public boolean isDown() {
+        return down;
+    }
+
+    public void setDown(boolean down) {
+        this.down = down;
+    }
+
     public void setCurrentHeight(float currentHeight) {
         this.currentHeight = currentHeight;
         projection.getModelMatrix().identity();
@@ -201,6 +246,29 @@ public class GridElement {
 
     public void setGreenZona(){
         texture = greenZona;
+    }
+
+    public GridElement cameFrom() {
+        return element;
+    }
+
+    public void setCameFromElement(GridElement element){
+        this.element = element;
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
+    }
+
+    public void clearDirection(){
+        left = false;
+        right = false;
+        up = false;
+        down = false;
     }
 
     public void draw(Shader shader){

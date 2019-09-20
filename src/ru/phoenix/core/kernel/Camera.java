@@ -9,6 +9,7 @@ import ru.phoenix.game.logic.generator.GraundGenerator;
 import ru.phoenix.game.logic.element.GridElement;
 
 import java.nio.DoubleBuffer;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -106,7 +107,7 @@ public class Camera {
         setOrtho();
     }
 
-    public void update(float fieldWidth, float fieldHeight, boolean mouseScrollStop){
+    public void update(float fieldWidth, float fieldHeight, boolean mouseScrollStop, List<GridElement> gridElements){
         updateViewMatrix();
         float movementSpeedX = 0.05f;
         float movementSpeedY = 0.088f;
@@ -158,23 +159,25 @@ public class Camera {
             float offset = 0.5f;
             float spOffset = 0.025f;
 
-            for(GridElement grid : GraundGenerator.getGridElements()){
-                if(grid.getPosition().getX() - offset <= currentCameraLookPos.getX() && currentCameraLookPos.getX() <= grid.getPosition().getX() + offset){
-                    if(grid.getPosition().getZ() - offset <= currentCameraLookPos.getZ() && currentCameraLookPos.getZ() <= grid.getPosition().getZ() + offset){
-                        if(currentCameraLookPos.getY() != grid.getCurrentHeight()){
-                            //if((float)Math.round(grid.getPosition().getY()) - grid.getPosition().getY() != 0.5f){
+            if(gridElements != null) {
+                for (GridElement grid : gridElements) {
+                    if (grid.getPosition().getX() - offset <= currentCameraLookPos.getX() && currentCameraLookPos.getX() <= grid.getPosition().getX() + offset) {
+                        if (grid.getPosition().getZ() - offset <= currentCameraLookPos.getZ() && currentCameraLookPos.getZ() <= grid.getPosition().getZ() + offset) {
+                            if (currentCameraLookPos.getY() != grid.getCurrentHeight()) {
+                                //if((float)Math.round(grid.getPosition().getY()) - grid.getPosition().getY() != 0.5f){
                                 if (currentCameraLookPos.getY() < grid.getCurrentHeight()) {
                                     Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
-                                    if(Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() >= grid.getCurrentHeight()){
+                                    if (Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() >= grid.getCurrentHeight()) {
                                         Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() - spOffset);
                                     }
                                 } else {
                                     Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() - spOffset);
-                                    if(Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() <= grid.getCurrentHeight()){
+                                    if (Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() <= grid.getCurrentHeight()) {
                                         Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
                                     }
                                 }
-                            //}
+                                //}
+                            }
                         }
                     }
                 }

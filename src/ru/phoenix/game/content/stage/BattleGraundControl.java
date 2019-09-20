@@ -62,11 +62,11 @@ public abstract class BattleGraundControl {
 
     public void update(){
         for(Object object : sprites){
-            object.update();
+            object.update(getGridElements());
         }
 
         for(Object object : water){
-            object.update();
+            object.update(getGridElements());
         }
     }
 
