@@ -24,6 +24,7 @@ public class Person extends ObjectControl implements Object {
     private int event;
     private final int PREPARED_ACTION       = 0x90001;
     private final int CRATE_AREA            = 0x90002;
+    private final int CREATE_PATH           = 0x90003;
 
     /*
     IDLE TEXTURES ARRAYS NUMBER
@@ -60,7 +61,6 @@ public class Person extends ObjectControl implements Object {
         setActive(true);
         action = false;
         sampleData = Time.getSecond();
-        pathfindingAlgorithm = new PathfindingAlgorithm();
         moveAnimation = new MoveAnimation();
     }
 
@@ -80,7 +80,6 @@ public class Person extends ObjectControl implements Object {
         setActive(true);
         action = false;
         sampleData = Time.getSecond();
-        pathfindingAlgorithm = new PathfindingAlgorithm();
         moveAnimation = new MoveAnimation();
     }
 
@@ -102,14 +101,18 @@ public class Person extends ObjectControl implements Object {
             if(action) {
                 switch (event){
                     case PREPARED_ACTION:
+                        pathfindingAlgorithm = new PathfindingAlgorithm();
                         pathfindingAlgorithm.setup(gridElements,characteristic);
-                        pathfindingAlgorithm.run();
+                        pathfindingAlgorithm.start();
                         event = CRATE_AREA;
                         break;
                     case CRATE_AREA:
-                        pathfindingAlgorithm.setup(getPosition());
-                        pathfindingAlgorithm.run();
-                        event = 0;
+                        if(!pathfindingAlgorithm.isAlive()) {
+                            pathfindingAlgorithm = new PathfindingAlgorithm();
+                            pathfindingAlgorithm.setup(gridElements,characteristic,getPosition());
+                            pathfindingAlgorithm.start();
+                            event = 0;
+                        }
                         break;
                 }
             }

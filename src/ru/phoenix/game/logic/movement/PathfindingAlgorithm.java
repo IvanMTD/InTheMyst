@@ -28,12 +28,14 @@ public class PathfindingAlgorithm extends Thread {
     }
 
     public void setup(List<GridElement> elements, Characteristic characteristic){
-        this.graphs = elements;
+        this.graphs = new ArrayList<>(elements);
         this.characteristic = characteristic;
         event = CONFIGURE_GRAPHS;
     }
 
-    public void setup(Vector3f startPosition){
+    public void setup(List<GridElement> elements, Characteristic characteristic,Vector3f startPosition){
+        this.graphs = new ArrayList<>(elements);
+        this.characteristic = characteristic;
         start = new Vector3f(startPosition);
         event = PREPARE_AREA;
     }
@@ -89,40 +91,79 @@ public class PathfindingAlgorithm extends Thread {
             List<GridElement>currentFrontier = new ArrayList<>(frontier);
             for(GridElement front : currentFrontier){
                 if(front.getStep() < characteristic.getCurentActionPoint()) {
-                    if (front.isUp()) {
-                        GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                        if (!isVisited(studyGraph)) {
-                            studyGraph.setCameFromElement(front);
-                            studyGraph.setStep(front.getStep() + 1);
-                            frontier.add(studyGraph);
-                            visited.add(studyGraph);
+                    if(front.getStep() % 2 == 1) {
+                        if (front.isUp()) {
+                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                            if (!isVisited(studyGraph)) {
+                                studyGraph.setCameFromElement(front);
+                                studyGraph.setStep(front.getStep() + 1);
+                                frontier.add(studyGraph);
+                                visited.add(studyGraph);
+                            }
                         }
-                    }
-                    if (front.isRight()) {
-                        GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                        if (!isVisited(studyGraph)) {
-                            studyGraph.setCameFromElement(front);
-                            studyGraph.setStep(front.getStep() + 1);
-                            frontier.add(studyGraph);
-                            visited.add(studyGraph);
+                        if (front.isRight()) {
+                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                            if (!isVisited(studyGraph)) {
+                                studyGraph.setCameFromElement(front);
+                                studyGraph.setStep(front.getStep() + 1);
+                                frontier.add(studyGraph);
+                                visited.add(studyGraph);
+                            }
                         }
-                    }
-                    if (front.isDown()) {
-                        GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                        if (!isVisited(studyGraph)) {
-                            studyGraph.setCameFromElement(front);
-                            studyGraph.setStep(front.getStep() + 1);
-                            frontier.add(studyGraph);
-                            visited.add(studyGraph);
+                        if (front.isDown()) {
+                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                            if (!isVisited(studyGraph)) {
+                                studyGraph.setCameFromElement(front);
+                                studyGraph.setStep(front.getStep() + 1);
+                                frontier.add(studyGraph);
+                                visited.add(studyGraph);
+                            }
                         }
-                    }
-                    if (front.isLeft()) {
-                        GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                        if (!isVisited(studyGraph)) {
-                            studyGraph.setCameFromElement(front);
-                            studyGraph.setStep(front.getStep() + 1);
-                            frontier.add(studyGraph);
-                            visited.add(studyGraph);
+                        if (front.isLeft()) {
+                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                            if (!isVisited(studyGraph)) {
+                                studyGraph.setCameFromElement(front);
+                                studyGraph.setStep(front.getStep() + 1);
+                                frontier.add(studyGraph);
+                                visited.add(studyGraph);
+                            }
+                        }
+                    }else{
+                        if (front.isUp()) {
+                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                            if (!isVisited(studyGraph)) {
+                                studyGraph.setCameFromElement(front);
+                                studyGraph.setStep(front.getStep() + 1);
+                                frontier.add(studyGraph);
+                                visited.add(studyGraph);
+                            }
+                        }
+                        if (front.isLeft()) {
+                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                            if (!isVisited(studyGraph)) {
+                                studyGraph.setCameFromElement(front);
+                                studyGraph.setStep(front.getStep() + 1);
+                                frontier.add(studyGraph);
+                                visited.add(studyGraph);
+                            }
+                        }
+                        if (front.isDown()) {
+                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                            if (!isVisited(studyGraph)) {
+                                studyGraph.setCameFromElement(front);
+                                studyGraph.setStep(front.getStep() + 1);
+                                frontier.add(studyGraph);
+                                visited.add(studyGraph);
+                            }
+                        }
+                        if (front.isRight()) {
+                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                            if (!isVisited(studyGraph)) {
+                                studyGraph.setCameFromElement(front);
+                                studyGraph.setStep(front.getStep() + 1);
+                                frontier.add(studyGraph);
+                                visited.add(studyGraph);
+                            }
                         }
                     }
                 }
