@@ -225,7 +225,9 @@ public class GraundGenerator {
                         waterLineInstanceList.add(newProjection.getModelMatrix());
                         for(GridElement grid : gridElements){
                             if(grid.getPosition().equals(position)){
-                                grid.setWater(true);
+                                if(position.getY() < -0.5f) {
+                                    grid.setWater(true);
+                                }
                                 break;
                             }
                         }

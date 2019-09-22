@@ -11,8 +11,8 @@ public class Characteristic {
     public Characteristic(){
         initiative = 0;
         initiativeCharge = 15;
-        totalActionPoint = 10;
-        curentActionPoint = 10;
+        totalActionPoint = 8;
+        curentActionPoint = 8;
         jump = 1.0f;
         speed = 0.02f;
     }

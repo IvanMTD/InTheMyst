@@ -1,4 +1,4 @@
-#version 430 core
+#version 330 core
 
 const int MAX_JOINTS = 44;
 const int MAX_WEIGHTS = 4;

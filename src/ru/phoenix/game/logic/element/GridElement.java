@@ -265,6 +265,7 @@ public class GridElement {
     }
 
     public void clearDirection(){
+        setCameFromElement(null);
         left = false;
         right = false;
         up = false;
