@@ -1,7 +1,5 @@
 package ru.phoenix.game.content.stage;
 
-import ru.phoenix.core.config.Time;
-import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.block.Block;
@@ -11,7 +9,6 @@ import ru.phoenix.game.logic.lighting.DirectLight;
 import ru.phoenix.game.logic.lighting.Light;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public abstract class BattleGraundControl {
@@ -23,12 +20,9 @@ public abstract class BattleGraundControl {
     private int mapX;
     private int mapZ;
 
-    private int tempSecond;
-
     public BattleGraundControl(){
         blocks = new ArrayList<>();
         directLights = new ArrayList<>();
-        tempSecond = Time.getSecond();
     }
 
     protected void setBlocks(List<GridElement> gridElements, List<Block> blocks, List<Object> water, List<Object> sprites, int mapX, int mapZ){
@@ -77,7 +71,7 @@ public abstract class BattleGraundControl {
     }
 
     public void drawSprites(Shader shader){
-        if(sprites.size() != 0) {
+        /*if(sprites.size() != 0) {
             if (!sprites.get(0).isInstance()) {
                 for (Object object : sprites) {
                     float distance = Camera.getInstance().getPos().sub(object.getPosition()).length();
@@ -95,7 +89,7 @@ public abstract class BattleGraundControl {
                     }
                 });
             }
-        }
+        }*/
 
         for(Object object : sprites){
             object.draw(shader);

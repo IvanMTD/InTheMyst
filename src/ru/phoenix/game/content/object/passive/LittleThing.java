@@ -9,8 +9,6 @@ import ru.phoenix.game.content.object.ObjectControl;
 import ru.phoenix.game.logic.element.GridElement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;

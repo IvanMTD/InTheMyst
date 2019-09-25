@@ -12,7 +12,7 @@ public class ImageLoader {
     private static int height;
 
     public static void load(String path) throws IOException {
-        BufferedImage img = null;
+        BufferedImage img;
         img = ImageIO.read(new File(path));
 
         buf = null;

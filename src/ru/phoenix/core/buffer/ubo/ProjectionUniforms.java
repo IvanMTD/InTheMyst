@@ -39,7 +39,6 @@ public class ProjectionUniforms implements UniformBufferObject {
 
     @Override
     public void totalUpdate(){
-        this.index = index;
         glBindBuffer(GL_UNIFORM_BUFFER, ubo);
         glBufferData(GL_UNIFORM_BUFFER, Matrix4f.SIZE * 3, GL_STATIC_DRAW);
         glBindBufferBase(GL_UNIFORM_BUFFER, index, ubo);

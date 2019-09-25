@@ -12,9 +12,8 @@ import java.util.Map;
 public class PathfindingAlgorithm extends Thread {
     private int event;
 
-    private final int CONFIGURE_GRAPHS      = 0x99100;
-    private final int PREPARE_AREA          = 0x99101;
-    private final int CREATE_PATH           = 0x99102;
+    private final int PREPARE_AREA          = 0x99100;
+    private final int CREATE_PATH           = 0x99101;
 
     private List<GridElement> graphs;
     private Characteristic characteristic;
@@ -27,12 +26,6 @@ public class PathfindingAlgorithm extends Thread {
     public PathfindingAlgorithm(){
         frontier = new ArrayList<>();
         visited = new ArrayList<>();
-    }
-
-    public void setup(List<GridElement> elements, Characteristic characteristic){
-        this.graphs = new ArrayList<>(elements);
-        this.characteristic = characteristic;
-        event = CONFIGURE_GRAPHS;
     }
 
     public void setup(List<GridElement> elements, Characteristic characteristic,Vector3f startPosition){
@@ -52,10 +45,8 @@ public class PathfindingAlgorithm extends Thread {
 
     public void run(){
         switch (event){
-            case CONFIGURE_GRAPHS:
-                configureGraphs();
-                break;
             case PREPARE_AREA:
+                configureGraphs();
                 prepareArea();
                 break;
             case CREATE_PATH:
@@ -80,14 +71,19 @@ public class PathfindingAlgorithm extends Thread {
             for(int key = 0; key < direction.size(); key++) {
                 Vector3f studyPosition = new Vector3f(graph.getPosition().add(direction.get(key)));
                 if(checkStudyPosition(graph, studyPosition)){
-                    if(key == 0){
-                        graph.setLeft(true);
-                    }else if(key == 1){
-                        graph.setUp(true);
-                    }else if(key == 2){
-                        graph.setRight(true);
-                    }else if(key == 3){
-                        graph.setDown(true);
+                    switch (key) {
+                        case 0:
+                            graph.setLeft(true);
+                            break;
+                        case 1:
+                            graph.setUp(true);
+                            break;
+                        case 2:
+                            graph.setRight(true);
+                            break;
+                        case 3:
+                            graph.setDown(true);
+                            break;
                     }
                 }
             }
@@ -110,7 +106,7 @@ public class PathfindingAlgorithm extends Thread {
                     if (front.getStep() < characteristic.getCurentActionPoint()) {
                         if (front.isUp()) {
                             GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                            if (!isVisited(studyGraph)) {
+                            if (checkVisit(studyGraph)) {
                                 studyGraph.setCameFromElement(front);
                                 studyGraph.setStep(front.getStep() + 1);
                                 frontier.add(studyGraph);
@@ -119,7 +115,7 @@ public class PathfindingAlgorithm extends Thread {
                         }
                         if (front.isLeft()) {
                             GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                            if (!isVisited(studyGraph)) {
+                            if (checkVisit(studyGraph)) {
                                 studyGraph.setCameFromElement(front);
                                 studyGraph.setStep(front.getStep() + 1);
                                 frontier.add(studyGraph);
@@ -128,7 +124,7 @@ public class PathfindingAlgorithm extends Thread {
                         }
                         if (front.isDown()) {
                             GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                            if (!isVisited(studyGraph)) {
+                            if (checkVisit(studyGraph)) {
                                 studyGraph.setCameFromElement(front);
                                 studyGraph.setStep(front.getStep() + 1);
                                 frontier.add(studyGraph);
@@ -137,7 +133,7 @@ public class PathfindingAlgorithm extends Thread {
                         }
                         if (front.isRight()) {
                             GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                            if (!isVisited(studyGraph)) {
+                            if (checkVisit(studyGraph)) {
                                 studyGraph.setCameFromElement(front);
                                 studyGraph.setStep(front.getStep() + 1);
                                 frontier.add(studyGraph);
@@ -152,7 +148,7 @@ public class PathfindingAlgorithm extends Thread {
                     if (front.getStep() < characteristic.getCurentActionPoint()) {
                         if (front.isRight()) {
                             GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                            if (!isVisited(studyGraph)) {
+                            if (checkVisit(studyGraph)) {
                                 studyGraph.setCameFromElement(front);
                                 studyGraph.setStep(front.getStep() + 1);
                                 frontier.add(studyGraph);
@@ -161,7 +157,7 @@ public class PathfindingAlgorithm extends Thread {
                         }
                         if (front.isDown()) {
                             GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                            if (!isVisited(studyGraph)) {
+                            if (checkVisit(studyGraph)) {
                                 studyGraph.setCameFromElement(front);
                                 studyGraph.setStep(front.getStep() + 1);
                                 frontier.add(studyGraph);
@@ -170,7 +166,7 @@ public class PathfindingAlgorithm extends Thread {
                         }
                         if (front.isLeft()) {
                             GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                            if (!isVisited(studyGraph)) {
+                            if (checkVisit(studyGraph)) {
                                 studyGraph.setCameFromElement(front);
                                 studyGraph.setStep(front.getStep() + 1);
                                 frontier.add(studyGraph);
@@ -179,7 +175,7 @@ public class PathfindingAlgorithm extends Thread {
                         }
                         if (front.isUp()) {
                             GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                            if (!isVisited(studyGraph)) {
+                            if (checkVisit(studyGraph)) {
                                 studyGraph.setCameFromElement(front);
                                 studyGraph.setStep(front.getStep() + 1);
                                 frontier.add(studyGraph);
@@ -198,7 +194,7 @@ public class PathfindingAlgorithm extends Thread {
 
         for(GridElement element : graphs){
             for(GridElement visit : visited){
-                if(element.getPosition().equals(visit.getPosition())){
+                if(element.getPosition().equals(visit.getPosition()) && !element.isBlocked()){
                     element.setVisible(true);
                 }
             }
@@ -207,14 +203,19 @@ public class PathfindingAlgorithm extends Thread {
 
     private void createPath(){
         for (GridElement graph : graphs) {
-            if (graph.isVisible()) {
-                graph.setWayPoint(false);
+            if(finish != null) {
+                if (!graph.getPosition().equals(finish)) {
+                    graph.setTarget(false);
+                }
             }
+            graph.setWayPoint(false);
         }
         if(finish != null) {
             GridElement element = findGraph(finish);
             List<Vector3f> wayPoints = new ArrayList<>();
             while (element.cameFrom() != null) {
+                Vector3f position = element.getPosition();
+                position.setY(element.getCurrentHeight());
                 wayPoints.add(element.getPosition());
                 element = element.cameFrom();
             }
@@ -262,7 +263,7 @@ public class PathfindingAlgorithm extends Thread {
         return graph;
     }
 
-    private boolean isVisited(GridElement studyGraph){
+    private boolean checkVisit(GridElement studyGraph){
         boolean check = false;
 
         for(GridElement visit : visited){
@@ -272,6 +273,6 @@ public class PathfindingAlgorithm extends Thread {
             }
         }
 
-        return check;
+        return !check;
     }
 }

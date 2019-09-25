@@ -1,7 +1,6 @@
 package ru.phoenix.game.content.object.water;
 
 import ru.phoenix.core.config.Default;
-import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Matrix4f;
@@ -77,16 +76,22 @@ public class WaterLine extends ObjectControl implements Object {
 
     @Override
     public void update(List<GridElement> gridElements){
-        if(offsetInfo == CENTER_BOARD) {
-            setyOffset(Default.getOffset());
-        }else if(offsetInfo == LEFT_BOARD){
-            setxOffset(-Default.getOffset());
-        }else if(offsetInfo == RIGHT_BOARD){
-            setxOffset(Default.getOffset());
-        }else if(offsetInfo == UP_BOARD){
-            setzOffset(-Default.getOffset());
-        }else if(offsetInfo == DOWN_BOARD){
-            setzOffset(Default.getOffset());
+        switch (offsetInfo) {
+            case CENTER_BOARD:
+                setyOffset(Default.getOffset());
+                break;
+            case LEFT_BOARD:
+                setxOffset(-Default.getOffset());
+                break;
+            case RIGHT_BOARD:
+                setxOffset(Default.getOffset());
+                break;
+            case UP_BOARD:
+                setzOffset(-Default.getOffset());
+                break;
+            case DOWN_BOARD:
+                setzOffset(Default.getOffset());
+                break;
         }
     }
 

@@ -9,8 +9,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.block.Block;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static ru.phoenix.core.config.Constants.GROUP_G;
@@ -300,7 +299,12 @@ public class GridElement {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
             shader.setUniform("image", 0);
+
+            glEnable(GL_CULL_FACE);
+            glFrontFace(GL_CW);
+            glCullFace(GL_BACK);
             vbo.draw();
+            glDisable(GL_CULL_FACE);
         }
     }
 }

@@ -56,9 +56,8 @@ public class Perlin2D {
         // интерполяция:
         float tx = lerp(tx1, tx2, qunticCurve(localX));
         float bx = lerp(bx1, bx2, qunticCurve(localX));
-        float tb = lerp(tx, bx, qunticCurve(localY));
 
-        return tb;
+        return lerp(tx, bx, qunticCurve(localY));
     }
 
     private float lerp(float a, float b, float t) {

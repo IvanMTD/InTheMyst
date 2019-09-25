@@ -39,7 +39,7 @@ public class WindowConfig {
 
     private void setConfigDefault(){
         if(config.length() == 0){
-            List<String> defaultConfig = new ArrayList<String>();
+            List<String> defaultConfig = new ArrayList<>();
             defaultConfig.add("full_screen");defaultConfig.add(Boolean.toString(false));
             defaultConfig.add("window_width");defaultConfig.add(Integer.toString(1280));
             defaultConfig.add("window_height");defaultConfig.add(Integer.toString(720));
@@ -164,7 +164,7 @@ public class WindowConfig {
 
     private List<String> getCurrentCopy(){
 
-        List<String> temp = new ArrayList<String>();
+        List<String> temp = new ArrayList<>();
 
         try {
             FileReader fr = new FileReader(config.getAbsoluteFile());

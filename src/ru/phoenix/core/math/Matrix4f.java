@@ -161,7 +161,7 @@ public class Matrix4f {
 
     public static Quaternion getRotationQuat(Matrix4f rot){
 
-        Quaternion quat = null;
+        Quaternion quat;
         float x, y, z, w;
 
         float trace = rot.get(0, 0) + rot.get(1, 1) + rot.get(2, 2);

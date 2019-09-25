@@ -67,8 +67,7 @@ public class Weed extends ObjectControl implements Object {
         super();
         this.textures = new ArrayList<>(object.getTextures());
         if(seed == MOUNTAIN_MAP){
-            Texture texture = new Texture2D();
-            texture = textures.get(2);
+            Texture texture = textures.get(2);
             textures.clear();
             textures.add(texture);
         }else if(seed == PLAIN_MAP){

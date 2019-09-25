@@ -117,7 +117,7 @@ public class Shader {
     private static String ShaderLoader(String path){
 
         StringBuilder shaderSource = new StringBuilder();
-        BufferedReader shaderReader = null;
+        BufferedReader shaderReader;
 
         try {
             shaderReader = new BufferedReader(new FileReader(path));

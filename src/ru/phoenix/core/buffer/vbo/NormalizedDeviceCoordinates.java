@@ -18,7 +18,7 @@ public class NormalizedDeviceCoordinates implements VertexBufferObject {
 
     public NormalizedDeviceCoordinates(){
         vao = glGenVertexArrays();
-        vbo = new ArrayList<Integer>();
+        vbo = new ArrayList<>();
         for(int i=0; i<2; i++){
             vbo.add(glGenBuffers());
         }

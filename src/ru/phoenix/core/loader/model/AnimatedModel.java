@@ -17,14 +17,14 @@ public class AnimatedModel {
         this.meshes = meshes;
         this.animations = animations;
         Optional<Map.Entry<String, Animation>> entry = animations.entrySet().stream().findFirst();
-        currentAnimation = entry.isPresent() ? entry.get().getValue() : null;
+        currentAnimation = entry.map(Map.Entry::getValue).orElse(null);
     }
 
     public AnimatedModel(AnimatedModel animatedModel) {
         this.meshes = animatedModel.getMeshes();
         this.animations = animatedModel.getAnimations();
         Optional<Map.Entry<String, Animation>> entry = animations.entrySet().stream().findFirst();
-        currentAnimation = entry.isPresent() ? entry.get().getValue() : null;
+        currentAnimation = entry.map(Map.Entry::getValue).orElse(null);
     }
 
     public Animation getAnimation(String name) {

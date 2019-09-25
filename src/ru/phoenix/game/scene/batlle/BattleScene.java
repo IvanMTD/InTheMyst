@@ -14,10 +14,10 @@ import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.scene.Scene;
 
-import java.util.Comparator;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static ru.phoenix.core.config.Constants.ID_PERSON_GEHARD;
 import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
 import static ru.phoenix.core.config.Constants.PLAIN_MAP;
 
@@ -64,7 +64,7 @@ public class BattleScene implements Scene {
         // ГЕНЕРАЦИЯ
         battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
 
-        Object person = new Person(Constants.ID_PERSON_GEHARD);
+        Object person = new Person(ID_PERSON_GEHARD);
         person.init(null);
         Vector3f pos = GraundGenerator.getRandomPos();
         pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
@@ -82,7 +82,7 @@ public class BattleScene implements Scene {
     @Override
     public void update(){
         // обновляем камеру
-        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),false,battleGraund.getGridElements());
+        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),battleGraund.getGridElements());
 
         // Обновляем информацию в сетке
         for(GridElement element : battleGraund.getGridElements()){
@@ -93,12 +93,7 @@ public class BattleScene implements Scene {
             }
         }
 
-        battleGraund.getGridElements().sort(new Comparator<GridElement>() {
-            @Override
-            public int compare(GridElement o1, GridElement o2) {
-                return o1.getDistance() < o2.getDistance() ? 0 : -1;
-            }
-        });
+        battleGraund.getGridElements().sort((o1, o2) -> o1.getDistance() < o2.getDistance() ? 0 : -1);
 
         // обнавляем движение волн
         if(switchControl){
@@ -132,7 +127,7 @@ public class BattleScene implements Scene {
         if(tap){
             if(index == 0) {
                 battleGraund = GraundGenerator.useMapGenerator(MOUNTAIN_MAP);
-                Object person = new Person(Constants.ID_PERSON_GEHARD);
+                Object person = new Person(ID_PERSON_GEHARD);
                 person.init(null);
                 Vector3f pos = GraundGenerator.getRandomPos();
                 pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
@@ -141,7 +136,7 @@ public class BattleScene implements Scene {
                 Default.setWait(false);
             }else if(index == 1){
                 battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
-                Object person = new Person(Constants.ID_PERSON_GEHARD);
+                Object person = new Person(ID_PERSON_GEHARD);
                 person.init(null);
                 Vector3f pos = GraundGenerator.getRandomPos();
                 pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());

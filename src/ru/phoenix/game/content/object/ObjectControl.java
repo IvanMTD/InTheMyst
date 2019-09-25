@@ -39,6 +39,7 @@ public abstract class ObjectControl {
     private boolean shadow;
     private boolean active;
     private boolean water;
+    private boolean jump;
 
     public ObjectControl(){
         textures = new ArrayList<>();
@@ -56,6 +57,11 @@ public abstract class ObjectControl {
         active = false;
         water = false;
         group = GROUP_A;
+    }
+
+    protected void setup(List<Texture> textures, int textureIndex, Vector3f position){
+        this.textures = new ArrayList<>(textures);
+        currentTexture = textureIndex;
     }
 
     protected void setup(List<Texture> textures, int row, int column, float width, float height, int textureIndex, Vector3f position, Matrix4f[] matrix){
@@ -116,6 +122,17 @@ public abstract class ObjectControl {
         }
     }
 
+    protected void setup(List<Texture> textures, ImageAnimation sprite, int currentTexture){
+        this.textures = new ArrayList<>(textures);
+        this.currentTexture = currentTexture;
+        this.sprite = sprite;
+    }
+
+    protected void updateAnimation(ImageAnimation sprite, int currentTexture){
+        this.currentTexture = currentTexture;
+        this.sprite = sprite;
+    }
+
     protected void setAnimated(boolean animated) {
         this.animated = animated;
     }
@@ -144,6 +161,14 @@ public abstract class ObjectControl {
 
     public void setId(float id) {
         this.id = id;
+    }
+
+    public boolean isJump() {
+        return jump;
+    }
+
+    public void setJump(boolean jump) {
+        this.jump = jump;
     }
 
     public boolean isOnTarget() {
@@ -227,9 +252,9 @@ public abstract class ObjectControl {
     }
 
     public void draw(Shader shader){
-        if(instance) {
+        /*if(instance) {
             sprite.updateInstanceMatrix();
-        }
+        }*/
         // setUniforms
         shader.useProgram();
         // глобальный юниформ
@@ -257,11 +282,21 @@ public abstract class ObjectControl {
 
         if(animated) {
             if(isBoard()) {
-                if (count > 10.0f + Math.random() * 10.0f) {
-                    sprite.nextFrame();
-                    count = 0;
+                if(isActive()){
+                    if(!isJump() && !sprite.isBlock()) {
+                        if (count > sprite.getCondition()) {
+                            sprite.nextFrame();
+                            count = 0;
+                        }
+                        count++;
+                    }
+                }else {
+                    if (count > 10.0f + Math.random() * 10.0f) {
+                        sprite.nextFrame();
+                        count = 0;
+                    }
+                    count++;
                 }
-                count++;
             }else{
                 if (count > 20.0f) {
                     sprite.nextFrame();

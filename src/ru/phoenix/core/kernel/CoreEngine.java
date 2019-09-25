@@ -41,13 +41,17 @@ public class CoreEngine {
 
         battleScene = new BattleScene();
 
-        scenes = new ArrayList<Scene>();
+        scenes = new ArrayList<>();
     }
 
     public void init(){
         Default.init();
         render.init();
         uboProjection.allocate(0);
+
+        battleScene.init();
+        battleScene.start();
+
         scenes = Arrays.asList(battleScene);
     }
 
@@ -68,7 +72,6 @@ public class CoreEngine {
         double unprocessedTime = 0;
 
         while(isRunning){
-
             Scene currentScene = SceneControl.getCurrentScene(scenes);
 
             boolean render = false;

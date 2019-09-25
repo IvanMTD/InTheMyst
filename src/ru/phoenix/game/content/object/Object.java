@@ -11,20 +11,20 @@ import java.util.List;
 
 public interface Object {
 
-    public void init(Matrix4f[] matrix);
-    public void update(List<GridElement> gridElements);
-    public List<Texture> getTextures();
+    void init(Matrix4f[] matrix);
+    void update(List<GridElement> gridElements);
+    List<Texture> getTextures();
 
-    public float getDistance();
-    public void setDistance(float distance);
-    public Vector3f getPosition();
-    public void setPosition(Vector3f position);
-    public float getId();
-    public boolean isOnTarget();
-    public boolean isInstance();
-    public boolean isShadow();
-    public boolean isActive();
-    public void draw(Shader shader);
-    public boolean isBoard();
-    public void setProjection(Projection projection);
+    float getDistance();
+    void setDistance(float distance);
+    Vector3f getPosition();
+    void setPosition(Vector3f position);
+    float getId();
+    boolean isOnTarget();
+    boolean isInstance();
+    boolean isShadow();
+    boolean isActive();
+    void draw(Shader shader);
+    boolean isBoard();
+    void setProjection(Projection projection);
 }

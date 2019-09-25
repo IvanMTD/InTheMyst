@@ -27,17 +27,20 @@ uniform float yOffset;
 uniform float zOffset;
 
 out vec2 textureCoord;
+flat out int isBoard;
 
 void main() {
-    vec3 cameraRight_worldspace = vec3(view_m[0][0], view_m[1][0], view_m[2][0]);
-    vec3 cameraUp_worldspace = vec3(view_m[0][1], view_m[1][1], view_m[2][1]);
-    vec3 cameraCenter_worldspace = vec3(view_m[0][2], view_m[1][2], view_m[2][2]);
+    vec3 cameraRight_worldspace = vec3(view_m[0].x, view_m[1].x, view_m[2].x);
+    vec3 cameraUp_worldspace = vec3(view_m[0].y, view_m[1].y, view_m[2].y);
+    vec3 cameraCenter_worldspace = vec3(view_m[0].z, view_m[1].z, view_m[2].z);
+
+    isBoard = board;
 
     if(instance == 1){
         if(board == 1){
             vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
-            vec3 particleCenter_wordspace = vec3(l_instance_m[0][2],l_instance_m[1][2],l_instance_m[2][2]);
-            vec3 particleUp_wordspace = vec3(l_instance_m[0][1],l_instance_m[1][1],l_instance_m[2][1]);
+            vec3 particleCenter_wordspace = vec3(l_instance_m[0].z,l_instance_m[1].z,l_instance_m[2].z);
+            vec3 particleUp_wordspace = vec3(l_instance_m[0].y,l_instance_m[1].y,l_instance_m[2].y);
             vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + particleUp_wordspace * l_pos.y  * billboardSize.y);
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
@@ -48,8 +51,8 @@ void main() {
     }else{
         if(board == 1){
             vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
-            vec3 particleCenter_wordspace = vec3(model_m[0][2],model_m[1][2],model_m[2][2]);
-            vec3 particleUp_wordspace = vec3(model_m[0][1],model_m[1][1],model_m[2][1]);
+            vec3 particleCenter_wordspace = vec3(model_m[0].z,model_m[1].z,model_m[2].z);
+            vec3 particleUp_wordspace = vec3(model_m[0].y,model_m[1].y,model_m[2]);
             vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + particleUp_wordspace * l_pos.y  * billboardSize.y);
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
 

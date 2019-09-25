@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.lwjgl.assimp.Assimp.*;
-import static org.lwjgl.opengl.GL11.GL_REPEAT;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
@@ -30,6 +29,7 @@ public class LoadStaticModel {
         directory = path.substring(0,path.lastIndexOf("/")) + "/";
         AIScene aiScene = aiImportFile(path,aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_LimitBoneWeights | aiProcess_JoinIdenticalVertices | aiProcess_FixInfacingNormals);
         checkScene(aiScene);
+        assert aiScene != null;
         return setupMeshes(aiScene);
     }
 
@@ -39,6 +39,7 @@ public class LoadStaticModel {
         PointerBuffer materialsBuffer = aiScene.mMaterials();
         ArrayList<Material> materials = new ArrayList<>();
         for (int i = 0; i < numMaterials; i++){
+            assert materialsBuffer != null;
             AIMaterial aiMaterial = AIMaterial.create(materialsBuffer.get(i));
             processMaterial(aiMaterial, materials);
         }
@@ -47,6 +48,7 @@ public class LoadStaticModel {
         PointerBuffer meshesBuffer = aiScene.mMeshes();
         Mesh[] meshArray = new Mesh[numMeshes];
         for (int i = 0; i < numMeshes; i++){
+            assert meshesBuffer != null;
             AIMesh aiMesh = AIMesh.create(meshesBuffer.get(i));
             Mesh mesh = processMesh(aiMesh, materials);
             meshArray[i] = mesh;
@@ -132,7 +134,7 @@ public class LoadStaticModel {
             }
 
             AIColor4D color = AIColor4D.create();
-            Vector3f cDiffuse = new Vector3f();
+            Vector3f cDiffuse;
             int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
             if (result == 0) {
                 cDiffuse = new Vector3f(color.r(), color.g(), color.b());

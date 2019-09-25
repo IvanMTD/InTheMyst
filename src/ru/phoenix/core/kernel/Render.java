@@ -8,7 +8,6 @@ import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
-import static org.lwjgl.opengl.GL11.*;
 
 public class Render {
     private Window window;

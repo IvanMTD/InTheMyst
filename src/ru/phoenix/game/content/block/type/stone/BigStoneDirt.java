@@ -11,7 +11,7 @@ public class BigStoneDirt extends BlockControl implements Block {
     // конструкторы
     public BigStoneDirt(){
         super();
-        setMeshs("./data/content/block/stone/big/big_rock_dirt.obj");
+        setMeshs("./data/content/block/stone/big/big_dirt_stone.obj");
         setType(BLOCK_STONE_BIG);
     }
 

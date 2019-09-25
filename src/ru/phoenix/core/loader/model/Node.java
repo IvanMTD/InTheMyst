@@ -21,13 +21,13 @@ public class Node {
     public Node(String name, Node parentNode) {
         this.name = name;
         this.parentNode = parentNode;
-        childNode = new ArrayList<Node>();
-        transformations = new ArrayList<Matrix4f>();
-        times = new ArrayList<Double>();
+        childNode = new ArrayList<>();
+        transformations = new ArrayList<>();
+        times = new ArrayList<>();
 
-        position = new ArrayList<Vector3f>();
-        scaling = new ArrayList<Vector3f>();
-        rotation = new ArrayList<Quaternion>();
+        position = new ArrayList<>();
+        scaling = new ArrayList<>();
+        rotation = new ArrayList<>();
     }
 
     public void addTransformation(Matrix4f transMatrix, Vector3f position, Vector3f scaling, Quaternion rotation){

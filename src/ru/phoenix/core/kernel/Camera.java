@@ -5,7 +5,6 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
-import ru.phoenix.game.logic.generator.GraundGenerator;
 import ru.phoenix.game.logic.element.GridElement;
 
 import java.nio.DoubleBuffer;
@@ -35,7 +34,6 @@ public class Camera {
     private float yaw;
     private float pitch;
     private float fov;
-    private float cathetus;
     private float hypotenuse;
     private float offset;
 
@@ -86,12 +84,12 @@ public class Camera {
 
         direction = new Vector3f();
         hypotenuse = 10.0f;
-        cathetus = (float)Math.sin(Math.toRadians(Math.abs(pitch))) * hypotenuse;
+        float cathetus = (float) Math.sin(Math.toRadians(Math.abs(pitch))) * hypotenuse;
 
 
         // Установка позиции!
-        pos = new Vector3f(0.0f,cathetus,-cathetus); // позиция камеры
-        front = new Vector3f(0.0f,-cathetus,cathetus).normalize(); // точка в которую смотрит камера
+        pos = new Vector3f(0.0f, cathetus,-cathetus); // позиция камеры
+        front = new Vector3f(0.0f,-cathetus, cathetus).normalize(); // точка в которую смотрит камера
         up = new Vector3f(0.0f,1.0f,0.0f); // вектор определяющий верх камеры
 
         //
@@ -107,7 +105,7 @@ public class Camera {
         setOrtho();
     }
 
-    public void update(float fieldWidth, float fieldHeight, boolean mouseScrollStop, List<GridElement> gridElements){
+    public void update(float fieldWidth, float fieldHeight, List<GridElement> gridElements){
         updateViewMatrix();
         float movementSpeedX = 0.05f;
         float movementSpeedY = 0.088f;
@@ -126,7 +124,7 @@ public class Camera {
             if (Input.getInstance().isPressed(GLFW_KEY_D)) {
                 setPos(pos.add(new Vector3f(front.cross(up)).normalize().mul(movementSpeedX)));
             }
-            if(Input.getInstance().isMousePressed(GLFW_MOUSE_BUTTON_LEFT) && !mouseScrollStop){
+            if(Input.getInstance().isMousePressed(GLFW_MOUSE_BUTTON_LEFT)){
                 if(lastCursorPos2 != null){
                     float corectionX = hypotenuse / Window.getInstance().getWidth();
                     float corectionY = hypotenuse / Window.getInstance().getHeight();
@@ -164,7 +162,6 @@ public class Camera {
                     if (grid.getPosition().getX() - offset <= currentCameraLookPos.getX() && currentCameraLookPos.getX() <= grid.getPosition().getX() + offset) {
                         if (grid.getPosition().getZ() - offset <= currentCameraLookPos.getZ() && currentCameraLookPos.getZ() <= grid.getPosition().getZ() + offset) {
                             if (currentCameraLookPos.getY() != grid.getCurrentHeight()) {
-                                //if((float)Math.round(grid.getPosition().getY()) - grid.getPosition().getY() != 0.5f){
                                 if (currentCameraLookPos.getY() < grid.getCurrentHeight()) {
                                     Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
                                     if (Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() >= grid.getCurrentHeight()) {
@@ -176,7 +173,6 @@ public class Camera {
                                         Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
                                     }
                                 }
-                                //}
                             }
                         }
                     }
@@ -209,19 +205,12 @@ public class Camera {
         }
 
         yaw -= turn;
+
         if(stopTurn){
             turnCounter = 0.0f;
             turn = 0.0f;
             turnButtonBlock = false;
         }
-
-        /*if(yaw <= -45.0f){
-            yaw = -45.0f;
-            turn = 0.0f;
-        }else if(yaw >= 45.0f){
-            yaw = 45.0f;
-            turn = 0.0f;
-        }*/
 
         direction.setX((float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))));
         direction.setY((float) Math.sin(Math.toRadians(pitch)));

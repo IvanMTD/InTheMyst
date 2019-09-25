@@ -14,7 +14,7 @@ public class Characteristic {
         totalActionPoint = 8;
         curentActionPoint = 8;
         jump = 1.0f;
-        speed = 0.02f;
+        speed = 0.012f;
     }
 
     public Characteristic(Characteristic characteristic){

@@ -11,7 +11,7 @@ public class BigStoneSnow extends BlockControl implements Block {
     // конструкторы
     public BigStoneSnow(){
         super();
-        setMeshs("./data/content/block/stone/big/big_rock_snow.obj");
+        setMeshs("./data/content/block/stone/big/big_snow_stone.obj");
         setType(BLOCK_STONE_BIG);
     }
 

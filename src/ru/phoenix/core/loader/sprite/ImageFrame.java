@@ -8,7 +8,6 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.util.SortArray;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ImageFrame {
@@ -46,18 +45,12 @@ public class ImageFrame {
     public void updateInstanceMatrix(){
         List<SortArray> sortingData = new ArrayList<>();
         if(mat != null){
-            for(int i=0; i<mat.length; i++){
-                float distance = new Vector3f(Camera.getInstance().getPos().sub(mat[i].getPositionVector())).length();
-                Matrix4f matrix = mat[i];
-                sortingData.add(new SortArray(distance,matrix));
+            for (Matrix4f aMat : mat) {
+                float distance = new Vector3f(Camera.getInstance().getPos().sub(aMat.getPositionVector())).length();
+                sortingData.add(new SortArray(distance, aMat));
             }
 
-            sortingData.sort(new Comparator<SortArray>() {
-                @Override
-                public int compare(SortArray o1, SortArray o2) {
-                    return o1.getCondition() < o2.getCondition() ? 0 : -1;
-                }
-            });
+            sortingData.sort((o1, o2) -> o1.getCondition() < o2.getCondition() ? 0 : -1);
 
             Matrix4f[] matrix = new Matrix4f[sortingData.size()];
             int i=0;

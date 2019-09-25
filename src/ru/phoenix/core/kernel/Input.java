@@ -28,7 +28,7 @@ public class Input {
     private Input(){
         init();
         GLFWKeyCallback keyCallback;
-        glfwSetKeyCallback(Window.getInstance().getWindow(), (keyCallback = new GLFWKeyCallback() {
+        glfwSetKeyCallback(Window.getInstance().getWindow(), new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if(key >= 0) {
@@ -39,10 +39,10 @@ public class Input {
                     }
                 }
             }
-        }));
+        });
 
         GLFWMouseButtonCallback mouseButtonCallback;
-        glfwSetMouseButtonCallback(Window.getInstance().getWindow(), (mouseButtonCallback = new GLFWMouseButtonCallback() {
+        glfwSetMouseButtonCallback(Window.getInstance().getWindow(), new GLFWMouseButtonCallback() {
             @Override
             public void invoke(long window, int button, int action, int mods) {
                 if (action == GLFW_PRESS) {
@@ -51,25 +51,24 @@ public class Input {
                     buttons[button] = false;
                 }
             }
-        }));
+        });
 
         GLFWCursorPosCallback cursorPosCallback;
-        glfwSetCursorPosCallback(Window.getInstance().getWindow(), (cursorPosCallback = new GLFWCursorPosCallback() {
+        glfwSetCursorPosCallback(Window.getInstance().getWindow(), new GLFWCursorPosCallback() {
             @Override
             public void invoke(long window, double xpos, double ypos) {
                 cursorPosition.setX((float) xpos);
                 cursorPosition.setY((float) ypos);
                 setCursorMove(true);
             }
-        }));
+        });
 
-        GLFWScrollCallback scrollCallback;
-        glfwSetScrollCallback(Window.getInstance().getWindow(), (scrollCallback = new GLFWScrollCallback() {
+        glfwSetScrollCallback(Window.getInstance().getWindow(), new GLFWScrollCallback() {
             @Override
             public void invoke(long window, double xoffset, double yoffset) {
                 setScrollOffset((float) yoffset);
             }
-        }));
+        });
     }
 
     private void init(){

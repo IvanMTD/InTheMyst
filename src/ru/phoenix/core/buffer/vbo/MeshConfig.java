@@ -32,7 +32,7 @@ public class MeshConfig implements VertexBufferObject {
 
     public MeshConfig(){
         vao = glGenVertexArrays();
-        vbo = new ArrayList<Integer>();
+        vbo = new ArrayList<>();
         for(int i=0; i<10; i++){
             vbo.add(glGenBuffers());
         }
@@ -296,9 +296,7 @@ public class MeshConfig implements VertexBufferObject {
         tic += 0.005f;
         tic2 += 0.001f;
         float[] temp = new float[this.tex.length];
-        for(int i=0; i<temp.length; i++){
-            temp[i] = this.tex[i];
-        }
+        System.arraycopy(this.tex, 0, temp, 0, temp.length);
 
         if(tic > 1.0f){
             tic = 0.0f;

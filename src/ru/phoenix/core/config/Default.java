@@ -1,5 +1,7 @@
 package ru.phoenix.core.config;
 
+import ru.phoenix.core.loader.sprite.TextureConfig;
+
 import static org.lwjgl.opengl.GL11.*;
 import static ru.phoenix.core.config.Constants.ID_PERSON_GEHARD;
 
@@ -7,8 +9,6 @@ public class Default {
 
     private static float offset;
     private static boolean wait;
-
-    private static final String GH_IDLE_STAND = "./data/content/texture/person/idle_gh_stand.png";
 
     public static void init() {
         glEnable(GL_DEPTH_TEST);
@@ -41,9 +41,23 @@ public class Default {
         Default.wait = wait;
     }
 
-    public static String getStandIdle(float id){
+    public static TextureConfig getStandIdle(float id){
         if(id == ID_PERSON_GEHARD){
-            return GH_IDLE_STAND;
+            return new TextureConfig("./data/content/texture/person/idle_gh_stand.png",3,1);
+        }
+        return null;
+    }
+
+    public static TextureConfig getWalkIdle(float id){
+        if(id == ID_PERSON_GEHARD){
+            return new TextureConfig("./data/content/texture/person/idle_gh_walk.png",12,1);
+        }
+        return null;
+    }
+
+    public static TextureConfig getJumpIdle(float id){
+        if(id == ID_PERSON_GEHARD){
+            return new TextureConfig("./data/content/texture/person/idle_gh_jump.png",7,1);
         }
         return null;
     }

@@ -65,6 +65,7 @@ public class GraundGenerator {
     private static int mapHeightOffset;
 
     private static float angleRotation = 0.0f;
+    private static int index = 0;
 
     public static BattleGraund useMapGenerator(int seed){
 
@@ -77,9 +78,9 @@ public class GraundGenerator {
         initSprite();
         generateMapSize();
 
-        List<Block> blocks = new ArrayList<>();
+        List<Block> blocks;
         List<Object> sprites = new ArrayList<>();
-        List<Object> water = new ArrayList<>();
+        List<Object> water;
 
         int height = 0;
 
@@ -130,7 +131,12 @@ public class GraundGenerator {
         List<Matrix4f>bigStoneDirtInstanceList = new ArrayList<>();
         List<Matrix4f>bigStoneSnowInstanceList = new ArrayList<>();
 
-        List<Matrix4f> weedInstanceList = new ArrayList<>();
+        List<Matrix4f> weedInstanceList1 = new ArrayList<>();
+        List<Matrix4f> weedInstanceList2 = new ArrayList<>();
+        List<Matrix4f> weedInstanceList3 = new ArrayList<>();
+        List<Matrix4f> weedInstanceList4 = new ArrayList<>();
+        List<Matrix4f> weedInstanceList5 = new ArrayList<>();
+        List<Matrix4f> weedInstanceList6 = new ArrayList<>();
         List<Matrix4f> treeInstanceList = new ArrayList<>();
 
         List<Matrix4f> waterLineInstanceList = new ArrayList<>();
@@ -189,33 +195,40 @@ public class GraundGenerator {
                         }
                         projection.setRotation(angle,new Vector3f(0.0f,1.0f,0.0f));
                         int random = (int)(Math.random() * 2.9f);
-                        if(random == 0) {
-                            smallStoneDirtInstanceList.add(projection.getModelMatrix());
-                            for (GridElement grid : gridElements) {
-                                if (grid.getPosition().equals(position)) {
-                                    grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                        switch (random) {
+                            case 0:
+                                smallStoneDirtInstanceList.add(projection.getModelMatrix());
+                                for (GridElement grid : gridElements) {
+                                    if (grid.getPosition().equals(position)) {
+                                        grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                                    }
                                 }
-                            }
-                        }else if(random == 1){
-                            mediumStoneDirtInstanceList.add(projection.getModelMatrix());
-                            for (GridElement grid : gridElements) {
-                                if (grid.getPosition().equals(position)) {
-                                    grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                break;
+                            case 1:
+                                mediumStoneDirtInstanceList.add(projection.getModelMatrix());
+                                for (GridElement grid : gridElements) {
+                                    if (grid.getPosition().equals(position)) {
+                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                    }
                                 }
-                            }
-                        }else if(random == 2){
-                            bigStoneDirtInstanceList.add(projection.getModelMatrix());
-                            for (GridElement grid : gridElements) {
-                                if (grid.getPosition().equals(position)) {
-                                    grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                break;
+                            case 2:
+                                bigStoneDirtInstanceList.add(projection.getModelMatrix());
+                                for (GridElement grid : gridElements) {
+                                    if (grid.getPosition().equals(position)) {
+                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                    }
                                 }
-                            }
+                                break;
                         }
                     }else if(!bevel && (Math.random() * 100.0f <= 10.0f) && (position.getY() <= -1.0f)){
-                        Object weed = new Weed((Weed) weed_main, position.getY());
+                        Projection weedProjection = new Projection();
+                        weedProjection.setTranslation(position);
+                        weedInstanceList1.add(weedProjection.getModelMatrix());
+                        /*Object weed = new Weed((Weed) weed_main, position.getY());
                         weed.init(null);
                         weed.setPosition(position);
-                        sprites.add(weed);
+                        sprites.add(weed);*/
                     }
 
                     if(position.getY() < 0.0f) {
@@ -332,27 +345,31 @@ public class GraundGenerator {
                             }
                             projection.setRotation(angle,new Vector3f(0.0f,1.0f,0.0f));
                             int random = (int)(Math.random() * 2.9f);
-                            if(random == 0) {
-                                smallStoneInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                            switch (random) {
+                                case 0:
+                                    smallStoneInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                                        }
                                     }
-                                }
-                            }else if(random == 1){
-                                mediumStoneInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                    break;
+                                case 1:
+                                    mediumStoneInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                        }
                                     }
-                                }
-                            }else if(random == 2){
-                                bigStoneInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                    break;
+                                case 2:
+                                    bigStoneInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                        }
                                     }
-                                }
+                                    break;
                             }
                         }
                     } else {
@@ -365,11 +382,31 @@ public class GraundGenerator {
                                 Vector3f spritePos = new Vector3f(position.getX(), position.getY(), position.getZ());
                                 Projection spriteProjection = new Projection();
                                 spriteProjection.setTranslation(spritePos);
-                                //weedInstanceList.add(spriteProjection.getModelMatrix());
-                                Object weed = new Weed((Weed) weed_main,seed);
+                                switch (index) {
+                                    case 0:
+                                        weedInstanceList2.add(spriteProjection.getModelMatrix());
+                                        break;
+                                    case 1:
+                                        weedInstanceList3.add(spriteProjection.getModelMatrix());
+                                        break;
+                                    case 2:
+                                        weedInstanceList4.add(spriteProjection.getModelMatrix());
+                                        break;
+                                    case 3:
+                                        weedInstanceList5.add(spriteProjection.getModelMatrix());
+                                        break;
+                                    case 4:
+                                        weedInstanceList6.add(spriteProjection.getModelMatrix());
+                                        break;
+                                }
+                                index++;
+                                if(index > 4){
+                                    index = 0;
+                                }
+                                /*Object weed = new Weed((Weed) weed_main,seed);
                                 weed.init(null);
                                 weed.setPosition(position);
-                                sprites.add(weed);
+                                sprites.add(weed);*/
                             }else if(Math.random() * 100.0f <= 1.0f){
                                 Vector3f spritePos = new Vector3f(position.getX(), position.getY(), position.getZ());
                                 Projection spriteProjection = new Projection();
@@ -484,27 +521,31 @@ public class GraundGenerator {
                             }
                             projection.setRotation(angle, new Vector3f(0.0f, 1.0f, 0.0f));
                             int random = (int) (Math.random() * 2.9f);
-                            if (random == 0) {
-                                smallStoneSnowInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                            switch (random) {
+                                case 0:
+                                    smallStoneSnowInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                                        }
                                     }
-                                }
-                            } else if (random == 1) {
-                                mediumStoneSnowInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                    break;
+                                case 1:
+                                    mediumStoneSnowInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                        }
                                     }
-                                }
-                            } else if (random == 2) {
-                                bigStoneSnowInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                    break;
+                                case 2:
+                                    bigStoneSnowInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                        }
                                     }
-                                }
+                                    break;
                             }
                         }
                     }else{
@@ -564,27 +605,31 @@ public class GraundGenerator {
                             }
                             projection.setRotation(angle, new Vector3f(0.0f, 1.0f, 0.0f));
                             int random = (int) (Math.random() * 2.9f);
-                            if (random == 0) {
-                                smallStoneSnowInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                            switch (random) {
+                                case 0:
+                                    smallStoneSnowInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                                        }
                                     }
-                                }
-                            } else if (random == 1) {
-                                mediumStoneSnowInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                    break;
+                                case 1:
+                                    mediumStoneSnowInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                        }
                                     }
-                                }
-                            } else if (random == 2) {
-                                bigStoneSnowInstanceList.add(projection.getModelMatrix());
-                                for (GridElement grid : gridElements) {
-                                    if (grid.getPosition().equals(position)) {
-                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                    break;
+                                case 2:
+                                    bigStoneSnowInstanceList.add(projection.getModelMatrix());
+                                    for (GridElement grid : gridElements) {
+                                        if (grid.getPosition().equals(position)) {
+                                            grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                        }
                                     }
-                                }
+                                    break;
                             }
                         }
                     }else{
@@ -613,27 +658,31 @@ public class GraundGenerator {
                         }
                         projection.setRotation(angle,new Vector3f(0.0f,1.0f,0.0f));
                         int random = (int)(Math.random() * 2.9f);
-                        if(random == 0) {
-                            smallStoneSnowInstanceList.add(projection.getModelMatrix());
-                            for (GridElement grid : gridElements) {
-                                if (grid.getPosition().equals(position)) {
-                                    grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                        switch (random) {
+                            case 0:
+                                smallStoneSnowInstanceList.add(projection.getModelMatrix());
+                                for (GridElement grid : gridElements) {
+                                    if (grid.getPosition().equals(position)) {
+                                        grid.setCurrentHeight(grid.getCurrentHeight() + 0.5f);
+                                    }
                                 }
-                            }
-                        }else if(random == 1){
-                            mediumStoneSnowInstanceList.add(projection.getModelMatrix());
-                            for (GridElement grid : gridElements) {
-                                if (grid.getPosition().equals(position)) {
-                                    grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                break;
+                            case 1:
+                                mediumStoneSnowInstanceList.add(projection.getModelMatrix());
+                                for (GridElement grid : gridElements) {
+                                    if (grid.getPosition().equals(position)) {
+                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.0f);
+                                    }
                                 }
-                            }
-                        }else if(random == 2){
-                            bigStoneSnowInstanceList.add(projection.getModelMatrix());
-                            for (GridElement grid : gridElements) {
-                                if (grid.getPosition().equals(position)) {
-                                    grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                break;
+                            case 2:
+                                bigStoneSnowInstanceList.add(projection.getModelMatrix());
+                                for (GridElement grid : gridElements) {
+                                    if (grid.getPosition().equals(position)) {
+                                        grid.setCurrentHeight(grid.getCurrentHeight() + 1.5f);
+                                    }
                                 }
-                            }
+                                break;
                         }
                     }
                 }
@@ -642,12 +691,12 @@ public class GraundGenerator {
 
         for(int i=0; i<gridElements.size(); i++){
             if(gridElements.get(i).isBlocked()){
-                for(int j=0; j<gridElements.size(); j++){
-                    if(gridElements.get(j).isBevel()){
-                        float distance = gridElements.get(i).getPosition().sub(gridElements.get(j).getPosition()).length();
-                        if(distance <= 2.0f){
-                            for(int k=0; k<sprites.size(); k++){
-                                if(sprites.get(k).getPosition().equals(gridElements.get(i).getPosition())){
+                for (GridElement gridElement : gridElements) {
+                    if (gridElement.isBevel()) {
+                        float distance = gridElements.get(i).getPosition().sub(gridElement.getPosition()).length();
+                        if (distance <= 2.0f) {
+                            for (int k = 0; k < sprites.size(); k++) {
+                                if (sprites.get(k).getPosition().equals(gridElements.get(i).getPosition())) {
                                     gridElements.get(i).setBlocked(false);
                                     sprites.remove(k);
                                     break;
@@ -660,12 +709,12 @@ public class GraundGenerator {
         }
 
         for(int i=0; i<gridElements.size(); i++){
-            for(int j=0; j<gridElements.size(); j++){
-                if(gridElements.get(i).getPosition().getY() > gridElements.get(j).getPosition().getY()){
-                    if(gridElements.get(j).isBlocked() && (gridElements.get(i).getPosition().sub(gridElements.get(j).getPosition()).length() <= 3.0f)){
-                        for(int k=0; k<sprites.size();k++){
-                            if(gridElements.get(j).getPosition().equals(sprites.get(k).getPosition())){
-                                gridElements.get(j).setBlocked(false);
+            for (GridElement gridElement : gridElements) {
+                if (gridElements.get(i).getPosition().getY() > gridElement.getPosition().getY()) {
+                    if (gridElement.isBlocked() && (gridElements.get(i).getPosition().sub(gridElement.getPosition()).length() <= 3.0f)) {
+                        for (int k = 0; k < sprites.size(); k++) {
+                            if (gridElement.getPosition().equals(sprites.get(k).getPosition())) {
+                                gridElement.setBlocked(false);
                                 sprites.remove(k);
                                 break;
                             }
@@ -680,12 +729,19 @@ public class GraundGenerator {
                 Projection projection = new Projection();
                 Vector3f position = new Vector3f(grid.getPosition().getX(), y, grid.getPosition().getZ());
                 projection.setTranslation(position);
-                if(grid.getBlock().getType() == BLOCK_DIRT_GRASS || grid.getBlock().getType() == BLOCK_DIRT || grid.getBlock().getType() == BLOCK_GRASS_FLOWER){
-                    dirtInstanceList.add(projection.getModelMatrix());
-                }else if(grid.getBlock().getType() == BLOCK_COLD_DIRT || grid.getBlock().getType() == BLOCK_DIRT_SNOW){
-                    coldDirtInstanceList.add(projection.getModelMatrix());
-                }else if(grid.getBlock().getType() == BLOCK_ROCK_SNOW){
-                    rockInstanceList.add(projection.getModelMatrix());
+                switch (grid.getBlock().getType()) {
+                    case BLOCK_DIRT_GRASS:
+                    case BLOCK_DIRT:
+                    case BLOCK_GRASS_FLOWER:
+                        dirtInstanceList.add(projection.getModelMatrix());
+                        break;
+                    case BLOCK_COLD_DIRT:
+                    case BLOCK_DIRT_SNOW:
+                        coldDirtInstanceList.add(projection.getModelMatrix());
+                        break;
+                    case BLOCK_ROCK_SNOW:
+                        rockInstanceList.add(projection.getModelMatrix());
+                        break;
                 }
             }
         }
@@ -709,7 +765,30 @@ public class GraundGenerator {
         bigStoneDirt.setInstanceMatrix(getInstanceMatrix(bigStoneDirtInstanceList));
         bigStoneSnow.setInstanceMatrix(getInstanceMatrix(bigStoneSnowInstanceList));
 
-        weed_main.init(getInstanceMatrix(weedInstanceList));
+        Object weed1 = new Weed((Weed)weed_main,-1.0f);
+        weed1.init(getInstanceMatrix(weedInstanceList1));
+        sprites.add(weed1);
+
+        Object weed2 = new Weed((Weed)weed_main,seed);
+        weed2.init(getInstanceMatrix(weedInstanceList2));
+        sprites.add(weed2);
+
+        Object weed3 = new Weed((Weed)weed_main,seed);
+        weed3.init(getInstanceMatrix(weedInstanceList3));
+        sprites.add(weed3);
+
+        Object weed4 = new Weed((Weed)weed_main,seed);
+        weed4.init(getInstanceMatrix(weedInstanceList4));
+        sprites.add(weed4);
+
+        Object weed5 = new Weed((Weed)weed_main,seed);
+        weed5.init(getInstanceMatrix(weedInstanceList5));
+        sprites.add(weed5);
+
+        Object weed6 = new Weed((Weed)weed_main,seed);
+        weed6.init(getInstanceMatrix(weedInstanceList6));
+        sprites.add(weed6);
+
         tree_main.init(getInstanceMatrix(treeInstanceList));
 
         water_line_main.init(getInstanceMatrix(waterLineInstanceList));
