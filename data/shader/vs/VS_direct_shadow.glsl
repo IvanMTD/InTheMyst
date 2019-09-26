@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 const int MAX_JOINTS = 44;
 

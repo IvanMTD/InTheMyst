@@ -80,7 +80,7 @@ public class BaseRenderFrame implements Framework {
         if(scene.getShader() != null && shadow != null) {
             scene.getShader().useProgram();
             scene.getShader().setUniformBlock("matrices", 0);
-            scene.getShader().setUniform("viewPos", Camera.getInstance().getPerspective().getViewMatrix());
+            scene.getShader().setUniform("viewPos", Camera.getInstance().getPos());
             Matrix4f[] matrix = null;
             if (scene.getLights() != null) {
                 matrix = scene.getLights().get(0).getLightSpaceMatrix();
@@ -139,7 +139,7 @@ public class BaseRenderFrame implements Framework {
         ndcShader.setUniform("main_texture",0);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1));
-        //glBindTexture(GL_TEXTURE_2D, shadow.getTexture());
+        //glBindTexture(GL_TEXTURE_2D, render.getTexture(1));
         ndcShader.setUniform("blur_texture",1);
         ndcVbo.draw();
     }

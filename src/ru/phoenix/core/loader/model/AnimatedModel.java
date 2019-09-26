@@ -3,6 +3,7 @@ package ru.phoenix.core.loader.model;
 import ru.phoenix.core.shader.Shader;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -47,7 +48,7 @@ public class AnimatedModel {
         for(Mesh mesh : meshes){
             int map = 0;
             for (Material material : mesh.getTextures()) {
-                if (material.getType() == "ambientMap") {
+                if (Objects.equals(material.getType(), "ambientMap")) {
                     map = material.getId();
                 }
             }
@@ -57,7 +58,7 @@ public class AnimatedModel {
 
             map = 0;
             for (Material material : mesh.getTextures()) {
-                if (material.getType() == "diffuseMap") {
+                if (Objects.equals(material.getType(), "diffuseMap")) {
                     map = material.getId();
                 }
             }
@@ -67,7 +68,7 @@ public class AnimatedModel {
 
             map = 0;
             for (Material material : mesh.getTextures()) {
-                if (material.getType() == "specularMap") {
+                if (Objects.equals(material.getType(), "specularMap")) {
                     map = material.getId();
                 }
             }
@@ -77,7 +78,7 @@ public class AnimatedModel {
 
             map = 0;
             for (Material material : mesh.getTextures()) {
-                if (material.getType() == "normalMap") {
+                if (Objects.equals(material.getType(), "normalMap")) {
                     map = material.getId();
                 }
             }

@@ -74,7 +74,7 @@ public class Camera {
 
         turn = 0.0f;
         fov = 20.0f;
-        yaw = 46.0f;
+        yaw = 226.0f;
         pitch = -30.0f;
         offset = 0.0f;
         cameraControlLock = false;
@@ -150,9 +150,7 @@ public class Camera {
                 }
             }
 
-            Vector3f currentCameraLookPos = Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse()));
-            currentCameraLookPos.setY(currentCameraLookPos.getY());
-
+            Vector3f currentCameraLookPos = getPos().add(getFront().mul(getHypotenuse()));
 
             float offset = 0.5f;
             float spOffset = 0.025f;
@@ -324,7 +322,7 @@ public class Camera {
                 pos.getX(), pos.getY() ,pos.getZ(),
                 pos.getX() + front.getX(), pos.getY() + front.getY(),pos.getZ() + front.getZ(),
                 up.getX(), up.getY(), up.getZ()
-        ); // Fly
+        );
     }
 
     public Vector3f getPos() {

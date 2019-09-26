@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.block;
 
+import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.loader.LoadStaticModel;
 import ru.phoenix.core.loader.model.Material;
 import ru.phoenix.core.loader.model.Mesh;
@@ -9,7 +10,9 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
@@ -67,7 +70,7 @@ public abstract class BlockControl {
 
             int map = 0;
             for (Material material : mesh.getTextures()) {
-                if (material.getType() == "ambientMap") {
+                if (Objects.equals(material.getType(), "ambientMap")) {
                     map = material.getId();
                 }
             }
@@ -77,7 +80,7 @@ public abstract class BlockControl {
 
             map = 0;
             for (Material material : mesh.getTextures()) {
-                if (material.getType() == "diffuseMap") {
+                if (Objects.equals(material.getType(), "diffuseMap")) {
                     map = material.getId();
                 }
             }
@@ -87,7 +90,7 @@ public abstract class BlockControl {
 
             map = 0;
             for (Material material : mesh.getTextures()) {
-                if (material.getType() == "specularMap") {
+                if (Objects.equals(material.getType(), "specularMap")) {
                     map = material.getId();
                 }
             }
@@ -97,7 +100,7 @@ public abstract class BlockControl {
 
             map = 0;
             for (Material material : mesh.getTextures()) {
-                if (material.getType() == "normalMap") {
+                if (Objects.equals(material.getType(), "normalMap")) {
                     map = material.getId();
                 }
             }

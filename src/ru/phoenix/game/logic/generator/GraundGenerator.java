@@ -78,7 +78,7 @@ public class GraundGenerator {
         initSprite();
         generateMapSize();
 
-        List<Block> blocks;
+        List<Block> blocks = new ArrayList<>();
         List<Object> sprites = new ArrayList<>();
         List<Object> water;
 
@@ -225,10 +225,6 @@ public class GraundGenerator {
                         Projection weedProjection = new Projection();
                         weedProjection.setTranslation(position);
                         weedInstanceList1.add(weedProjection.getModelMatrix());
-                        /*Object weed = new Weed((Weed) weed_main, position.getY());
-                        weed.init(null);
-                        weed.setPosition(position);
-                        sprites.add(weed);*/
                     }
 
                     if(position.getY() < 0.0f) {
@@ -725,45 +721,100 @@ public class GraundGenerator {
         }
 
         for(GridElement grid : gridElements){
+            float h = checkBlockBorder(grid);
             for(float y = (int)Math.ceil(grid.getPosition().getY()) - 1.0f; y >= -4.0f; y--){
-                Projection projection = new Projection();
-                Vector3f position = new Vector3f(grid.getPosition().getX(), y, grid.getPosition().getZ());
-                projection.setTranslation(position);
-                switch (grid.getBlock().getType()) {
-                    case BLOCK_DIRT_GRASS:
-                    case BLOCK_DIRT:
-                    case BLOCK_GRASS_FLOWER:
-                        dirtInstanceList.add(projection.getModelMatrix());
-                        break;
-                    case BLOCK_COLD_DIRT:
-                    case BLOCK_DIRT_SNOW:
-                        coldDirtInstanceList.add(projection.getModelMatrix());
-                        break;
-                    case BLOCK_ROCK_SNOW:
-                        rockInstanceList.add(projection.getModelMatrix());
-                        break;
+                if(checkMapBorder(grid.getPosition()) || h != 0) {
+                    h--;
+                    Projection projection = new Projection();
+                    Vector3f position = new Vector3f(grid.getPosition().getX(), y, grid.getPosition().getZ());
+                    projection.setTranslation(position);
+                    switch (grid.getBlock().getType()) {
+                        case BLOCK_DIRT_GRASS:
+                        case BLOCK_DIRT:
+                        case BLOCK_GRASS_FLOWER:
+                            dirtInstanceList.add(projection.getModelMatrix());
+                            break;
+                        case BLOCK_COLD_DIRT:
+                        case BLOCK_DIRT_SNOW:
+                            coldDirtInstanceList.add(projection.getModelMatrix());
+                            break;
+                        case BLOCK_ROCK_SNOW:
+                            rockInstanceList.add(projection.getModelMatrix());
+                            break;
+                    }
                 }
             }
         }
 
-        dirt.setInstanceMatrix(getInstanceMatrix(dirtInstanceList));
-        grass.setInstanceMatrix(getInstanceMatrix(grassInstanceList));
-        grassFlower.setInstanceMatrix(getInstanceMatrix(grassFlowerInstanceList));
-        coldDirt.setInstanceMatrix(getInstanceMatrix(coldDirtInstanceList));
-        snow.setInstanceMatrix(getInstanceMatrix(snowInstanceList));
-        rock.setInstanceMatrix(getInstanceMatrix(rockInstanceList));
-        rockSnow.setInstanceMatrix(getInstanceMatrix(rockSnowInstanceList));
-        bevelGrass.setInstanceMatrix(getInstanceMatrix(bevelGrassInstanceList));
+        if(dirtInstanceList.size() != 0) {
+            dirt.setInstanceMatrix(getInstanceMatrix(dirtInstanceList));
+            blocks.add(dirt);
+        }
+        if(grassInstanceList.size() != 0) {
+            grass.setInstanceMatrix(getInstanceMatrix(grassInstanceList));
+            blocks.add(grass);
+        }
+        if(grassFlowerInstanceList.size() != 0) {
+            grassFlower.setInstanceMatrix(getInstanceMatrix(grassFlowerInstanceList));
+            blocks.add(grassFlower);
+        }
+        if(coldDirtInstanceList.size() != 0) {
+            coldDirt.setInstanceMatrix(getInstanceMatrix(coldDirtInstanceList));
+            blocks.add(coldDirt);
+        }
+        if(snowInstanceList.size() != 0) {
+            snow.setInstanceMatrix(getInstanceMatrix(snowInstanceList));
+            blocks.add(snow);
+        }
+        if(rockInstanceList.size() != 0) {
+            rock.setInstanceMatrix(getInstanceMatrix(rockInstanceList));
+            blocks.add(rock);
+        }
+        if(rockSnowInstanceList.size() != 0) {
+            rockSnow.setInstanceMatrix(getInstanceMatrix(rockSnowInstanceList));
+            blocks.add(rockSnow);
+        }
+        if(bevelGrassInstanceList.size() != 0) {
+            bevelGrass.setInstanceMatrix(getInstanceMatrix(bevelGrassInstanceList));
+            blocks.add(bevelGrass);
+        }
 
-        smallStone.setInstanceMatrix(getInstanceMatrix(smallStoneInstanceList));
-        smallStoneDirt.setInstanceMatrix(getInstanceMatrix(smallStoneDirtInstanceList));
-        smallStoneSnow.setInstanceMatrix(getInstanceMatrix(smallStoneSnowInstanceList));
-        mediumStone.setInstanceMatrix(getInstanceMatrix(mediumStoneInstanceList));
-        mediumStoneDirt.setInstanceMatrix(getInstanceMatrix(mediumStoneDirtInstanceList));
-        mediumStoneSnow.setInstanceMatrix(getInstanceMatrix(mediumStoneSnowInstanceList));
-        bigStone.setInstanceMatrix(getInstanceMatrix(bigStoneInstanceList));
-        bigStoneDirt.setInstanceMatrix(getInstanceMatrix(bigStoneDirtInstanceList));
-        bigStoneSnow.setInstanceMatrix(getInstanceMatrix(bigStoneSnowInstanceList));
+        if(smallStoneInstanceList.size() != 0) {
+            smallStone.setInstanceMatrix(getInstanceMatrix(smallStoneInstanceList));
+            blocks.add(smallStone);
+        }
+        if(smallStoneDirtInstanceList.size() != 0) {
+            smallStoneDirt.setInstanceMatrix(getInstanceMatrix(smallStoneDirtInstanceList));
+            blocks.add(smallStoneDirt);
+        }
+        if(smallStoneSnowInstanceList.size() != 0) {
+            smallStoneSnow.setInstanceMatrix(getInstanceMatrix(smallStoneSnowInstanceList));
+            blocks.add(smallStoneSnow);
+        }
+        if(mediumStoneInstanceList.size() != 0) {
+            mediumStone.setInstanceMatrix(getInstanceMatrix(mediumStoneInstanceList));
+            blocks.add(mediumStone);
+        }
+        if(mediumStoneDirtInstanceList.size() != 0) {
+            mediumStoneDirt.setInstanceMatrix(getInstanceMatrix(mediumStoneDirtInstanceList));
+            blocks.add(mediumStoneDirt);
+        }
+        if(mediumStoneSnowInstanceList.size() != 0) {
+            mediumStoneSnow.setInstanceMatrix(getInstanceMatrix(mediumStoneSnowInstanceList));
+            blocks.add(mediumStoneSnow);
+        }
+        if(bigStoneInstanceList.size() != 0) {
+            bigStone.setInstanceMatrix(getInstanceMatrix(bigStoneInstanceList));
+            blocks.add(bigStone);
+        }
+        if(bigStoneDirtInstanceList.size() != 0) {
+            bigStoneDirt.setInstanceMatrix(getInstanceMatrix(bigStoneDirtInstanceList));
+            blocks.add(bigStoneDirt);
+        }
+        if(bigStoneSnowInstanceList.size() != 0) {
+            bigStoneSnow.setInstanceMatrix(getInstanceMatrix(bigStoneSnowInstanceList));
+            blocks.add(bigStoneSnow);
+        }
 
         Object weed1 = new Weed((Weed)weed_main,-1.0f);
         weed1.init(getInstanceMatrix(weedInstanceList1));
@@ -789,8 +840,6 @@ public class GraundGenerator {
         weed6.init(getInstanceMatrix(weedInstanceList6));
         sprites.add(weed6);
 
-        tree_main.init(getInstanceMatrix(treeInstanceList));
-
         water_line_main.init(getInstanceMatrix(waterLineInstanceList));
         Object waterLine_left = new WaterLine((WaterLine)water_line_main,LEFT_BOARD);
         waterLine_left.init(getInstanceMatrix(waterLineLeftInstanceList));
@@ -800,8 +849,6 @@ public class GraundGenerator {
         waterLine_down.init(getInstanceMatrix(waterLineDownInstanceList));
         Object waterLine_up = new WaterLine((WaterLine)water_line_main,UP_BOARD);
         waterLine_up.init(getInstanceMatrix(waterLineUpInstanceList));
-
-        blocks = new ArrayList<>(Arrays.asList(dirt,grass,grassFlower,coldDirt,snow,rock,rockSnow,bevelGrass,smallStone,smallStoneDirt,mediumStone,mediumStoneDirt,bigStone,bigStoneDirt,smallStoneSnow,mediumStoneSnow,bigStoneSnow));
         water = new ArrayList<>(Arrays.asList(waterLine_left,waterLine_right,waterLine_down,waterLine_up,water_line_main));
 
         int mapX = mapWidthOffset * 2;
@@ -1221,6 +1268,48 @@ public class GraundGenerator {
             }
         }
         return check;
+    }
+
+    private static int checkBlockBorder(GridElement block){
+        float mainCurrentHeight = block.getCurrentHeight() - 1.0f;
+        Vector3f left = new Vector3f(block.getPosition().getX() - 1.0f,0.0f,block.getPosition().getZ());
+        Vector3f right = new Vector3f(block.getPosition().getX() + 1.0f,0.0f,block.getPosition().getZ());
+        Vector3f up = new Vector3f(block.getPosition().getX(),0.0f,block.getPosition().getZ() + 1.0f);
+        Vector3f down = new Vector3f(block.getPosition().getX(),0.0f,block.getPosition().getZ() - 1.0f);
+
+        List<Float>heights = new ArrayList<>();
+
+        for(GridElement element : gridElements){
+            if(element.getPosition().equals(left)){
+                if(element.getCurrentHeight() < mainCurrentHeight){
+                    heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
+                }
+            }
+            if(element.getPosition().equals(right)){
+                if(element.getCurrentHeight() < mainCurrentHeight){
+                    heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
+                }
+            }
+            if (element.getPosition().equals(up)) {
+                if(element.getCurrentHeight() < mainCurrentHeight){
+                    heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
+                }
+            }
+            if(element.getPosition().equals(down)){
+                if(element.getCurrentHeight() < mainCurrentHeight){
+                    heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
+                }
+            }
+        }
+
+        int height  = 0;
+
+        if(heights.size() != 0) {
+            heights.sort((o1, o2) -> o1 > o2 ? 0 : -1);
+            height = (int)Math.ceil(heights.get(0));
+        }
+
+        return height;
     }
 
     private static Matrix4f[] getInstanceMatrix(List<Matrix4f> matrixList){

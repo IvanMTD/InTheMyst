@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 #define R 131073
 #define G 131074
@@ -50,12 +50,12 @@ uniform sampler2D shadowMap;
 uniform int group;
 uniform float id;
 
-vec2 textureCoordinate;
+//vec2 textureCoordinate;
 
 // Функции
 vec4 targetHighlight();
 vec3 getDirectLight(DirectLight, vec3, vec3);
-float ShadowCalculation(vec4, vec3, vec3);
+float shadowCalculation(vec4, vec3, vec3);
 
 void main() {
 
@@ -117,13 +117,13 @@ vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection){
     vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuseMap, fs_in.TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.diffuseMap, fs_in.TexCoords));
 
-    float shadow = ShadowCalculation(fs_in.FragPosLightSpace, lightDir, normal);
+    float shadow = shadowCalculation(fs_in.FragPosLightSpace, lightDir, normal);
     vec3 lighting = ambient + (1.0 - shadow) * (diffuse + specular);
 
     return lighting;
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal){
+float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal){
        // perform perspective divide
        vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
        // transform to [0,1] range

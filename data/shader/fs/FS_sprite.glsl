@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 #define R 131073
 #define G 131074
