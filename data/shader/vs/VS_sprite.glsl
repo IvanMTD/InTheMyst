@@ -19,6 +19,7 @@ layout (row_major, std140) uniform matrices{
 uniform int instance;
 uniform int board;
 uniform int isActive;
+uniform int turn;
 
 // доп данные
 uniform mat4 model_m;
@@ -43,6 +44,12 @@ void main() {
             vec3 particleUp_wordspace = vec3(l_instance_m[0].y,l_instance_m[1].y,l_instance_m[2].y);
             vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + particleUp_wordspace * l_pos.y  * billboardSize.y);
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
+
+            if(turn == 1){
+                result.x = -result.x;
+                result.z = -result.z;
+            }
+
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
@@ -55,6 +62,11 @@ void main() {
             vec3 particleUp_wordspace = vec3(model_m[0].y,model_m[1].y,model_m[2]);
             vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + particleUp_wordspace * l_pos.y  * billboardSize.y);
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
+
+            if(turn == 1){
+                result.x = -result.x;
+                result.z = -result.z;
+            }
 
             if(isActive == 1){
                 vec3 somePos = cameraCenter_worldspace + (cameraCenter_worldspace - result) * -1.02f;

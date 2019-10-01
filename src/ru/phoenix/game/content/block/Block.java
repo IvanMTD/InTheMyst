@@ -7,4 +7,6 @@ public interface Block {
     void draw(Shader shader);
     void setInstanceMatrix(Matrix4f[] matrix);
     int getType();
+    int getCost();
+    void setCost(int cost);
 }

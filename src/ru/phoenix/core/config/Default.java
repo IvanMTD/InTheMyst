@@ -61,4 +61,11 @@ public class Default {
         }
         return null;
     }
+
+    public static TextureConfig getClimbingIdle(float id){
+        if(id == ID_PERSON_GEHARD){
+            return new TextureConfig("./data/content/texture/person/idle_gh_climbing.png",6,1);
+        }
+        return null;
+    }
 }

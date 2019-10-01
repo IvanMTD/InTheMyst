@@ -104,7 +104,7 @@ public class GraundGenerator {
         Block bigStoneSnow = new BigStoneSnow((BigStoneSnow)stone_big_snow_main);
 
         if(seed == PLAIN_MAP){
-            height = 1;
+            height = 2;
         }else if(seed == MOUNTAIN_MAP){
             height = 5;
         }
@@ -164,6 +164,7 @@ public class GraundGenerator {
             boolean bevel = false;
 
             if (seed == PLAIN_MAP) {
+                boolean weed = false;
                 if (position.getY() < 0) {
                     if(check){
                         bevel = tryGenerateTilt(position,finalPos,projection);
@@ -225,6 +226,7 @@ public class GraundGenerator {
                         Projection weedProjection = new Projection();
                         weedProjection.setTranslation(position);
                         weedInstanceList1.add(weedProjection.getModelMatrix());
+                        weed = true;
                     }
 
                     if(position.getY() < 0.0f) {
@@ -305,7 +307,7 @@ public class GraundGenerator {
                             }
                         }
 
-                        if(!bevel && (checkInfo > 0) && position.getY() != -0.5f){
+                        if(!weed && !bevel && (checkInfo > 0) && position.getY() != -0.5f){
                             if(Math.random() * 100 <= 30.0f) {
                                 Object waterFlower = new WaterFlower((WaterFlower) waterFlower_main);
                                 waterFlower.init(null);
@@ -951,8 +953,8 @@ public class GraundGenerator {
     }
 
     private static void generateMapSize(){
-        mapWidthOffset = (int)(10.0f + Math.random() * 10.0f);
-        mapHeightOffset = (int)(10.0f + Math.random() * 10.0f);
+        mapWidthOffset = (int)(10.0f + Math.random() * 20.0f);
+        mapHeightOffset = (int)(10.0f + Math.random() * 20.0f);
     }
 
     private static List<Vector3f> createMap(long seed, int height){
@@ -1271,7 +1273,7 @@ public class GraundGenerator {
     }
 
     private static int checkBlockBorder(GridElement block){
-        float mainCurrentHeight = block.getCurrentHeight() - 1.0f;
+        float mainCurrentHeight = block.getPosition().getY() - 1.0f;
         Vector3f left = new Vector3f(block.getPosition().getX() - 1.0f,0.0f,block.getPosition().getZ());
         Vector3f right = new Vector3f(block.getPosition().getX() + 1.0f,0.0f,block.getPosition().getZ());
         Vector3f up = new Vector3f(block.getPosition().getX(),0.0f,block.getPosition().getZ() + 1.0f);
@@ -1281,22 +1283,22 @@ public class GraundGenerator {
 
         for(GridElement element : gridElements){
             if(element.getPosition().equals(left)){
-                if(element.getCurrentHeight() < mainCurrentHeight){
+                if(element.getPosition().getY() < mainCurrentHeight){
                     heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
                 }
             }
             if(element.getPosition().equals(right)){
-                if(element.getCurrentHeight() < mainCurrentHeight){
+                if(element.getPosition().getY() < mainCurrentHeight){
                     heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
                 }
             }
             if (element.getPosition().equals(up)) {
-                if(element.getCurrentHeight() < mainCurrentHeight){
+                if(element.getPosition().getY() < mainCurrentHeight){
                     heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
                 }
             }
             if(element.getPosition().equals(down)){
-                if(element.getCurrentHeight() < mainCurrentHeight){
+                if(element.getPosition().getY() < mainCurrentHeight){
                     heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
                 }
             }

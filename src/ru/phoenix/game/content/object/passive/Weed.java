@@ -70,8 +70,6 @@ public class Weed extends ObjectControl implements Object {
             Texture texture = textures.get(2);
             textures.clear();
             textures.add(texture);
-        }else if(seed == PLAIN_MAP){
-            textures.remove(2);
         }
         setId(0.0f);
         setOnTarget(false);

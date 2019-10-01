@@ -140,4 +140,9 @@ public class PointLight implements Light {
     public void setDirectLightViewMatrix(Matrix4f directLightViewMatrix) {
 
     }
+
+    @Override
+    public Vector3f getSunRayDirection() {
+        return null;
+    }
 }

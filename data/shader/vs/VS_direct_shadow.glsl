@@ -23,6 +23,7 @@ uniform mat4 model_m;
 uniform mat4 lightSpaceMatrix;
 uniform mat4 directLightViewMatrix;
 uniform mat4 joints_m[MAX_JOINTS];
+uniform vec3 sunRay;
 uniform float xOffset;
 uniform float yOffset;
 uniform float zOffset;
@@ -76,7 +77,12 @@ void main(){
                 vec3 particleCenter_wordspace = vec3(model_m[0].z,model_m[1].z,model_m[2].z);
                 vec3 particleUp_wordspace = vec3(model_m[0].y,model_m[1].y,model_m[2].y);
                 vec3 result = particleCenter_wordspace + (sunRight_worldspace * l_pos.x * billboardSize.x + sunUp_worldspace * l_pos.y  * billboardSize.y);
-                result = vec3(result.x + xOffset,result.y + 0.1f + yOffset,result.z - 1.0f + zOffset);
+                result = vec3(result.x + xOffset,result.y + 1.0f + yOffset,result.z - 1.0f + zOffset);
+
+                vec3 inverseRay = (sunRay * 0.65f) * -1.0f;
+                vec3 somePos = result + inverseRay;
+                result = vec3(somePos.x,result.y,somePos.z);
+
                 gl_Position = lightSpaceMatrix * model_m * vec4(result,1.0f);
             }else{
                 gl_Position = lightSpaceMatrix * model_m * vec4(l_pos, 1.0);

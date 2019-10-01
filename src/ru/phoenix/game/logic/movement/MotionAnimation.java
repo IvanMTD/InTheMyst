@@ -12,53 +12,58 @@ public class MotionAnimation {
     private float goal;
     private int index;
 
+    private Vector3f startPosition;
     private Vector3f tempPos;
     private Vector3f tempPos2;
-    private List<Vector3f> wayPoints;
+    private List<GridElement> wayPoints;
 
     private ImageAnimation animation;
 
+    private boolean walkStage;
     private int timer;
     private boolean firstStart;
     private boolean endFrame;
 
     public MotionAnimation(){
+        startPosition = new Vector3f();
         tempPos = new Vector3f();
         tempPos2 = new Vector3f();
         wayPoints = new ArrayList<>();
     }
 
-    public void setup(Vector3f start, List<Vector3f> wayPoints){
+    public void setup(Vector3f start, List<GridElement> wayPoints){
         timer = 0;
         firstStart = true;
         endFrame = true;
+        walkStage = false;
         goal = 0;
         index = 0;
+        startPosition = new Vector3f(start);
         tempPos = new Vector3f(start);
         Vector3f s = new Vector3f(this.tempPos);
-        Vector3f f = new Vector3f(wayPoints.get(index));
+        Vector3f f = new Vector3f(wayPoints.get(index).getPosition());
         Vector3f d = new Vector3f(f.sub(s));
         this.tempPos2 = new Vector3f(s.add(d.div(2.0f)));
         this.wayPoints.clear();
         this.wayPoints = new ArrayList<>(wayPoints);
     }
 
-    public int motion(List<GridElement> elements, Vector3f position, Characteristic characteristic,ImageAnimation animation){
+    public int motion(List<GridElement> elements, Vector3f position, Characteristic characteristic,ImageAnimation jumpAnim, ImageAnimation climbingAnim){
         int motion;
         boolean isJump = false;
-        this.animation = animation;
+        boolean isClimbing = false;
 
-        if (index < wayPoints.size() && !isBevel(elements)) {
-            if (wayPoints.get(index).getY() < this.tempPos.getY() - 0.4f || this.tempPos.getY() + 0.4f < wayPoints.get(index).getY()) {
+        if (index < wayPoints.size()) {
+            if (wayPoints.get(index).getCurrentHeight() < this.tempPos.getY() - 0.6f || this.tempPos.getY() + 0.6f < wayPoints.get(index).getCurrentHeight()) {
                 isJump = true;
+                this.animation = jumpAnim;
             }
+        }
 
-            if (wayPoints.get(index).getX() < this.tempPos.getX() - 1.1f || this.tempPos.getX() + 1.1f < wayPoints.get(index).getX()) {
-                isJump = true;
-            }
-
-            if (wayPoints.get(index).getZ() < this.tempPos.getZ() - 1.1f || this.tempPos.getZ() + 1.1f < wayPoints.get(index).getZ()) {
-                isJump = true;
+        if(!isJump){
+            if (wayPoints.get(index).getCurrentHeight() < this.tempPos.getY() - 0.4f || this.tempPos.getY() + 0.4f < wayPoints.get(index).getCurrentHeight()) {
+                isClimbing = true;
+                this.animation = climbingAnim;
             }
         }
 
@@ -68,7 +73,17 @@ public class MotionAnimation {
             } else {
                 motion = 2;
             }
-        } else {
+        }else if(isClimbing){
+            if (climbing(position, characteristic)) {
+                motion = 0;
+            } else {
+                if(walkStage) {
+                    motion = 1;
+                }else{
+                    motion = 3;
+                }
+            }
+        }else {
             if (move(position, characteristic)) {
                 motion = 0;
             } else {
@@ -83,18 +98,25 @@ public class MotionAnimation {
         boolean end = false;
         goal += characteristic.getSpeed(); // фактор движения в приделах от 0-1
         Vector3f start = new Vector3f(this.tempPos); // точка старта
-        Vector3f finish = new Vector3f(wayPoints.get(index)); // точка назначения
+        Vector3f finish = new Vector3f(wayPoints.get(index).getPosition()); // точка назначения
+        finish.setY(wayPoints.get(index).getCurrentHeight());
         Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
         Vector3f currentPos = start.add(delta.mul(goal)); // добавляем к вектору начала, разницу векторов помноженную на фактор движения
         position.setVector(currentPos); // устанавливаем обьекту текущее положение по направлению движения
 
         if (goal >= 1.0f) {
             goal = 0.0f;
-            this.tempPos = new Vector3f(wayPoints.get(index));
+            GridElement temp = wayPoints.get(index);
+            this.tempPos = new Vector3f(wayPoints.get(index).getPosition());
+            this.tempPos.setY(wayPoints.get(index).getCurrentHeight());
+            this.startPosition = new Vector3f(wayPoints.get(index).getPosition());
+            this.startPosition.setY(wayPoints.get(index).getCurrentHeight());
+            position.setVector(this.tempPos);
             index++;
             if(index < wayPoints.size()) {
                 start = new Vector3f(this.tempPos);
-                finish = new Vector3f(wayPoints.get(index));
+                finish = new Vector3f(wayPoints.get(index).getPosition());
+                finish.setY(wayPoints.get(index).getCurrentHeight());
                 delta = new Vector3f(finish.sub(start));
                 this.tempPos2 = new Vector3f(start.add(delta.div(2.0f)));
                 firstStart = true;
@@ -104,13 +126,165 @@ public class MotionAnimation {
                 end = true;
             }
             if (index <= wayPoints.size()) {
-                characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - 1);
+                characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - temp.getTravelCost());
             }
             if (index >= wayPoints.size()) {
-                position.setVector(wayPoints.get(index - 1));
+                position.setVector(wayPoints.get(index - 1).getPosition());
+                position.setY(wayPoints.get(index - 1).getCurrentHeight());
                 end = true;
             }
         }
+        return end;
+    }
+
+    private boolean climbing(Vector3f position, Characteristic characteristic){
+        float speedFactor = 1.2f;
+        boolean end = false;
+
+        Vector3f offset;
+        Vector3f s = new Vector3f(startPosition.getX(),wayPoints.get(index).getCurrentHeight(),startPosition.getZ());
+        Vector3f direction = new Vector3f(wayPoints.get(index).getPosition().sub(s).normalize().mul(0.3f));
+        boolean isStepUp = false;
+
+        if(wayPoints.get(index).getCurrentHeight() > tempPos.getY()){
+            offset = new Vector3f(0.0f,0.5f,0.0f).add(direction);
+            isStepUp = true;
+        }else{
+            offset = new Vector3f(0.0f,-0.5f,0.0f).add(direction);
+            isStepUp = false;
+        }
+
+        if(isStepUp) {
+            if (firstStart) {
+                walkStage = false;
+                goal += characteristic.getSpeed() * speedFactor; // фактор движения в приделах от 0-1
+                Vector3f start = new Vector3f(this.tempPos); // точка старта
+                Vector3f finish = new Vector3f(this.tempPos.add(offset)); // точка назначения
+                Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
+                Vector3f currentPos = start.add(delta.mul(goal)); // добавляем к вектору начала, разницу векторов помноженную на фактор движения
+                position.setVector(currentPos); // устанавливаем обьекту текущее положение по направлению движения
+
+                if(goal < 0.33f){
+                    animation.setFrames(4);
+                }else if(goal < 0.88f){
+                    animation.setFrames(5);
+                }else if(goal < 0.99f){
+                    animation.setFrames(1);
+                }
+
+                if (goal >= 1.0f) {
+                    goal = 0.0f;
+                    this.tempPos = new Vector3f(this.tempPos.add(offset));
+                    position.setVector(this.tempPos);
+                    firstStart = false;
+                }
+            } else {
+                walkStage = true;
+                goal += characteristic.getSpeed(); // фактор движения в приделах от 0-1
+                Vector3f start = new Vector3f(this.tempPos); // точка старта
+                Vector3f finish = new Vector3f(wayPoints.get(index).getPosition()); // точка назначения
+                finish.setY(wayPoints.get(index).getCurrentHeight());
+                Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
+                Vector3f currentPos = start.add(delta.mul(goal)); // добавляем к вектору начала, разницу векторов помноженную на фактор движения
+                position.setVector(currentPos); // устанавливаем обьекту текущее положение по направлению движения
+
+                if (goal >= 1.0f) {
+                    goal = 0.0f;
+                    GridElement temp = wayPoints.get(index);
+                    this.tempPos = new Vector3f(wayPoints.get(index).getPosition());
+                    this.tempPos.setY(wayPoints.get(index).getCurrentHeight());
+                    this.startPosition = new Vector3f(wayPoints.get(index).getPosition());
+                    this.startPosition.setY(wayPoints.get(index).getCurrentHeight());
+                    position.setVector(this.tempPos);
+                    index++;
+                    if (index < wayPoints.size()) {
+                        start = new Vector3f(this.tempPos);
+                        finish = new Vector3f(wayPoints.get(index).getPosition());
+                        finish.setY(wayPoints.get(index).getCurrentHeight());
+                        delta = new Vector3f(finish.sub(start));
+                        this.tempPos2 = new Vector3f(start.add(delta.div(2.0f)));
+                        firstStart = true;
+                        timer = 0;
+                    }
+                    if (characteristic.getCurentActionPoint() <= 0) {
+                        end = true;
+                    }
+                    if (index <= wayPoints.size()) {
+                        characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - temp.getTravelCost());
+                    }
+                    if (index >= wayPoints.size()) {
+                        position.setVector(wayPoints.get(index - 1).getPosition());
+                        position.setY(wayPoints.get(index - 1).getCurrentHeight());
+                        end = true;
+                    }
+                }
+            }
+        }else{
+            if (firstStart) {
+                walkStage = true;
+                goal += characteristic.getSpeed(); // фактор движения в приделах от 0-1
+                Vector3f start = new Vector3f(this.tempPos); // точка старта
+                Vector3f finish = new Vector3f(wayPoints.get(index).getPosition().add(offset.mul(-1.0f))); // точка назначения
+                Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
+                Vector3f currentPos = start.add(delta.mul(goal)); // добавляем к вектору начала, разницу векторов помноженную на фактор движения
+                position.setVector(currentPos); // устанавливаем обьекту текущее положение по направлению движения
+
+                if (goal >= 1.0f) {
+                    goal = 0.0f;
+                    this.tempPos = new Vector3f(wayPoints.get(index).getPosition().add(offset.mul(-1.0f)));
+                    position.setVector(this.tempPos);
+                    firstStart = false;
+                }
+            } else {
+                walkStage = false;
+                goal += characteristic.getSpeed() * speedFactor; // фактор движения в приделах от 0-1
+                Vector3f start = new Vector3f(this.tempPos); // точка старта
+                Vector3f finish = new Vector3f(this.tempPos.add(offset)); // точка назначения
+                Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
+                Vector3f currentPos = start.add(delta.mul(goal)); // добавляем к вектору начала, разницу векторов помноженную на фактор движения
+                position.setVector(currentPos); // устанавливаем обьекту текущее положение по направлению движения
+
+                if(goal < 0.33f){
+                    animation.setFrames(4);
+                }else if(goal < 0.88f){
+                    animation.setFrames(5);
+                }else if(goal < 0.99f){
+                    animation.setFrames(6);
+                }
+
+                if (goal >= 1.0f) {
+                    goal = 0.0f;
+                    GridElement temp = wayPoints.get(index);
+                    this.tempPos = new Vector3f(wayPoints.get(index).getPosition());
+                    this.tempPos.setY(wayPoints.get(index).getCurrentHeight());
+                    this.startPosition = new Vector3f(wayPoints.get(index).getPosition());
+                    this.startPosition.setY(wayPoints.get(index).getCurrentHeight());
+                    position.setVector(this.tempPos);
+                    index++;
+                    if (index < wayPoints.size()) {
+                        start = new Vector3f(this.tempPos);
+                        finish = new Vector3f(wayPoints.get(index).getPosition());
+                        finish.setY(wayPoints.get(index).getCurrentHeight());
+                        delta = new Vector3f(finish.sub(start));
+                        this.tempPos2 = new Vector3f(start.add(delta.div(2.0f)));
+                        firstStart = true;
+                        timer = 0;
+                    }
+                    if (characteristic.getCurentActionPoint() <= 0) {
+                        end = true;
+                    }
+                    if (index <= wayPoints.size()) {
+                        characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - temp.getTravelCost());
+                    }
+                    if (index >= wayPoints.size()) {
+                        position.setVector(wayPoints.get(index - 1).getPosition());
+                        position.setY(wayPoints.get(index - 1).getCurrentHeight());
+                        end = true;
+                    }
+                }
+            }
+        }
+
         return end;
     }
 
@@ -137,7 +311,8 @@ public class MotionAnimation {
         }else {
             goal += 1.5f;
             Vector3f start = new Vector3f(this.tempPos);
-            Vector3f finish = new Vector3f(wayPoints.get(index));
+            Vector3f finish = new Vector3f(wayPoints.get(index).getPosition());
+            finish.setY(wayPoints.get(index).getCurrentHeight());
             Vector3f centerS = new Vector3f(this.tempPos2);
             centerS.setY(start.getY());
             Vector3f centerF = new Vector3f(this.tempPos2);
@@ -297,7 +472,7 @@ public class MotionAnimation {
             if(element.getPosition().equals(tempPos)){
                 mainPosBevel = element.isBevel();
             }
-            if(element.getPosition().equals(wayPoints.get(index))){
+            if(element.getPosition().equals(wayPoints.get(index).getPosition())){
                 nextPosBevel = element.isBevel();
             }
         }
@@ -306,18 +481,23 @@ public class MotionAnimation {
             bevel = true;
         }
 
-        return bevel;
+        return !bevel;
     }
 
     private boolean setStep(Characteristic characteristic, Vector3f position){
         boolean end = false;
         goal = 0.0f;
-        this.tempPos = new Vector3f(wayPoints.get(index));
+        GridElement temp = wayPoints.get(index);
+        this.tempPos = new Vector3f(wayPoints.get(index).getPosition());
+        tempPos.setY(wayPoints.get(index).getCurrentHeight());
+        this.startPosition = new Vector3f(wayPoints.get(index).getPosition());
+        this.startPosition.setY(wayPoints.get(index).getCurrentHeight());
         index++;
 
         if(index < wayPoints.size()) {
             Vector3f start = new Vector3f(this.tempPos);
-            Vector3f finish = new Vector3f(wayPoints.get(index));
+            Vector3f finish = new Vector3f(wayPoints.get(index).getPosition());
+            finish.setY(wayPoints.get(index).getCurrentHeight());
             Vector3f delta = new Vector3f(finish.sub(start));
             this.tempPos2 = new Vector3f(start.add(delta.div(2.0f)));
             firstStart = true;
@@ -327,10 +507,11 @@ public class MotionAnimation {
             end = true;
         }
         if (index <= wayPoints.size()) {
-            characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - 1);
+            characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - temp.getTravelCost());
         }
         if (index >= wayPoints.size()) {
-            position.setVector(wayPoints.get(index - 1));
+            position.setVector(wayPoints.get(index - 1).getPosition());
+            position.setY(wayPoints.get(index - 1).getCurrentHeight());
             end = true;
         }
         return end;
@@ -339,7 +520,8 @@ public class MotionAnimation {
     private boolean endFrame(Characteristic characteristic, Vector3f position){
         boolean end = false;
         if(endFrame){
-            position.setVector(wayPoints.get(index));
+            position.setVector(wayPoints.get(index).getPosition());
+            position.setY(wayPoints.get(index).getCurrentHeight());
             animation.setFrames(7);
             timer++;
             if(timer > 50){

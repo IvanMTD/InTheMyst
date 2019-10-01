@@ -29,4 +29,6 @@ public interface Light {
 
     Matrix4f getDirectLightViewMatrix();
     void setDirectLightViewMatrix(Matrix4f directLightViewMatrix);
+
+    Vector3f getSunRayDirection();
 }

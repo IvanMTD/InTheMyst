@@ -23,6 +23,7 @@ public class Characteristic {
         totalActionPoint = characteristic.getTotalActionPoint();
         curentActionPoint = characteristic.getCurentActionPoint();
         jump = characteristic.getJump();
+        speed = characteristic.getSpeed();
     }
 
     public int getInitiative() {

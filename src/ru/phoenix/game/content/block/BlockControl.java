@@ -25,11 +25,13 @@ public abstract class BlockControl {
     private Vector3f position;
 
     private int type;
+    private int cost;
 
     // конструкторы
     public BlockControl(){
         projection = new Projection();
         position = new Vector3f();
+        cost = 1;
     }
 
     // методы
@@ -52,7 +54,7 @@ public abstract class BlockControl {
 
     public void draw(Shader shader){
         for(Mesh mesh : meshes){
-            // setUniforms
+            /*// setUniforms
             shader.useProgram();
             // глобальный юниформ
             shader.setUniformBlock("matrices",0);
@@ -66,7 +68,10 @@ public abstract class BlockControl {
             shader.setUniform("group",GROUP_A);
             shader.setUniform("id",0.0f);
             shader.setUniform("onTarget", 0);
-            // end
+            // end*/
+            shader.setUniform("instance",mesh.getVbo().isInstances() ? 1 : 0);
+            // доп данные
+            shader.setUniform("model_m",projection.getModelMatrix());
 
             int map = 0;
             for (Material material : mesh.getTextures()) {
@@ -108,11 +113,7 @@ public abstract class BlockControl {
             glBindTexture(GL_TEXTURE_2D, map);
             shader.setUniform("material.normalMap", 3);
 
-            glEnable(GL_CULL_FACE);
-            glFrontFace(GL_CCW);
-            glCullFace(GL_BACK);
             mesh.draw();
-            glDisable(GL_CULL_FACE);
         }
     }
 
@@ -122,6 +123,14 @@ public abstract class BlockControl {
 
     protected void setType(int type) {
         this.type = type;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
     }
 
     protected List<Mesh> getMeshes(){

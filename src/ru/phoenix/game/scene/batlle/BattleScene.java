@@ -14,9 +14,13 @@ import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.scene.Scene;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.glCullFace;
 import static ru.phoenix.core.config.Constants.ID_PERSON_GEHARD;
 import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
 import static ru.phoenix.core.config.Constants.PLAIN_MAP;
@@ -64,11 +68,8 @@ public class BattleScene implements Scene {
         // ГЕНЕРАЦИЯ
         battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
 
-        Object person = new Person(ID_PERSON_GEHARD);
+        Object person = new Person(ID_PERSON_GEHARD,GraundGenerator.getRandomPos());
         person.init(null);
-        Vector3f pos = GraundGenerator.getRandomPos();
-        pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
-        person.setPosition(pos);
         battleGraund.getSprites().add(person);
         Default.setWait(false);
         // КОНЕЦ ГЕНЕРАЦИИ
@@ -127,20 +128,14 @@ public class BattleScene implements Scene {
         if(tap){
             if(index == 0) {
                 battleGraund = GraundGenerator.useMapGenerator(MOUNTAIN_MAP);
-                Object person = new Person(ID_PERSON_GEHARD);
+                Object person = new Person(ID_PERSON_GEHARD,GraundGenerator.getRandomPos());
                 person.init(null);
-                Vector3f pos = GraundGenerator.getRandomPos();
-                pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
-                person.setPosition(pos);
                 battleGraund.getSprites().add(person);
                 Default.setWait(false);
             }else if(index == 1){
                 battleGraund = GraundGenerator.useMapGenerator(PLAIN_MAP);
-                Object person = new Person(ID_PERSON_GEHARD);
+                Object person = new Person(ID_PERSON_GEHARD,GraundGenerator.getRandomPos());
                 person.init(null);
-                Vector3f pos = GraundGenerator.getRandomPos();
-                pos = new Vector3f(pos.getX(),pos.getY(),pos.getZ());
-                person.setPosition(pos);
                 battleGraund.getSprites().add(person);
                 Default.setWait(false);
             }
@@ -154,17 +149,41 @@ public class BattleScene implements Scene {
 
     @Override
     public void draw(){
+        List<GridElement>temp = new ArrayList<>();
+        List<GridElement>temp2 = new ArrayList<>();
+        // рисуем поле и сетку
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+        glCullFace(GL_BACK);
         battleGraund.draw(shader3D);
-        for(GridElement grid : battleGraund.getGridElements()){
-            if(grid.getCurrentHeight() < -0.5f) {
-                grid.draw(shaderSprite);
+
+        shaderSprite.useProgram();
+        shaderSprite.setUniformBlock("matrices", 0);
+        for(GridElement element : battleGraund.getGridElements()){
+            if(element.isVisible()){
+                if(element.getPosition().getY() == element.getCurrentHeight()){
+                    element.draw(shaderSprite);
+                }else{
+                    if(element.getCurrentHeight() >= -0.5f) {
+                        temp.add(element);
+                    }else{
+                        temp2.add(element);
+                    }
+                }
             }
         }
+        glDisable(GL_CULL_FACE);
+        // рисуем спрайты и воду
         battleGraund.drawSprites(shaderSprite);
+        if(!temp2.isEmpty()){
+            for(GridElement element : temp2){
+                element.draw(shaderSprite);
+            }
+        }
         battleGraund.drawWater(shaderSprite);
-        for(GridElement grid : battleGraund.getGridElements()){
-            if(grid.getCurrentHeight() >= -0.5f) {
-                grid.draw(shaderSprite);
+        if(!temp.isEmpty()){
+            for(GridElement element : temp){
+                element.draw(shaderSprite);
             }
         }
     }

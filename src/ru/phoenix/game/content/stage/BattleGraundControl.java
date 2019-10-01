@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.stage;
 
+import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.block.Block;
@@ -10,6 +11,8 @@ import ru.phoenix.game.logic.lighting.Light;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.phoenix.core.config.Constants.GROUP_A;
 
 public abstract class BattleGraundControl {
     private List<GridElement> gridElements;
@@ -39,8 +42,8 @@ public abstract class BattleGraundControl {
     }
 
     protected void initLight(){
-        float x = (float)(Math.random() * mapX);
-        float z = (float)(Math.random() * mapZ);
+        float x = (float)(Math.random() * mapX / 2);
+        float z = (float)(Math.random() * mapZ / 2);
         float y = (mapX + mapZ) / 2.0f;
         Light directLight = new DirectLight(
                 new Vector3f(x,y,z), // position
@@ -56,9 +59,7 @@ public abstract class BattleGraundControl {
 
     public void update(){
         for(Object object : sprites){
-            if(object.isActive()) {
-                object.update(getGridElements());
-            }
+            object.update(getGridElements());
         }
 
         for(Object object : water){
@@ -67,31 +68,33 @@ public abstract class BattleGraundControl {
     }
 
     public void draw(Shader shader){
+        // setUniforms
+        shader.useProgram();
+        // глобальный юниформ
+        shader.setUniformBlock("matrices",0);
+        // контролеры
+        shader.setUniform("animated",0);
+        shader.setUniform("board",0);
+        // доп данные
+        shader.setUniform("shininess",64.0f);
+        shader.setUniform("group",GROUP_A);
+        shader.setUniform("id",0.0f);
+        shader.setUniform("onTarget", 0);
+        // end
         for(Block block : blocks){
             block.draw(shader);
         }
     }
 
     public void drawSprites(Shader shader){
-        /*if(sprites.size() != 0) {
-            if (!sprites.get(0).isInstance()) {
-                for (Object object : sprites) {
-                    float distance = Camera.getInstance().getPos().sub(object.getPosition()).length();
-                    if(object.isActive()){
-                        object.setDistance(distance + 0.1f);
-                    }else {
-                        object.setDistance(distance);
-                    }
-                }
-
-                sprites.sort(new Comparator<Object>() {
-                    @Override
-                    public int compare(Object o1, Object o2) {
-                        return o1.getDistance() < o2.getDistance() ? 0 : -1;
-                    }
-                });
+        if(sprites.size() != 0) {
+            for (Object object : sprites) {
+                float distance = Camera.getInstance().getPos().sub(object.getPosition()).length();
+                object.setDistance(distance);
             }
-        }*/
+
+            sprites.sort((o1, o2) -> o1.getDistance() < o2.getDistance() ? 0 : -1);
+        }
 
         for(Object object : sprites){
             object.draw(shader);
@@ -101,6 +104,12 @@ public abstract class BattleGraundControl {
     public void drawWater(Shader shader){
         for(Object object : water){
             object.draw(shader);
+        }
+    }
+
+    public void drawGrid(Shader shader){
+        for(GridElement element : gridElements){
+            element.draw(shader);
         }
     }
 

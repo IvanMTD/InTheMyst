@@ -12,6 +12,7 @@ public interface BattleGraund {
     void draw(Shader shader);
     void drawSprites(Shader shader);
     void drawWater(Shader shader);
+    void drawGrid(Shader shader);
     void drawShadowSprites(Shader shader);
     int getMapX();
     int getMapZ();

@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.object;
 
+import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.loader.ImageAnimLoader;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.loader.texture.Texture;
@@ -40,6 +41,7 @@ public abstract class ObjectControl {
     private boolean active;
     private boolean water;
     private boolean jump;
+    private boolean turn;
 
     public ObjectControl(){
         textures = new ArrayList<>();
@@ -251,19 +253,35 @@ public abstract class ObjectControl {
         this.group = group;
     }
 
+    public boolean isTurn() {
+        return turn;
+    }
+
+    public void setTurn(boolean turn) {
+        this.turn = turn;
+    }
+
     public void draw(Shader shader){
+        boolean currentTurn;
+        float yaw = Camera.getInstance().getYaw();
+        if(90.0f < yaw && yaw < 270.0f){
+            currentTurn = !isTurn();
+        }else{
+            currentTurn = isTurn();
+        }
         /*if(instance) {
             sprite.updateInstanceMatrix();
         }*/
         // setUniforms
-        shader.useProgram();
+        /*shader.useProgram();
         // глобальный юниформ
-        shader.setUniformBlock("matrices",0);
+        shader.setUniformBlock("matrices",0);*/
         // контролеры
         shader.setUniform("instance",sprite.getVbo().isInstances() ? 1 : 0);
         shader.setUniform("animated",0);
         shader.setUniform("board",isBoard() ? 1 : 0);
         shader.setUniform("isActive",isActive() ? 1 : 0);
+        shader.setUniform("turn",currentTurn ? 1 : 0);
         // доп данные
         shader.setUniform("model_m",projection.getModelMatrix());
         shader.setUniform("xOffset",xOffset);

@@ -263,6 +263,16 @@ public class GridElement {
         this.step = step;
     }
 
+    public int getTravelCost(){
+        int cost = block.getCost();
+
+        if(isWater()){
+            cost *=3;
+        }
+
+        return cost;
+    }
+
     public void clearDirection(){
         setCameFromElement(null);
         left = false;
@@ -278,9 +288,6 @@ public class GridElement {
             }else{
                 setGrayZona();
             }
-            shader.useProgram();
-            // глобальный юниформ
-            shader.setUniformBlock("matrices", 0);
             // контролеры
             shader.setUniform("instance", 0);
             shader.setUniform("animated", 0);

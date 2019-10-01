@@ -74,7 +74,7 @@ public class Camera {
 
         turn = 0.0f;
         fov = 20.0f;
-        yaw = 226.0f;
+        yaw = 46.0f;
         pitch = -30.0f;
         offset = 0.0f;
         cameraControlLock = false;
@@ -203,6 +203,14 @@ public class Camera {
         }
 
         yaw -= turn;
+
+        if(yaw < 0){
+            yaw = 360 + yaw;
+        }
+
+        if(yaw > 359){
+            yaw = yaw - 360;
+        }
 
         if(stopTurn){
             turnCounter = 0.0f;
@@ -359,5 +367,9 @@ public class Camera {
 
     public void setCameraControlLock(boolean cameraControlLock) {
         this.cameraControlLock = cameraControlLock;
+    }
+
+    public float getYaw(){
+        return yaw;
     }
 }

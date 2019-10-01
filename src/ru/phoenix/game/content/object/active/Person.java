@@ -2,6 +2,7 @@ package ru.phoenix.game.content.object.active;
 
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
+import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.loader.ImageAnimLoader;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
@@ -20,6 +21,8 @@ import ru.phoenix.game.logic.movement.PathfindingAlgorithm;
 
 import java.util.*;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
@@ -41,32 +44,40 @@ public class Person extends ObjectControl implements Object {
     private ImageAnimation stand;
     private ImageAnimation walk;
     private ImageAnimation jump;
+    private ImageAnimation climbing;
     // textures
     private List<Texture> textures;
     private TextureConfig standConfig;
     private TextureConfig walkConfig;
     private TextureConfig jumpConfig;
+    private TextureConfig climbingConfig;
     // parametri
     private Characteristic characteristic;
     // control
-    private List<Vector3f> wayPoints;
+    private List<GridElement> wayPoints;
     private int sampleData;
     private boolean action;
 
     private PathfindingAlgorithm pathfindingAlgorithm;
     private MotionAnimation motionAnimation;
 
-    private float dirX;
     private boolean standControl;
     private int count;
 
+    private boolean firstStart;
+    private float tempX;
+    private float tempZ;
+
     // конструкторы
-    public Person(float id){
+    public Person(float id, Vector3f position){
         super();
+
+        setPosition(position);
 
         standConfig = Default.getStandIdle(id);
         walkConfig = Default.getWalkIdle(id);
         jumpConfig = Default.getJumpIdle(id);
+        climbingConfig = Default.getClimbingIdle(id);
 
         Texture person_stand = new Texture2D();
         assert standConfig != null;
@@ -80,7 +91,11 @@ public class Person extends ObjectControl implements Object {
         assert jumpConfig != null;
         person_jump.setup(null, jumpConfig.getPath(),GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
 
-        textures = new ArrayList<>(Arrays.asList(person_stand,person_walk,person_jump));
+        Texture person_climbing = new Texture2D();
+        assert climbingConfig != null;
+        person_climbing.setup(null,climbingConfig.getPath(),GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+
+        textures = new ArrayList<>(Arrays.asList(person_stand,person_walk,person_jump,person_climbing));
 
         characteristic = new Characteristic();
 
@@ -97,15 +112,17 @@ public class Person extends ObjectControl implements Object {
         wayPoints = new ArrayList<>();
     }
 
-    public Person(Person object){
+    public Person(Person object, float id, Vector3f position){
         super();
+
+        setPosition(position);
 
         textures = new ArrayList<>(object.getTextures());
 
         characteristic = new Characteristic();
 
         setGroup(GROUP_R);
-        setId(object.getId());
+        setId(id);
         setOnTarget(false);
         setBoard(true);
         setShadow(true);
@@ -116,14 +133,17 @@ public class Person extends ObjectControl implements Object {
         motionAnimation = new MotionAnimation();
         wayPoints = new ArrayList<>();
 
-        standConfig = Default.getStandIdle(getId());
-        walkConfig = Default.getWalkIdle(getId());
-        jumpConfig = Default.getJumpIdle(getId());
+        standConfig = Default.getStandIdle(object.getId());
+        walkConfig = Default.getWalkIdle(object.getId());
+        jumpConfig = Default.getJumpIdle(object.getId());
+        climbingConfig = Default.getClimbingIdle(object.getId());
     }
 
     // методы
     public void init(Matrix4f[] matrix){
+        firstStart = true;
         event = 0;
+
         int currentTexture = 0;
         int texWid = textures.get(currentTexture).getWidth();
         int texHei = textures.get(currentTexture).getHeight();
@@ -149,13 +169,24 @@ public class Person extends ObjectControl implements Object {
         objectWidth = (texWid / row) * objectHeight / (texHei / column);
         objectHeight = (texHei / column) * objectWidth / (texWid / row);
         jump = ImageAnimLoader.load(textures.get(currentTexture), row, column, objectWidth, objectHeight,null,0);
+        currentTexture = 3;
+        texWid = textures.get(currentTexture).getWidth();
+        texHei = textures.get(currentTexture).getHeight();
+        row = climbingConfig.getRow();
+        column = climbingConfig.getColumn();
+        objectWidth = (texWid / row) * objectHeight / (texHei / column);
+        objectHeight = (texHei / column) * objectWidth / (texWid / row);
+        climbing = ImageAnimLoader.load(textures.get(currentTexture), row, column, objectWidth, objectHeight,null,0);
+        climbing.setBlock(true);
+
         setup(textures,stand,0);
         standControl = false;
         count = 0;
+        tempX = getPosition().getX();
+        tempZ = getPosition().getZ();
     }
 
     public void update(List<GridElement> gridElements){
-
         if(Math.random() * 100.0f <= 0.4f && !standControl){
             stand.setFrames(2);
             standControl = true;
@@ -172,6 +203,24 @@ public class Person extends ObjectControl implements Object {
         }
 
         if(Default.isWait()){
+
+            // ТЕСТОВЫЙ ТРИГЕР!!!!! --- НАЧАЛО
+            if(Input.getInstance().isPressed(GLFW_KEY_X)){
+                updateAnimation(stand,0);
+                setJump(false);
+                for(GridElement element : gridElements){
+                    element.setVisible(false);
+                    element.setWayPoint(false);
+                    if(element.getPosition().equals(getPosition())){
+                        element.setBlocked(true);
+                    }
+                }
+                characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
+                Default.setWait(false);
+                this.action = false;
+            }
+            // ТЕСТОВЫЙ!!!!! --- КОНЕЦ
+
             if(action) {
                 switch (event){
                     case PREPARED_AREA:
@@ -189,9 +238,9 @@ public class Person extends ObjectControl implements Object {
                                 wayPoints.clear();
                                 GridElement finishElement = getFinishElement(gridElements);
                                 if(finishElement != null) {
-                                    List<Vector3f> reverse = new ArrayList<>();
+                                    List<GridElement> reverse = new ArrayList<>();
                                     while (finishElement.cameFrom() != null) {
-                                        reverse.add(finishElement.getPosition());
+                                        reverse.add(finishElement);
                                         finishElement = finishElement.cameFrom();
                                     }
                                     for (int i = reverse.size() - 1; i >= 0; i--) {
@@ -204,47 +253,60 @@ public class Person extends ObjectControl implements Object {
                                                 element.setBlocked(false);
                                             }
                                         }
-                                        walk.setCurrentAnimation(1);
-                                        jump.setCurrentAnimation(1);
+                                        walk.setFrames(1);
+                                        jump.setFrames(1);
+                                        climbing.setFrames(1);
                                         event = MOVEMENT_ANIMATION;
                                         setJump(false);
+                                        for(GridElement element : gridElements){
+                                            if(!element.isWayPoint()){
+                                                element.setVisible(false);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                         break;
                     case MOVEMENT_ANIMATION:
-                        Vector3f position = new Vector3f(-1.0f,-1.0f,-1.0f);
-                        int motion = motionAnimation.motion(gridElements,position,characteristic,jump);
-                        if(!position.equals(new Vector3f(-1.0f,-1.0f,-1.0f))) {
-                            setPosition(position);
-                        }
-                        /*if(getPosition().getX() < dirX){
-
-                        }*/
-                        if(motion == 1){
-                            setJump(false);
-                            updateAnimation(walk,1);
-                        }else if(motion == 2){
-                            setJump(true);
-                            updateAnimation(jump,2);
-                        }
-                        if(motion == 0){
-                            updateAnimation(stand,0);
-                            setJump(false);
-                            for(GridElement element : gridElements){
-                                element.setVisible(false);
-                                element.setWayPoint(false);
-                                if(element.getPosition().equals(getPosition())){
-                                    element.setBlocked(true);
-                                }
+                        if(firstStart){
+                            setTurn();
+                            firstStart = false;
+                        }else {
+                            Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
+                            int motion = motionAnimation.motion(gridElements, position, characteristic, jump, climbing);
+                            if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
+                                setPosition(position);
                             }
-                            if(characteristic.getCurentActionPoint() > 0){
-                                event = PREPARED_AREA;
-                            }else {
-                                characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
-                                Default.setWait(false);
-                                this.action = false;
+                            if (motion == 1) {
+                                setJump(false);
+                                updateAnimation(walk, 1);
+                            } else if (motion == 2) {
+                                setJump(true);
+                                updateAnimation(jump, 2);
+                            } else if(motion == 3){
+                                setJump(false);
+                                updateAnimation(climbing,3);
+                            }
+
+                            if (motion == 0) {
+                                updateAnimation(stand, 0);
+                                setJump(false);
+                                for (GridElement element : gridElements) {
+                                    element.setVisible(false);
+                                    element.setWayPoint(false);
+                                    if (element.getPosition().equals(getPosition())) {
+                                        element.setBlocked(true);
+                                    }
+                                }
+                                if (characteristic.getCurentActionPoint() > 0) {
+                                    event = PREPARED_AREA;
+                                    firstStart = true;
+                                } else {
+                                    characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
+                                    Default.setWait(false);
+                                    this.action = false;
+                                }
                             }
                         }
                         break;
@@ -256,6 +318,7 @@ public class Person extends ObjectControl implements Object {
                 if(characteristic.getInitiative() >= 100){
                     characteristic.setInitiative(0);
                     this.action = true;
+                    this.firstStart = true;
                     event = PREPARED_AREA;
                     Default.setWait(true);
                 }
@@ -270,7 +333,12 @@ public class Person extends ObjectControl implements Object {
             setOnTarget(false);
         }
 
-        dirX = getPosition().getX();
+        if(tempX != getPosition().getX() || tempZ != getPosition().getZ() || isJump()) {
+            checkTurn();
+        }
+
+        tempX = getPosition().getX();
+        tempZ = getPosition().getZ();
     }
 
     public List<Texture> getTextures(){
@@ -299,5 +367,93 @@ public class Person extends ObjectControl implements Object {
         }
 
         return finishElement;
+    }
+
+    private void checkTurn(){
+        float yaw = Camera.getInstance().getYaw();
+        if(yaw == 46.0f || yaw == 226.0f) {
+            if (getPosition().getX() > tempX){
+                setTurn(true);
+            }else if (getPosition().getZ() < tempZ){
+                setTurn(true);
+            }else if(getPosition().getX() < tempX){
+                setTurn(false);
+            }else if (getPosition().getZ() > tempZ){
+                setTurn(false);
+            }
+            if(isJump()){
+                for (int i = 0; i < wayPoints.size(); i++) {
+                    if (wayPoints.get(i).getPosition().equals(getPosition())) {
+                        Vector3f nextPoint;
+                        if (i + 1 < wayPoints.size()) {
+                            nextPoint = wayPoints.get(i + 1).getPosition();
+                            if (nextPoint.getX() > getPosition().getX()) {
+                                setTurn(true);
+                            } else if (nextPoint.getZ() < getPosition().getZ()) {
+                                setTurn(true);
+                            } else if (nextPoint.getX() < getPosition().getX()) {
+                                setTurn(false);
+                            } else if (nextPoint.getZ() > getPosition().getZ()) {
+                                setTurn(false);
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            if (getPosition().getX() < tempX){
+                setTurn(true);
+            }else if(getPosition().getZ() < tempZ){
+                setTurn(true);
+            }else if(getPosition().getX() > tempX){
+                setTurn(false);
+            }else if (getPosition().getZ() > tempZ){
+                setTurn(false);
+            }
+            if(isJump()){
+                for(int i=0; i<wayPoints.size(); i++){
+                    if(wayPoints.get(i).getPosition().equals(getPosition())){
+                        Vector3f nextPoint;
+                        if(i + 1 < wayPoints.size()) {
+                            nextPoint = wayPoints.get(i + 1).getPosition();
+                            if (nextPoint.getX() < getPosition().getX()){
+                                setTurn(true);
+                            }else if(nextPoint.getZ() < getPosition().getZ()){
+                                setTurn(true);
+                            }else if(nextPoint.getX() > getPosition().getX()){
+                                setTurn(false);
+                            }else if (nextPoint.getZ() > getPosition().getZ()){
+                                setTurn(false);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setTurn(){
+        float yaw = Camera.getInstance().getYaw();
+        if(yaw == 46.0f || yaw == 226.0f) {
+            if (wayPoints.get(0).getPosition().getX() > getPosition().getX()) {
+                setTurn(true);
+            } else if (wayPoints.get(0).getPosition().getZ() < getPosition().getZ()) {
+                setTurn(true);
+            } else if (wayPoints.get(0).getPosition().getX() < getPosition().getX()) {
+                setTurn(false);
+            } else if (wayPoints.get(0).getPosition().getZ() > getPosition().getZ()) {
+                setTurn(false);
+            }
+        }else{
+            if (wayPoints.get(0).getPosition().getX() < getPosition().getX()){
+                setTurn(true);
+            }else if(wayPoints.get(0).getPosition().getZ() < getPosition().getZ()){
+                setTurn(true);
+            }else if(wayPoints.get(0).getPosition().getX() > getPosition().getX()){
+                setTurn(false);
+            }else if (wayPoints.get(0).getPosition().getZ() > getPosition().getZ()){
+                setTurn(false);
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ public class DirectLight implements Light {
 
     private Matrix4f[] lightSpaceMatrix;
     private Matrix4f directLightViewMatrix;
+    private Vector3f sunRayDirection;
     private int shadowMapSize;
 
     private int mapX;
@@ -32,6 +33,10 @@ public class DirectLight implements Light {
         setMapX(mapX);
         setMapZ(mapZ);
         createLightSpaceMatrix();
+
+        Vector3f sunPosOnMap = new Vector3f(position.getX(),0.0f,position.getZ());
+        Vector3f centerOfMap = new Vector3f(mapX / 2.0f, 0.0f, mapZ / 2.0f);
+        sunRayDirection = centerOfMap.sub(sunPosOnMap).normalize();
     }
 
     private void createLightSpaceMatrix(){
@@ -133,5 +138,10 @@ public class DirectLight implements Light {
 
     private void setMapZ(int mapZ) {
         this.mapZ = mapZ;
+    }
+
+    @Override
+    public Vector3f getSunRayDirection() {
+        return sunRayDirection;
     }
 }
