@@ -49,45 +49,54 @@ public class MotionAnimation {
     }
 
     public int motion(List<GridElement> elements, Vector3f position, Characteristic characteristic,ImageAnimation jumpAnim, ImageAnimation climbingAnim){
-        int motion;
+        boolean action = true;
+        int motion = 0;
         boolean isJump = false;
         boolean isClimbing = false;
 
-        if (index < wayPoints.size()) {
-            if (wayPoints.get(index).getCurrentHeight() < this.tempPos.getY() - 0.6f || this.tempPos.getY() + 0.6f < wayPoints.get(index).getCurrentHeight()) {
-                isJump = true;
-                this.animation = jumpAnim;
+        if(index < wayPoints.size()){
+            if(characteristic.getStamina() - wayPoints.get(index).getTravelCost() < 0){
+                action = false;
             }
         }
 
-        if(!isJump){
-            if (wayPoints.get(index).getCurrentHeight() < this.tempPos.getY() - 0.4f || this.tempPos.getY() + 0.4f < wayPoints.get(index).getCurrentHeight()) {
-                isClimbing = true;
-                this.animation = climbingAnim;
-            }
-        }
-
-        if (isJump) {
-            if (jump(position, characteristic)) {
-                motion = 0;
-            } else {
-                motion = 2;
-            }
-        }else if(isClimbing){
-            if (climbing(position, characteristic)) {
-                motion = 0;
-            } else {
-                if(walkStage) {
-                    motion = 1;
-                }else{
-                    motion = 3;
+        if(action) {
+            if (index < wayPoints.size()) {
+                if (wayPoints.get(index).getCurrentHeight() < this.tempPos.getY() - 0.6f || this.tempPos.getY() + 0.6f < wayPoints.get(index).getCurrentHeight()) {
+                    isJump = true;
+                    this.animation = jumpAnim;
                 }
             }
-        }else {
-            if (move(position, characteristic)) {
-                motion = 0;
+
+            if (!isJump) {
+                if (wayPoints.get(index).getCurrentHeight() < this.tempPos.getY() - 0.4f || this.tempPos.getY() + 0.4f < wayPoints.get(index).getCurrentHeight()) {
+                    isClimbing = true;
+                    this.animation = climbingAnim;
+                }
+            }
+
+            if (isJump) {
+                if (jump(position, characteristic)) {
+                    motion = 0;
+                } else {
+                    motion = 2;
+                }
+            } else if (isClimbing) {
+                if (climbing(position, characteristic)) {
+                    motion = 0;
+                } else {
+                    if (walkStage) {
+                        motion = 1;
+                    } else {
+                        motion = 3;
+                    }
+                }
             } else {
-                motion = 1;
+                if (move(position, characteristic)) {
+                    motion = 0;
+                } else {
+                    motion = 1;
+                }
             }
         }
 
@@ -122,11 +131,11 @@ public class MotionAnimation {
                 firstStart = true;
                 timer = 0;
             }
-            if (characteristic.getCurentActionPoint() <= 0) {
+            if (characteristic.getStamina() <= 0) {
                 end = true;
             }
             if (index <= wayPoints.size()) {
-                characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - temp.getTravelCost());
+                characteristic.setStamina(characteristic.getStamina() - temp.getTravelCost());
             }
             if (index >= wayPoints.size()) {
                 position.setVector(wayPoints.get(index - 1).getPosition());
@@ -206,11 +215,11 @@ public class MotionAnimation {
                         firstStart = true;
                         timer = 0;
                     }
-                    if (characteristic.getCurentActionPoint() <= 0) {
+                    if (characteristic.getStamina() <= 0) {
                         end = true;
                     }
                     if (index <= wayPoints.size()) {
-                        characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - temp.getTravelCost());
+                        characteristic.setStamina(characteristic.getStamina() - temp.getTravelCost());
                     }
                     if (index >= wayPoints.size()) {
                         position.setVector(wayPoints.get(index - 1).getPosition());
@@ -270,11 +279,11 @@ public class MotionAnimation {
                         firstStart = true;
                         timer = 0;
                     }
-                    if (characteristic.getCurentActionPoint() <= 0) {
+                    if (characteristic.getStamina() <= 0) {
                         end = true;
                     }
                     if (index <= wayPoints.size()) {
-                        characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - temp.getTravelCost());
+                        characteristic.setStamina(characteristic.getStamina() - temp.getTravelCost());
                     }
                     if (index >= wayPoints.size()) {
                         position.setVector(wayPoints.get(index - 1).getPosition());
@@ -503,11 +512,11 @@ public class MotionAnimation {
             firstStart = true;
             timer = 0;
         }
-        if (characteristic.getCurentActionPoint() <= 0) {
+        if (characteristic.getStamina() <= 0) {
             end = true;
         }
         if (index <= wayPoints.size()) {
-            characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - temp.getTravelCost());
+            characteristic.setStamina(characteristic.getStamina() - temp.getTravelCost());
         }
         if (index >= wayPoints.size()) {
             position.setVector(wayPoints.get(index - 1).getPosition());

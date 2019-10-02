@@ -21,9 +21,7 @@ import ru.phoenix.game.logic.movement.PathfindingAlgorithm;
 
 import java.util.*;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.GROUP_R;
@@ -187,6 +185,11 @@ public class Person extends ObjectControl implements Object {
     }
 
     public void update(List<GridElement> gridElements){
+
+        if(Input.getInstance().isPressed(GLFW_KEY_Z)){
+            System.out.println(characteristic.getStamina());
+        }
+
         if(Math.random() * 100.0f <= 0.4f && !standControl){
             stand.setFrames(2);
             standControl = true;
@@ -246,6 +249,7 @@ public class Person extends ObjectControl implements Object {
                                     for (int i = reverse.size() - 1; i >= 0; i--) {
                                         wayPoints.add(reverse.get(i));
                                     }
+
                                     if(!wayPoints.isEmpty()) {
                                         motionAnimation.setup(getPosition(), wayPoints);
                                         for (GridElement element : gridElements) {
@@ -290,6 +294,21 @@ public class Person extends ObjectControl implements Object {
                             }
 
                             if (motion == 0) {
+                                int index = -1;
+                                for(int i=0; i<wayPoints.size(); i++){
+                                    if(wayPoints.get(i).getPosition().equals(getPosition())){
+                                        index = i;
+                                    }
+                                }
+
+                                if(index >= 0){
+                                    if(index < characteristic.getMove()){
+                                        characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - 1);
+                                    }else{
+                                        characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - 2);
+                                    }
+                                }
+
                                 updateAnimation(stand, 0);
                                 setJump(false);
                                 for (GridElement element : gridElements) {
@@ -300,8 +319,14 @@ public class Person extends ObjectControl implements Object {
                                     }
                                 }
                                 if (characteristic.getCurentActionPoint() > 0) {
-                                    event = PREPARED_AREA;
-                                    firstStart = true;
+                                    if(characteristic.getStamina() > 0) {
+                                        event = PREPARED_AREA;
+                                        firstStart = true;
+                                    }else{
+                                        characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
+                                        Default.setWait(false);
+                                        this.action = false;
+                                    }
                                 } else {
                                     characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
                                     Default.setWait(false);
@@ -317,6 +342,10 @@ public class Person extends ObjectControl implements Object {
                 characteristic.setInitiative(characteristic.getInitiative() + characteristic.getInitiativeCharge());
                 if(characteristic.getInitiative() >= 100){
                     characteristic.setInitiative(0);
+                    characteristic.setStamina(characteristic.getStamina() + characteristic.getStaminaCharge());
+                    if(characteristic.getStamina() >= characteristic.getStaminaTotal()){
+                        characteristic.setStamina(characteristic.getStaminaTotal());
+                    }
                     this.action = true;
                     this.firstStart = true;
                     event = PREPARED_AREA;

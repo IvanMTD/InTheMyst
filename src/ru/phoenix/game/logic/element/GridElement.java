@@ -18,6 +18,7 @@ public class GridElement {
     // came from
     private GridElement element;
     private int step;
+    private float cost;
     // vbo
     private boolean visible;
     private VertexBufferObject vbo;
@@ -26,6 +27,10 @@ public class GridElement {
     private Texture grayZona;
     private Texture redZona;
     private Texture greenZona;
+    private Texture goldZona;
+    private Texture blueZona;
+    private Texture tempTexture;
+    private Texture pointTexture;
     private Texture texture;
     // recognize info
     private float id;
@@ -47,10 +52,12 @@ public class GridElement {
     private boolean up;
     private boolean down;
 
-    public GridElement(float id, Vector3f position, Block block, boolean bevel, float bevelDirection, boolean blocked, Texture gray, Texture red, Texture green) {
+    public GridElement(float id, Vector3f position, Block block, boolean bevel, float bevelDirection, boolean blocked, Texture gray, Texture red, Texture green, Texture gold, Texture blue) {
         grayZona = gray;
         redZona = red;
         greenZona = green;
+        goldZona = gold;
+        blueZona = blue;
 
         setLeft(false);
         setUp(false);
@@ -237,14 +244,35 @@ public class GridElement {
 
     public void setGrayZona(){
         texture = grayZona;
+        tempTexture = grayZona;
     }
 
     public void setRedZona(){
         texture = redZona;
+        pointTexture = redZona;
     }
 
     public void setGreenZona(){
         texture = greenZona;
+        pointTexture = greenZona;
+    }
+
+    public void setGoldZona() {
+        texture = goldZona;
+        tempTexture = goldZona;
+    }
+
+    public  void setBlueZona(){
+        texture = blueZona;
+        tempTexture = blueZona;
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public void setCost(float cost) {
+        this.cost = cost;
     }
 
     public GridElement cameFrom() {
@@ -284,9 +312,9 @@ public class GridElement {
     public void draw(Shader shader){
         if(isVisible()) {
             if(isWayPoint() || isTarget()){
-                setGreenZona();
+                this.texture = this.pointTexture;
             }else{
-                setGrayZona();
+                this.texture = this.tempTexture;
             }
             // контролеры
             shader.setUniform("instance", 0);
@@ -303,6 +331,11 @@ public class GridElement {
             shader.setUniform("onTarget", isTarget() ? 1 : 0);
             shader.setUniform("water",0);
             // end
+
+            if(texture == null){
+                texture = grayZona;
+            }
+
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
             shader.setUniform("image", 0);

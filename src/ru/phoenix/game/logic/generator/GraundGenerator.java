@@ -33,6 +33,8 @@ public class GraundGenerator {
     private static Texture grayZona             = null;
     private static Texture redZona              = null;
     private static Texture greenZona            = null;
+    private static Texture goldZona             = null;
+    private static Texture blueZona             = null;
 
     private static Block dirt_main              = null;
     private static Block grass_main             = null;
@@ -175,7 +177,7 @@ public class GraundGenerator {
                         dirtInstanceList.add(projection.getModelMatrix());
                     }
 
-                    gridElements.add(new GridElement(gridId,position, dirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                    gridElements.add(new GridElement(gridId,position, dirt, bevel,angleRotation,false,grayZona,redZona,greenZona,goldZona,blueZona));
 
                     if(!bevel && (Math.random() * 100.0f <= 1.0f)){
                         int coin = (int)Math.round(Math.random() * 3.0);
@@ -323,7 +325,7 @@ public class GraundGenerator {
                             bevel = tryGenerateTilt(position,finalPos,projection);
                         }
                         grassFlowerInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, grassFlower, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, grassFlower, bevel,angleRotation,false,grayZona,redZona,greenZona,goldZona,blueZona));
                         if(!bevel && (Math.random() * 100.0f <= 5.0f)){
                             int coin = (int)Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -447,7 +449,7 @@ public class GraundGenerator {
                             }
                         }
                         grassInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, grass, bevel,angleRotation, tree,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, grass, bevel,angleRotation, tree,grayZona,redZona,greenZona,goldZona,blueZona));
                     }
                 }
             } else if (seed == MOUNTAIN_MAP) {
@@ -485,7 +487,7 @@ public class GraundGenerator {
                             tree = true;
                         }
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, coldDirt, false,angleRotation,tree,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, coldDirt, false,angleRotation,tree,grayZona,redZona,greenZona,goldZona,blueZona));
                     }else if ((Math.random() * 100.0f <= Math.random() * 10.0f) && !bevel) {
                         Vector3f spritePos = new Vector3f(position.getX(), position.getY(), position.getZ());
                         Projection spriteProjection = new Projection();
@@ -496,10 +498,10 @@ public class GraundGenerator {
                         weed.setPosition(position);
                         sprites.add(weed);
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, coldDirt, false,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, coldDirt, false,angleRotation,false,grayZona,redZona,greenZona,goldZona,blueZona));
                     }else if(Math.random() * 100.0f <= 1.0f){
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona,goldZona,blueZona));
                         if(!bevel) {
                             int coin = (int) Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -548,7 +550,7 @@ public class GraundGenerator {
                         }
                     }else{
                         coldDirtInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, coldDirt, bevel,angleRotation,false,grayZona,redZona,greenZona,goldZona,blueZona));
                     }
                 } else if(-2.0f < position.getY() && position.getY() <= 0.0f){
                     if((Math.random() * 100.0f <= 2.0f) && !checkMapBorder(position) && !bevel){
@@ -580,10 +582,10 @@ public class GraundGenerator {
                             tree = true;
                         }
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, snow, false,angleRotation,tree,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, snow, false,angleRotation,tree,grayZona,redZona,greenZona,goldZona,blueZona));
                     }else if(Math.random() * 100.0f <= 1.0f){
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona,goldZona,blueZona));
                         if(!bevel) {
                             int coin = (int) Math.round(Math.random() * 3.0);
                             float angle = 0.0f;
@@ -632,11 +634,11 @@ public class GraundGenerator {
                         }
                     }else{
                         snowInstanceList.add(projection.getModelMatrix());
-                        gridElements.add(new GridElement(gridId,position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                        gridElements.add(new GridElement(gridId,position, snow, bevel,angleRotation,false,grayZona,redZona,greenZona,goldZona,blueZona));
                     }
                 } else if(position.getY() > 0.0f){
                     rockSnowInstanceList.add(projection.getModelMatrix());
-                    gridElements.add(new GridElement(gridId,position, rockSnow, bevel,angleRotation,false,grayZona,redZona,greenZona));
+                    gridElements.add(new GridElement(gridId,position, rockSnow, bevel,angleRotation,false,grayZona,redZona,greenZona,goldZona,blueZona));
                     if(!bevel && Math.random() * 100.0f <= 1.0f){
                         int coin = (int)Math.round(Math.random() * 3.0);
                         float angle = 0.0f;
@@ -872,6 +874,16 @@ public class GraundGenerator {
         if(greenZona == null){
             greenZona = new Texture2D();
             greenZona.setup(null,"./data/content/texture/zona/grid_element_green.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        }
+
+        if(goldZona == null){
+            goldZona = new Texture2D();
+            goldZona.setup(null,"./data/content/texture/zona/grid_element_gold.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        }
+
+        if(blueZona == null){
+            blueZona = new Texture2D();
+            blueZona.setup(null,"./data/content/texture/zona/grid_element_blue.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         }
     }
 
