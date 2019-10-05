@@ -1,22 +1,20 @@
 package ru.phoenix.game.content.block;
 
-import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.loader.LoadStaticModel;
 import ru.phoenix.core.loader.model.Material;
 import ru.phoenix.core.loader.model.Mesh;
+import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
-import static ru.phoenix.core.config.Constants.GROUP_A;
 
 public abstract class BlockControl {
     // описание
@@ -24,8 +22,12 @@ public abstract class BlockControl {
     private Projection projection;
     private Vector3f position;
 
+    private Texture texture;
+
     private int type;
     private int cost;
+
+    private boolean isMeshTexture;
 
     // конструкторы
     public BlockControl(){
@@ -35,11 +37,29 @@ public abstract class BlockControl {
     }
 
     // методы
+    protected void setMeshs(String path, Texture texture){
+        isMeshTexture = false;
+        meshes = LoadStaticModel.LoadModel(path,true);
+        this.texture = texture;
+    }
+
     protected void setMeshs(String path){
+        isMeshTexture = true;
         meshes = LoadStaticModel.LoadModel(path,false);
     }
 
+    protected Texture getTexture(){
+        return texture;
+    }
+
+    protected void setMeshs(List<Mesh> meshes, Texture texture){
+        isMeshTexture = false;
+        this.meshes = new ArrayList<>(meshes);
+        this.texture = texture;
+    }
+
     protected void setMeshs(List<Mesh> meshes){
+        isMeshTexture = true;
         this.meshes = new ArrayList<>(meshes);
     }
 
@@ -73,45 +93,51 @@ public abstract class BlockControl {
             // доп данные
             shader.setUniform("model_m",projection.getModelMatrix());
 
-            int map = 0;
-            for (Material material : mesh.getTextures()) {
-                if (Objects.equals(material.getType(), "ambientMap")) {
-                    map = material.getId();
+            if(isMeshTexture){
+                int map = 0;
+                for (Material material : mesh.getTextures()) {
+                    if (Objects.equals(material.getType(), "ambientMap")) {
+                        map = material.getId();
+                    }
                 }
-            }
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, map);
-            shader.setUniform("material.ambientMap", 0);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, map);
+                shader.setUniform("material.ambientMap", 0);
 
-            map = 0;
-            for (Material material : mesh.getTextures()) {
-                if (Objects.equals(material.getType(), "diffuseMap")) {
-                    map = material.getId();
+                map = 0;
+                for (Material material : mesh.getTextures()) {
+                    if (Objects.equals(material.getType(), "diffuseMap")) {
+                        map = material.getId();
+                    }
                 }
-            }
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, map);
-            shader.setUniform("material.diffuseMap", 1);
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, map);
+                shader.setUniform("material.diffuseMap", 1);
 
-            map = 0;
-            for (Material material : mesh.getTextures()) {
-                if (Objects.equals(material.getType(), "specularMap")) {
-                    map = material.getId();
+                map = 0;
+                for (Material material : mesh.getTextures()) {
+                    if (Objects.equals(material.getType(), "specularMap")) {
+                        map = material.getId();
+                    }
                 }
-            }
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, map);
-            shader.setUniform("material.specularMap", 2);
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, map);
+                shader.setUniform("material.specularMap", 2);
 
-            map = 0;
-            for (Material material : mesh.getTextures()) {
-                if (Objects.equals(material.getType(), "normalMap")) {
-                    map = material.getId();
+                map = 0;
+                for (Material material : mesh.getTextures()) {
+                    if (Objects.equals(material.getType(), "normalMap")) {
+                        map = material.getId();
+                    }
                 }
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, map);
+                shader.setUniform("material.normalMap", 3);
+            }else{
+                glActiveTexture(GL_TEXTURE4);
+                glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+                shader.setUniform("material.diffuseMap", 4);
             }
-            glActiveTexture(GL_TEXTURE3);
-            glBindTexture(GL_TEXTURE_2D, map);
-            shader.setUniform("material.normalMap", 3);
 
             mesh.draw();
         }

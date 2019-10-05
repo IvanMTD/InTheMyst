@@ -82,9 +82,6 @@ public class BattleScene implements Scene {
 
     @Override
     public void update(){
-        // обновляем камеру
-        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),battleGraund.getGridElements());
-
         // Обновляем информацию в сетке
         for(GridElement element : battleGraund.getGridElements()){
             if(element.isVisible()){
@@ -112,6 +109,9 @@ public class BattleScene implements Scene {
         }
         // обновляем все объекты сцены
         battleGraund.update();
+
+        // обновляем камеру
+        Camera.getInstance().update(battleGraund.getMapX(),battleGraund.getMapZ(),battleGraund.getGridElements());
 
         // ТЕСТОВЫЙ ТРИГЕР!!!
         boolean tap = false;

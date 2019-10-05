@@ -36,6 +36,8 @@ public class GraundGenerator {
     private static Texture goldZona             = null;
     private static Texture blueZona             = null;
 
+    private static Texture blockTextures        = null;
+
     private static Block dirt_main              = null;
     private static Block grass_main             = null;
     private static Block snow_main              = null;
@@ -888,29 +890,35 @@ public class GraundGenerator {
     }
 
     private static void initBlocks(){
+
+        if(blockTextures == null){
+            blockTextures = new Texture2D();
+            blockTextures.setup(null,"./data/content/block/texture/atlas_blocks_texture.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        }
+
         if(dirt_main == null){
-            dirt_main = new Dirt();
+            dirt_main = new Dirt(blockTextures);
         }
         if(grass_main == null){
-            grass_main = new Grass();
+            grass_main = new Grass(blockTextures);
         }
         if(snow_main == null){
-            snow_main = new Snow();
+            snow_main = new Snow(blockTextures);
         }
         if(mountain_dirt_main == null){
-            mountain_dirt_main = new MountainDirt();
+            mountain_dirt_main = new MountainDirt(blockTextures);
         }
         if(snow_rock_main == null){
-            snow_rock_main = new SnowRock();
+            snow_rock_main = new SnowRock(blockTextures);
         }
         if(rock_main == null){
-            rock_main = new Rock();
+            rock_main = new Rock(blockTextures);
         }
         if(grass_flower_main == null){
-            grass_flower_main = new GrassFlower();
+            grass_flower_main = new GrassFlower(blockTextures);
         }
         if(grass_bevel_main == null){
-            grass_bevel_main = new GrassBevel();
+            grass_bevel_main = new GrassBevel(blockTextures);
         }
 
         if(stone_small_main == null){
@@ -1296,22 +1304,22 @@ public class GraundGenerator {
         for(GridElement element : gridElements){
             if(element.getPosition().equals(left)){
                 if(element.getPosition().getY() < mainCurrentHeight){
-                    heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
+                    heights.add(Math.abs(mainCurrentHeight - element.getPosition().getY()));
                 }
             }
             if(element.getPosition().equals(right)){
                 if(element.getPosition().getY() < mainCurrentHeight){
-                    heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
+                    heights.add(Math.abs(mainCurrentHeight - element.getPosition().getY()));
                 }
             }
             if (element.getPosition().equals(up)) {
                 if(element.getPosition().getY() < mainCurrentHeight){
-                    heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
+                    heights.add(Math.abs(mainCurrentHeight - element.getPosition().getY()));
                 }
             }
             if(element.getPosition().equals(down)){
                 if(element.getPosition().getY() < mainCurrentHeight){
-                    heights.add(Math.abs(mainCurrentHeight - element.getCurrentHeight()));
+                    heights.add(Math.abs(mainCurrentHeight - element.getPosition().getY()));
                 }
             }
         }

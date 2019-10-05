@@ -18,7 +18,7 @@ public class GridElement {
     // came from
     private GridElement element;
     private int step;
-    private float cost;
+    private int cost;
     // vbo
     private boolean visible;
     private VertexBufferObject vbo;
@@ -267,11 +267,11 @@ public class GridElement {
         tempTexture = blueZona;
     }
 
-    public float getCost() {
+    public int getCost() {
         return cost;
     }
 
-    public void setCost(float cost) {
+    public void setCost(int cost) {
         this.cost = cost;
     }
 
@@ -291,11 +291,15 @@ public class GridElement {
         this.step = step;
     }
 
+    public int getEstimateFullPathLength(){
+        return getStep() + getCost();
+    }
+
     public int getTravelCost(){
         int cost = block.getCost();
 
         if(isWater()){
-            cost *=3;
+            cost *= 3;
         }
 
         return cost;

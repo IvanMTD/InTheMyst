@@ -52,7 +52,8 @@ public class PathfindingAlgorithm extends Thread {
                 prepareArea();
                 break;
             case CREATE_PATH:
-                createPath();
+                //createPath();
+                createPathAStar();
                 break;
         }
     }
@@ -98,7 +99,7 @@ public class PathfindingAlgorithm extends Thread {
         cameFrom.clear();
         GridElement startGraph = findGraph(start);
         startGraph.setStep(0);
-        startGraph.setCost(0.0f);
+        startGraph.setCost(0);
         frontier.add(startGraph);
         costSoFar.add(startGraph);
         cameFrom.add(startGraph);
@@ -162,6 +163,86 @@ public class PathfindingAlgorithm extends Thread {
             for(GridElement came : cameFrom){
                 if(element.getPosition().equals(came.getPosition()) && !element.isBlocked()){
                     element.setVisible(true);
+                }
+            }
+        }
+    }
+
+    private void createPathAStar(){
+        if(finish != null){
+            for (GridElement graph : graphs) {
+                if (!graph.getPosition().equals(finish)) {
+                    graph.setTarget(false);
+                }
+                graph.setWayPoint(false);
+            }
+            GridElement Start = findGraph(start);
+            GridElement Finish = findGraph(finish);
+            List<GridElement> closedSet = new ArrayList<>();
+            List<GridElement> openSet = new ArrayList<>();
+            Start.setCameFromElement(null);
+            Start.setStep(0);
+            Start.setCost(getHeuristicPathLength(Start,Finish));
+            openSet.add(Start);
+            while (!openSet.isEmpty()){
+                GridElement currentElement = minFullPathLength(openSet);
+                if(currentElement.getPosition().equals(finish)){
+                    Finish = currentElement;
+                    break;
+                }
+                openSet.remove(currentElement);
+                closedSet.add(currentElement);
+
+                for(GridElement neighbour : getNeighbours(currentElement,Finish)){
+                    if(checkClosedSet(neighbour,closedSet)){
+                        continue;
+                    }
+
+                    GridElement open = getOpenSetElement(neighbour,openSet);
+                    if(open == null){
+                        int result = 0;
+                        float h = Math.abs(currentElement.getCurrentHeight() - neighbour.getCurrentHeight());
+                        if(h > 0){
+                            if(Math.round(h) - h == 0.5f){
+                                result = 1;
+                            }else{
+                                result = 3;
+                            }
+                        }
+
+                        neighbour.setCameFromElement(currentElement);
+                        neighbour.setStep(currentElement.getStep() + neighbour.getTravelCost() + result);
+                        neighbour.setCost(getHeuristicPathLength(neighbour,Finish));
+                        openSet.add(neighbour);
+                    }else{
+                        if(open.getStep() > neighbour.getStep()){
+                            open.setCameFromElement(currentElement);
+                            open.setStep(neighbour.getStep());
+                        }
+                    }
+                }
+            }
+
+            List<GridElement> reverse = new ArrayList<>();
+            while (Finish.cameFrom() != null){
+                reverse.add(Finish);
+                Finish = Finish.cameFrom();
+            }
+
+            List<GridElement> wayPoints = new ArrayList<>();
+            for(int i=reverse.size() - 1; i >= 0; i--){
+                wayPoints.add(reverse.get(i));
+            }
+
+            int currentStamina = characteristic.getStamina();
+
+            for(GridElement point : wayPoints){
+                point.setWayPoint(true);
+                currentStamina -= point.getTravelCost();
+                if(currentStamina >= 0){
+                    point.setGreenZona();
+                }else{
+                    point.setRedZona();
                 }
             }
         }
@@ -238,17 +319,30 @@ public class PathfindingAlgorithm extends Thread {
         return graph;
     }
 
-    private boolean checkVisit(GridElement studyGraph){
-        boolean check = false;
+    private boolean checkClosedSet(GridElement study, List<GridElement> closedSet){
+        boolean visit = false;
 
-        for(GridElement came : cameFrom){
-            if(came.getPosition().equals(studyGraph.getPosition())){
-                check = true;
+        for(GridElement closed : closedSet){
+            if(closed.getPosition().equals(study.getPosition())){
+                visit = true;
                 break;
             }
         }
 
-        return !check;
+        return visit;
+    }
+
+    private boolean checkVisit(GridElement studyGraph){
+        boolean visit = false;
+
+        for(GridElement came : cameFrom){
+            if(came.getPosition().equals(studyGraph.getPosition())){
+                visit = true;
+                break;
+            }
+        }
+
+        return !visit;
     }
 
     private void setStep(GridElement front, GridElement studyGraph){
@@ -267,13 +361,7 @@ public class PathfindingAlgorithm extends Thread {
 
     private void setCostStep(GridElement front, GridElement studyGraph){
 
-        float h = Math.abs(front.getCurrentHeight() - studyGraph.getCurrentHeight());
-        if(Math.round(h) - h == 0.5f){
-            h = 0;
-        }else{
-            h = 10.0f;
-        }
-        float cost = front.getCost() + studyGraph.getTravelCost() + h;
+        int cost = front.getCost() + studyGraph.getTravelCost();
 
         if(checkCostVisit(studyGraph,cost) &&(front.getStep() + 1 <= (characteristic.getMove() * characteristic.getCurentActionPoint()))){
             studyGraph.setCameFromElement(front);
@@ -297,7 +385,6 @@ public class PathfindingAlgorithm extends Thread {
             if(costSoFar.get(i).getPosition().equals(studyGraph.getPosition())){
                 check = false;
                 if(cost < costSoFar.get(i).getCost()) {
-                    System.out.println("Текущая цена хода: " + cost + " | Предыдущая цена хода: " + costSoFar.get(i).getCost());
                     costSoFar.remove(costSoFar.get(i));
                     check = true;
                 }
@@ -305,5 +392,92 @@ public class PathfindingAlgorithm extends Thread {
         }
 
         return check;
+    }
+
+    private static int getHeuristicPathLength(GridElement from, GridElement to) {
+        return (int)(Math.abs(from.getPosition().getX() - to.getPosition().getX()) + Math.abs(from.getPosition().getZ() - to.getPosition().getZ()));
+    }
+
+    private GridElement minFullPathLength(List<GridElement> elements){
+
+        for(int i=0; i<elements.size() - 1; i++){
+            for(int j=i+1; j<elements.size(); j++){
+                if(elements.get(i).getEstimateFullPathLength() > elements.get(j).getEstimateFullPathLength()){
+                    GridElement temp = elements.get(i);
+                    elements.set(i,elements.get(j));
+                    elements.set(j,temp);
+                }
+            }
+        }
+
+        int num = 1;
+
+        for(int i=1; i<elements.size(); i++){
+            if(elements.get(0).getEstimateFullPathLength() == elements.get(i).getEstimateFullPathLength()){
+                num++;
+            }
+        }
+
+        if(num > 1){
+            for(int i=0; i<num; i++){
+                float lenght = elements.get(i).getPosition().sub(finish).length();
+                elements.get(i).setDistance(lenght);
+            }
+        }
+
+        for(int i=0; i<num-1;i++){
+            for(int j=i+1; j<num; j++){
+                if(elements.get(i).getDistance() > elements.get(j).getDistance()){
+                    GridElement temp = elements.get(i);
+                    elements.set(i,elements.get(j));
+                    elements.set(j,temp);
+                }
+            }
+        }
+
+        return elements.get(0);
+    }
+
+    private List<GridElement> getNeighbours(GridElement element, GridElement finish) {
+        List<GridElement> result = new ArrayList<>();
+        if (element.isUp()) {
+            GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+            if(studyGraph.isVisible()){
+                result.add(studyGraph);
+            }
+        }
+        if (element.isLeft()) {
+            GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+            if(studyGraph.isVisible()){
+                result.add(studyGraph);
+            }
+        }
+        if (element.isDown()) {
+            GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+            if(studyGraph.isVisible()){
+                result.add(studyGraph);
+            }
+        }
+        if (element.isRight()) {
+            GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+            if(studyGraph.isVisible()){
+                result.add(studyGraph);
+            }
+        }
+
+        return result;
+    }
+
+    private GridElement getOpenSetElement(GridElement study, List<GridElement> openSet){
+        GridElement open = null;
+
+        for(GridElement element : openSet){
+            if(element.getPosition().equals(study.getPosition())){
+                open = element;
+                break;
+            }
+        }
+
+        return open;
     }
 }

@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.object.active;
 
+import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
 import ru.phoenix.core.kernel.Camera;
@@ -62,6 +63,7 @@ public class Person extends ObjectControl implements Object {
     private boolean standControl;
     private int count;
 
+    private Vector3f tempFinish;
     private boolean firstStart;
     private float tempX;
     private float tempZ;
@@ -180,16 +182,12 @@ public class Person extends ObjectControl implements Object {
         setup(textures,stand,0);
         standControl = false;
         count = 0;
+        tempFinish = new Vector3f();
         tempX = getPosition().getX();
         tempZ = getPosition().getZ();
     }
 
     public void update(List<GridElement> gridElements){
-
-        if(Input.getInstance().isPressed(GLFW_KEY_Z)){
-            System.out.println(characteristic.getStamina());
-        }
-
         if(Math.random() * 100.0f <= 0.4f && !standControl){
             stand.setFrames(2);
             standControl = true;
@@ -233,14 +231,25 @@ public class Person extends ObjectControl implements Object {
                         event = CREATE_PATH;
                         break;
                     case CREATE_PATH:
-                        if(!pathfindingAlgorithm.isAlive()) {
-                            pathfindingAlgorithm = new PathfindingAlgorithm();
-                            pathfindingAlgorithm.setup(gridElements,characteristic,getPosition(),getFinishPosition(gridElements));
-                            pathfindingAlgorithm.start();
-                            if(Input.getInstance().isMousePressed(GLFW_MOUSE_BUTTON_LEFT)){
+                        Vector3f finish = getFinishPosition(gridElements);
+                        if(finish == null){
+                            for(GridElement element : gridElements){
+                                if(element.isVisible()){
+                                    element.setWayPoint(false);
+                                }
+                            }
+                        }else{
+                            if(!finish.equals(tempFinish)) {
+                                if (!pathfindingAlgorithm.isAlive()) {
+                                    pathfindingAlgorithm = new PathfindingAlgorithm();
+                                    pathfindingAlgorithm.setup(gridElements, characteristic, getPosition(), finish);
+                                    pathfindingAlgorithm.start();
+                                }
+                            }
+                            if (Input.getInstance().buttonActionVerification(true,GLFW_MOUSE_BUTTON_LEFT) == Constants.CLICK) {
                                 wayPoints.clear();
                                 GridElement finishElement = getFinishElement(gridElements);
-                                if(finishElement != null) {
+                                if (finishElement != null) {
                                     List<GridElement> reverse = new ArrayList<>();
                                     while (finishElement.cameFrom() != null) {
                                         reverse.add(finishElement);
@@ -250,7 +259,7 @@ public class Person extends ObjectControl implements Object {
                                         wayPoints.add(reverse.get(i));
                                     }
 
-                                    if(!wayPoints.isEmpty()) {
+                                    if (!wayPoints.isEmpty()) {
                                         motionAnimation.setup(getPosition(), wayPoints);
                                         for (GridElement element : gridElements) {
                                             if (element.getPosition().equals(getPosition())) {
@@ -262,14 +271,19 @@ public class Person extends ObjectControl implements Object {
                                         climbing.setFrames(1);
                                         event = MOVEMENT_ANIMATION;
                                         setJump(false);
-                                        for(GridElement element : gridElements){
-                                            if(!element.isWayPoint()){
+                                        for (GridElement element : gridElements) {
+                                            if (!element.isWayPoint()) {
                                                 element.setVisible(false);
                                             }
                                         }
                                     }
                                 }
                             }
+                        }
+                        if(finish == null){
+                            tempFinish = new Vector3f();
+                        }else {
+                            tempFinish = finish;
                         }
                         break;
                     case MOVEMENT_ANIMATION:

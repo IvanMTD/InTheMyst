@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.block.type;
 
+import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.block.BlockControl;
 
@@ -9,9 +10,9 @@ public class Dirt extends BlockControl implements Block {
     // описание
 
     // конструкторы
-    public Dirt(){
+    public Dirt(Texture texture){
         super();
-        setMeshs("./data/content/block/dirt/block_dirt.obj");
+        setMeshs("./data/content/block/dirt.obj");
         setType(BLOCK_DIRT);
     }
 

@@ -37,6 +37,11 @@ public class Constants {
     // person id
     public static final float ID_PERSON_GEHARD  = 0.12001f;
 
+    // click or hold
+    public static final int NO_ACTION           = 0x30000;
+    public static final int CLICK               = 0x30001;
+    public static final int HOLD                = 0x30002;
+
     // group RGB
     public static final int GROUP_R             = 0x20001;
     public static final int GROUP_G             = 0x20002;

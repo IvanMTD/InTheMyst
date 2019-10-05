@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
+import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.math.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -15,8 +16,11 @@ public class Input {
     private boolean[] buttons;
 
     private boolean cursorMove;
+    private boolean click;
     private Vector2f cursorPosition;
     private float scrollOffset;
+    private int counter;
+    private int action;
 
     public static Input getInstance(){
         if(instance == null){
@@ -72,6 +76,9 @@ public class Input {
     }
 
     private void init(){
+        action = Constants.NO_ACTION;
+        counter = 0;
+        click = false;
         cursorPosition = new Vector2f();
         scrollOffset = 0.0f;
         keys = new boolean[1024];
@@ -84,11 +91,36 @@ public class Input {
         glfwPollEvents();
     }
 
+    public int buttonActionVerification(boolean mouse, int key){
+        if(mouse){
+            if (isMousePressed(key)) {
+                counter++;
+                if(!click) {
+                    click = true;
+                    action = Constants.HOLD;
+                }
+            }else if(!isMousePressed(key)){
+                action = Constants.NO_ACTION;
+                if(click) {
+                    if (counter <= 50) {
+                        action = Constants.CLICK;
+                    }
+                    counter = 0;
+                    click = false;
+                }
+            }
+        }else{
+            System.out.println("Not working yet!");
+        }
+
+        return action;
+    }
+
     public boolean isPressed(int index){
         return keys[index];
     }
 
-    public boolean isMousePressed(int index){
+    private boolean isMousePressed(int index){
         return buttons[index];
     }
 

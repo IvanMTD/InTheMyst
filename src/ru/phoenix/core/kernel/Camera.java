@@ -2,6 +2,7 @@ package ru.phoenix.core.kernel;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
@@ -29,6 +30,9 @@ public class Camera {
     private Vector3f direction;
     private Vector2f lastCursorPos;
     private Vector2f lastCursorPos2;
+
+    private float corW;
+    private float corH;
 
     private float turn;
     private float yaw;
@@ -71,6 +75,9 @@ public class Camera {
         glfwGetCursorPos(Window.getInstance().getWindow(),lx,ly);
         lastCursorPos = new Vector2f((float)lx.get(),(float)ly.get());
         lastCursorPos2 = null;
+
+        corW = ((float)Window.getInstance().getWidth() / (float)Window.getInstance().getHeight()) * 0.9f;
+        corH = (1.0f + ((float)Window.getInstance().getHeight() / (float)Window.getInstance().getWidth())) * 0.9f;
 
         turn = 0.0f;
         fov = 20.0f;
@@ -124,10 +131,10 @@ public class Camera {
             if (Input.getInstance().isPressed(GLFW_KEY_D)) {
                 setPos(pos.add(new Vector3f(front.cross(up)).normalize().mul(movementSpeedX)));
             }
-            if(Input.getInstance().isMousePressed(GLFW_MOUSE_BUTTON_LEFT)){
+            if(Input.getInstance().buttonActionVerification(true,GLFW_MOUSE_BUTTON_LEFT) == Constants.HOLD){
                 if(lastCursorPos2 != null){
-                    float corectionX = hypotenuse / Window.getInstance().getWidth();
-                    float corectionY = hypotenuse / Window.getInstance().getHeight();
+                    float corectionX = (hypotenuse / Window.getInstance().getWidth()) / corW;
+                    float corectionY = (hypotenuse / Window.getInstance().getHeight()) / corH;
                     if(lastCursorPos2.getX() > currentCursorPosition.getX()){ // Right move;
                         float speed = (lastCursorPos2.getX() - currentCursorPosition.getX()) * corectionX;
                         setPos(pos.add(new Vector3f(front.cross(up)).normalize().mul(speed)));
