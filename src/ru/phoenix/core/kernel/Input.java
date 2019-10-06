@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 import ru.phoenix.core.config.Constants;
+import ru.phoenix.core.config.Time;
 import ru.phoenix.core.math.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -19,7 +20,7 @@ public class Input {
     private boolean click;
     private Vector2f cursorPosition;
     private float scrollOffset;
-    private int counter;
+    private float counter;
     private int action;
 
     public static Input getInstance(){
@@ -77,7 +78,7 @@ public class Input {
 
     private void init(){
         action = Constants.NO_ACTION;
-        counter = 0;
+        counter = 0.0f;
         click = false;
         cursorPosition = new Vector2f();
         scrollOffset = 0.0f;
@@ -87,6 +88,7 @@ public class Input {
     }
 
     public void update(){
+        cursorMove = false;
         setScrollOffset(0.0f);
         glfwPollEvents();
     }
@@ -102,7 +104,7 @@ public class Input {
             }else if(!isMousePressed(key)){
                 action = Constants.NO_ACTION;
                 if(click) {
-                    if (counter <= 50) {
+                    if (counter < 60 && !getCursorMove()) {
                         action = Constants.CLICK;
                     }
                     counter = 0;

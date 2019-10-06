@@ -176,6 +176,7 @@ public class PathfindingAlgorithm extends Thread {
                 }
                 graph.setWayPoint(false);
             }
+            GridElement resultFinish = null;
             GridElement Start = findGraph(start);
             GridElement Finish = findGraph(finish);
             List<GridElement> closedSet = new ArrayList<>();
@@ -187,13 +188,13 @@ public class PathfindingAlgorithm extends Thread {
             while (!openSet.isEmpty()){
                 GridElement currentElement = minFullPathLength(openSet);
                 if(currentElement.getPosition().equals(finish)){
-                    Finish = currentElement;
+                    resultFinish = currentElement;
                     break;
                 }
                 openSet.remove(currentElement);
                 closedSet.add(currentElement);
 
-                for(GridElement neighbour : getNeighbours(currentElement,Finish)){
+                for(GridElement neighbour : getNeighbours(currentElement)){
                     if(checkClosedSet(neighbour,closedSet)){
                         continue;
                     }
@@ -224,9 +225,9 @@ public class PathfindingAlgorithm extends Thread {
             }
 
             List<GridElement> reverse = new ArrayList<>();
-            while (Finish.cameFrom() != null){
-                reverse.add(Finish);
-                Finish = Finish.cameFrom();
+            while (resultFinish.cameFrom() != null){
+                reverse.add(resultFinish);
+                resultFinish = resultFinish.cameFrom();
             }
 
             List<GridElement> wayPoints = new ArrayList<>();
@@ -400,28 +401,32 @@ public class PathfindingAlgorithm extends Thread {
 
     private GridElement minFullPathLength(List<GridElement> elements){
 
-        for(int i=0; i<elements.size() - 1; i++){
-            for(int j=i+1; j<elements.size(); j++){
-                if(elements.get(i).getEstimateFullPathLength() > elements.get(j).getEstimateFullPathLength()){
-                    GridElement temp = elements.get(i);
-                    elements.set(i,elements.get(j));
-                    elements.set(j,temp);
-                }
-            }
+        for (GridElement element : elements) {
+            float lenght = element.getPosition().sub(finish).length();
+            element.setDistance(lenght);
         }
+
+        elements.sort(((o1, o2) -> o1.getEstimateFullPathLength() > o2.getEstimateFullPathLength() ? 0 : -1));
 
         int num = 1;
 
         for(int i=1; i<elements.size(); i++){
-            if(elements.get(0).getEstimateFullPathLength() == elements.get(i).getEstimateFullPathLength()){
-                num++;
-            }
-        }
-
-        if(num > 1){
-            for(int i=0; i<num; i++){
-                float lenght = elements.get(i).getPosition().sub(finish).length();
-                elements.get(i).setDistance(lenght);
+            if(start.getY() < finish.getY()){
+                if(elements.get(0).getEstimateFullPathLength() + 1 >= elements.get(i).getEstimateFullPathLength()){
+                    if(start.getY() <= elements.get(i).getCurrentHeight()){
+                        num++;
+                    }
+                }
+            }else if(start.getY() > finish.getY()){
+                if(elements.get(0).getEstimateFullPathLength() + 1 >= elements.get(i).getEstimateFullPathLength()){
+                    if(start.getY() >= elements.get(i).getCurrentHeight()){
+                        num++;
+                    }
+                }
+            }else{
+                if(elements.get(0).getEstimateFullPathLength() == elements.get(i).getEstimateFullPathLength()){
+                    num++;
+                }
             }
         }
 
@@ -438,7 +443,7 @@ public class PathfindingAlgorithm extends Thread {
         return elements.get(0);
     }
 
-    private List<GridElement> getNeighbours(GridElement element, GridElement finish) {
+    private List<GridElement> getNeighbours(GridElement element) {
         List<GridElement> result = new ArrayList<>();
         if (element.isUp()) {
             GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));

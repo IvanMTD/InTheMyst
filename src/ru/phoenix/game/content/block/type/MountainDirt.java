@@ -10,15 +10,25 @@ public class MountainDirt extends BlockControl implements Block {
     // описание
 
     // конструкторы
-    public MountainDirt(Texture texture){
+    public MountainDirt(){
         super();
         setMeshs("./data/content/block/cold_dirt.obj");
         setType(BLOCK_COLD_DIRT);
     }
 
+    public MountainDirt(Texture texture){
+        super();
+        setMeshs("./data/content/block/cold_dirt.obj",texture);
+        setType(BLOCK_COLD_DIRT);
+    }
+
     public MountainDirt(MountainDirt block){
         super();
-        setMeshs(block.getMeshes());
+        if(block.getTexture() != null) {
+            setMeshs(block.getMeshes(), block.getTexture());
+        }else{
+            setMeshs(block.getMeshes());
+        }
         setType(block.getType());
     }
 }

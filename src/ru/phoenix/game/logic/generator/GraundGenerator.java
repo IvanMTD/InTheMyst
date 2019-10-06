@@ -897,28 +897,28 @@ public class GraundGenerator {
         }
 
         if(dirt_main == null){
-            dirt_main = new Dirt(blockTextures);
+            dirt_main = new Dirt();
         }
         if(grass_main == null){
-            grass_main = new Grass(blockTextures);
+            grass_main = new Grass();
         }
         if(snow_main == null){
-            snow_main = new Snow(blockTextures);
+            snow_main = new Snow();
         }
         if(mountain_dirt_main == null){
-            mountain_dirt_main = new MountainDirt(blockTextures);
+            mountain_dirt_main = new MountainDirt();
         }
         if(snow_rock_main == null){
-            snow_rock_main = new SnowRock(blockTextures);
+            snow_rock_main = new SnowRock();
         }
         if(rock_main == null){
-            rock_main = new Rock(blockTextures);
+            rock_main = new Rock();
         }
         if(grass_flower_main == null){
-            grass_flower_main = new GrassFlower(blockTextures);
+            grass_flower_main = new GrassFlower();
         }
         if(grass_bevel_main == null){
-            grass_bevel_main = new GrassBevel(blockTextures);
+            grass_bevel_main = new GrassBevel();
         }
 
         if(stone_small_main == null){

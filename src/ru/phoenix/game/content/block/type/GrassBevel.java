@@ -8,15 +8,25 @@ import static ru.phoenix.core.config.Constants.BLOCK_DIRT_GRASS;
 
 public class GrassBevel extends BlockControl implements Block {
     // конструкторы
-    public GrassBevel(Texture texture){
+    public GrassBevel(){
         super();
         setMeshs("./data/content/block/bevel.obj");
         setType(BLOCK_DIRT_GRASS);
     }
 
+    public GrassBevel(Texture texture){
+        super();
+        setMeshs("./data/content/block/bevel.obj",texture);
+        setType(BLOCK_DIRT_GRASS);
+    }
+
     public GrassBevel(GrassBevel block){
         super();
-        setMeshs(block.getMeshes());
+        if(block.getTexture() != null) {
+            setMeshs(block.getMeshes(), block.getTexture());
+        }else{
+            setMeshs(block.getMeshes());
+        }
         setType(block.getType());
     }
 }

@@ -10,15 +10,25 @@ public class Dirt extends BlockControl implements Block {
     // описание
 
     // конструкторы
-    public Dirt(Texture texture){
+    public Dirt(){
         super();
         setMeshs("./data/content/block/dirt.obj");
         setType(BLOCK_DIRT);
     }
 
+    public Dirt(Texture texture){
+        super();
+        setMeshs("./data/content/block/dirt.obj",texture);
+        setType(BLOCK_DIRT);
+    }
+
     public Dirt(Dirt block){
         super();
-        setMeshs(block.getMeshes());
+        if(block.getTexture() != null) {
+            setMeshs(block.getMeshes(), block.getTexture());
+        }else{
+            setMeshs(block.getMeshes());
+        }
         setType(block.getType());
     }
 }

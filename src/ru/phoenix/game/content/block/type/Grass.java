@@ -10,15 +10,25 @@ public class Grass extends BlockControl implements Block{
     // описание
 
     // конструкторы
-    public Grass(Texture texture){
+    public Grass(){
         super();
         setMeshs("./data/content/block/grass.obj");
         setType(BLOCK_DIRT_GRASS);
     }
 
+    public Grass(Texture texture){
+        super();
+        setMeshs("./data/content/block/grass.obj",texture);
+        setType(BLOCK_DIRT_GRASS);
+    }
+
     public Grass(Grass block){
         super();
-        setMeshs(block.getMeshes());
+        if(block.getTexture() != null) {
+            setMeshs(block.getMeshes(), block.getTexture());
+        }else{
+            setMeshs(block.getMeshes());
+        }
         setType(block.getType());
     }
 }

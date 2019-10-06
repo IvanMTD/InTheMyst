@@ -8,15 +8,25 @@ import static ru.phoenix.core.config.Constants.BLOCK_DIRT_SNOW;
 
 public class Snow extends BlockControl implements Block {
     // конструкторы
-    public Snow(Texture texture){
+    public Snow(){
         super();
         setMeshs("./data/content/block/dirt_snow.obj");
         setType(BLOCK_DIRT_SNOW);
     }
 
+    public Snow(Texture texture){
+        super();
+        setMeshs("./data/content/block/dirt_snow.obj",texture);
+        setType(BLOCK_DIRT_SNOW);
+    }
+
     public Snow(Snow block){
         super();
-        setMeshs(block.getMeshes());
+        if(block.getTexture() != null) {
+            setMeshs(block.getMeshes(), block.getTexture());
+        }else{
+            setMeshs(block.getMeshes());
+        }
         setType(block.getType());
     }
 }

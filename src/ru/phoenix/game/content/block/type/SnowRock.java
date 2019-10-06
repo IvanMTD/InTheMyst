@@ -8,15 +8,25 @@ import static ru.phoenix.core.config.Constants.BLOCK_ROCK_SNOW;
 
 public class SnowRock extends BlockControl implements Block {
     // конструкторы
-    public SnowRock(Texture texture){
+    public SnowRock(){
         super();
         setMeshs("./data/content/block/rock_snow.obj");
         setType(BLOCK_ROCK_SNOW);
     }
 
+    public SnowRock(Texture texture){
+        super();
+        setMeshs("./data/content/block/rock_snow.obj",texture);
+        setType(BLOCK_ROCK_SNOW);
+    }
+
     public SnowRock(SnowRock block){
         super();
-        setMeshs(block.getMeshes());
+        if(block.getTexture() != null) {
+            setMeshs(block.getMeshes(), block.getTexture());
+        }else{
+            setMeshs(block.getMeshes());
+        }
         setType(block.getType());
     }
 }
