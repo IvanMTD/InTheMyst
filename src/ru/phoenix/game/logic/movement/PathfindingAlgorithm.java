@@ -176,59 +176,19 @@ public class PathfindingAlgorithm extends Thread {
                 }
                 graph.setWayPoint(false);
             }
-            GridElement resultFinish = null;
-            GridElement Start = findGraph(start);
-            GridElement Finish = findGraph(finish);
-            List<GridElement> closedSet = new ArrayList<>();
-            List<GridElement> openSet = new ArrayList<>();
-            Start.setCameFromElement(null);
-            Start.setStep(0);
-            Start.setCost(getHeuristicPathLength(Start,Finish));
-            openSet.add(Start);
-            while (!openSet.isEmpty()){
-                GridElement currentElement = minFullPathLength(openSet);
-                if(currentElement.getPosition().equals(finish)){
-                    resultFinish = currentElement;
-                    break;
-                }
-                openSet.remove(currentElement);
-                closedSet.add(currentElement);
+            GridElement resultFinish = createPath(true);
+            List<GridElement> reverse = new ArrayList<>();
 
-                for(GridElement neighbour : getNeighbours(currentElement)){
-                    if(checkClosedSet(neighbour,closedSet)){
-                        continue;
-                    }
-
-                    GridElement open = getOpenSetElement(neighbour,openSet);
-                    if(open == null){
-                        int result = 0;
-                        float h = Math.abs(currentElement.getCurrentHeight() - neighbour.getCurrentHeight());
-                        if(h > 0){
-                            if(Math.round(h) - h == 0.5f){
-                                result = 1;
-                            }else{
-                                result = 3;
-                            }
-                        }
-
-                        neighbour.setCameFromElement(currentElement);
-                        neighbour.setStep(currentElement.getStep() + neighbour.getTravelCost() + result);
-                        neighbour.setCost(getHeuristicPathLength(neighbour,Finish));
-                        openSet.add(neighbour);
-                    }else{
-                        if(open.getStep() > neighbour.getStep()){
-                            open.setCameFromElement(currentElement);
-                            open.setStep(neighbour.getStep());
-                        }
-                    }
-                }
+            if(resultFinish == null) {
+                resultFinish = createPath(false);
             }
 
-            List<GridElement> reverse = new ArrayList<>();
-            while (resultFinish.cameFrom() != null){
+            assert resultFinish != null;
+            while (resultFinish.cameFrom() != null) {
                 reverse.add(resultFinish);
                 resultFinish = resultFinish.cameFrom();
             }
+
 
             List<GridElement> wayPoints = new ArrayList<>();
             for(int i=reverse.size() - 1; i >= 0; i--){
@@ -249,47 +209,55 @@ public class PathfindingAlgorithm extends Thread {
         }
     }
 
-    private void createPath(){
-        for (GridElement graph : graphs) {
-            if(finish != null) {
-                if (!graph.getPosition().equals(finish)) {
-                    graph.setTarget(false);
+    private GridElement createPath(boolean restriction){
+        GridElement resultFinish = null;
+        GridElement Start = findGraph(start);
+        GridElement Finish = findGraph(finish);
+        List<GridElement> closedSet = new ArrayList<>();
+        List<GridElement> openSet = new ArrayList<>();
+        Start.setCameFromElement(null);
+        Start.setStep(0);
+        Start.setCost(getHeuristicPathLength(Start,Finish));
+        openSet.add(Start);
+        while (!openSet.isEmpty()){
+            GridElement currentElement = minFullPathLength(openSet);
+            if(currentElement.getPosition().equals(finish)){
+                resultFinish = currentElement;
+                break;
+            }
+            openSet.remove(currentElement);
+            closedSet.add(currentElement);
+
+            for(GridElement neighbour : getNeighbours(currentElement,Finish,restriction)){
+                if(checkClosedSet(neighbour,closedSet)){
+                    continue;
                 }
-            }
-            graph.setWayPoint(false);
-        }
-        if(finish != null) {
-            GridElement element = findGraph(finish);
-            List<GridElement> reverse = new ArrayList<>();
-            while (element.cameFrom() != null) {
-                reverse.add(element);
-                element = element.cameFrom();
-            }
 
-            List<GridElement> wayPoints = new ArrayList<>();
+                GridElement open = getOpenSetElement(neighbour,openSet);
+                if(open == null){
+                    int result = 0;
+                    float h = Math.abs(currentElement.getCurrentHeight() - neighbour.getCurrentHeight());
+                    if(h > 0){
+                        if(Math.round(h) - h == 0.5f){
+                            result = 1;
+                        }else{
+                            result = 3;
+                        }
+                    }
 
-            for (int i=reverse.size() -1; i>=0; i--){
-                wayPoints.add(reverse.get(i));
-            }
-
-            int currentStamina = characteristic.getStamina();
-
-            for(GridElement point : wayPoints){
-                point.setWayPoint(true);
-                currentStamina -= point.getTravelCost();
-                if(currentStamina >= 0){
-                    point.setGreenZona();
+                    neighbour.setCameFromElement(currentElement);
+                    neighbour.setStep(currentElement.getStep() + neighbour.getTravelCost() + result);
+                    neighbour.setCost(getHeuristicPathLength(neighbour,Finish));
+                    openSet.add(neighbour);
                 }else{
-                    point.setRedZona();
-                }
-            }
-        }else{
-            for (GridElement graph : graphs) {
-                if (graph.isVisible()) {
-                    graph.setWayPoint(false);
+                    if(open.getStep() > neighbour.getStep()){
+                        open.setCameFromElement(currentElement);
+                        open.setStep(neighbour.getStep());
+                    }
                 }
             }
         }
+        return resultFinish;
     }
 
     private boolean checkStudyPosition(GridElement parentElement, Vector3f studyPosition){
@@ -443,31 +411,128 @@ public class PathfindingAlgorithm extends Thread {
         return elements.get(0);
     }
 
-    private List<GridElement> getNeighbours(GridElement element) {
+    private List<GridElement> getNeighbours(GridElement element, GridElement finish, boolean restriction) {
         List<GridElement> result = new ArrayList<>();
-        if (element.isUp()) {
-            GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-            if(studyGraph.isVisible()){
-                result.add(studyGraph);
+        if(finish.isBlueZona()){
+            if(restriction){
+                if (element.isUp()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                        if(element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f){
+                            result.add(studyGraph);
+                        }
+                    }
+                }
+                if (element.isLeft()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                        if(element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f){
+                            result.add(studyGraph);
+                        }
+                    }
+                }
+                if (element.isDown()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                        if(element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f){
+                            result.add(studyGraph);
+                        }
+                    }
+                }
+                if (element.isRight()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                        if(element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f){
+                            result.add(studyGraph);
+                        }
+                    }
+                }
+            }else {
+                if (element.isUp()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                    if (studyGraph.isVisible()) {
+                        result.add(studyGraph);
+                    }
+                }
+                if (element.isLeft()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                    if (studyGraph.isVisible()) {
+                        result.add(studyGraph);
+                    }
+                }
+                if (element.isDown()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                    if (studyGraph.isVisible()) {
+                        result.add(studyGraph);
+                    }
+                }
+                if (element.isRight()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                    if (studyGraph.isVisible()) {
+                        result.add(studyGraph);
+                    }
+                }
             }
-        }
-        if (element.isLeft()) {
-            GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-            if(studyGraph.isVisible()){
-                result.add(studyGraph);
-            }
-        }
-        if (element.isDown()) {
-            GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-            if(studyGraph.isVisible()){
-                result.add(studyGraph);
-            }
-        }
-        if (element.isRight()) {
-            GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-            if(studyGraph.isVisible()){
-                result.add(studyGraph);
-            }
+        }else if(finish.isGoldZona()){
+            /*if(restriction) {
+                if (element.isUp()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                    if (studyGraph.isVisible()) {
+                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            result.add(studyGraph);
+                        }
+                    }
+                }
+                if (element.isLeft()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                    if (studyGraph.isVisible()) {
+                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            result.add(studyGraph);
+                        }
+                    }
+                }
+                if (element.isDown()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                    if (studyGraph.isVisible()) {
+                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            result.add(studyGraph);
+                        }
+                    }
+                }
+                if (element.isRight()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                    if (studyGraph.isVisible()) {
+                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            result.add(studyGraph);
+                        }
+                    }
+                }
+            }else{*/
+                if (element.isUp()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                    if (studyGraph.isVisible()) {
+                        result.add(studyGraph);
+                    }
+                }
+                if (element.isLeft()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                    if (studyGraph.isVisible()) {
+                        result.add(studyGraph);
+                    }
+                }
+                if (element.isDown()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                    if (studyGraph.isVisible()) {
+                        result.add(studyGraph);
+                    }
+                }
+                if (element.isRight()) {
+                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                    if (studyGraph.isVisible()) {
+                        result.add(studyGraph);
+                    }
+                }
+            //}
         }
 
         return result;

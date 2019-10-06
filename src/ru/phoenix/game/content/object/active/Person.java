@@ -308,19 +308,19 @@ public class Person extends ObjectControl implements Object {
                             }
 
                             if (motion == 0) {
-                                int index = -1;
-                                for(int i=0; i<wayPoints.size(); i++){
-                                    if(wayPoints.get(i).getPosition().equals(getPosition())){
-                                        index = i;
+                                GridElement currentElement = null;
+                                for(GridElement point : wayPoints){
+                                    if(point.getPosition().equals(getPosition())){
+                                        currentElement = point;
+                                        break;
                                     }
                                 }
 
-                                if(index >= 0){
-                                    if(index < characteristic.getMove()){
-                                        characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - 1);
-                                    }else{
-                                        characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - 2);
-                                    }
+                                assert currentElement != null;
+                                if(currentElement.isBlueZona()){
+                                    characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - 1);
+                                }else if(currentElement.isGoldZona()){
+                                    characteristic.setCurentActionPoint(characteristic.getCurentActionPoint() - 2);
                                 }
 
                                 updateAnimation(stand, 0);

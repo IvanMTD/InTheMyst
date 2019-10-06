@@ -32,6 +32,8 @@ public class GridElement {
     private Texture tempTexture;
     private Texture pointTexture;
     private Texture texture;
+    private boolean isBlueZona;
+    private boolean isGoldZona;
     // recognize info
     private float id;
     private boolean target;
@@ -245,6 +247,8 @@ public class GridElement {
     public void setGrayZona(){
         texture = grayZona;
         tempTexture = grayZona;
+        isBlueZona = false;
+        isGoldZona = false;
     }
 
     public void setRedZona(){
@@ -260,11 +264,21 @@ public class GridElement {
     public void setGoldZona() {
         texture = goldZona;
         tempTexture = goldZona;
+        isGoldZona = true;
     }
 
     public  void setBlueZona(){
         texture = blueZona;
         tempTexture = blueZona;
+        isBlueZona = true;
+    }
+
+    public boolean isBlueZona() {
+        return isBlueZona;
+    }
+
+    public boolean isGoldZona() {
+        return isGoldZona;
     }
 
     public int getCost() {
