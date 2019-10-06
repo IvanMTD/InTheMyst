@@ -474,7 +474,7 @@ public class PathfindingAlgorithm extends Thread {
                 }
             }
         }else if(finish.isGoldZona()){
-            /*if(restriction) {
+            if(restriction) {
                 if (element.isUp()) {
                     GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
                     if (studyGraph.isVisible()) {
@@ -507,7 +507,7 @@ public class PathfindingAlgorithm extends Thread {
                         }
                     }
                 }
-            }else{*/
+            }else{
                 if (element.isUp()) {
                     GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
                     if (studyGraph.isVisible()) {
@@ -532,7 +532,7 @@ public class PathfindingAlgorithm extends Thread {
                         result.add(studyGraph);
                     }
                 }
-            //}
+            }
         }
 
         return result;

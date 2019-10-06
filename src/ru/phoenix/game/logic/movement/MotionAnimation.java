@@ -160,7 +160,6 @@ public class MotionAnimation {
             isStepUp = true;
         }else{
             offset = new Vector3f(0.0f,-0.5f,0.0f).add(direction);
-            isStepUp = false;
         }
 
         if(isStepUp) {

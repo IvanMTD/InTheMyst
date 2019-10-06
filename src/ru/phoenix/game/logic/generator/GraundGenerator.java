@@ -110,7 +110,7 @@ public class GraundGenerator {
         if(seed == PLAIN_MAP){
             height = 2;
         }else if(seed == MOUNTAIN_MAP){
-            height = 5;
+            height = 10;
         }
 
         long mapSeed = (long)(1 + Math.random() * 10000000000L);
@@ -1327,7 +1327,7 @@ public class GraundGenerator {
         int height  = 0;
 
         if(heights.size() != 0) {
-            heights.sort((o1, o2) -> o1 > o2 ? 0 : -1);
+            heights.sort((o1, o2) -> o1 < o2 ? 0 : -1);
             height = (int)Math.ceil(heights.get(0));
         }
 
