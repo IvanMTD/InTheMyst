@@ -10,7 +10,7 @@ public class Characteristic {
     private int staminaTotal;
     private int stamina;
     private int staminaCharge;
-    private float jump;
+    private int jump;
     private float speed;
 
     public Characteristic(){
@@ -22,7 +22,7 @@ public class Characteristic {
         setStaminaTotal(100);
         setStamina(100);
         setStaminaCharge(10);
-        setJump(1.0f);
+        setJump(2);
         setSpeed(0.012f);
     }
 
@@ -103,11 +103,11 @@ public class Characteristic {
         this.staminaCharge = staminaCharge;
     }
 
-    public float getJump() {
+    public int getJump() {
         return jump;
     }
 
-    public void setJump(float jump) {
+    public void setJump(int jump) {
         this.jump = jump;
     }
 

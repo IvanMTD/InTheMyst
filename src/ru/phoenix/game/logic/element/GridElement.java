@@ -54,6 +54,8 @@ public class GridElement {
     private boolean up;
     private boolean down;
 
+    private boolean skip;
+
     public GridElement(float id, Vector3f position, Block block, boolean bevel, float bevelDirection, boolean blocked, Texture gray, Texture red, Texture green, Texture gold, Texture blue) {
         grayZona = gray;
         redZona = red;
@@ -65,6 +67,8 @@ public class GridElement {
         setUp(false);
         setRight(false);
         setDown(false);
+
+        setSkip(false);
 
         vbo = new MeshConfig();
         projection = new Projection();
@@ -183,6 +187,14 @@ public class GridElement {
 
     public void setDown(boolean down) {
         this.down = down;
+    }
+
+    public boolean isSkip() {
+        return skip;
+    }
+
+    public void setSkip(boolean skip) {
+        this.skip = skip;
     }
 
     public void setCurrentHeight(float currentHeight) {

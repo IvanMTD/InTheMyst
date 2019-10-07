@@ -413,125 +413,28 @@ public class PathfindingAlgorithm extends Thread {
 
     private List<GridElement> getNeighbours(GridElement element, GridElement finish, boolean restriction) {
         List<GridElement> result = new ArrayList<>();
-        if(finish.isBlueZona()){
-            if(restriction){
-                if (element.isUp()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        if(element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f){
-                            result.add(studyGraph);
-                        }
-                    }
-                }
-                if (element.isLeft()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        if(element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f){
-                            result.add(studyGraph);
-                        }
-                    }
-                }
-                if (element.isDown()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        if(element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f){
-                            result.add(studyGraph);
-                        }
-                    }
-                }
-                if (element.isRight()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        if(element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f){
-                            result.add(studyGraph);
-                        }
-                    }
-                }
-            }else {
-                if (element.isUp()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        result.add(studyGraph);
-                    }
-                }
-                if (element.isLeft()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        result.add(studyGraph);
-                    }
-                }
-                if (element.isDown()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        result.add(studyGraph);
-                    }
-                }
-                if (element.isRight()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        result.add(studyGraph);
-                    }
-                }
+        if (element.isUp()) {
+            GridElement studyGraph = tryAddGraph(element,new Vector3f(0.0f,0.0f,1.0f),finish.isBlueZona(),restriction);
+            if(studyGraph != null){
+                result.add(studyGraph);
             }
-        }else if(finish.isGoldZona()){
-            if(restriction) {
-                if (element.isUp()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                    if (studyGraph.isVisible()) {
-                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                            result.add(studyGraph);
-                        }
-                    }
-                }
-                if (element.isLeft()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible()) {
-                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                            result.add(studyGraph);
-                        }
-                    }
-                }
-                if (element.isDown()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                    if (studyGraph.isVisible()) {
-                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                            result.add(studyGraph);
-                        }
-                    }
-                }
-                if (element.isRight()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible()) {
-                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                            result.add(studyGraph);
-                        }
-                    }
-                }
-            }else{
-                if (element.isUp()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                    if (studyGraph.isVisible()) {
-                        result.add(studyGraph);
-                    }
-                }
-                if (element.isLeft()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible()) {
-                        result.add(studyGraph);
-                    }
-                }
-                if (element.isDown()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                    if (studyGraph.isVisible()) {
-                        result.add(studyGraph);
-                    }
-                }
-                if (element.isRight()) {
-                    GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible()) {
-                        result.add(studyGraph);
-                    }
-                }
+        }
+        if (element.isLeft()) {
+            GridElement studyGraph = tryAddGraph(element,new Vector3f(-1.0f,0.0f,0.0f),finish.isBlueZona(),restriction);
+            if(studyGraph != null){
+                result.add(studyGraph);
+            }
+        }
+        if (element.isDown()) {
+            GridElement studyGraph = tryAddGraph(element,new Vector3f(0.0f,0.0f,-1.0f),finish.isBlueZona(),restriction);
+            if(studyGraph != null){
+                result.add(studyGraph);
+            }
+        }
+        if (element.isRight()) {
+            GridElement studyGraph = tryAddGraph(element,new Vector3f(1.0f,0.0f,0.0f),finish.isBlueZona(),restriction);
+            if(studyGraph != null){
+                result.add(studyGraph);
             }
         }
 
@@ -549,5 +452,134 @@ public class PathfindingAlgorithm extends Thread {
         }
 
         return open;
+    }
+
+    private GridElement tryAddGraph(GridElement element, Vector3f direction, boolean isBlueZona, boolean restriction){
+        GridElement finalResult = null;
+        int skipInfo = 1 + characteristic.getJump() / 2;
+        if(skipInfo > 1){
+            List<GridElement> studyGraphs = new ArrayList<>();
+            for(int i=1; i<=skipInfo; i++){
+                GridElement studyGraph = findGraph(element.getPosition().add(direction.mul(i)));
+                if(studyGraph != null) {
+                    if(isBlueZona) {
+                        if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                            studyGraphs.add(studyGraph);
+                        } else {
+                            break;
+                        }
+                    }else{
+                        if (studyGraph.isVisible()) {
+                            studyGraphs.add(studyGraph);
+                        } else {
+                            break;
+                        }
+                    }
+                }else{
+                    break;
+                }
+            }
+
+            if(!studyGraphs.isEmpty()) {
+                for (GridElement studyGraph : studyGraphs) {
+                    studyGraph.setSkip(false);
+                    if (studyGraph.getCurrentHeight() <= element.getCurrentHeight() - 1) {
+                        if (!studyGraph.getPosition().equals(finish)) {
+                            studyGraph.setSkip(true);
+                        }
+                    }
+                }
+
+                for (GridElement studyGraph : studyGraphs) {
+                    if (!studyGraph.isSkip()) {
+                        if (studyGraph.getCurrentHeight() == element.getCurrentHeight()) {
+                            finalResult = studyGraph;
+                            break;
+                        } else {
+                            if(restriction) {
+                                if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    finalResult = studyGraphs.get(0);
+                                }
+                            }else{
+                                finalResult = studyGraphs.get(0);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if(finalResult == null){
+                    GridElement studyGraph = findGraph(element.getPosition().add(direction));
+                    if(isBlueZona) {
+                        if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                            if(restriction) {
+                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    finalResult = studyGraph;
+                                }
+                            }else{
+                                finalResult = studyGraph;
+                            }
+                        }
+                    }else{
+                        if (studyGraph.isVisible()) {
+                            if(restriction) {
+                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    finalResult = studyGraph;
+                                }
+                            }else{
+                                finalResult = studyGraph;
+                            }
+                        }
+                    }
+                }
+            }else{
+                GridElement studyGraph = findGraph(element.getPosition().add(direction));
+                if(isBlueZona) {
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                        if(restriction) {
+                            if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                finalResult = studyGraph;
+                            }
+                        }else{
+                            finalResult = studyGraph;
+                        }
+                    }
+                }else{
+                    if (studyGraph.isVisible()) {
+                        if(restriction) {
+                            if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                finalResult = studyGraph;
+                            }
+                        }else{
+                            finalResult = studyGraph;
+                        }
+                    }
+                }
+            }
+        }else {
+            GridElement studyGraph = findGraph(element.getPosition().add(direction));
+            if(isBlueZona) {
+                if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                    if(restriction) {
+                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            finalResult = studyGraph;
+                        }
+                    }else{
+                        finalResult = studyGraph;
+                    }
+                }
+            }else{
+                if (studyGraph.isVisible()) {
+                    if(restriction) {
+                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            finalResult = studyGraph;
+                        }
+                    }else{
+                        finalResult = studyGraph;
+                    }
+                }
+            }
+        }
+        return finalResult;
     }
 }
