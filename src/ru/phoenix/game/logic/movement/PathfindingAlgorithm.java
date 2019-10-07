@@ -450,25 +450,25 @@ public class PathfindingAlgorithm extends Thread {
             }else {
                 if (element.isUp()) {
                     GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                    if (studyGraph.isVisible()) {
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
                         result.add(studyGraph);
                     }
                 }
                 if (element.isLeft()) {
                     GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible()) {
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
                         result.add(studyGraph);
                     }
                 }
                 if (element.isDown()) {
                     GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                    if (studyGraph.isVisible()) {
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
                         result.add(studyGraph);
                     }
                 }
                 if (element.isRight()) {
                     GridElement studyGraph = findGraph(element.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                    if (studyGraph.isVisible()) {
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
                         result.add(studyGraph);
                     }
                 }
