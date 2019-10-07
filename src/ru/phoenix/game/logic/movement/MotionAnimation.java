@@ -11,6 +11,7 @@ import java.util.List;
 public class MotionAnimation {
     private float goal;
     private int index;
+    private int walkControl;
 
     private Vector3f startPosition;
     private Vector3f tempPos;
@@ -36,6 +37,7 @@ public class MotionAnimation {
         firstStart = true;
         endFrame = true;
         walkStage = false;
+        walkControl = 0;
         goal = 0;
         index = 0;
         startPosition = new Vector3f(start);
@@ -48,7 +50,7 @@ public class MotionAnimation {
         this.wayPoints = new ArrayList<>(wayPoints);
     }
 
-    public int motion(List<GridElement> elements, Vector3f position, Characteristic characteristic,ImageAnimation jumpAnim, ImageAnimation climbingAnim){
+    public int motion(List<GridElement> elements, Vector3f position, Characteristic characteristic,ImageAnimation jumpAnim, ImageAnimation climbingAnim, ImageAnimation walkAnim){
         boolean action = true;
         int motion = 0;
         boolean isJump = false;
@@ -61,6 +63,7 @@ public class MotionAnimation {
         }
 
         if(action) {
+            this.animation = walkAnim;
             if (index < wayPoints.size()) {
                 if (wayPoints.get(index).getCurrentHeight() < this.tempPos.getY() - 0.6f || this.tempPos.getY() + 0.6f < wayPoints.get(index).getCurrentHeight()) {
                     isJump = true;
@@ -106,6 +109,7 @@ public class MotionAnimation {
     private boolean move(Vector3f position, Characteristic characteristic){
         boolean end = false;
         goal += characteristic.getSpeed(); // фактор движения в приделах от 0-1
+        walkControl++;
         Vector3f start = new Vector3f(this.tempPos); // точка старта
         Vector3f finish = new Vector3f(wayPoints.get(index).getPosition()); // точка назначения
         finish.setY(wayPoints.get(index).getCurrentHeight());
@@ -113,8 +117,16 @@ public class MotionAnimation {
         Vector3f currentPos = start.add(delta.mul(goal)); // добавляем к вектору начала, разницу векторов помноженную на фактор движения
         position.setVector(currentPos); // устанавливаем обьекту текущее положение по направлению движения
 
+        if(walkControl == 27){
+            animation.nextFrame();
+        }else if(walkControl == 54){
+            animation.nextFrame();
+        }
+
         if (goal >= 1.0f) {
+            animation.nextFrame();
             goal = 0.0f;
+            walkControl = 0;
             GridElement temp = wayPoints.get(index);
             this.tempPos = new Vector3f(wayPoints.get(index).getPosition());
             this.tempPos.setY(wayPoints.get(index).getCurrentHeight());

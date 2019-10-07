@@ -12,13 +12,13 @@ public class MountainDirt extends BlockControl implements Block {
     // конструкторы
     public MountainDirt(){
         super();
-        setMeshs("./data/content/block/cold_dirt.obj");
+        setMeshs("./data/content/block/dirt/mountain_dirt.obj");
         setType(BLOCK_COLD_DIRT);
     }
 
     public MountainDirt(Texture texture){
         super();
-        setMeshs("./data/content/block/cold_dirt.obj",texture);
+        setMeshs("./data/content/block/dirt/mountain_dirt.obj",texture);
         setType(BLOCK_COLD_DIRT);
     }
 

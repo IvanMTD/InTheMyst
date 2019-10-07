@@ -10,13 +10,13 @@ public class GrassBevel extends BlockControl implements Block {
     // конструкторы
     public GrassBevel(){
         super();
-        setMeshs("./data/content/block/bevel.obj");
+        setMeshs("./data/content/block/grass/dirt_grass_bevel.obj");
         setType(BLOCK_DIRT_GRASS);
     }
 
     public GrassBevel(Texture texture){
         super();
-        setMeshs("./data/content/block/bevel.obj",texture);
+        setMeshs("./data/content/block/grass/dirt_grass_bevel.obj",texture);
         setType(BLOCK_DIRT_GRASS);
     }
 

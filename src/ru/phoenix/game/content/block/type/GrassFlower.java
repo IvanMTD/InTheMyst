@@ -12,13 +12,13 @@ public class GrassFlower extends BlockControl implements Block {
 
     public GrassFlower(){
         super();
-        setMeshs("./data/content/block/grass_f.obj");
+        setMeshs("./data/content/block/grass/grass_flower.obj");
         setType(BLOCK_GRASS_FLOWER);
     }
 
     public GrassFlower(Texture texture){
         super();
-        setMeshs("./data/content/block/grass_f.obj",texture);
+        setMeshs("./data/content/block/grass/grass_flower.obj",texture);
         setType(BLOCK_GRASS_FLOWER);
     }
 

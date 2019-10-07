@@ -12,13 +12,13 @@ public class Grass extends BlockControl implements Block{
     // конструкторы
     public Grass(){
         super();
-        setMeshs("./data/content/block/grass.obj");
+        setMeshs("./data/content/block/grass/dirt_grass_block.obj");
         setType(BLOCK_DIRT_GRASS);
     }
 
     public Grass(Texture texture){
         super();
-        setMeshs("./data/content/block/grass.obj",texture);
+        setMeshs("./data/content/block/grass/dirt_grass_block.obj",texture);
         setType(BLOCK_DIRT_GRASS);
     }
 

@@ -10,13 +10,13 @@ public class Rock extends BlockControl implements Block {
     // конструкторы
     public Rock(){
         super();
-        setMeshs("./data/content/block/rock.obj");
+        setMeshs("./data/content/block/rock/rock.obj");
         setType(BLOCK_ROCK);
     }
 
     public Rock(Texture texture){
         super();
-        setMeshs("./data/content/block/rock.obj",texture);
+        setMeshs("./data/content/block/rock/rock.obj",texture);
         setType(BLOCK_ROCK);
     }
 

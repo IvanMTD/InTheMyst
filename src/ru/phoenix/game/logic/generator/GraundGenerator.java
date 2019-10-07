@@ -36,8 +36,6 @@ public class GraundGenerator {
     private static Texture goldZona             = null;
     private static Texture blueZona             = null;
 
-    private static Texture blockTextures        = null;
-
     private static Block dirt_main              = null;
     private static Block grass_main             = null;
     private static Block snow_main              = null;
@@ -890,11 +888,6 @@ public class GraundGenerator {
     }
 
     private static void initBlocks(){
-
-        if(blockTextures == null){
-            blockTextures = new Texture2D();
-            blockTextures.setup(null,"./data/content/block/texture/atlas_blocks_texture.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        }
 
         if(dirt_main == null){
             dirt_main = new Dirt();

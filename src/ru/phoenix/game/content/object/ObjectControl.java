@@ -1,6 +1,7 @@
 package ru.phoenix.game.content.object;
 
 import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.kernel.CoreEngine;
 import ru.phoenix.core.loader.ImageAnimLoader;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.loader.texture.Texture;
@@ -12,6 +13,7 @@ import ru.phoenix.core.shader.Shader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -28,7 +30,8 @@ public abstract class ObjectControl {
     private float distance;
     private float id;
     private int group;
-    private int count;
+    private float counter;
+    private float lastCount;
     private float xOffset;
     private float yOffset;
     private float zOffset;
@@ -49,7 +52,8 @@ public abstract class ObjectControl {
         position = new Vector3f();
         currentTexture = 1;
         distance = 0;
-        count = 0;
+        counter = 0.0f;
+        lastCount = (float)glfwGetTime();
         xOffset = 0.0f;
         yOffset = 0.0f;
         zOffset = 0.0f;
@@ -302,26 +306,26 @@ public abstract class ObjectControl {
             if(isBoard()) {
                 if(isActive()){
                     if(!isJump() && !sprite.isBlock()) {
-                        if (count > sprite.getCondition()) {
+                        if (counter > sprite.getCondition()) {
                             sprite.nextFrame();
-                            count = 0;
+                            counter = 0.0f;
                         }
-                        count++;
                     }
                 }else {
-                    if (count > 10.0f + Math.random() * 10.0f) {
+                    if (counter > 10.0f + Math.random() * 10.0f) {
                         sprite.nextFrame();
-                        count = 0;
+                        counter = 0.0f;
                     }
-                    count++;
                 }
             }else{
-                if (count > 20.0f) {
+                if (counter > 20.0f) {
                     sprite.nextFrame();
-                    count = 0;
+                    counter = 0.0f;
                 }
-                count++;
             }
+            float tik = (float)glfwGetTime() - lastCount;
+            counter+=(tik * CoreEngine.getFps());
+            lastCount = (float)glfwGetTime();
         }
     }
 }

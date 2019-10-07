@@ -142,7 +142,7 @@ public class CoreEngine {
         glfwTerminate();
     }
 
-    private static int getFps() {
+    public static int getFps() {
         return fps;
     }
 

@@ -10,13 +10,13 @@ public class Snow extends BlockControl implements Block {
     // конструкторы
     public Snow(){
         super();
-        setMeshs("./data/content/block/dirt_snow.obj");
+        setMeshs("./data/content/block/snow/snow.obj");
         setType(BLOCK_DIRT_SNOW);
     }
 
     public Snow(Texture texture){
         super();
-        setMeshs("./data/content/block/dirt_snow.obj",texture);
+        setMeshs("./data/content/block/snow/snow.obj",texture);
         setType(BLOCK_DIRT_SNOW);
     }
 

@@ -161,6 +161,7 @@ public class Person extends ObjectControl implements Object {
         objectWidth = (texWid / row) * objectHeight / (texHei / column);
         objectHeight = (texHei / column) * objectWidth / (texWid / row);
         walk = ImageAnimLoader.load(textures.get(currentTexture), row, column, objectWidth, objectHeight,null,0);
+        walk.setBlock(true);
         currentTexture = 2;
         texWid = textures.get(currentTexture).getWidth();
         texHei = textures.get(currentTexture).getHeight();
@@ -169,6 +170,7 @@ public class Person extends ObjectControl implements Object {
         objectWidth = (texWid / row) * objectHeight / (texHei / column);
         objectHeight = (texHei / column) * objectWidth / (texWid / row);
         jump = ImageAnimLoader.load(textures.get(currentTexture), row, column, objectWidth, objectHeight,null,0);
+        jump.setBlock(true);
         currentTexture = 3;
         texWid = textures.get(currentTexture).getWidth();
         texHei = textures.get(currentTexture).getHeight();
@@ -266,7 +268,13 @@ public class Person extends ObjectControl implements Object {
                                                 element.setBlocked(false);
                                             }
                                         }
-                                        walk.setFrames(1);
+                                        int coin = Math.round((float)Math.random() * 2.0f);
+                                        if(coin == 1){
+                                            walk.setFrames(1);
+                                        }else{
+                                            walk.setFrames(5);
+                                        }
+                                        stand.setFrames(1);
                                         jump.setFrames(1);
                                         climbing.setFrames(1);
                                         event = MOVEMENT_ANIMATION;
@@ -292,7 +300,7 @@ public class Person extends ObjectControl implements Object {
                             firstStart = false;
                         }else {
                             Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-                            int motion = motionAnimation.motion(gridElements, position, characteristic, jump, climbing);
+                            int motion = motionAnimation.motion(gridElements, position, characteristic, jump, climbing, walk);
                             if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
                                 setPosition(position);
                             }

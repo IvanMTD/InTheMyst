@@ -12,13 +12,13 @@ public class Dirt extends BlockControl implements Block {
     // конструкторы
     public Dirt(){
         super();
-        setMeshs("./data/content/block/dirt.obj");
+        setMeshs("./data/content/block/dirt/block_dirt.obj");
         setType(BLOCK_DIRT);
     }
 
     public Dirt(Texture texture){
         super();
-        setMeshs("./data/content/block/dirt.obj",texture);
+        setMeshs("./data/content/block/dirt/block_dirt.obj",texture);
         setType(BLOCK_DIRT);
     }
 
