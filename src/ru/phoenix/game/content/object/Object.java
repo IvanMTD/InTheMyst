@@ -24,7 +24,7 @@ public interface Object {
     boolean isInstance();
     boolean isShadow();
     boolean isActive();
-    void draw(Shader shader);
+    void draw(Shader shader, boolean shadow);
     boolean isBoard();
     void setProjection(Projection projection);
 }

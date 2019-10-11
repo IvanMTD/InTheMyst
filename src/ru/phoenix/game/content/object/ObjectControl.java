@@ -2,6 +2,7 @@ package ru.phoenix.game.content.object;
 
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.CoreEngine;
+import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.loader.ImageAnimLoader;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.loader.texture.Texture;
@@ -14,11 +15,12 @@ import ru.phoenix.game.hud.assembled.SelfIndicators;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static ru.phoenix.core.config.Constants.GROUP_A;
+import static ru.phoenix.core.config.Constants.*;
 
 public abstract class ObjectControl {
     // vbo
@@ -48,7 +50,12 @@ public abstract class ObjectControl {
     private boolean jump;
     private boolean turn;
 
+    private boolean isIndicatorOn;
+    private boolean tapStop;
+
     public ObjectControl(){
+        isIndicatorOn = true;
+        tapStop = false;
         selfIndicators = null;
         textures = new ArrayList<>();
         projection = new Projection();
@@ -272,7 +279,7 @@ public abstract class ObjectControl {
         this.turn = turn;
     }
 
-    public void draw(Shader shader){
+    public void draw(Shader shader, boolean shadow){
         boolean currentTurn;
         float yaw = Camera.getInstance().getYaw();
         if(90.0f < yaw && yaw < 270.0f){
@@ -335,7 +342,22 @@ public abstract class ObjectControl {
             lastCount = (float)glfwGetTime();
         }
 
-        if(selfIndicators != null && isOnTarget()){
+        boolean tap = false;
+
+        if(!tapStop){
+            tap = Input.getInstance().isPressed(GLFW_KEY_F);
+            tapStop = true;
+        }
+
+        if(!Input.getInstance().isPressed(GLFW_KEY_F)){
+            tapStop = false;
+        }
+
+        if(tap){
+            isIndicatorOn = !isIndicatorOn;
+        }
+
+        if(selfIndicators != null && isIndicatorOn && !shadow){
             selfIndicators.draw(shader);
         }
     }

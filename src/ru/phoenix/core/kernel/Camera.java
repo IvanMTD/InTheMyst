@@ -131,7 +131,7 @@ public class Camera {
             if (Input.getInstance().isPressed(GLFW_KEY_D)) {
                 setPos(pos.add(new Vector3f(front.cross(up)).normalize().mul(movementSpeedX)));
             }
-            if(Input.getInstance().buttonActionVerification(true,GLFW_MOUSE_BUTTON_LEFT) == Constants.HOLD){
+            if(Input.getInstance().mouseButtonActionVerification(GLFW_MOUSE_BUTTON_LEFT) == Constants.HOLD){
                 if(lastCursorPos2 != null){
                     float corectionX = (hypotenuse / Window.getInstance().getWidth()) / corW;
                     float corectionY = (hypotenuse / Window.getInstance().getHeight()) / corH;

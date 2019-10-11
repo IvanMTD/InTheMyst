@@ -41,6 +41,7 @@ public class Constants {
     public static final int NO_ACTION           = 0x30000;
     public static final int CLICK               = 0x30001;
     public static final int HOLD                = 0x30002;
+    public static final int PRESS               = 0x30003;
 
     // group RGB
     public static final int GROUP_R             = 0x20001;

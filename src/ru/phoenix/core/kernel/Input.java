@@ -5,7 +5,6 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 import ru.phoenix.core.config.Constants;
-import ru.phoenix.core.config.Time;
 import ru.phoenix.core.math.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -93,28 +92,23 @@ public class Input {
         glfwPollEvents();
     }
 
-    public int buttonActionVerification(boolean mouse, int key){
-        if(mouse){
-            if (isMousePressed(key)) {
-                counter++;
-                if(!click) {
-                    click = true;
-                    action = Constants.HOLD;
-                }
-            }else if(!isMousePressed(key)){
-                action = Constants.NO_ACTION;
-                if(click) {
-                    if (counter < 60 && !getCursorMove()) {
-                        action = Constants.CLICK;
-                    }
-                    counter = 0;
-                    click = false;
-                }
+    public int mouseButtonActionVerification(int key){
+        if (isMousePressed(key)) {
+            counter++;
+            if(!click) {
+                click = true;
+                action = Constants.HOLD;
             }
-        }else{
-            System.out.println("Not working yet!");
+        }else if(!isMousePressed(key)){
+            action = Constants.NO_ACTION;
+            if(click) {
+                if (counter < 60 && !getCursorMove()) {
+                    action = Constants.CLICK;
+                }
+                counter = 0;
+                click = false;
+            }
         }
-
         return action;
     }
 

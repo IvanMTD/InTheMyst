@@ -252,7 +252,7 @@ public class Person extends ObjectControl implements Object {
                                     pathfindingAlgorithm.start();
                                 }
                             }
-                            if (Input.getInstance().buttonActionVerification(true,GLFW_MOUSE_BUTTON_LEFT) == Constants.CLICK) {
+                            if (Input.getInstance().mouseButtonActionVerification(GLFW_MOUSE_BUTTON_LEFT) == Constants.CLICK) {
                                 wayPoints.clear();
                                 GridElement finishElement = getFinishElement(gridElements);
                                 if (finishElement != null) {

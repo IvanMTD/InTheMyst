@@ -97,13 +97,13 @@ public abstract class BattleGraundControl {
         }
 
         for(Object object : sprites){
-            object.draw(shader);
+            object.draw(shader,false);
         }
     }
 
     public void drawWater(Shader shader){
         for(Object object : water){
-            object.draw(shader);
+            object.draw(shader,false);
         }
     }
 
@@ -116,7 +116,7 @@ public abstract class BattleGraundControl {
     public void drawShadowSprites(Shader shader){
         for(Object object : sprites){
             if(object.isShadow()){
-                object.draw(shader);
+                object.draw(shader,true);
             }
         }
     }
