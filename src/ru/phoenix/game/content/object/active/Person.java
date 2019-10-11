@@ -15,6 +15,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
 import ru.phoenix.game.content.object.active.property.Characteristic;
+import ru.phoenix.game.hud.assembled.SelfIndicators;
 import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.game.logic.movement.MotionAnimation;
@@ -51,6 +52,7 @@ public class Person extends ObjectControl implements Object {
     private TextureConfig jumpConfig;
     private TextureConfig climbingConfig;
     // parametri
+    private SelfIndicators selfIndicators;
     private Characteristic characteristic;
     // control
     private List<GridElement> wayPoints;
@@ -180,6 +182,8 @@ public class Person extends ObjectControl implements Object {
         objectHeight = (texHei / column) * objectWidth / (texWid / row);
         climbing = ImageAnimLoader.load(textures.get(currentTexture), row, column, objectWidth, objectHeight,null,0);
         climbing.setBlock(true);
+
+        selfIndicators = new SelfIndicators(objectWidth,new Vector3f(0.0f,objectHeight,0.0f));
 
         setup(textures,stand,0);
         standControl = false;
@@ -364,10 +368,7 @@ public class Person extends ObjectControl implements Object {
                 characteristic.setInitiative(characteristic.getInitiative() + characteristic.getInitiativeCharge());
                 if(characteristic.getInitiative() >= 100){
                     characteristic.setInitiative(0);
-                    characteristic.setStamina(characteristic.getStamina() + characteristic.getStaminaCharge());
-                    if(characteristic.getStamina() >= characteristic.getStaminaTotal()){
-                        characteristic.setStamina(characteristic.getStaminaTotal());
-                    }
+                    characteristic.updateIndicators();
                     this.action = true;
                     this.firstStart = true;
                     event = PREPARED_AREA;
@@ -387,6 +388,9 @@ public class Person extends ObjectControl implements Object {
         if(tempX != getPosition().getX() || tempZ != getPosition().getZ() || isJump()) {
             checkTurn();
         }
+
+        selfIndicators.update(getPosition());
+        setSelfIndicators(selfIndicators);
 
         tempX = getPosition().getX();
         tempZ = getPosition().getZ();

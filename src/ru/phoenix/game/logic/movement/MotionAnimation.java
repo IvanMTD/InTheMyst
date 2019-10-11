@@ -69,6 +69,11 @@ public class MotionAnimation {
                     isJump = true;
                     this.animation = jumpAnim;
                 }
+
+                if(wayPoints.get(index).getPosition().sub(tempPos).length() > 1.5f){
+                    isJump = true;
+                    this.animation = jumpAnim;
+                }
             }
 
             if (!isJump) {
@@ -108,7 +113,7 @@ public class MotionAnimation {
 
     private boolean move(Vector3f position, Characteristic characteristic){
         boolean end = false;
-        goal += characteristic.getSpeed(); // фактор движения в приделах от 0-1
+        goal += characteristic.getMovementSpeed(); // фактор движения в приделах от 0-1
         walkControl++;
         Vector3f start = new Vector3f(this.tempPos); // точка старта
         Vector3f finish = new Vector3f(wayPoints.get(index).getPosition()); // точка назначения
@@ -177,7 +182,7 @@ public class MotionAnimation {
         if(isStepUp) {
             if (firstStart) {
                 walkStage = false;
-                goal += characteristic.getSpeed() * speedFactor; // фактор движения в приделах от 0-1
+                goal += characteristic.getMovementSpeed() * speedFactor; // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos); // точка старта
                 Vector3f finish = new Vector3f(this.tempPos.add(offset)); // точка назначения
                 Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
@@ -200,7 +205,7 @@ public class MotionAnimation {
                 }
             } else {
                 walkStage = true;
-                goal += characteristic.getSpeed(); // фактор движения в приделах от 0-1
+                goal += characteristic.getMovementSpeed(); // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos); // точка старта
                 Vector3f finish = new Vector3f(wayPoints.get(index).getPosition()); // точка назначения
                 finish.setY(wayPoints.get(index).getCurrentHeight());
@@ -242,7 +247,7 @@ public class MotionAnimation {
         }else{
             if (firstStart) {
                 walkStage = true;
-                goal += characteristic.getSpeed(); // фактор движения в приделах от 0-1
+                goal += characteristic.getMovementSpeed(); // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos); // точка старта
                 Vector3f finish = new Vector3f(wayPoints.get(index).getPosition().add(offset.mul(-1.0f))); // точка назначения
                 Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
@@ -257,7 +262,7 @@ public class MotionAnimation {
                 }
             } else {
                 walkStage = false;
-                goal += characteristic.getSpeed() * speedFactor; // фактор движения в приделах от 0-1
+                goal += characteristic.getMovementSpeed() * speedFactor; // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos); // точка старта
                 Vector3f finish = new Vector3f(this.tempPos.add(offset)); // точка назначения
                 Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
@@ -470,6 +475,76 @@ public class MotionAnimation {
                             animation.setFrames(6);
                             float z = (float) Math.cos(goal * Math.PI / 180.0f) * 0.5f;
                             float y = (float) Math.sin(goal * Math.PI / 180.0f) * (Math.abs(start.getY() - finish.getY()) + 0.5f);
+                            Vector3f currentPos = new Vector3f(centerF).add(new Vector3f(0.0f, y, z));
+                            position.setVector(currentPos);
+                        } else {
+                            end = endFrame(characteristic,position);
+                        }
+                    }
+                }
+            }else{
+                if (start.getX() != finish.getX() && start.getZ() == finish.getZ()) {
+                    if (start.getX() < finish.getX()) { // 5
+                        if (goal < 90.0f) {
+                            animation.setFrames(5);
+                            float x = (float) -Math.cos(goal * Math.PI / 180.0f);
+                            float y = (float) Math.sin(goal * Math.PI / 180.0f);
+                            Vector3f currentPos = new Vector3f(centerS).add(new Vector3f(x, y, 0.0f));
+                            position.setVector(currentPos);
+                        } else if (90.0f <= goal && goal < 180.0f) {
+                            animation.setFrames(6);
+                            float x = (float) -Math.cos(goal * Math.PI / 180.0f);
+                            float y = (float) Math.sin(goal * Math.PI / 180.0f);
+                            Vector3f currentPos = new Vector3f(centerF).add(new Vector3f(x, y, 0.0f));
+                            position.setVector(currentPos);
+                        } else {
+                            end = endFrame(characteristic,position);
+                        }
+                    } else if (start.getX() > finish.getX()) { // 6
+                        if (goal < 90.0f) {
+                            animation.setFrames(5);
+                            float x = (float) Math.cos(goal * Math.PI / 180.0f);
+                            float y = (float) Math.sin(goal * Math.PI / 180.0f);
+                            Vector3f currentPos = new Vector3f(centerS).add(new Vector3f(x, y, 0.0f));
+                            position.setVector(currentPos);
+                        } else if (90.0f <= goal && goal < 180.0f) {
+                            animation.setFrames(6);
+                            float x = (float) Math.cos(goal * Math.PI / 180.0f);
+                            float y = (float) Math.sin(goal * Math.PI / 180.0f);
+                            Vector3f currentPos = new Vector3f(centerF).add(new Vector3f(x, y, 0.0f));
+                            position.setVector(currentPos);
+                        } else {
+                            end = endFrame(characteristic,position);
+                        }
+                    }
+                } else if (start.getX() == finish.getX() && start.getZ() != finish.getZ()) {
+                    if (start.getZ() < finish.getZ()) { // 7
+                        if (goal < 90.0f) {
+                            animation.setFrames(5);
+                            float z = (float) -Math.cos(goal * Math.PI / 180.0f);
+                            float y = (float) Math.sin(goal * Math.PI / 180.0f);
+                            Vector3f currentPos = new Vector3f(centerS).add(new Vector3f(0.0f, y, z));
+                            position.setVector(currentPos);
+                        } else if (90.0f <= goal && goal < 180.0f) {
+                            animation.setFrames(6);
+                            float z = (float) -Math.cos(goal * Math.PI / 180.0f);
+                            float y = (float) Math.sin(goal * Math.PI / 180.0f);
+                            Vector3f currentPos = new Vector3f(centerF).add(new Vector3f(0.0f, y, z));
+                            position.setVector(currentPos);
+                        } else {
+                            end = endFrame(characteristic,position);
+                        }
+                    } else if (start.getZ() > finish.getZ()) { // 8
+                        if (goal < 90.0f) {
+                            animation.setFrames(5);
+                            float z = (float) Math.cos(goal * Math.PI / 180.0f);
+                            float y = (float) Math.sin(goal * Math.PI / 180.0f);
+                            Vector3f currentPos = new Vector3f(centerS).add(new Vector3f(0.0f, y, z));
+                            position.setVector(currentPos);
+                        } else if (90.0f <= goal && goal < 180.0f) {
+                            animation.setFrames(6);
+                            float z = (float) Math.cos(goal * Math.PI / 180.0f);
+                            float y = (float) Math.sin(goal * Math.PI / 180.0f);
                             Vector3f currentPos = new Vector3f(centerF).add(new Vector3f(0.0f, y, z));
                             position.setVector(currentPos);
                         } else {

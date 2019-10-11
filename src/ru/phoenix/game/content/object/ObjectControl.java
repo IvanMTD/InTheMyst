@@ -9,6 +9,7 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.hud.assembled.SelfIndicators;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import static ru.phoenix.core.config.Constants.GROUP_A;
 
 public abstract class ObjectControl {
     // vbo
+    private SelfIndicators selfIndicators;
     private List<Texture> textures;
     private ImageAnimation sprite;
     private Projection projection;
@@ -47,6 +49,7 @@ public abstract class ObjectControl {
     private boolean turn;
 
     public ObjectControl(){
+        selfIndicators = null;
         textures = new ArrayList<>();
         projection = new Projection();
         position = new Vector3f();
@@ -159,6 +162,10 @@ public abstract class ObjectControl {
         this.position = position;
         projection.getModelMatrix().identity();
         projection.setTranslation(position);
+    }
+
+    protected void setSelfIndicators(SelfIndicators selfIndicators) {
+        this.selfIndicators = selfIndicators;
     }
 
     public float getId() {
@@ -326,6 +333,10 @@ public abstract class ObjectControl {
             float tik = (float)glfwGetTime() - lastCount;
             counter+=(tik * CoreEngine.getFps());
             lastCount = (float)glfwGetTime();
+        }
+
+        if(selfIndicators != null && isOnTarget()){
+            selfIndicators.draw(shader);
         }
     }
 }

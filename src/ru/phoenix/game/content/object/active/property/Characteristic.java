@@ -1,60 +1,111 @@
 package ru.phoenix.game.content.object.active.property;
 
 public class Characteristic {
+    private final int MAX_LEVEL     = 99;
+    private final int NEXT_LEVEL    = 100;
 
-    private int initiative;
-    private int initiativeCharge;
+    // Опыт и уровень
+    private int experience;
+    private int level;
+
+    // Здоровье
+    private int totalHealth;
+    private int health;
+    private int healthCharge;
+    // Манна
+    private int totalManna;
+    private int manna;
+    private int mannaCharge;
+    // Стамина
+    private int totalStamina; // Максимальная стамина
+    private int stamina; // Текущий уровень стамины
+    private int staminaCharge; // Востановление стамины
+    // Инициатива
+    private int initiative; // Текущий уровень инициативы
+    private int initiativeCharge; // Скорость накопления инициативы
+    // Очки действия
     private int totalActionPoint;
     private int curentActionPoint;
+    // Пораметры перемещения
     private int move;
-    private int staminaTotal;
-    private int stamina;
-    private int staminaCharge;
     private int jump;
-    private float speed;
+    private int speed;
 
+    // Конструкторы класса
     public Characteristic(){
+        // Опыт и уровень
+        setExperience(0);
+        setLevel(1);
+        // Очки действия
+        setTotalActionPoint(2);
+        setCurentActionPoint(getTotalActionPoint());
+        // Инициатива
         setInitiative(0);
         setInitiativeCharge(15);
-        setTotalActionPoint(2);
-        setCurentActionPoint(2);
-        setMove(6);
-        setStaminaTotal(100);
-        setStamina(100);
-        setStaminaCharge(10);
-        setJump(2);
-        setSpeed(0.012f);
+        // Здоровье
+        setTotalHealth(30);
+        setHealth(getTotalHealth());
+        setHealthCharge(0);
+        // Манна
+        setTotalManna(30);
+        setManna(getTotalManna());
+        setMannaCharge(0);
+        // Стамина
+        setTotalStamina(100);
+        setStamina(getTotalStamina());
+        setStaminaCharge(15);
+        // Движения
+        setMove(3);
+        setJump(1);
+        setSpeed(2);
     }
 
-    public Characteristic(Characteristic characteristic) {
+    public Characteristic(Characteristic characteristic){
+        // Опыт и уровень
+        setExperience(characteristic.getExperience());
+        setLevel(characteristic.getLevel());
+        // Очки действия
+        setTotalActionPoint(characteristic.getTotalActionPoint());
+        setCurentActionPoint(getTotalActionPoint());
+        // Инициатива
         setInitiative(characteristic.getInitiative());
         setInitiativeCharge(characteristic.getInitiativeCharge());
-        setTotalActionPoint(characteristic.getTotalActionPoint());
-        setCurentActionPoint(characteristic.getCurentActionPoint());
-        setMove(characteristic.getMove());
-        setStaminaTotal(characteristic.getStaminaTotal());
-        setStamina(characteristic.getStamina());
+        // Здоровье
+        setTotalHealth(characteristic.getTotalHealth());
+        setHealth(getTotalHealth());
+        setHealthCharge(characteristic.getHealthCharge());
+        // Манна
+        setTotalManna(characteristic.getTotalManna());
+        setManna(getTotalManna());
+        setMannaCharge(characteristic.getMannaCharge());
+        // Стамина
+        setTotalStamina(characteristic.getTotalStamina());
+        setStamina(getTotalStamina());
         setStaminaCharge(characteristic.getStaminaCharge());
+        // Движения
+        setMove(characteristic.getMove());
         setJump(characteristic.getJump());
         setSpeed(characteristic.getSpeed());
     }
 
-    public int getInitiative() {
-        return initiative;
+    // ОПЫТ И УРОВЕНЬ
+    public int getExperience() {
+        return experience;
     }
 
-    public void setInitiative(int initiative) {
-        this.initiative = initiative;
+    public void setExperience(int experience) {
+        this.experience = experience;
     }
 
-    public int getInitiativeCharge() {
-        return initiativeCharge;
+    public int getLevel() {
+        return level;
     }
 
-    public void setInitiativeCharge(int initiativeCharge) {
-        this.initiativeCharge = initiativeCharge;
+    public void setLevel(int level) {
+        this.level = level;
     }
 
+    // ОЧКИ ДЕЙСТВИЯ
     public int getTotalActionPoint() {
         return totalActionPoint;
     }
@@ -71,20 +122,86 @@ public class Characteristic {
         this.curentActionPoint = curentActionPoint;
     }
 
-    public int getMove() {
-        return move;
+    // ИНИЦИАТИВА
+    public int getInitiative() {
+        return initiative;
     }
 
-    public void setMove(int move) {
-        this.move = move;
+    public void setInitiative(int initiative) {
+        this.initiative = initiative;
     }
 
-    public int getStaminaTotal() {
-        return staminaTotal;
+    public int getInitiativeCharge() {
+        return initiativeCharge;
     }
 
-    public void setStaminaTotal(int staminaTotal) {
-        this.staminaTotal = staminaTotal;
+    public void setInitiativeCharge(int initiativeCharge) {
+        this.initiativeCharge = initiativeCharge;
+    }
+
+    //ЗДОРОВЬЕ
+    public int getTotalHealth() {
+        return totalHealth;
+    }
+
+    public void setTotalHealth(int totalHealth) {
+        this.totalHealth = totalHealth;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+        if(getHealth() > getTotalHealth()){
+            setHealth(getTotalHealth());
+        }
+    }
+
+    public int getHealthCharge() {
+        return healthCharge;
+    }
+
+    public void setHealthCharge(int healthCharge) {
+        this.healthCharge = healthCharge;
+    }
+
+    // МАННА
+    public int getTotalManna() {
+        return totalManna;
+    }
+
+    public void setTotalManna(int totalManna) {
+        this.totalManna = totalManna;
+    }
+
+    public int getManna() {
+        return manna;
+    }
+
+    public void setManna(int manna) {
+        this.manna = manna;
+        if(getManna() > getTotalManna()){
+            setManna(getTotalManna());
+        }
+    }
+
+    public int getMannaCharge() {
+        return mannaCharge;
+    }
+
+    public void setMannaCharge(int mannaCharge) {
+        this.mannaCharge = mannaCharge;
+    }
+
+    // СТАМИНА
+    public int getTotalStamina() {
+        return totalStamina;
+    }
+
+    public void setTotalStamina(int totalStamina) {
+        this.totalStamina = totalStamina;
     }
 
     public int getStamina() {
@@ -93,6 +210,9 @@ public class Characteristic {
 
     public void setStamina(int stamina) {
         this.stamina = stamina;
+        if(getStamina() > getTotalStamina()){
+            setStamina(getTotalStamina());
+        }
     }
 
     public int getStaminaCharge() {
@@ -103,6 +223,15 @@ public class Characteristic {
         this.staminaCharge = staminaCharge;
     }
 
+    //ДВИЖЕНИЕ
+    public int getMove() {
+        return move;
+    }
+
+    public void setMove(int move) {
+        this.move = move;
+    }
+
     public int getJump() {
         return jump;
     }
@@ -111,11 +240,22 @@ public class Characteristic {
         this.jump = jump;
     }
 
-    public float getSpeed() {
+    public int getSpeed() {
         return speed;
     }
 
-    public void setSpeed(float speed) {
+    public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    // Формулы
+    public void updateIndicators(){
+        setHealth(getHealth() + getHealthCharge());
+        setManna(getManna() + getMannaCharge());
+        setStamina(getStamina() + getStaminaCharge());
+    }
+
+    public float getMovementSpeed() {
+        return speed * 0.006f;
     }
 }

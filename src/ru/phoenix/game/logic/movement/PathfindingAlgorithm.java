@@ -262,8 +262,8 @@ public class PathfindingAlgorithm extends Thread {
 
     private boolean checkStudyPosition(GridElement parentElement, Vector3f studyPosition){
         boolean check = false;
-        float min = parentElement.getCurrentHeight() - characteristic.getJump();
-        float max = parentElement.getCurrentHeight() + characteristic.getJump();
+        float min = parentElement.getCurrentHeight() - (float)characteristic.getJump();
+        float max = parentElement.getCurrentHeight() + (float)characteristic.getJump();
 
         for(GridElement graph : graphs){
             if(graph.getPosition().equals(studyPosition) && !graph.isBlocked()){
@@ -509,26 +509,21 @@ public class PathfindingAlgorithm extends Thread {
                 }
 
                 if(finalResult == null){
-                    GridElement studyGraph = findGraph(element.getPosition().add(direction));
-                    if(isBlueZona) {
-                        if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                            if(restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                    finalResult = studyGraph;
-                                }
-                            }else{
-                                finalResult = studyGraph;
+                    if(isBlueZona){
+                        if(restriction){
+                            if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                finalResult = studyGraphs.get(0);
                             }
+                        }else{
+                            finalResult = studyGraphs.get(0);
                         }
                     }else{
-                        if (studyGraph.isVisible()) {
-                            if(restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                    finalResult = studyGraph;
-                                }
-                            }else{
-                                finalResult = studyGraph;
+                        if(restriction){
+                            if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                finalResult = studyGraphs.get(0);
                             }
+                        }else{
+                            finalResult = studyGraphs.get(0);
                         }
                     }
                 }

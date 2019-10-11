@@ -1286,7 +1286,7 @@ public class GraundGenerator {
     }
 
     private static int checkBlockBorder(GridElement block){
-        float mainCurrentHeight = block.getPosition().getY() - 1.0f;
+        float mainCurrentHeight = (float)Math.ceil(block.getPosition().getY()) - 1.0f;
         Vector3f left = new Vector3f(block.getPosition().getX() - 1.0f,0.0f,block.getPosition().getZ());
         Vector3f right = new Vector3f(block.getPosition().getX() + 1.0f,0.0f,block.getPosition().getZ());
         Vector3f up = new Vector3f(block.getPosition().getX(),0.0f,block.getPosition().getZ() + 1.0f);
