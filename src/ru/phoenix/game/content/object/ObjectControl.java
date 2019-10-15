@@ -300,6 +300,7 @@ public abstract class ObjectControl {
         shader.setUniform("board",isBoard() ? 1 : 0);
         shader.setUniform("isActive",isActive() ? 1 : 0);
         shader.setUniform("turn",currentTurn ? 1 : 0);
+        shader.setUniform("zBufferOffset",0);
         // доп данные
         shader.setUniform("model_m",projection.getModelMatrix());
         shader.setUniform("xOffset",xOffset);

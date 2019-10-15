@@ -22,11 +22,15 @@ public abstract class BoardControl {
     private Projection projection;
     private Vector3f mainPosition;
 
+    // control
+    private boolean visible;
+
     protected BoardControl(){
         texture = new Texture2D();
         vbo = new MeshConfig();
         projection = new Projection();
         mainPosition = new Vector3f();
+        visible = true;
     }
 
     protected void init(String texturePath, float width, Vector3f mainPosition){
@@ -59,9 +63,9 @@ public abstract class BoardControl {
         vbo.allocate(pos,null,tex,null,null,null,null,null,indices);
     }
 
-    public void update(Vector3f gamePosition){
+    public void update(Vector3f gamePos){
         projection.getModelMatrix().identity();
-        projection.setTranslation(gamePosition);
+        projection.setTranslation(gamePos);
     }
 
     public void draw(Shader shader){
@@ -88,5 +92,13 @@ public abstract class BoardControl {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
         shader.setUniform("image",0);
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

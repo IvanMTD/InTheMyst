@@ -5,5 +5,8 @@ import ru.phoenix.core.shader.Shader;
 
 public interface Board {
     void draw(Shader shader);
-    void update(Vector3f position);
+    void update(Vector3f gamePos);
+    // control
+    boolean isVisible();
+    void setVisible(boolean visible);
 }

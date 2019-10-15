@@ -59,7 +59,7 @@ void main() {
         if(board == 1){
             vec3 billboardSize = vec3(1.0f,1.0f,1.0f);
             vec3 particleCenter_wordspace = vec3(model_m[0].z,model_m[1].z,model_m[2].z);
-            vec3 particleUp_wordspace = vec3(model_m[0].y,model_m[1].y,model_m[2]);
+            vec3 particleUp_wordspace = vec3(model_m[0].y,model_m[1].y,model_m[2].y);
             vec3 result = particleCenter_wordspace + (cameraRight_worldspace * l_pos.x * billboardSize.x + particleUp_wordspace * l_pos.y  * billboardSize.y);
             result = vec3(result.x + xOffset,result.y + yOffset,result.z - 1.0f + zOffset);
 

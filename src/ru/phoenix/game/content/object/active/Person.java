@@ -349,12 +349,10 @@ public class Person extends ObjectControl implements Object {
                                         event = PREPARED_AREA;
                                         firstStart = true;
                                     }else{
-                                        characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
                                         Default.setWait(false);
                                         this.action = false;
                                     }
                                 } else {
-                                    characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
                                     Default.setWait(false);
                                     this.action = false;
                                 }
@@ -367,6 +365,7 @@ public class Person extends ObjectControl implements Object {
             if(sampleData != Time.getSecond()){
                 characteristic.setInitiative(characteristic.getInitiative() + characteristic.getInitiativeCharge());
                 if(characteristic.getInitiative() >= 100){
+                    characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
                     characteristic.setInitiative(0);
                     characteristic.updateIndicators();
                     this.action = true;
@@ -389,7 +388,7 @@ public class Person extends ObjectControl implements Object {
             checkTurn();
         }
 
-        selfIndicators.update(getPosition());
+        selfIndicators.update(getPosition(),characteristic);
         setSelfIndicators(selfIndicators);
 
         tempX = getPosition().getX();
