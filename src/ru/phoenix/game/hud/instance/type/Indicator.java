@@ -10,4 +10,9 @@ public class Indicator extends BoardControl implements Board {
         super();
         init(texturePath,width,offsetPosition);
     }
+
+    @Override
+    public void update(Vector3f currentPos){
+        super.update(currentPos);
+    }
 }

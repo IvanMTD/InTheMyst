@@ -89,11 +89,12 @@ public abstract class BattleGraundControl {
     public void drawSprites(Shader shader){
         if(sprites.size() != 0) {
             for (Object object : sprites) {
-                float distance = Camera.getInstance().getPos().sub(object.getPosition()).length();
+                float distance = Math.abs(Camera.getInstance().getPos().sub(object.getPosition()).length());
                 object.setDistance(distance);
             }
 
             sprites.sort((o1, o2) -> o1.getDistance() < o2.getDistance() ? 0 : -1);
+            sprites.sort(((o1, o2) -> (o1.isActive() ? 1 : 0) < (o2.isActive() ? 1 : 0) ? 0 : -1));
         }
 
         for(Object object : sprites){

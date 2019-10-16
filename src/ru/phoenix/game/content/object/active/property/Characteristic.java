@@ -26,6 +26,9 @@ public class Characteristic {
     // Очки действия
     private int totalActionPoint;
     private int curentActionPoint;
+    // Характеристики
+    private int physicalPower;
+    private int magicPower;
     // Пораметры перемещения
     private int move;
     private int jump;
@@ -54,8 +57,11 @@ public class Characteristic {
         setTotalStamina(100);
         setStamina(getTotalStamina());
         setStaminaCharge(15);
+        // Характеристики
+        setPhysicalPower(10);
+        setMagicPower(10);
         // Движения
-        setMove(3);
+        setMove(6);
         setJump(1);
         setSpeed(2);
     }
@@ -82,6 +88,9 @@ public class Characteristic {
         setTotalStamina(characteristic.getTotalStamina());
         setStamina(getTotalStamina());
         setStaminaCharge(characteristic.getStaminaCharge());
+        // Характеристики
+        setPhysicalPower(characteristic.getPhysicalPower());
+        setMagicPower(characteristic.getMagicPower());
         // Движения
         setMove(characteristic.getMove());
         setJump(characteristic.getJump());
@@ -221,6 +230,23 @@ public class Characteristic {
 
     public void setStaminaCharge(int staminaCharge) {
         this.staminaCharge = staminaCharge;
+    }
+
+    // ХАРАКТЕРИСТИКИ
+    public int getPhysicalPower() {
+        return physicalPower;
+    }
+
+    public void setPhysicalPower(int physicalPower) {
+        this.physicalPower = physicalPower;
+    }
+
+    public int getMagicPower() {
+        return magicPower;
+    }
+
+    public void setMagicPower(int magicPower) {
+        this.magicPower = magicPower;
     }
 
     //ДВИЖЕНИЕ

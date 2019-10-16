@@ -20,7 +20,6 @@ uniform int instance;
 uniform int board;
 uniform int isActive;
 uniform int turn;
-
 // доп данные
 uniform mat4 model_m;
 uniform float xOffset;

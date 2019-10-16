@@ -19,6 +19,7 @@ public class MotionAnimation {
     private List<GridElement> wayPoints;
 
     private ImageAnimation animation;
+    private ImageAnimation walkAnimation;
 
     private boolean walkStage;
     private int timer;
@@ -80,6 +81,7 @@ public class MotionAnimation {
                 if (wayPoints.get(index).getCurrentHeight() < this.tempPos.getY() - 0.4f || this.tempPos.getY() + 0.4f < wayPoints.get(index).getCurrentHeight()) {
                     isClimbing = true;
                     this.animation = climbingAnim;
+                    this.walkAnimation = walkAnim;
                 }
             }
 
@@ -246,6 +248,7 @@ public class MotionAnimation {
             }
         }else{
             if (firstStart) {
+                walkControl++;
                 walkStage = true;
                 goal += characteristic.getMovementSpeed(); // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos); // точка старта
@@ -254,7 +257,15 @@ public class MotionAnimation {
                 Vector3f currentPos = start.add(delta.mul(goal)); // добавляем к вектору начала, разницу векторов помноженную на фактор движения
                 position.setVector(currentPos); // устанавливаем обьекту текущее положение по направлению движения
 
+                if(walkControl == 27){
+                    walkAnimation.nextFrame();
+                }else if(walkControl == 54){
+                    walkAnimation.nextFrame();
+                }
+
                 if (goal >= 1.0f) {
+                    walkAnimation.nextFrame();
+                    walkControl = 0;
                     goal = 0.0f;
                     this.tempPos = new Vector3f(wayPoints.get(index).getPosition().add(offset.mul(-1.0f)));
                     position.setVector(this.tempPos);

@@ -300,7 +300,8 @@ public abstract class ObjectControl {
         shader.setUniform("board",isBoard() ? 1 : 0);
         shader.setUniform("isActive",isActive() ? 1 : 0);
         shader.setUniform("turn",currentTurn ? 1 : 0);
-        shader.setUniform("zBufferOffset",0);
+        shader.setUniform("discardReverse",0);
+        shader.setUniform("discardControl",-1.0f);
         // доп данные
         shader.setUniform("model_m",projection.getModelMatrix());
         shader.setUniform("xOffset",xOffset);
@@ -360,6 +361,10 @@ public abstract class ObjectControl {
 
         if(selfIndicators != null && isIndicatorOn && !shadow){
             selfIndicators.draw(shader);
+        }else{
+            if(selfIndicators != null && isOnTarget() && !shadow){
+                selfIndicators.draw(shader);
+            }
         }
     }
 }

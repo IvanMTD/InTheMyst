@@ -222,7 +222,6 @@ public class Person extends ObjectControl implements Object {
                         element.setBlocked(true);
                     }
                 }
-                characteristic.setCurentActionPoint(characteristic.getTotalActionPoint());
                 Default.setWait(false);
                 this.action = false;
             }

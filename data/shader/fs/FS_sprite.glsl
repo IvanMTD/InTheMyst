@@ -16,8 +16,11 @@ flat in int isBoard;
 uniform sampler2D image;
 uniform int group;
 uniform float id;
+// switch
 uniform int onTarget;
 uniform int water;
+uniform int discardReverse;
+uniform float discardControl;
 
 vec4 targetHighlight(vec4 rgba);
 
@@ -27,6 +30,19 @@ void main(){
     if(rgba.a < 1.0f && isBoard == 1){
         discard;
     }
+
+    if(discardControl > -1.0f){
+        if(discardReverse == 1){
+            if(textureCoord.x < discardControl){
+                discard;
+            }
+        }else{
+            if(textureCoord.x > discardControl){
+                discard;
+            }
+        }
+    }
+
     // Расчитываем цвет фрагмента
     if(onTarget == 1){
         fragment_color = targetHighlight(rgba);

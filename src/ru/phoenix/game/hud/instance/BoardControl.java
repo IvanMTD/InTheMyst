@@ -24,6 +24,8 @@ public abstract class BoardControl {
 
     // control
     private boolean visible;
+    private boolean discardReverse;
+    private float discatdControl;
 
     protected BoardControl(){
         texture = new Texture2D();
@@ -31,6 +33,8 @@ public abstract class BoardControl {
         projection = new Projection();
         mainPosition = new Vector3f();
         visible = true;
+        discardReverse = false;
+        discatdControl = -1.0f;
     }
 
     protected void init(String texturePath, float width, Vector3f mainPosition){
@@ -63,7 +67,7 @@ public abstract class BoardControl {
         vbo.allocate(pos,null,tex,null,null,null,null,null,indices);
     }
 
-    public void update(Vector3f gamePos){
+    protected void update(Vector3f gamePos){
         projection.getModelMatrix().identity();
         projection.setTranslation(gamePos);
     }
@@ -79,6 +83,8 @@ public abstract class BoardControl {
         shader.setUniform("board",1);
         shader.setUniform("isActive",0);
         shader.setUniform("turn",0);
+        shader.setUniform("discardReverse",isDiscardReverse() ? 1 : 0);
+        shader.setUniform("discardControl",getDiscatdControl());
         // доп данные
         shader.setUniform("model_m",projection.getModelMatrix());
         shader.setUniform("xOffset",0);
@@ -100,5 +106,21 @@ public abstract class BoardControl {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public float getDiscatdControl() {
+        return discatdControl;
+    }
+
+    public void setDiscatdControl(float discatdControl) {
+        this.discatdControl = discatdControl;
+    }
+
+    public boolean isDiscardReverse() {
+        return discardReverse;
+    }
+
+    public void setDiscardReverse(boolean discardReverse) {
+        this.discardReverse = discardReverse;
     }
 }
