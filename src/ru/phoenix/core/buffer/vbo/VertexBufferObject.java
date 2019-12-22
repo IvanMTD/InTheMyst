@@ -8,6 +8,7 @@ public interface VertexBufferObject {
     void draw();
     void setNewPos(float[] pos);
     void setNewTex();
+    void setNewTex(float[]tex);
     boolean isAnimated();
     boolean isTangentSpace();
     boolean isInstances();

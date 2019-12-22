@@ -34,17 +34,21 @@ public class DirectLight implements Light {
         setMapZ(mapZ);
         createLightSpaceMatrix();
 
-        Vector3f sunPosOnMap = new Vector3f(position.getX(),0.0f,position.getZ());
+        /*Vector3f sunPosOnMap = new Vector3f(position.getX(),0.0f,position.getZ());
         Vector3f centerOfMap = new Vector3f(mapX / 2.0f, 0.0f, mapZ / 2.0f);
-        sunRayDirection = centerOfMap.sub(sunPosOnMap).normalize();
+        sunRayDirection = centerOfMap.sub(sunPosOnMap).normalize();*/
     }
 
     private void createLightSpaceMatrix(){
         Projection projection = new Projection();
-        projection.setOrtho(-shadowMapSize,shadowMapSize,-shadowMapSize,shadowMapSize, WindowConfig.getInstance().getNear(), mapX + mapZ);
+        projection.setOrtho(-shadowMapSize,shadowMapSize,-shadowMapSize,shadowMapSize, WindowConfig.getInstance().getNear(), (mapX + mapZ) * 2.0f);
         projection.setView(position,new Vector3f(mapX / 2,0.0f,mapZ / 2),new Vector3f(0.0f,1.0f,0.0f));
         directLightViewMatrix.setMatrix(projection.getViewMatrix());
         lightSpaceMatrix[0].setMatrix(projection.getProjection().mul(projection.getViewMatrix()));
+
+        Vector3f sunPosOnMap = new Vector3f(position.getX(),0.0f,position.getZ());
+        Vector3f centerOfMap = new Vector3f(mapX / 2.0f, 0.0f, mapZ / 2.0f);
+        sunRayDirection = centerOfMap.sub(sunPosOnMap).normalize();
     }
 
     @Override

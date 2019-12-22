@@ -1,4 +1,4 @@
-package ru.phoenix.game.content.object.active.property;
+package ru.phoenix.game.property;
 
 public class Characteristic {
     private final int MAX_LEVEL     = 99;
@@ -7,7 +7,6 @@ public class Characteristic {
     // Опыт и уровень
     private int experience;
     private int level;
-
     // Здоровье
     private int totalHealth;
     private int health;
@@ -33,6 +32,8 @@ public class Characteristic {
     private int move;
     private int jump;
     private int speed;
+    // Параметры обзора
+    private int vision;
 
     // Конструкторы класса
     public Characteristic(){
@@ -62,8 +63,10 @@ public class Characteristic {
         setMagicPower(10);
         // Движения
         setMove(6);
-        setJump(1);
+        setJump(2);
         setSpeed(2);
+        // Обзор
+        setVision(10);
     }
 
     public Characteristic(Characteristic characteristic){
@@ -95,6 +98,8 @@ public class Characteristic {
         setMove(characteristic.getMove());
         setJump(characteristic.getJump());
         setSpeed(characteristic.getSpeed());
+        // Обзор
+        setVision(characteristic.getVision());
     }
 
     // ОПЫТ И УРОВЕНЬ
@@ -272,6 +277,15 @@ public class Characteristic {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    // ОБЗОР
+    public int getVision() {
+        return vision;
+    }
+
+    public void setVision(int vision) {
+        this.vision = vision;
     }
 
     // Формулы

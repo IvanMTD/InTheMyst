@@ -20,6 +20,14 @@ public class Vertex {
         bitangnets = new Vector3f();
     }
 
+    public Vertex(Vertex vertex){
+        position = vertex.getPosition();
+        normal = vertex.getNormal();
+        texCoords = vertex.getTexCoords();
+        tangents = vertex.getTangents();
+        bitangnets = vertex.getBitangnets();
+    }
+
     // methods
     public Vector3f getPosition() {
         return position;

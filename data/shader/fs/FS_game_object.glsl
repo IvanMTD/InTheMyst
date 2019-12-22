@@ -10,7 +10,7 @@ layout (location = 1) out vec4 select_color;
 layout (location = 2) out vec4 bright_color;
 
 // Входящий Блок
-in VS_OUT {
+in GS_OUT {
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
@@ -41,6 +41,8 @@ struct DirectLight{
     vec3 specular;
 };
 
+in flat int useShading;
+
 // target highlight
 uniform int onTarget;
 uniform float shininess;
@@ -54,11 +56,10 @@ uniform float id;
 
 // Функции
 vec4 targetHighlight();
-vec3 getDirectLight(DirectLight, vec3, vec3);
+vec3 getDirectLight(DirectLight, vec3, vec3, vec2);
 float shadowCalculation(vec4, vec3, vec3);
 
 void main() {
-
     vec3 viewDirection = normalize(fs_in.ViewPos - fs_in.FragPos);
     //vec3 viewDirection = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     vec3 normal = fs_in.Normal;
@@ -69,9 +70,16 @@ void main() {
     if(onTarget == 1){
         fragment_color = targetHighlight();
     }else{
-        vec3 result = getDirectLight(directLight, normal, viewDirection);
-        float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-        fragment_color = vec4(result, alpha);
+        if(useShading == 0){
+            vec3 result = getDirectLight(directLight, normal, viewDirection,fs_in.TexCoords);
+            float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+            fragment_color = vec4(result, alpha);
+        }else{
+            vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
+            float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+            //float average = 0.2126 * result.r + 0.7152 * result.g + 0.0722 * result.b; // Градации серого
+            fragment_color = vec4(result / 10.0f,alpha);
+        }
     }
 
     vec4 rgba = texture(material.diffuseMap,fs_in.TexCoords);
@@ -102,7 +110,7 @@ vec4 targetHighlight(){
     return result;
 }
 
-vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection){
+vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection, vec2 tex){
     //vec3 lightDir = normalize(light.position - fs_in.TangentFragPos);
     vec3 lightDir = normalize(light.position);
     // диффузное освещение
@@ -113,9 +121,9 @@ vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection){
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
     // комбинируем результаты
-    vec3 ambient  = light.ambient  * vec3(texture(material.diffuseMap, fs_in.TexCoords));
-    vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuseMap, fs_in.TexCoords));
-    vec3 specular = light.specular * spec * vec3(texture(material.diffuseMap, fs_in.TexCoords));
+    vec3 ambient  = light.ambient  * vec3(texture(material.diffuseMap, tex));
+    vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuseMap, tex));
+    vec3 specular = light.specular * spec * vec3(texture(material.diffuseMap, tex));
 
     float shadow = shadowCalculation(fs_in.FragPosLightSpace, lightDir, normal);
     vec3 lighting = ambient + (1.0 - shadow) * (diffuse + specular);
@@ -131,10 +139,10 @@ float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal){
        // get depth of current fragment from light's perspective
        float currentDepth = projCoords.z;
        // check whether current frag pos is in shadow
-       float bias = max(0.005f * (1.0f - dot(normal, lightDir)), 0.001f);
+       float bias = max(0.005f * (1.0f - dot(normal, lightDir)), 0.001f); // 0.005f
 
        float shadow = 0.0f;
-       vec2 texelSize = 1.0f / textureSize(shadowMap, 0);
+       vec2 texelSize = 0.25f / textureSize(shadowMap, 0);
        int value = 5;
        for(int x = -value; x <= value; ++x){
            for(int y = -value; y <= value; ++y){

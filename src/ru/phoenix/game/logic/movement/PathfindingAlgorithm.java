@@ -1,103 +1,104 @@
 package ru.phoenix.game.logic.movement;
 
 import ru.phoenix.core.math.Vector3f;
-import ru.phoenix.game.content.object.active.property.Characteristic;
-import ru.phoenix.game.logic.element.GridElement;
+import ru.phoenix.game.property.Characteristic;
+import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PathfindingAlgorithm extends Thread {
     private int event;
 
     private final int PREPARE_AREA          = 0x99100;
     private final int CREATE_PATH           = 0x99101;
+    private final int TOTAL_PATH            = 0x99103;
 
-    private List<GridElement> graphs;
+    private int width;
+    private int height;
+
+    private Cell[][]graphs;
     private Characteristic characteristic;
     private Vector3f start;
     private Vector3f finish;
 
-    private List<GridElement> frontier;
-    private List<GridElement> costSoFar;
-    private List<GridElement> cameFrom;
+    private List<Cell> frontier;
+    private List<Cell> costSoFar;
+    private List<Cell> cameFrom;
 
+    private boolean occupied;
+    private List<Cell> wayPoints;
+
+    // Коструктор класса
     public PathfindingAlgorithm(){
         frontier = new ArrayList<>();
         costSoFar = new ArrayList<>();
         cameFrom = new ArrayList<>();
+        wayPoints = new ArrayList<>();
     }
 
-    public void setup(List<GridElement> elements, Characteristic characteristic,Vector3f startPosition){
-        this.graphs = new ArrayList<>(elements);
+    // Методы пресетов - начало
+    public void setup(Cell[][] grid, Characteristic characteristic, Vector3f start){
+        this.width = grid.length - 1;
+        this.height = grid[0].length - 1;
+        this.occupied = true;
+        this.graphs = grid;
         this.characteristic = characteristic;
-        start = new Vector3f(startPosition);
+        this.start = new Vector3f(start);
         event = PREPARE_AREA;
     }
 
-    public void setup(List<GridElement> elements, Characteristic characteristic,Vector3f startPosition, Vector3f finishPosition){
-        this.graphs = new ArrayList<>(elements);
+    public void setup(Cell[][] grid, Characteristic characteristic,Vector3f start, Vector3f finish){
+        this.width = grid.length - 1;
+        this.height = grid[0].length - 1;
+        this.occupied = true;
+        this.graphs = grid;
         this.characteristic = characteristic;
-        start = new Vector3f(startPosition);
-        finish = finishPosition;
+        this.start = new Vector3f(start);
+        this.finish = new Vector3f(finish);
         event = CREATE_PATH;
     }
 
+    public void setWayPoints(List<Cell> wayPoints){
+        this.wayPoints = wayPoints;
+    }
+
+    public void setup(Cell[][] grid, Characteristic characteristic, Cell start, Cell finish, List<Cell> wayPoints, boolean occupied){
+        this.wayPoints = wayPoints;
+        this.width = grid.length - 1;
+        this.height = grid[0].length - 1;
+        this.occupied = occupied;
+        this.graphs = grid;
+        this.characteristic = characteristic;
+        this.start = new Vector3f(start.getModifiedPosition());
+        this.finish = new Vector3f(finish.getModifiedPosition());
+        event = TOTAL_PATH;
+    }
+    // Методы пресетов - конец
+
+    // Метод запуска потоков - начало
     public void run(){
         switch (event){
             case PREPARE_AREA:
-                configureGraphs();
                 prepareArea();
                 break;
             case CREATE_PATH:
-                //createPath();
                 createPathAStar();
+                break;
+            case TOTAL_PATH:
+                createPathAStarTotal();
                 break;
         }
     }
+    // Метод запуска потоков - конец
 
-    private void configureGraphs(){
-        Map<Integer,Vector3f> direction = new HashMap<>();
-        direction.put(0,new Vector3f(-1.0f,0.0f,0.0f)); // left
-        direction.put(1,new Vector3f(0.0f,0.0f,1.0f)); // up
-        direction.put(2,new Vector3f(1.0f,0.0f,0.0f)); // right
-        direction.put(3,new Vector3f(0.0f,0.0f,-1.0f)); // down
-        for(GridElement graph : graphs){
-            if(graph.getPosition().sub(start).length() <= ((characteristic.getMove() * characteristic.getCurentActionPoint()) + 2)) {
-                graph.setVisible(false);
-                graph.setWayPoint(false);
-                graph.setGrayZona();
-                graph.clearDirection();
-                for (int key = 0; key < direction.size(); key++) {
-                    Vector3f studyPosition = new Vector3f(graph.getPosition().add(direction.get(key)));
-                    if (checkStudyPosition(graph, studyPosition)) {
-                        switch (key) {
-                            case 0:
-                                graph.setLeft(true);
-                                break;
-                            case 1:
-                                graph.setUp(true);
-                                break;
-                            case 2:
-                                graph.setRight(true);
-                                break;
-                            case 3:
-                                graph.setDown(true);
-                                break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
+    // Методы поиска путей
+    // Методы поиска в ширину - начало
     private void prepareArea(){
         frontier.clear();
         costSoFar.clear();
         cameFrom.clear();
-        GridElement startGraph = findGraph(start);
+        Cell startGraph = graphs[(int)start.getX()][(int)start.getZ()];
         startGraph.setStep(0);
         startGraph.setCost(0);
         frontier.add(startGraph);
@@ -107,47 +108,71 @@ public class PathfindingAlgorithm extends Thread {
         int index = 0;
 
         while(!frontier.isEmpty()) {
-            List<GridElement> currentFrontier = new ArrayList<>(frontier);
+            List<Cell> currentFrontier = new ArrayList<>(frontier);
             if(index == 0){
-                for (GridElement front : currentFrontier) {
+                for (Cell front : currentFrontier) {
                     if (front.getStep() < (characteristic.getMove() * characteristic.getCurentActionPoint())) {
-                        if (front.isUp()) {
-                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                            setStep(front,studyGraph);
+                        // ВВЕРХ
+                        Cell upElement = findGraph(front.getModifiedPosition(), front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                        if(upElement != null){
+                            if(checkStudyPosition(front,upElement)){
+                                setStep(front,upElement);
+                            }
                         }
-                        if (front.isLeft()) {
-                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                            setStep(front,studyGraph);
+                        // ЛЕВО
+                        Cell leftElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                        if(leftElement != null){
+                            if(checkStudyPosition(front,leftElement)){
+                                setStep(front,leftElement);
+                            }
                         }
-                        if (front.isDown()) {
-                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                            setStep(front,studyGraph);
+                        // ВНИЗ
+                        Cell downElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                        if(downElement != null){
+                            if(checkStudyPosition(front,downElement)){
+                                setStep(front,downElement);
+                            }
                         }
-                        if (front.isRight()) {
-                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                            setStep(front,studyGraph);
+                        // ПРАВО
+                        Cell rightElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                        if(rightElement != null){
+                            if(checkStudyPosition(front,rightElement)){
+                                setStep(front,rightElement);
+                            }
                         }
                     }
                     frontier.remove(front);
                 }
             }else if(index == 1){
-                for (GridElement front : currentFrontier) {
+                for (Cell front : currentFrontier) {
                     if (front.getStep() < (characteristic.getMove() * characteristic.getCurentActionPoint())) {
-                        if (front.isRight()) {
-                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
-                            setStep(front,studyGraph);
+                        // ПРАВО
+                        Cell rightElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                        if(rightElement != null){
+                            if(checkStudyPosition(front,rightElement)){
+                                setStep(front,rightElement);
+                            }
                         }
-                        if (front.isDown()) {
-                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
-                            setStep(front,studyGraph);
+                        // ВНИЗ
+                        Cell downElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                        if(downElement != null){
+                            if(checkStudyPosition(front,downElement)){
+                                setStep(front,downElement);
+                            }
                         }
-                        if (front.isLeft()) {
-                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
-                            setStep(front,studyGraph);
+                        // ЛЕВО
+                        Cell leftElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                        if(leftElement != null){
+                            if(checkStudyPosition(front,leftElement)){
+                                setStep(front,leftElement);
+                            }
                         }
-                        if (front.isUp()) {
-                            GridElement studyGraph = findGraph(front.getPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
-                            setStep(front,studyGraph);
+                        // ВВЕРХ
+                        Cell upElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                        if(upElement != null){
+                            if(checkStudyPosition(front,upElement)){
+                                setStep(front,upElement);
+                            }
                         }
                     }
                     frontier.remove(front);
@@ -159,164 +184,141 @@ public class PathfindingAlgorithm extends Thread {
             }
         }
 
-        for(GridElement element : graphs){
-            for(GridElement came : cameFrom){
-                if(element.getPosition().equals(came.getPosition()) && !element.isBlocked()){
-                    element.setVisible(true);
-                }
+        for(Cell came : cameFrom){
+            if(!came.isBlocked() && !came.isOccupied()){
+                came.setVisible(true);
             }
+        }
+    }
+    // Методы поиска в ширину - конец
+
+    // Метод поиска пути А* - начало
+    private void createPathAStarTotal(){
+        Cell resultFinish = null;
+        if(start != null && finish != null){
+            resultFinish = createPath(false,false);
+        }
+        if(resultFinish != null) {
+            List<Cell> reverse = new ArrayList<>();
+            while (resultFinish.getParent() != null) {
+                reverse.add(resultFinish);
+                resultFinish = resultFinish.getParent();
+            }
+            wayPoints.clear();
+            for (int i = reverse.size() - 1; i >= 0; i--) {
+                wayPoints.add(reverse.get(i));
+            }
+        }else{
+            wayPoints.clear();
         }
     }
 
     private void createPathAStar(){
         if(finish != null){
-            for (GridElement graph : graphs) {
-                if (!graph.getPosition().equals(finish)) {
-                    graph.setTarget(false);
+            graphs[(int)finish.getX()][(int)finish.getZ()].setTarget(false);
+            for(int x=0; x<=width; x++){
+                for(int z=0; z<=height; z++){
+                    if(graphs[x][z].isVisible()){
+                        graphs[x][z].setWayPoint(false);
+                    }
                 }
-                graph.setWayPoint(false);
             }
-            GridElement resultFinish = createPath(true);
-            List<GridElement> reverse = new ArrayList<>();
-
+            Cell resultFinish = createPath(true,true);
             if(resultFinish == null) {
-                resultFinish = createPath(false);
+                resultFinish = createPath(false,true);
             }
 
-            assert resultFinish != null;
-            while (resultFinish.cameFrom() != null) {
-                reverse.add(resultFinish);
-                resultFinish = resultFinish.cameFrom();
-            }
-
-
-            List<GridElement> wayPoints = new ArrayList<>();
-            for(int i=reverse.size() - 1; i >= 0; i--){
-                wayPoints.add(reverse.get(i));
-            }
-
-            int currentStamina = characteristic.getStamina();
-
-            for(GridElement point : wayPoints){
-                point.setWayPoint(true);
-                currentStamina -= point.getTravelCost();
-                if(currentStamina >= 0){
-                    point.setGreenZona();
-                }else{
-                    point.setRedZona();
+            List<Cell> reverse = new ArrayList<>();
+            if(resultFinish != null) { // Проверка!
+                while (resultFinish.getParent() != null) {
+                    reverse.add(resultFinish);
+                    resultFinish = resultFinish.getParent();
                 }
+
+
+                List<Cell> wayPoints = new ArrayList<>();
+                for (int i = reverse.size() - 1; i >= 0; i--) {
+                    wayPoints.add(reverse.get(i));
+                }
+
+                int currentStamina = characteristic.getStamina();
+
+                for (Cell point : wayPoints) {
+                    point.setVisible(true);
+                    point.setWayPoint(true);
+                    currentStamina -= point.getTravelCost();
+                    if (currentStamina >= 0) {
+                        point.setGreenZona();
+                    } else {
+                        point.setRedZona();
+                    }
+                }
+            }else{
+                wayPoints.clear();
             }
         }
     }
 
-    private GridElement createPath(boolean restriction){
-        GridElement resultFinish = null;
-        GridElement Start = findGraph(start);
-        GridElement Finish = findGraph(finish);
-        List<GridElement> closedSet = new ArrayList<>();
-        List<GridElement> openSet = new ArrayList<>();
-        Start.setCameFromElement(null);
-        Start.setStep(0);
-        Start.setCost(getHeuristicPathLength(Start,Finish));
-        openSet.add(Start);
-        while (!openSet.isEmpty()){
-            GridElement currentElement = minFullPathLength(openSet);
-            if(currentElement.getPosition().equals(finish)){
-                resultFinish = currentElement;
-                break;
-            }
-            openSet.remove(currentElement);
-            closedSet.add(currentElement);
-
-            for(GridElement neighbour : getNeighbours(currentElement,Finish,restriction)){
-                if(checkClosedSet(neighbour,closedSet)){
-                    continue;
+    private Cell createPath(boolean restriction, boolean isZones){
+        Cell resultFinish = null;
+        Cell Start = findGraph(start);
+        Cell Finish = findGraph(finish);
+        if(Start != null && Finish != null) {
+            List<Cell> closedSet = new ArrayList<>();
+            List<Cell> openSet = new ArrayList<>();
+            Start.setParent(null);
+            Start.setStep(0);
+            Start.setCost(getHeuristicPathLength(Start, Finish));
+            openSet.add(Start);
+            while (!openSet.isEmpty()) {
+                Cell currentElement = minFullPathLength(openSet);
+                if (currentElement.getModifiedPosition().equals(finish)) {
+                    resultFinish = currentElement;
+                    break;
                 }
+                openSet.remove(currentElement);
+                closedSet.add(currentElement);
 
-                GridElement open = getOpenSetElement(neighbour,openSet);
-                if(open == null){
-                    int result = 0;
-                    float h = Math.abs(currentElement.getCurrentHeight() - neighbour.getCurrentHeight());
-                    if(h > 0){
-                        if(Math.round(h) - h == 0.5f){
-                            result = 1;
-                        }else{
-                            result = 3;
+                for (Cell neighbour : getNeighbours(currentElement, Finish, restriction, isZones)) {
+                    if(!neighbour.isBlocked() && !neighbour.isOccupied()) {
+                        if (checkClosedSet(neighbour, closedSet)) {
+                            continue;
                         }
-                    }
 
-                    neighbour.setCameFromElement(currentElement);
-                    neighbour.setStep(currentElement.getStep() + neighbour.getTravelCost() + result);
-                    neighbour.setCost(getHeuristicPathLength(neighbour,Finish));
-                    openSet.add(neighbour);
-                }else{
-                    if(open.getStep() > neighbour.getStep()){
-                        open.setCameFromElement(currentElement);
-                        open.setStep(neighbour.getStep());
+                        Cell open = getOpenSetElement(neighbour, openSet);
+                        if (open == null) {
+                            int result = 0;
+                            float h = Math.abs(currentElement.getCurrentHeight() - neighbour.getCurrentHeight());
+                            if (h > 0) {
+                                if (Math.round(h) - h == 0.5f) {
+                                    result = 1;
+                                } else {
+                                    result = 3;
+                                }
+                            }
+
+                            neighbour.setParent(currentElement);
+                            neighbour.setStep(currentElement.getStep() + neighbour.getTravelCost() + result);
+                            neighbour.setCost(getHeuristicPathLength(neighbour, Finish));
+                            openSet.add(neighbour);
+                        } else {
+                            if (open.getStep() > neighbour.getStep()) {
+                                open.setParent(currentElement);
+                                open.setStep(neighbour.getStep());
+                            }
+                        }
                     }
                 }
             }
         }
         return resultFinish;
     }
+    // Метод поиска пути А* - конец
 
-    private boolean checkStudyPosition(GridElement parentElement, Vector3f studyPosition){
-        boolean check = false;
-        float min = parentElement.getCurrentHeight() - (float)characteristic.getJump();
-        float max = parentElement.getCurrentHeight() + (float)characteristic.getJump();
-
-        for(GridElement graph : graphs){
-            if(graph.getPosition().equals(studyPosition) && !graph.isBlocked()){
-                if(min <= graph.getCurrentHeight() && graph.getCurrentHeight() <= max){
-                    check = true;
-                }
-            }
-        }
-
-        return check;
-    }
-
-    private GridElement findGraph(Vector3f position){
-        GridElement graph = null;
-
-        for(GridElement element : graphs){
-            if(element.getPosition().equals(position)){
-                graph = element;
-            }
-        }
-
-        return graph;
-    }
-
-    private boolean checkClosedSet(GridElement study, List<GridElement> closedSet){
-        boolean visit = false;
-
-        for(GridElement closed : closedSet){
-            if(closed.getPosition().equals(study.getPosition())){
-                visit = true;
-                break;
-            }
-        }
-
-        return visit;
-    }
-
-    private boolean checkVisit(GridElement studyGraph){
-        boolean visit = false;
-
-        for(GridElement came : cameFrom){
-            if(came.getPosition().equals(studyGraph.getPosition())){
-                visit = true;
-                break;
-            }
-        }
-
-        return !visit;
-    }
-
-    private void setStep(GridElement front, GridElement studyGraph){
+    // Методы установок - начало
+    private void setStep(Cell front, Cell studyGraph){
         if (checkVisit(studyGraph) && (front.getStep() + 1 <= characteristic.getMove() * characteristic.getCurentActionPoint())) {
-            studyGraph.setCameFromElement(front);
+            studyGraph.setParent(front);
             studyGraph.setStep(front.getStep() + 1);
             if(studyGraph.getStep() <= characteristic.getMove()){
                 studyGraph.setBlueZona();
@@ -328,147 +330,21 @@ public class PathfindingAlgorithm extends Thread {
         }
     }
 
-    private void setCostStep(GridElement front, GridElement studyGraph){
-
-        int cost = front.getCost() + studyGraph.getTravelCost();
-
-        if(checkCostVisit(studyGraph,cost) &&(front.getStep() + 1 <= (characteristic.getMove() * characteristic.getCurentActionPoint()))){
-            studyGraph.setCameFromElement(front);
-            studyGraph.setStep(front.getStep() + 1);
-            studyGraph.setCost(front.getCost() + cost);
-            if(studyGraph.getStep() <= characteristic.getMove()){
-                studyGraph.setBlueZona();
-            }else{
-                studyGraph.setGoldZona();
-            }
-            frontier.add(studyGraph);
-            costSoFar.add(studyGraph);
-            cameFrom.add(studyGraph);
-        }
-    }
-
-    private boolean checkCostVisit(GridElement studyGraph, float cost){
-        boolean check = true;
-
-        for(int i=0; i<costSoFar.size(); i++){
-            if(costSoFar.get(i).getPosition().equals(studyGraph.getPosition())){
-                check = false;
-                if(cost < costSoFar.get(i).getCost()) {
-                    costSoFar.remove(costSoFar.get(i));
-                    check = true;
-                }
-            }
-        }
-
-        return check;
-    }
-
-    private static int getHeuristicPathLength(GridElement from, GridElement to) {
-        return (int)(Math.abs(from.getPosition().getX() - to.getPosition().getX()) + Math.abs(from.getPosition().getZ() - to.getPosition().getZ()));
-    }
-
-    private GridElement minFullPathLength(List<GridElement> elements){
-
-        for (GridElement element : elements) {
-            float lenght = element.getPosition().sub(finish).length();
-            element.setDistance(lenght);
-        }
-
-        elements.sort(((o1, o2) -> o1.getEstimateFullPathLength() > o2.getEstimateFullPathLength() ? 0 : -1));
-
-        int num = 1;
-
-        for(int i=1; i<elements.size(); i++){
-            if(start.getY() < finish.getY()){
-                if(elements.get(0).getEstimateFullPathLength() + 1 >= elements.get(i).getEstimateFullPathLength()){
-                    if(start.getY() <= elements.get(i).getCurrentHeight()){
-                        num++;
-                    }
-                }
-            }else if(start.getY() > finish.getY()){
-                if(elements.get(0).getEstimateFullPathLength() + 1 >= elements.get(i).getEstimateFullPathLength()){
-                    if(start.getY() >= elements.get(i).getCurrentHeight()){
-                        num++;
-                    }
-                }
-            }else{
-                if(elements.get(0).getEstimateFullPathLength() == elements.get(i).getEstimateFullPathLength()){
-                    num++;
-                }
-            }
-        }
-
-        for(int i=0; i<num-1;i++){
-            for(int j=i+1; j<num; j++){
-                if(elements.get(i).getDistance() > elements.get(j).getDistance()){
-                    GridElement temp = elements.get(i);
-                    elements.set(i,elements.get(j));
-                    elements.set(j,temp);
-                }
-            }
-        }
-
-        return elements.get(0);
-    }
-
-    private List<GridElement> getNeighbours(GridElement element, GridElement finish, boolean restriction) {
-        List<GridElement> result = new ArrayList<>();
-        if (element.isUp()) {
-            GridElement studyGraph = tryAddGraph(element,new Vector3f(0.0f,0.0f,1.0f),finish.isBlueZona(),restriction);
-            if(studyGraph != null){
-                result.add(studyGraph);
-            }
-        }
-        if (element.isLeft()) {
-            GridElement studyGraph = tryAddGraph(element,new Vector3f(-1.0f,0.0f,0.0f),finish.isBlueZona(),restriction);
-            if(studyGraph != null){
-                result.add(studyGraph);
-            }
-        }
-        if (element.isDown()) {
-            GridElement studyGraph = tryAddGraph(element,new Vector3f(0.0f,0.0f,-1.0f),finish.isBlueZona(),restriction);
-            if(studyGraph != null){
-                result.add(studyGraph);
-            }
-        }
-        if (element.isRight()) {
-            GridElement studyGraph = tryAddGraph(element,new Vector3f(1.0f,0.0f,0.0f),finish.isBlueZona(),restriction);
-            if(studyGraph != null){
-                result.add(studyGraph);
-            }
-        }
-
-        return result;
-    }
-
-    private GridElement getOpenSetElement(GridElement study, List<GridElement> openSet){
-        GridElement open = null;
-
-        for(GridElement element : openSet){
-            if(element.getPosition().equals(study.getPosition())){
-                open = element;
-                break;
-            }
-        }
-
-        return open;
-    }
-
-    private GridElement tryAddGraph(GridElement element, Vector3f direction, boolean isBlueZona, boolean restriction){
-        GridElement finalResult = null;
+    private Cell tryAddGraph(Cell element, Vector3f direction, boolean isBlueZona, boolean restriction){
+        Cell finalResult = null;
         int skipInfo = 1 + characteristic.getJump() / 2;
         if(skipInfo > 1){
-            List<GridElement> studyGraphs = new ArrayList<>();
+            List<Cell> studyGraphs = new ArrayList<>();
             for(int i=1; i<=skipInfo; i++){
-                GridElement studyGraph = findGraph(element.getPosition().add(direction.mul(i)));
+                Cell studyGraph = findGraph(element.getModifiedPosition(),element.getModifiedPosition().add(direction.mul(i)));
                 if(studyGraph != null) {
-                    if(isBlueZona) {
+                    if (isBlueZona) {
                         if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
                             studyGraphs.add(studyGraph);
                         } else {
                             break;
                         }
-                    }else{
+                    } else {
                         if (studyGraph.isVisible()) {
                             studyGraphs.add(studyGraph);
                         } else {
@@ -481,16 +357,16 @@ public class PathfindingAlgorithm extends Thread {
             }
 
             if(!studyGraphs.isEmpty()) {
-                for (GridElement studyGraph : studyGraphs) {
+                for (Cell studyGraph : studyGraphs) {
                     studyGraph.setSkip(false);
                     if (studyGraph.getCurrentHeight() <= element.getCurrentHeight() - 1) {
-                        if (!studyGraph.getPosition().equals(finish)) {
+                        if (!studyGraph.getModifiedPosition().equals(finish)) {
                             studyGraph.setSkip(true);
                         }
                     }
                 }
 
-                for (GridElement studyGraph : studyGraphs) {
+                for (Cell studyGraph : studyGraphs) {
                     if (!studyGraph.isSkip()) {
                         if (studyGraph.getCurrentHeight() == element.getCurrentHeight()) {
                             finalResult = studyGraph;
@@ -528,53 +404,338 @@ public class PathfindingAlgorithm extends Thread {
                     }
                 }
             }else{
-                GridElement studyGraph = findGraph(element.getPosition().add(direction));
-                if(isBlueZona) {
-                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                        if(restriction) {
-                            if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                finalResult = studyGraph;
+                Cell studyGraph = findGraph(element.getModifiedPosition(),element.getModifiedPosition().add(direction));
+                if(studyGraph != null) {
+                    if(checkStudyPosition(element,studyGraph)) {
+                        if (isBlueZona) {
+                            if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                                if (restriction) {
+                                    if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                        finalResult = studyGraph;
+                                    }
+                                } else {
+                                    finalResult = studyGraph;
+                                }
                             }
-                        }else{
-                            finalResult = studyGraph;
-                        }
-                    }
-                }else{
-                    if (studyGraph.isVisible()) {
-                        if(restriction) {
-                            if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                finalResult = studyGraph;
+                        } else {
+                            if (studyGraph.isVisible()) {
+                                if (restriction) {
+                                    if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                        finalResult = studyGraph;
+                                    }
+                                } else {
+                                    finalResult = studyGraph;
+                                }
                             }
-                        }else{
-                            finalResult = studyGraph;
                         }
                     }
                 }
             }
         }else {
-            GridElement studyGraph = findGraph(element.getPosition().add(direction));
-            if(isBlueZona) {
-                if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                    if(restriction) {
-                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                            finalResult = studyGraph;
+            Cell studyGraph = findGraph(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
+            if(studyGraph != null) {
+                if(checkStudyPosition(element,studyGraph)) {
+                    if (isBlueZona) {
+                        if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                            if (restriction) {
+                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    finalResult = studyGraph;
+                                }
+                            } else {
+                                finalResult = studyGraph;
+                            }
                         }
-                    }else{
-                        finalResult = studyGraph;
-                    }
-                }
-            }else{
-                if (studyGraph.isVisible()) {
-                    if(restriction) {
-                        if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                            finalResult = studyGraph;
+                    } else {
+                        if (studyGraph.isVisible()) {
+                            if (restriction) {
+                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    finalResult = studyGraph;
+                                }
+                            } else {
+                                finalResult = studyGraph;
+                            }
                         }
-                    }else{
-                        finalResult = studyGraph;
                     }
                 }
             }
         }
         return finalResult;
     }
+
+    private Cell tryAddGraph(Cell element, Vector3f direction, boolean restriction){
+        Cell finalResult = null;
+        int skipInfo = 1 + characteristic.getJump() / 2;
+        if(skipInfo > 1){
+            List<Cell> studyGraphs = new ArrayList<>();
+            for(int i=1; i<=skipInfo; i++){
+                Cell studyGraph = findGraph(element.getModifiedPosition(), element.getModifiedPosition().add(direction.mul(i)));
+                if(studyGraph != null) {
+                   studyGraphs.add(studyGraph);
+                }else{
+                    break;
+                }
+            }
+
+            if(!studyGraphs.isEmpty()) {
+                for (Cell studyGraph : studyGraphs) {
+                    studyGraph.setSkip(false);
+                    if (studyGraph.getCurrentHeight() <= element.getCurrentHeight() - 1) {
+                        if (!studyGraph.getModifiedPosition().equals(finish)) {
+                            studyGraph.setSkip(true);
+                        }
+                    }
+                }
+
+                for (Cell studyGraph : studyGraphs) {
+                    if (!studyGraph.isSkip()) {
+                        if (studyGraph.getCurrentHeight() == element.getCurrentHeight()) {
+                            finalResult = studyGraph;
+                            break;
+                        } else {
+                            if(restriction) {
+                                if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    finalResult = studyGraphs.get(0);
+                                }
+                            }else{
+                                finalResult = studyGraphs.get(0);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if(finalResult == null){
+                    if(restriction){
+                        if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            finalResult = studyGraphs.get(0);
+                        }
+                    }else{
+                        finalResult = studyGraphs.get(0);
+                    }
+                }
+            }else{
+                Cell studyGraph = findGraph(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
+                if(restriction) {
+                    if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                        finalResult = studyGraph;
+                    }
+                }else{
+                    finalResult = studyGraph;
+                }
+            }
+        }else {
+            Cell studyGraph = findGraph(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
+            if(restriction) {
+                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                    finalResult = studyGraph;
+                }
+            }else{
+                finalResult = studyGraph;
+            }
+        }
+
+        return finalResult;
+    }
+    // методы установок - конец
+
+    // методы проверок - начало
+    private boolean checkStudyPosition(Cell parentElement, Cell studyCell){
+        boolean check = false;
+        float min = parentElement.getCurrentHeight() - (float)characteristic.getJump();
+        float max = parentElement.getCurrentHeight() + (float)characteristic.getJump();
+
+        if(!occupied){
+            if(finish != null) {
+                if (studyCell.getModifiedPosition().equals(finish)) {
+                    if (!studyCell.isBlocked()) {
+                        if (min <= studyCell.getCurrentHeight() && studyCell.getCurrentHeight() <= max) {
+                            check = true;
+                        }
+                    }
+                } else {
+                    if (!studyCell.isBlocked() && !studyCell.isOccupied()) {
+                        if (min <= studyCell.getCurrentHeight() && studyCell.getCurrentHeight() <= max) {
+                            check = true;
+                        }
+                    }
+                }
+            }
+        }else {
+            if (!studyCell.isBlocked() && !studyCell.isOccupied()) {
+                if (min <= studyCell.getCurrentHeight() && studyCell.getCurrentHeight() <= max) {
+                    check = true;
+                }
+            }
+        }
+
+        return check;
+    }
+
+    private boolean checkClosedSet(Cell study, List<Cell> closedSet){
+        boolean visit = false;
+
+        for(Cell closed : closedSet){
+            if(closed.getId() == study.getId()){
+                visit = true;
+                break;
+            }
+        }
+
+        return visit;
+    }
+
+    private boolean checkVisit(Cell studyGraph){
+        boolean visit = false;
+
+        for(Cell came : cameFrom){
+            if(came.getId() == studyGraph.getId()){
+                visit = true;
+                break;
+            }
+        }
+
+        return !visit;
+    }
+    // методы проверок - конец
+
+    // методы гетеры - начало
+    private Cell minFullPathLength(List<Cell> elements){
+
+        for (Cell element : elements) {
+            float lenght = element.getModifiedPosition().sub(finish).length();
+            element.setDistance(lenght);
+        }
+
+        elements.sort(((o1, o2) -> o1.getEstimateFullPathLength() > o2.getEstimateFullPathLength() ? 0 : -1));
+
+        int num = 1;
+
+        for(int i=1; i<elements.size(); i++){
+            if(start.getY() < finish.getY()){
+                if(elements.get(0).getEstimateFullPathLength() + 1 >= elements.get(i).getEstimateFullPathLength()){
+                    if(start.getY() <= elements.get(i).getCurrentHeight()){
+                        num++;
+                    }
+                }
+            }else if(start.getY() > finish.getY()){
+                if(elements.get(0).getEstimateFullPathLength() + 1 >= elements.get(i).getEstimateFullPathLength()){
+                    if(start.getY() >= elements.get(i).getCurrentHeight()){
+                        num++;
+                    }
+                }
+            }else{
+                if(elements.get(0).getEstimateFullPathLength() == elements.get(i).getEstimateFullPathLength()){
+                    num++;
+                }
+            }
+        }
+
+        for(int i=0; i<num-1;i++){
+            for(int j=i+1; j<num; j++){
+                if(elements.get(i).getDistance() > elements.get(j).getDistance()){
+                    Cell temp = elements.get(i);
+                    elements.set(i,elements.get(j));
+                    elements.set(j,temp);
+                }
+            }
+        }
+
+        return elements.get(0);
+    }
+
+    private List<Cell> getNeighbours(Cell element, Cell finish, boolean restriction,boolean isZones) {
+        List<Cell> result = new ArrayList<>();
+        // Вверх
+        Cell upElement = null;
+        if(isZones) {
+            upElement = tryAddGraph(element, new Vector3f(0.0f, 0.0f, 1.0f), finish.isBlueZona(), restriction);
+        }else{
+            upElement = tryAddGraph(element, new Vector3f(0.0f, 0.0f, 1.0f), restriction);
+        }
+        if(upElement != null){
+            result.add(upElement);
+        }
+        // Влево
+        Cell leftElement = null;
+        if(isZones) {
+            leftElement = tryAddGraph(element, new Vector3f(-1.0f, 0.0f, 0.0f), finish.isBlueZona(), restriction);
+        }else{
+            leftElement = tryAddGraph(element, new Vector3f(-1.0f, 0.0f, 0.0f), restriction);
+        }
+        if(leftElement != null){
+            result.add(leftElement);
+        }
+        // Вниз
+        Cell downElement = null;
+        if(isZones) {
+            downElement = tryAddGraph(element, new Vector3f(0.0f, 0.0f, -1.0f), finish.isBlueZona(), restriction);
+        }else{
+            downElement = tryAddGraph(element, new Vector3f(0.0f, 0.0f, -1.0f), restriction);
+        }
+        if(downElement != null){
+            result.add(downElement);
+        }
+        // Вправо
+        Cell rightElement = null;
+        if(isZones) {
+            rightElement = tryAddGraph(element, new Vector3f(1.0f, 0.0f, 0.0f), finish.isBlueZona(), restriction);
+        }else{
+            rightElement = tryAddGraph(element, new Vector3f(1.0f, 0.0f, 0.0f), restriction);
+        }
+        if(rightElement != null){
+            result.add(rightElement);
+        }
+
+        return result;
+    }
+
+    private Cell getOpenSetElement(Cell study, List<Cell> openSet){
+        Cell open = null;
+
+        for(Cell element : openSet){
+            if(element.getId() == study.getId()){
+                open = element;
+                break;
+            }
+        }
+
+        return open;
+    }
+
+    private Cell findGraph(Vector3f position){
+        Cell graph = null;
+
+        if((0 <= position.getX() && position.getX() <= width) && (0 <= position.getZ() && position.getZ() <= height)){
+            graph = graphs[(int)position.getX()][(int)position.getZ()];
+        }
+
+        return graph;
+    }
+
+    private Cell findGraph(Vector3f parentPos, Vector3f position){
+        Cell graph = null;
+        Cell testGraphParent = null;
+        Cell testGraphStudy = null;
+
+        if((0 <= parentPos.getX() && parentPos.getX() <= width) && (0 <= parentPos.getZ() && parentPos.getZ() <= height)){
+            testGraphParent = graphs[(int)parentPos.getX()][(int)parentPos.getZ()];
+        }
+
+        if((0 <= position.getX() && position.getX() <= width) && (0 <= position.getZ() && position.getZ() <= height)){
+            testGraphStudy = graphs[(int)position.getX()][(int)position.getZ()];
+        }
+
+        if(testGraphParent != null && testGraphStudy != null){
+            if(Math.abs(testGraphParent.getCurrentHeight() - testGraphStudy.getCurrentHeight()) <= characteristic.getJump()){
+                graph = graphs[(int)position.getX()][(int)position.getZ()];
+            }
+        }
+
+        return graph;
+    }
+
+    private static int getHeuristicPathLength(Cell from, Cell to) {
+        return (int)(Math.abs(from.getModifiedPosition().getX() - to.getModifiedPosition().getX()) + Math.abs(from.getModifiedPosition().getZ() - to.getModifiedPosition().getZ()));
+    }
+    // методы гетеры - конец
 }

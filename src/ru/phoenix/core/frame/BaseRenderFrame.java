@@ -13,6 +13,7 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
 
 import java.nio.FloatBuffer;
@@ -138,8 +139,18 @@ public class BaseRenderFrame implements Framework {
         glBindTexture(GL_TEXTURE_2D, render.getTexture());
         ndcShader.setUniform("main_texture",0);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1));
-        //glBindTexture(GL_TEXTURE_2D, render.getTexture(1));
+
+        if(GameController.getInstance().isTabHold()){
+            //glBindTexture(GL_TEXTURE_2D, shadow.getTexture()); // отладочный для проверки карты теней
+            glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
+            ndcShader.setUniform("shadow",1);
+        }else{
+            glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1)); // Основной рендер
+            ndcShader.setUniform("shadow",2);
+        }
+        //glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1)); // Основной рендер
+        //glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
+        //glBindTexture(GL_TEXTURE_2D, shadow.getTexture()); // отладочный для проверки карты теней
         ndcShader.setUniform("blur_texture",1);
         ndcVbo.draw();
     }

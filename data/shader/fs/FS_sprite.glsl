@@ -12,6 +12,8 @@ layout (location = 2) out vec4 bright_color;
 
 in vec2 textureCoord;
 flat in int isBoard;
+flat in int isGrid;
+in flat int useShading;
 
 uniform sampler2D image;
 uniform int group;
@@ -20,6 +22,7 @@ uniform float id;
 uniform int onTarget;
 uniform int water;
 uniform int discardReverse;
+uniform int noPaint;
 uniform float discardControl;
 
 vec4 targetHighlight(vec4 rgba);
@@ -28,7 +31,9 @@ void main(){
     // обробатываем текстуру
     vec4 rgba = texture(image,textureCoord);
     if(rgba.a < 1.0f && isBoard == 1){
-        discard;
+        if(noPaint == 0){
+            discard;
+        }
     }
 
     if(discardControl > -1.0f){
@@ -47,11 +52,26 @@ void main(){
     if(onTarget == 1){
         fragment_color = targetHighlight(rgba);
     }else{
-        if(water == 1){
-            fragment_color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
+        if(useShading == 1){
+            if(water == 1){
+                vec4 color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
+                //float average = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b; // Градации серого
+                fragment_color = vec4(color.rgb, color.a);
+            }else{
+                //float average = 0.2126 * rgba.r + 0.7152 * rgba.g + 0.0722 * rgba.b; // Градации серого
+                fragment_color = vec4(rgba.rgb / 10.0f, rgba.a);
+            }
         }else{
-            fragment_color = rgba;
+            if(water == 1){
+                fragment_color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
+            }else{
+                fragment_color = rgba;
+            }
         }
+    }
+
+    if(noPaint == 1){
+        fragment_color = vec4(0.0f,0.0f,0.0f,0.0f);
     }
 
     // Расчитываем выбраный цвет

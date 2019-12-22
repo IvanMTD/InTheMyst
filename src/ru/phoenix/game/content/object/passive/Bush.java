@@ -7,6 +7,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
 import ru.phoenix.game.logic.element.GridElement;
+import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +15,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
-import static ru.phoenix.core.config.Constants.MOUNTAIN_MAP;
-import static ru.phoenix.core.config.Constants.PLAIN_MAP;
+import static ru.phoenix.core.config.Constants.*;
 
 public class Bush extends ObjectControl implements Object {
     private List<Texture> textures;
@@ -55,12 +55,12 @@ public class Bush extends ObjectControl implements Object {
     public Bush(Bush object, int seed){
         super();
         this.textures = new ArrayList<>(object.getTextures());
-        if(seed == PLAIN_MAP){
+        if(seed == PLAIN_AREA){
             if(Math.random() * 100.0f <= 99.0f){
                 textures.remove(4);
                 textures.remove(3);
             }
-        }else if(seed == MOUNTAIN_MAP){
+        }else if(seed == MOUNTAIN_AREA){
             Texture temp = textures.get(3);
             Texture temp1 = textures.get(4);
             textures.clear();
@@ -90,12 +90,42 @@ public class Bush extends ObjectControl implements Object {
     }
 
     @Override
-    public void update(List<GridElement> gridElements){
+    public void update(Cell[][] grid, Vector3f pixel, Cell finishCell){
 
     }
 
     @Override
     public List<Texture> getTextures(){
         return textures;
+    }
+
+    @Override
+    public int getRecognition() {
+        return 0;
+    }
+
+    @Override
+    public void setRecognition(int recognition) {
+
+    }
+
+    @Override
+    public boolean isSelected() {
+        return false;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+
+    }
+
+    @Override
+    public boolean isBattle() {
+        return false;
+    }
+
+    @Override
+    public void setBattle(boolean battle) {
+
     }
 }

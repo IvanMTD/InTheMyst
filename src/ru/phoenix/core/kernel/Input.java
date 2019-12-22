@@ -8,6 +8,7 @@ import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.math.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static ru.phoenix.core.config.Constants.NO_ACTION;
 
 public class Input {
     private static Input instance = null;
@@ -31,6 +32,7 @@ public class Input {
 
     private Input(){
         init();
+        glfwSetInputMode(Window.getInstance().getWindow(),GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         GLFWKeyCallback keyCallback;
         glfwSetKeyCallback(Window.getInstance().getWindow(), new GLFWKeyCallback() {
             @Override
@@ -76,7 +78,7 @@ public class Input {
     }
 
     private void init(){
-        action = Constants.NO_ACTION;
+        action = NO_ACTION;
         counter = 0.0f;
         click = false;
         cursorPosition = new Vector2f();
@@ -92,31 +94,11 @@ public class Input {
         glfwPollEvents();
     }
 
-    public int mouseButtonActionVerification(int key){
-        if (isMousePressed(key)) {
-            counter++;
-            if(!click) {
-                click = true;
-                action = Constants.HOLD;
-            }
-        }else if(!isMousePressed(key)){
-            action = Constants.NO_ACTION;
-            if(click) {
-                if (counter < 60 && !getCursorMove()) {
-                    action = Constants.CLICK;
-                }
-                counter = 0;
-                click = false;
-            }
-        }
-        return action;
-    }
-
     public boolean isPressed(int index){
         return keys[index];
     }
 
-    private boolean isMousePressed(int index){
+    public boolean isMousePressed(int index){
         return buttons[index];
     }
 

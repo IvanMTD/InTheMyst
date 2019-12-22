@@ -46,7 +46,7 @@ public class WindowConfig {
             defaultConfig.add("samples");defaultConfig.add(Integer.toString(4));
             defaultConfig.add("gamma");defaultConfig.add(Float.toString(2.2f));
             defaultConfig.add("z_near");defaultConfig.add(Float.toString(0.01f));
-            defaultConfig.add("z_far");defaultConfig.add(Float.toString(100.0f));
+            defaultConfig.add("z_far");defaultConfig.add(Float.toString(300.0f));
             writeFile(defaultConfig);
         }
     }

@@ -3,11 +3,13 @@ package ru.phoenix.game.content.object;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.CoreEngine;
 import ru.phoenix.core.kernel.Input;
+import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.ImageAnimLoader;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Projection;
+import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.hud.assembled.SelfIndicators;
@@ -43,18 +45,20 @@ public abstract class ObjectControl {
     private boolean instance;
     private boolean animated;
     private boolean onTarget;
+    private boolean selected;
     private boolean board;
     private boolean shadow;
     private boolean active;
     private boolean water;
     private boolean jump;
     private boolean turn;
+    private boolean bigTree;
 
     private boolean isIndicatorOn;
     private boolean tapStop;
 
     public ObjectControl(){
-        isIndicatorOn = true;
+        isIndicatorOn = false;
         tapStop = false;
         selfIndicators = null;
         textures = new ArrayList<>();
@@ -72,6 +76,7 @@ public abstract class ObjectControl {
         shadow = false;
         active = false;
         water = false;
+        bigTree = false;
         group = GROUP_A;
     }
 
@@ -199,6 +204,14 @@ public abstract class ObjectControl {
         this.onTarget = onTarget;
     }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
     public boolean isBoard() {
         return board;
     }
@@ -279,92 +292,135 @@ public abstract class ObjectControl {
         this.turn = turn;
     }
 
+    protected boolean isBigTree() {
+        return bigTree;
+    }
+
+    protected void setBigTree(boolean bigTree) {
+        this.bigTree = bigTree;
+    }
+
     public void draw(Shader shader, boolean shadow){
-        boolean currentTurn;
-        float yaw = Camera.getInstance().getYaw();
-        if(90.0f < yaw && yaw < 270.0f){
-            currentTurn = !isTurn();
-        }else{
-            currentTurn = isTurn();
-        }
-        /*if(instance) {
-            sprite.updateInstanceMatrix();
-        }*/
-        // setUniforms
-        /*shader.useProgram();
-        // глобальный юниформ
-        shader.setUniformBlock("matrices",0);*/
-        // контролеры
-        shader.setUniform("instance",sprite.getVbo().isInstances() ? 1 : 0);
-        shader.setUniform("animated",0);
-        shader.setUniform("board",isBoard() ? 1 : 0);
-        shader.setUniform("isActive",isActive() ? 1 : 0);
-        shader.setUniform("turn",currentTurn ? 1 : 0);
-        shader.setUniform("discardReverse",0);
-        shader.setUniform("discardControl",-1.0f);
-        // доп данные
-        shader.setUniform("model_m",projection.getModelMatrix());
-        shader.setUniform("xOffset",xOffset);
-        shader.setUniform("yOffset",yOffset);
-        shader.setUniform("zOffset",zOffset);
-        shader.setUniform("group",group);
-        shader.setUniform("id",id);
-        shader.setUniform("onTarget", isOnTarget() ? 1 : 0);
-        shader.setUniform("water", isWater() ? 1 : 0);
-        // end
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textures.get(currentTexture).getTextureID());
-        shader.setUniform("image",0);
 
-        sprite.draw();
+        if(checkObjectOnScreen() || sprite.getVbo().isInstances()) {
 
-        if(animated) {
-            if(isBoard()) {
-                if(isActive()){
-                    if(!isJump() && !sprite.isBlock()) {
-                        if (counter > sprite.getCondition()) {
+            boolean currentTurn;
+            float yaw = Camera.getInstance().getYaw();
+            if (90.0f < yaw && yaw < 270.0f) {
+                currentTurn = !isTurn();
+            } else {
+                currentTurn = isTurn();
+            }
+            /*if(instance) {
+                sprite.updateInstanceMatrix();
+            }*/
+                // setUniforms
+            /*shader.useProgram();
+            // глобальный юниформ
+            shader.setUniformBlock("matrices",0);*/
+            // контролеры
+            shader.setUniform("instance", sprite.getVbo().isInstances() ? 1 : 0);
+            shader.setUniform("animated", 0);
+            shader.setUniform("board", isBoard() ? 1 : 0);
+            shader.setUniform("grid", 0);
+            shader.setUniform("isActive", isActive() ? 1 : 0);
+            shader.setUniform("bigTree", isBigTree() ? 1 : 0);
+            shader.setUniform("viewDirect", new Vector3f(Camera.getInstance().getFront().normalize()));
+            shader.setUniform("turn", currentTurn ? 1 : 0);
+            shader.setUniform("discardReverse", 0);
+            shader.setUniform("discardControl", -1.0f);
+            shader.setUniform("noPaint", 0);
+            // доп данные
+            shader.setUniform("model_m", projection.getModelMatrix());
+            shader.setUniform("xOffset", xOffset);
+            shader.setUniform("yOffset", yOffset);
+            shader.setUniform("zOffset", zOffset);
+            shader.setUniform("group", group);
+            shader.setUniform("id", id);
+            shader.setUniform("onTarget", isOnTarget() ? 1 : 0);
+            shader.setUniform("water", isWater() ? 1 : 0);
+            // end
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, textures.get(currentTexture).getTextureID());
+            shader.setUniform("image", 0);
+
+            sprite.draw();
+
+            if (animated) {
+                if (isBoard()) {
+                    if (isActive()) {
+                        if (!isJump() && !sprite.isBlock()) {
+                            if (counter > sprite.getCondition()) {
+                                sprite.nextFrame();
+                                counter = 0.0f;
+                            }
+                        }
+                    } else {
+                        if (counter > 10.0f + Math.random() * 10.0f) {
                             sprite.nextFrame();
                             counter = 0.0f;
                         }
                     }
-                }else {
-                    if (counter > 10.0f + Math.random() * 10.0f) {
+                } else {
+                    if (counter > 20.0f) {
                         sprite.nextFrame();
                         counter = 0.0f;
                     }
                 }
-            }else{
-                if (counter > 20.0f) {
-                    sprite.nextFrame();
-                    counter = 0.0f;
+                float tik = (float) glfwGetTime() - lastCount;
+                counter += (tik * CoreEngine.getFps());
+                lastCount = (float) glfwGetTime();
+            }
+
+            boolean tap = false;
+
+            if (!tapStop) {
+                tap = Input.getInstance().isPressed(GLFW_KEY_F);
+                tapStop = true;
+            }
+
+            if (!Input.getInstance().isPressed(GLFW_KEY_F)) {
+                tapStop = false;
+            }
+
+            if (tap) {
+                isIndicatorOn = !isIndicatorOn;
+            }
+
+            if (selfIndicators != null && isIndicatorOn && !shadow) {
+                selfIndicators.draw(shader);
+            } else {
+                if (selfIndicators != null && isOnTarget() && !shadow) {
+                    selfIndicators.draw(shader);
                 }
             }
-            float tik = (float)glfwGetTime() - lastCount;
-            counter+=(tik * CoreEngine.getFps());
-            lastCount = (float)glfwGetTime();
         }
+    }
 
-        boolean tap = false;
+    private boolean checkObjectOnScreen(){
+        boolean check = false;
+        Vector3f position = new Vector3f(getPosition());
+        // извлекаем матрицы перспективы и вида
+        Matrix4f perspective = new Matrix4f(Camera.getInstance().getPerspective().getProjection());
+        Matrix4f view = new Matrix4f(Camera.getInstance().getPerspective().getViewMatrix());
+        // получение мировой матрицы путем перемножения матриц перспективы и вида
+        Matrix4f world = new Matrix4f(perspective.mul(view));
+        // вычисление ндсПозиции обьекта
+        Vector3f ndcPosition = new Vector3f(world.mulOnVector(position));
+        ndcPosition = new Vector3f(ndcPosition.getX() / ndcPosition.getZ(), ndcPosition.getY() / ndcPosition.getZ(), 0.01f);
+        // Вычисление позиции объекта в экранных координатах
+        float X = (ndcPosition.getX() + 1.0f) * Window.getInstance().getWidth() / 2.0f;
+        float Y = (Window.getInstance().getHeight() - ((ndcPosition.getY() + 1.0f) * Window.getInstance().getHeight() / 2.0f));
+        Vector2f objectPos = new Vector2f(X,Y);
 
-        if(!tapStop){
-            tap = Input.getInstance().isPressed(GLFW_KEY_F);
-            tapStop = true;
-        }
+        int offset = 1000;
 
-        if(!Input.getInstance().isPressed(GLFW_KEY_F)){
-            tapStop = false;
-        }
-
-        if(tap){
-            isIndicatorOn = !isIndicatorOn;
-        }
-
-        if(selfIndicators != null && isIndicatorOn && !shadow){
-            selfIndicators.draw(shader);
-        }else{
-            if(selfIndicators != null && isOnTarget() && !shadow){
-                selfIndicators.draw(shader);
+        if(-offset <= objectPos.getX() && objectPos.getX() <= Window.getInstance().getWidth() + offset){
+            if(-offset <= objectPos.getY() && objectPos.getY() <= Window.getInstance().getHeight() + offset){
+                check = true;
             }
         }
+
+        return check;
     }
 }

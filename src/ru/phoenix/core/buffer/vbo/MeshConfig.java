@@ -30,6 +30,9 @@ public class MeshConfig implements VertexBufferObject {
     private float tic;
     private float tic2;
 
+    private int drawInfo;
+    private int drawMethod;
+
     public MeshConfig(){
         vao = glGenVertexArrays();
         vbo = new ArrayList<>();
@@ -47,6 +50,29 @@ public class MeshConfig implements VertexBufferObject {
 
         tic = 0.0f;
         tic2 = 0.0f;
+        drawInfo = GL_STATIC_DRAW;
+        drawMethod = GL_TRIANGLES;
+    }
+
+    public MeshConfig(int drawInfo, int drawMethod){
+        vao = glGenVertexArrays();
+        vbo = new ArrayList<>();
+        for(int i=0; i<10; i++){
+            vbo.add(glGenBuffers());
+        }
+        ibo = glGenBuffers();
+
+        sizeIndices = 0;
+        sizeInstance = 0;
+
+        animated = false;
+        tangent = false;
+        instances = false;
+
+        tic = 0.0f;
+        tic2 = 0.0f;
+        this.drawInfo = drawInfo;
+        this.drawMethod = drawMethod;
     }
 
     @Override
@@ -66,49 +92,49 @@ public class MeshConfig implements VertexBufferObject {
             // Записываем все позиции в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(0));
             if (positions != null) {
-                glBufferData(GL_ARRAY_BUFFER, positions, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, positions, drawInfo);
             }
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
             // Записываем все нормали в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(1));
             if (normals != null) {
-                glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, normals, drawInfo);
             }
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
             // Записываем все текстуры в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(2));
             if (textureCoords != null) {
-                glBufferData(GL_ARRAY_BUFFER, textureCoords, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, textureCoords, drawInfo);
             }
             glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
             // Записываем все тангенсы в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(3));
             if (tangents != null) {
-                glBufferData(GL_ARRAY_BUFFER, tangents, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, tangents, drawInfo);
             }
             glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
             // Записываем все битангенсы в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(4));
             if (biTangents != null) {
-                glBufferData(GL_ARRAY_BUFFER, biTangents, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, biTangents, drawInfo);
             }
             glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
             // Записываем все айди костей
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(5));
             if (boneIds != null) {
-                glBufferData(GL_ARRAY_BUFFER, boneIds, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, boneIds, drawInfo);
             }
             glVertexAttribPointer(5, 4, GL_FLOAT, false, 0, 0);
             // Записываем все веса костей
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(6));
             if (boneWeights != null) {
-                glBufferData(GL_ARRAY_BUFFER, boneWeights, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, boneWeights, drawInfo);
             }
             glVertexAttribPointer(6, 4, GL_FLOAT, false, 0, 0);
 
             if (instances != null) {
                 glBindBuffer(GL_ARRAY_BUFFER, vbo.get(7));
-                glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), drawInfo);
                 glVertexAttribPointer(7, 4, GL_FLOAT, false, Float.BYTES * v4size, 0);
                 glVertexAttribPointer(8, 4, GL_FLOAT, false, Float.BYTES * v4size, v4size);
                 glVertexAttribPointer(9, 4, GL_FLOAT, false, Float.BYTES * v4size, 2 * v4size);
@@ -121,44 +147,44 @@ public class MeshConfig implements VertexBufferObject {
             }
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, drawInfo);
             glBindVertexArray(0);
         }else{
             glBindVertexArray(vao);
             // Записываем все позиции в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(0));
             if (positions != null) {
-                glBufferData(GL_ARRAY_BUFFER, positions, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, positions, drawInfo);
             }
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
             // Записываем все нормали в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(1));
             if (normals != null) {
-                glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, normals, drawInfo);
             }
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
             // Записываем все текстуры в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(2));
             if (textureCoords != null) {
-                glBufferData(GL_ARRAY_BUFFER, textureCoords, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, textureCoords, drawInfo);
             }
             glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
             // Записываем все тангенсы в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(3));
             if (tangents != null) {
-                glBufferData(GL_ARRAY_BUFFER, tangents, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, tangents, drawInfo);
             }
             glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
             // Записываем все битангенсы в буфер
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(4));
             if (biTangents != null) {
-                glBufferData(GL_ARRAY_BUFFER, biTangents, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, biTangents, drawInfo);
             }
             glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
 
             if (instances != null) {
                 glBindBuffer(GL_ARRAY_BUFFER, vbo.get(7));
-                glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), drawInfo);
                 glVertexAttribPointer(7, 4, GL_FLOAT, false, Float.BYTES * v4size, 0);
                 glVertexAttribPointer(8, 4, GL_FLOAT, false, Float.BYTES * v4size, v4size);
                 glVertexAttribPointer(9, 4, GL_FLOAT, false, Float.BYTES * v4size, 2 * v4size);
@@ -171,7 +197,7 @@ public class MeshConfig implements VertexBufferObject {
             }
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, drawInfo);
             glBindVertexArray(0);
         }
     }
@@ -192,7 +218,7 @@ public class MeshConfig implements VertexBufferObject {
                 glEnableVertexAttribArray(8);
                 glEnableVertexAttribArray(9);
                 glEnableVertexAttribArray(10);
-                glDrawElementsInstanced(GL_TRIANGLES, sizeIndices, GL_UNSIGNED_INT, 0, sizeInstance);
+                glDrawElementsInstanced(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0, sizeInstance);
                 glDisableVertexAttribArray(0);
                 glDisableVertexAttribArray(1);
                 glDisableVertexAttribArray(2);
@@ -216,7 +242,7 @@ public class MeshConfig implements VertexBufferObject {
                 glEnableVertexAttribArray(8);
                 glEnableVertexAttribArray(9);
                 glEnableVertexAttribArray(10);
-                glDrawElementsInstanced(GL_TRIANGLES, sizeIndices, GL_UNSIGNED_INT, 0, sizeInstance);
+                glDrawElementsInstanced(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0, sizeInstance);
                 glDisableVertexAttribArray(0);
                 glDisableVertexAttribArray(1);
                 glDisableVertexAttribArray(2);
@@ -238,7 +264,7 @@ public class MeshConfig implements VertexBufferObject {
                 glEnableVertexAttribArray(4);
                 glEnableVertexAttribArray(5);
                 glEnableVertexAttribArray(6);
-                glDrawElements(GL_TRIANGLES, sizeIndices, GL_UNSIGNED_INT, 0);
+                glDrawElements(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0);
                 glDisableVertexAttribArray(0);
                 glDisableVertexAttribArray(1);
                 glDisableVertexAttribArray(2);
@@ -254,7 +280,7 @@ public class MeshConfig implements VertexBufferObject {
                 glEnableVertexAttribArray(2);
                 glEnableVertexAttribArray(3);
                 glEnableVertexAttribArray(4);
-                glDrawElements(GL_TRIANGLES, sizeIndices, GL_UNSIGNED_INT, 0);
+                glDrawElements(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0);
                 glDisableVertexAttribArray(0);
                 glDisableVertexAttribArray(1);
                 glDisableVertexAttribArray(2);
@@ -285,7 +311,7 @@ public class MeshConfig implements VertexBufferObject {
         vbo.set(0,glGenBuffers());
         glBindBuffer(GL_ARRAY_BUFFER, vbo.get(0));
         if(pos != null) {
-            glBufferData(GL_ARRAY_BUFFER, pos, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, pos, drawInfo);
         }
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
     }
@@ -317,7 +343,20 @@ public class MeshConfig implements VertexBufferObject {
         vbo.set(2,glGenBuffers());
         glBindBuffer(GL_ARRAY_BUFFER, vbo.get(2));
         if(tex != null) {
-            glBufferData(GL_ARRAY_BUFFER, temp, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, temp, drawInfo);
+        }
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
+    }
+
+    @Override
+    public void setNewTex(float[] tex) {
+        glBindVertexArray(vao);
+        // Записываем все текстуры в буфер
+        glDeleteBuffers(vbo.get(2));
+        vbo.set(2,glGenBuffers());
+        glBindBuffer(GL_ARRAY_BUFFER, vbo.get(2));
+        if(tex != null) {
+            glBufferData(GL_ARRAY_BUFFER, tex, drawInfo);
         }
         glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
     }

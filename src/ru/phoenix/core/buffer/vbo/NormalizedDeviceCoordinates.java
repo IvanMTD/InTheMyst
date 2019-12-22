@@ -66,6 +66,11 @@ public class NormalizedDeviceCoordinates implements VertexBufferObject {
     }
 
     @Override
+    public void setNewTex(float[] tex) {
+
+    }
+
+    @Override
     public boolean isAnimated() {
         return false;
     }

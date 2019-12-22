@@ -4,7 +4,9 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import ru.phoenix.core.buffer.ubo.ProjectionUniforms;
 import ru.phoenix.core.buffer.ubo.UniformBufferObject;
 import ru.phoenix.core.config.*;
+import ru.phoenix.core.debug.HowLong;
 import ru.phoenix.game.loop.SceneControl;
+import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
 import ru.phoenix.game.scene.batlle.BattleScene;
 

@@ -1,9 +1,11 @@
 package ru.phoenix.core.kernel;
 
 import ru.phoenix.core.config.*;
+import ru.phoenix.core.debug.HowLong;
 import ru.phoenix.core.frame.BaseRenderFrame;
 import ru.phoenix.core.frame.Framework;
 import ru.phoenix.core.frame.ShadowRenderFrame;
+import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
 
@@ -20,12 +22,17 @@ public class Render {
     private float lastTime;
     private float timer;
 
+    private float angle;
+    private float hyp;
+
     Render(){
         window = Window.getInstance();
         baseRenderFrame = new BaseRenderFrame(3);
         shadowRenderFrame = new ShadowRenderFrame();
         stopRender = false;
         firstStart = true;
+
+        angle = 0.0f;
     }
 
     public void init(){
@@ -47,6 +54,24 @@ public class Render {
 
         if (!stopRender) {
             if (scene.getLights() != null) {
+                /*Vector3f center = new Vector3f((float)scene.getBattleGraund().getMapX() / 2.0f,0.0f,(float)scene.getBattleGraund().getMapZ()/2.0f);
+
+                int width = scene.getBattleGraund().getMapX();
+                int height = scene.getBattleGraund().getMapZ();
+                float hyp = (float)Math.sqrt(width * width + height * height);
+
+                float x = center.getX() + ((float)Math.sin(Math.toRadians(angle)) * (float)width / 2.0f);
+                float y = hyp;
+                float z = center.getZ() + ((float)Math.cos(Math.toRadians(angle)) * (float)height / 2.0f);
+
+                scene.getBattleGraund().getDirectLight().get(0).setPosition(new Vector3f(x,y,z));
+                scene.getBattleGraund().getDirectLight().get(0).updateLightSpaceMatrix();
+
+                angle += 0.1f;
+                if(angle > 360.0f){
+                    angle = 0.0f;
+                }*/
+
                 shadowRenderFrame.draw(scene);
                 baseRenderFrame.setFbo(shadowRenderFrame.getFbo());
             }

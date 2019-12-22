@@ -22,7 +22,6 @@ layout (row_major, std140) uniform matrices{
 uniform int animated;
 uniform int instance;
 
-
 // доп данные
 uniform mat4 model_m;
 uniform mat4 lightSpaceMatrix;
@@ -38,6 +37,7 @@ out VS_OUT {
      vec3 ViewPos;
      vec4 FragPosLightSpace;
      mat3 TBN;
+     vec4 localPos;
 } vs_out;
 
 void main() {
@@ -87,6 +87,7 @@ void main() {
         vs_out.ViewPos = viewPos;
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
+        vs_out.localPos = l_instance_m * initPos;
     }else{
         if(animated == 1){
             int count = 0;
@@ -116,18 +117,22 @@ void main() {
             initNormal = vec4(l_norm,0.0f);
         }
 
+        vec3 norm = mat3(transpose(inverse(model_m))) * vec3(initNormal);
+        //vec3 norm = vec3(initNormal);
+
         vec3 T = normalize(vec3(model_m * vec4(l_tan,    0.0f)));
         vec3 B = normalize(vec3(model_m * vec4(l_bi_tan, 0.0f)));
-        vec3 N = normalize(vec3(model_m * initNormal));
+        vec3 N = normalize(vec3(model_m * vec4(norm,0.0f)));
         mat3 TBN = mat3(T, B, N);
 
         vs_out.FragPos = vec3(model_m * initPos);
-        vs_out.Normal = mat3(transpose(inverse(model_m))) * vec3(initNormal);
-        vs_out.TexCoords = l_tex;
+        vs_out.Normal = norm;
+        vs_out.TexCoords = vec2(l_tex.x,1.0f - l_tex.y);
         vs_out.TangentViewPos  = TBN * viewPos;
         vs_out.TangentFragPos  = TBN * vs_out.FragPos;
         vs_out.ViewPos = viewPos;
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
+        vs_out.localPos = model_m * initPos;
     }
 }

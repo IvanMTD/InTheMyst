@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
+import static ru.phoenix.core.config.Constants.GROUP_A;
 
 public abstract class BlockControl {
     // описание
@@ -74,10 +75,10 @@ public abstract class BlockControl {
 
     public void draw(Shader shader){
         for(Mesh mesh : meshes){
-            /*// setUniforms
-            shader.useProgram();
+            // setUniforms
+            /*shader.useProgram();
             // глобальный юниформ
-            shader.setUniformBlock("matrices",0);
+            shader.setUniformBlock("matrices",0);*/
             // контролеры
             shader.setUniform("animated",0);
             shader.setUniform("instance",mesh.getVbo().isInstances() ? 1 : 0);
@@ -88,7 +89,7 @@ public abstract class BlockControl {
             shader.setUniform("group",GROUP_A);
             shader.setUniform("id",0.0f);
             shader.setUniform("onTarget", 0);
-            // end*/
+            // end
             shader.setUniform("instance",mesh.getVbo().isInstances() ? 1 : 0);
             // доп данные
             shader.setUniform("model_m",projection.getModelMatrix());

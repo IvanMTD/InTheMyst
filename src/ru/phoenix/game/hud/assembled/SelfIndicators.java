@@ -2,7 +2,7 @@ package ru.phoenix.game.hud.assembled;
 
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
-import ru.phoenix.game.content.object.active.property.Characteristic;
+import ru.phoenix.game.property.Characteristic;
 import ru.phoenix.game.hud.instance.Board;
 import ru.phoenix.game.hud.instance.type.Indicator;
 

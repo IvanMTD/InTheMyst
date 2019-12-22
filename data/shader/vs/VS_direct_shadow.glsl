@@ -17,6 +17,7 @@ out vec2 texCoord;
 uniform int instance;
 uniform int animated;
 uniform int board;
+uniform int turn;
 
 // доп данные
 uniform mat4 model_m;
@@ -34,6 +35,9 @@ void main(){
     vec3 sunUp_worldspace = vec3(directLightViewMatrix[0].y, directLightViewMatrix[1].y, directLightViewMatrix[2].y);
 
     texCoord = l_tex;
+    if(turn != 1){
+        texCoord = vec2(1.0f - l_tex.x,l_tex.y);
+    }
 
     if(instance == 1){
         if(animated == 1){
@@ -79,7 +83,7 @@ void main(){
                 vec3 result = particleCenter_wordspace + (sunRight_worldspace * l_pos.x * billboardSize.x + sunUp_worldspace * l_pos.y  * billboardSize.y);
                 result = vec3(result.x + xOffset,result.y + 1.0f + yOffset,result.z - 1.0f + zOffset);
 
-                vec3 inverseRay = (sunRay * 0.65f) * -1.0f;
+                vec3 inverseRay = (sunRay * 0.5f) * -1.0f; // сдвиг тени
                 vec3 somePos = result + inverseRay;
                 result = vec3(somePos.x,result.y,somePos.z);
 

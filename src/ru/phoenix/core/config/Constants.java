@@ -26,6 +26,9 @@ public class Constants {
     public static final int PLAIN_MAP           = 0x13101;
     public static final int MOUNTAIN_MAP        = 0x13102;
     public static final int RIVER_MAP           = 0x13103;
+    // area info
+    public static final int PLAIN_AREA          = 0x13101;
+    public static final int MOUNTAIN_AREA       = 0x13102;
 
     // scene indicators
     public static final int SCENE_LOGO          = 0x10000;
@@ -34,8 +37,22 @@ public class Constants {
     public static final int SCENE_BATTLE        = 0x13000;
     public static final int SCENE_LOADING       = 0x14000;
 
+    // recognition
+    public static final int ALLY                = 0x13100;
+    public static final int ENEMY               = 0x13101;
+    public static final int NEUTRAL             = 0x13102;
+
     // person id
-    public static final float ID_PERSON_GEHARD  = 0.12001f;
+    // communists
+    public static final int ID_COMMUNIST_GEHARD  = 0x12101;
+    public static final int ID_COMMUNIST_CHEMIST = 0x12102;
+    public static final int ID_COMMUNIST_ARCHER  = 0x12103;
+    // anarchists
+    public static final int ID_ANARCHY_THIEF   = 0x12201;
+    public static final int ID_ANARCHY_BANDIT  = 0x12202;
+    public static final int ID_ANARCHY_ARCHER  = 0x12203;
+    // imperial
+    public static final int ID_IMPERIAL_ARCHER = 0x12301;
 
     // click or hold
     public static final int NO_ACTION           = 0x30000;

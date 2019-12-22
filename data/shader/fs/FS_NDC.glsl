@@ -7,6 +7,7 @@ in vec2 texture_coord;
 uniform sampler2D main_texture;
 uniform sampler2D blur_texture;
 uniform float gamma;
+uniform int shadow;
 
 /*void main(){
     //FragColor = texture(screenTexture, TexCoord);
@@ -78,7 +79,10 @@ void main(){
     vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
     // gamma correction
     mapped = pow(mapped, vec3(1.0 / gamma));
-    fragment_color = vec4(mapped, 1.0);
-    //fragment_color = texture(blur_texture,texture_coord);
+    if(shadow == 1){
+        fragment_color = texture(blur_texture,texture_coord);
+    }else{
+        fragment_color = vec4(mapped, 1.0);
+    }
 }
 

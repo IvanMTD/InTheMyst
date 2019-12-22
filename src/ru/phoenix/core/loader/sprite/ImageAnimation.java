@@ -30,12 +30,6 @@ public class ImageAnimation {
         currentAnimation = animation;
     }
 
-    public void updateInstanceMatrix(){
-        for(ImageFrame frame : frames){
-            frame.updateInstanceMatrix();
-        }
-    }
-
     public void nextFrame(){
         int size = 0;
         for(ImageFrame frame : frames){

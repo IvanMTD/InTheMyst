@@ -8,6 +8,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
 import ru.phoenix.game.logic.element.GridElement;
+import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,12 +59,42 @@ public class WaterFlower extends ObjectControl implements Object {
     }
 
     @Override
-    public void update(List<GridElement> gridElements){
+    public void update(Cell[][] grid, Vector3f pixel, Cell finishCell){
         setyOffset(Default.getOffset());
     }
 
     @Override
     public List<Texture> getTextures(){
         return textures;
+    }
+
+    @Override
+    public int getRecognition() {
+        return 0;
+    }
+
+    @Override
+    public void setRecognition(int recognition) {
+
+    }
+
+    @Override
+    public boolean isSelected() {
+        return false;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+
+    }
+
+    @Override
+    public boolean isBattle() {
+        return false;
+    }
+
+    @Override
+    public void setBattle(boolean battle) {
+
     }
 }

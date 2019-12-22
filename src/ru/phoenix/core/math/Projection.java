@@ -24,6 +24,15 @@ public class Projection {
         projection = new Matrix4f().identity();
     }
 
+    public Projection(Projection projection){
+        translation = projection.getTranslation();
+        scaling = projection.getScaling();
+        rotation = projection.getRotation();
+        model = projection.getModelMatrix();
+        view = projection.getViewMatrix();
+        this.projection = projection.getProjection();
+    }
+
     public void setPerspective(float fov){
         float aspect = Window.getInstance().getWidth() * 1.0f / Window.getInstance().getHeight();
         projection.setPerspective(fov,aspect, WindowConfig.getInstance().getNear(), WindowConfig.getInstance().getFar());

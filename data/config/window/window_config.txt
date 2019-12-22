@@ -4,4 +4,4 @@ window_height 720
 samples 4
 gamma 2.2
 z_near 0.01
-z_far 100.0
+z_far 300.0

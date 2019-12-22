@@ -62,10 +62,6 @@ public class Mesh {
         vbo.draw();
     }
 
-    public ArrayList<Material> getTextures() {
-        return textures;
-    }
-
     private float[] getPositions(){
         float[] positions = new float[vertices.size() * 3];
         int index = 0;
@@ -150,6 +146,10 @@ public class Mesh {
 
     public ArrayList<Integer> getIndicesArray(){
         return indices;
+    }
+
+    public ArrayList<Material> getTextures() {
+        return textures;
     }
 
     public VertexBufferObject getVbo() {

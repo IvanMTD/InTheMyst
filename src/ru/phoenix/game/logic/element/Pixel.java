@@ -5,8 +5,8 @@ import ru.phoenix.core.math.Vector3f;
 public class Pixel {
     private static Vector3f pixel;
 
-    public static void setPixel(Vector3f p){
-        pixel = new Vector3f(p);
+    public static void setPixel(Vector3f pixelInfo){
+        pixel = new Vector3f(pixelInfo);
     }
 
     public static Vector3f getPixel(){

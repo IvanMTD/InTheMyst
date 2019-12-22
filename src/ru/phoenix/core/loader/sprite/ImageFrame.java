@@ -42,27 +42,6 @@ public class ImageFrame {
         vbo.allocate(positions,null,textureCoords,null,null,null,null,matrix,indices);
     }
 
-    public void updateInstanceMatrix(){
-        List<SortArray> sortingData = new ArrayList<>();
-        if(mat != null){
-            for (Matrix4f aMat : mat) {
-                float distance = new Vector3f(Camera.getInstance().getPos().sub(aMat.getPositionVector())).length();
-                sortingData.add(new SortArray(distance, aMat));
-            }
-
-            sortingData.sort((o1, o2) -> o1.getCondition() < o2.getCondition() ? 0 : -1);
-
-            Matrix4f[] matrix = new Matrix4f[sortingData.size()];
-            int i=0;
-            for(SortArray sortData : sortingData){
-                matrix[i] = sortData.getMatrix();
-                i++;
-            }
-
-            vbo.allocate(pos,null,tex,null,null,null,null,matrix,ind);
-        }
-    }
-
     public void draw(){
         vbo.draw();
     }
