@@ -17,6 +17,7 @@ public interface Character {
     // main class
     void setDefaultCharacteristic();
     void preset();
+    void resetSettings();
     void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemy, List<Character> ally, BattleGround battleGround);
     void update();
     void draw(Shader shader, boolean shadow);

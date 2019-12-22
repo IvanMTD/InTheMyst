@@ -102,8 +102,6 @@
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-ovr/lwjgl-ovr.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-ovr/lwjgl-ovr-javadoc.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-ovr/lwjgl-ovr-sources.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-ovr/lwjgl-ovr-natives-linux.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-ovr/lwjgl-ovr-natives-macos.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-ovr/lwjgl-ovr-natives-windows.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-par/lwjgl-par.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-par/lwjgl-par-javadoc.jar" path-in-jar="/" />
@@ -156,6 +154,7 @@
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-vulkan/lwjgl-vulkan.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-vulkan/lwjgl-vulkan-javadoc.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-vulkan/lwjgl-vulkan-sources.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-vulkan/lwjgl-vulkan-natives-macos.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-xxhash/lwjgl-xxhash.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-xxhash/lwjgl-xxhash-javadoc.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Documents/Java/Lib/lwjgl-3.1.6/lwjgl-xxhash/lwjgl-xxhash-sources.jar" path-in-jar="/" />

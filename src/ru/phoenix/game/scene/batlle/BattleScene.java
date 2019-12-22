@@ -423,6 +423,21 @@ public class BattleScene implements Scene {
             studyArea.getEnemies().add(character);
         }
 
+        id+=0.01f;
+        position = Generator.getRandomPos(studyArea.getGrid(),true);
+        lagerPoint = position;
+        character = new AnarchyThief(Default.getAnarchyThief(),position,lagerPoint,id,ENEMY);
+        character.setDefaultCharacteristic();
+        studyArea.getEnemies().add(character);
+
+        for(int i=0; i<5; i++){
+            id+=0.01f;
+            position = Generator.getRandomPos(studyArea.getGrid(),lagerPoint,5.0f,true);
+            character = new AnarchyThief(Default.getAnarchyThief(),position,lagerPoint,id,ENEMY);
+            character.setDefaultCharacteristic();
+            studyArea.getEnemies().add(character);
+        }
+
         first = new ArrayList<>();
         second = new ArrayList<>();
         exception = new ArrayList<>();

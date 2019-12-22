@@ -139,14 +139,45 @@ public abstract class StudyAreaControl {
                 prepareBattlefield = false;
                 Default.setWait(false);
             }else{
+                int totalAllies = alliesInBattle.size();
                 for(Character ally : alliesInBattle){
                     ally.interaction(grid,null,pixel,enemiesInBattle,alliesInBattle,battleGround);
                     ally.update();
+                    if(ally.isDead()){
+                        totalAllies--;
+                    }
                 }
 
+                int totalEnemies = enemiesInBattle.size();
                 for(Character enemy : enemiesInBattle){
                     enemy.interaction(grid,null,pixel,alliesInBattle,enemiesInBattle,battleGround);
                     enemy.update();
+                    if(enemy.isDead()){
+                        totalEnemies--;
+                    }
+                }
+                if(totalAllies == 0 || totalEnemies == 0){
+                    battleGround.setActive(false);
+                    prepareBattlefield = true;
+                    Default.setWait(false);
+                    for(Character ally : alliesInBattle){
+                        ally.setBattle(false);
+                        ally.resetSettings();
+                    }
+                    for(Character enemy : enemiesInBattle){
+                        enemy.setBattle(false);
+                        enemy.resetSettings();
+                    }
+                    for(int x=0; x<getMapX(); x++){
+                        for(int z=0; z<getMapZ(); z++){
+                            grid[x][z].setGrayZona();
+                            grid[x][z].setVisible(false);
+                            grid[x][z].setWayPoint(false);
+                            grid[x][z].setParent(null);
+                            grid[x][z].setBattleGraund(false);
+                            grid[x][z].setExitBattleGraund(false);
+                        }
+                    }
                 }
             }
         }else{

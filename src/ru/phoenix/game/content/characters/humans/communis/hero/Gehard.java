@@ -260,8 +260,52 @@ public class Gehard extends HumanDraw implements Character {
     }
 
     @Override
+    public void resetSettings(){
+        targetPoint = null;
+        // тригеры умений
+        isBaseAttack = false;
+        // доп инициализация
+        battleEvent = PREPARED_AREA;
+        studyEvent = CREATE_PATH;
+        count = 0;
+        maxCount = (int)(50.0f + Math.random() * 150.0f);
+        counter = 0;
+        counterMax = (int)(200.0f + (float)Math.random() * 300.0f);
+        timer = 0;
+        waitTime = (int)(250.0f + Math.random() * 250.0f);
+        currentFrame = 1;
+        sampleData = Time.getSecond();
+        tempFinish = new Vector3f(-1.0f,-1.0f,-1.0f);
+        if(!isDead()) {
+            deadCount = 0;
+            deadFrame = 1;
+        }
+        damageCount = 0;
+        damageFrame = 1;
+        // вспомогательные
+        remap = false;
+        action = false;
+        pathCheck = false;
+        moveClick = false;
+        studyModeActive = false;
+        firstStart = true;
+        preparingForBattle = true;
+        firstBaseAttack = true;
+        waiting = true;
+        moveControl = true;
+        if(!isDead()) {
+            playDead = true;
+        }
+    }
+
+    @Override
     public void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemy, List<Character> ally, BattleGround battleGround) {
         targetControl(pixel);
+
+        if (getCharacteristic().getHealth() == 0) {
+            setDead(true);
+        }
+
         if(isDead()){
            if(playDead){
                deadCount++;
@@ -280,9 +324,6 @@ public class Gehard extends HumanDraw implements Character {
                updateAnimation(deadTexture,deadAnimation);
            }
         }else {
-            if(getCharacteristic().getHealth() == 0){
-                setDead(true);
-            }
             blink();
             if (isBattle()) {
                 updateAnimation(battleStanceTexture, battleStanceAnimation);
