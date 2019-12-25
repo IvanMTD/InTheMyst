@@ -45,6 +45,13 @@ public class Camera {
     private boolean stopTurn;
     private boolean turnButtonBlock;
 
+    // УПРОВЛЕНИЕ ДВИЖЕНИЕМ КАМЕРЫ
+    private boolean prepare;
+    private Vector3f moveDirection;
+    private float moveDistance;
+    private float moveOffset;
+    private float totalMove;
+
     public static Camera getInstance(){
         if(instance == null){
             instance = new Camera();
@@ -74,6 +81,7 @@ public class Camera {
         glfwGetCursorPos(Window.getInstance().getWindow(),lx,ly);
         lastCursorPos = new Vector2f((float)lx.get(),(float)ly.get());
         lastCursorPos2 = null;
+        prepare = true;
 
         corW = ((float)Window.getInstance().getWidth() / (float)Window.getInstance().getHeight()) * 0.9f;
         corH = (1.0f + ((float)Window.getInstance().getHeight() / (float)Window.getInstance().getWidth())) * 0.9f;
@@ -156,29 +164,99 @@ public class Camera {
                 }
             }
 
-            Vector3f currentCameraLookPos = getPos().add(getFront().mul(getHypotenuse()));
+            zoomInOut();
 
-            float offset = 0.5f;
-            float spOffset = 0.020f;
+            if(!turnButtonBlock) {
+                if (Input.getInstance().isPressed(GLFW_KEY_Q)) {
+                    turn = -2.0f;
+                    stopTurn = false;
+                    turnButtonBlock = true;
+                } else if (Input.getInstance().isPressed(GLFW_KEY_E)) {
+                    turn = 2.0f;
+                    stopTurn = false;
+                    turnButtonBlock = true;
+                }
+            }
+            // УПРОВЛЕНИЕ ПОВОРОТАМИ - НАЧАЛО
+            float temp = turnCounter;
+            turnCounter += turn;
+            if(turnCounter >= 90.0f){
+                turn = turnCounter - temp;
+                stopTurn = true;
+            }else if(turnCounter <= -90.0f){
+                turn = turnCounter - temp;
+                stopTurn = true;
+            }
+            yaw -= turn;
+            if(yaw < 0){
+                yaw = 360 + yaw;
+            }
+            if(yaw > 359){
+                yaw = yaw - 360;
+            }
+            if(stopTurn){
+                turnCounter = 0.0f;
+                turn = 0.0f;
+                turnButtonBlock = false;
+            }
+            direction.setX((float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))));
+            direction.setY((float) Math.sin(Math.toRadians(pitch)));
+            direction.setZ((float) (Math.cos(Math.toRadians(pitch)) * Math.sin(Math.toRadians(yaw))));
+            pos = pos.add(front.normalize().mul(hypotenuse)).add(direction.normalize().mul(-hypotenuse));
+            front = direction.normalize();
+            // УПРОВЛЕНИЕ ПОВОРОТАМИ - КОНЕЦ
+            // КОНТРОЛЬ ОСТОНОВКИ КАМЕРЫ - НАЧАЛО
+            if(getPos().add(getFront().mul(getHypotenuse())).getX() < minW){
+                Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
+                Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
+                Vector3f stop = new Vector3f(minW,stopPoint.getY(),stopPoint.getZ()).add(ray);
+                setPos(stop);
+            }
 
-            if(grid != null) {
-                int x = Math.round(currentCameraLookPos.getX());
-                int z = Math.round(currentCameraLookPos.getZ());
+            if(getPos().add(getFront().mul(getHypotenuse())).getX() > maxW){
+                Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
+                Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
+                Vector3f stop = new Vector3f(maxW,stopPoint.getY(),stopPoint.getZ()).add(ray);
+                setPos(stop);
+            }
 
-                if((minW <= x && x <= maxW) && (minH <= z && z <= maxH)) {
-                    if (grid[x][z].getPosition().getX() - offset <= currentCameraLookPos.getX() && currentCameraLookPos.getX() <= grid[x][z].getPosition().getX() + offset) {
-                        if (grid[x][z].getPosition().getZ() - offset <= currentCameraLookPos.getZ() && currentCameraLookPos.getZ() <= grid[x][z].getPosition().getZ() + offset) {
-                            if (currentCameraLookPos.getY() != grid[x][z].getCurrentHeight()) {
-                                if (currentCameraLookPos.getY() < grid[x][z].getCurrentHeight()) {
-                                    Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
-                                    if (Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() >= grid[x][z].getCurrentHeight()) {
-                                        Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() - spOffset);
-                                    }
-                                } else {
+            if(getPos().add(getFront().mul(getHypotenuse())).getZ() < minH){
+                Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
+                Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
+                Vector3f stop = new Vector3f(stopPoint.getX(),stopPoint.getY(),minH).add(ray);
+                setPos(stop);
+            }
+
+            if(getPos().add(getFront().mul(getHypotenuse())).getZ() > maxH){
+                Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
+                Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
+                Vector3f stop = new Vector3f(stopPoint.getX(),stopPoint.getY(),maxH).add(ray);
+                setPos(stop);
+            }
+            // КОНТРОЛЬ ОСТОНОВКИ КАМЕРЫ - КОНЕЦ
+        }
+
+        // Контроль высоты - начало
+        Vector3f currentCameraLookPos = getPos().add(getFront().mul(getHypotenuse()));
+        float offset = 0.5f;
+        float spOffset = 0.020f;
+        if(grid != null) {
+            int x = Math.round(currentCameraLookPos.getX());
+            int z = Math.round(currentCameraLookPos.getZ());
+
+            if((minW <= x && x <= maxW) && (minH <= z && z <= maxH)) {
+                if (grid[x][z].getPosition().getX() - offset <= currentCameraLookPos.getX() && currentCameraLookPos.getX() <= grid[x][z].getPosition().getX() + offset) {
+                    if (grid[x][z].getPosition().getZ() - offset <= currentCameraLookPos.getZ() && currentCameraLookPos.getZ() <= grid[x][z].getPosition().getZ() + offset) {
+                        if (currentCameraLookPos.getY() != grid[x][z].getCurrentHeight()) {
+                            if (currentCameraLookPos.getY() < grid[x][z].getCurrentHeight()) {
+                                Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
+                                if (Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() >= grid[x][z].getCurrentHeight()) {
                                     Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() - spOffset);
-                                    if (Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() <= grid[x][z].getCurrentHeight()) {
-                                        Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
-                                    }
+                                }
+                            } else {
+                                Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() - spOffset);
+                                if (Camera.getInstance().getPos().add(Camera.getInstance().getFront().mul(Camera.getInstance().getHypotenuse())).getY() <= grid[x][z].getCurrentHeight()) {
+                                    Camera.getInstance().getPos().setY(Camera.getInstance().getPos().getY() + spOffset);
                                 }
                             }
                         }
@@ -186,86 +264,41 @@ public class Camera {
                 }
             }
         }
-
-        zoomInOut();
-
-        if(!turnButtonBlock) {
-            if (Input.getInstance().isPressed(GLFW_KEY_Q)) {
-                turn = -2.0f;
-                stopTurn = false;
-                turnButtonBlock = true;
-            } else if (Input.getInstance().isPressed(GLFW_KEY_E)) {
-                turn = 2.0f;
-                stopTurn = false;
-                turnButtonBlock = true;
-            }
-        }
-
-        float temp = turnCounter;
-        turnCounter += turn;
-        if(turnCounter >= 90.0f){
-            turn = turnCounter - temp;
-            stopTurn = true;
-        }else if(turnCounter <= -90.0f){
-            turn = turnCounter - temp;
-            stopTurn = true;
-        }
-
-        yaw -= turn;
-
-        if(yaw < 0){
-            yaw = 360 + yaw;
-        }
-
-        if(yaw > 359){
-            yaw = yaw - 360;
-        }
-
-        if(stopTurn){
-            turnCounter = 0.0f;
-            turn = 0.0f;
-            turnButtonBlock = false;
-        }
-
-        direction.setX((float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))));
-        direction.setY((float) Math.sin(Math.toRadians(pitch)));
-        direction.setZ((float) (Math.cos(Math.toRadians(pitch)) * Math.sin(Math.toRadians(yaw))));
-
-        pos = pos.add(front.normalize().mul(hypotenuse)).add(direction.normalize().mul(-hypotenuse));
-        front = direction.normalize();
-
-        if(getPos().add(getFront().mul(getHypotenuse())).getX() < minW){
-            Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
-            Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
-            Vector3f stop = new Vector3f(minW,stopPoint.getY(),stopPoint.getZ()).add(ray);
-            setPos(stop);
-        }
-
-        if(getPos().add(getFront().mul(getHypotenuse())).getX() > maxW){
-            Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
-            Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
-            Vector3f stop = new Vector3f(maxW,stopPoint.getY(),stopPoint.getZ()).add(ray);
-            setPos(stop);
-        }
-
-        if(getPos().add(getFront().mul(getHypotenuse())).getZ() < minH){
-            Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
-            Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
-            Vector3f stop = new Vector3f(stopPoint.getX(),stopPoint.getY(),minH).add(ray);
-            setPos(stop);
-        }
-
-        if(getPos().add(getFront().mul(getHypotenuse())).getZ() > maxH){
-            Vector3f stopPoint = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
-            Vector3f ray = new Vector3f(getFront().mul(-getHypotenuse()));
-            Vector3f stop = new Vector3f(stopPoint.getX(),stopPoint.getY(),maxH).add(ray);
-            setPos(stop);
-        }
+        // Контрль высоты - конец
 
         if(Input.getInstance().getCursorMove()){
             lastCursorPos = new Vector2f(Input.getInstance().getCursorPosition());
             lastCursorPos2 = new Vector2f(Input.getInstance().getCursorPosition());
         }
+    }
+
+    public boolean cameraMove(Vector3f targetPosition){
+        boolean over = false;
+        Vector3f currenPos = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
+        if(prepare){
+            moveDirection = new Vector3f(targetPosition.sub(currenPos)).normalize();
+            moveDistance = Math.abs(new Vector3f(targetPosition.sub(currenPos)).length());
+            moveOffset = 0.1f;
+            totalMove = 0.0f;
+            prepare = false;
+            setCameraControlLock(true);
+        }else{
+            Vector3f newPos = new Vector3f(currenPos.add(moveDirection.mul(moveOffset)));
+            totalMove += moveOffset;
+            if(totalMove >= moveDistance){
+                Vector3f reverseFront = new Vector3f(getFront()).mul(-1.0f);
+                Vector3f camPos = new Vector3f(targetPosition.add(reverseFront.mul(getHypotenuse())));
+                Camera.getInstance().setPos(camPos);
+                over = true;
+                prepare = true;
+                setCameraControlLock(false);
+            }else {
+                Vector3f reverseFront = new Vector3f(getFront()).mul(-1.0f);
+                Vector3f camPos = new Vector3f(newPos.add(reverseFront.mul(getHypotenuse())));
+                Camera.getInstance().setPos(camPos);
+            }
+        }
+        return over;
     }
 
     private void zoomInOut(){

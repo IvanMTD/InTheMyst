@@ -756,6 +756,8 @@ public class AnarchyThief extends HumanDraw implements Character {
             if(action) {
                 switch (battleEvent) {
                     case PREPARED_AREA:
+                        SimpleAI.dataLoading(grid,this,allies,enemies);
+                        SimpleAI.dataAnalyze();
                         counter = 0;
                         runPathfindingAlgorithm();
                         getPathfindingAlgorithm().setup(grid, getCharacteristic(), getPosition());
@@ -1042,8 +1044,6 @@ public class AnarchyThief extends HumanDraw implements Character {
                     this.firstStart = true;
                     battleEvent = PREPARED_AREA;
                     Default.setWait(true);
-                    SimpleAI.dataLoading(grid,this,allies,enemies);
-                    SimpleAI.dataAnalyze();
                 }
             }
             sampleData = Time.getSecond();

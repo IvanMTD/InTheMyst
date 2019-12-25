@@ -63,6 +63,7 @@ public class BattleScene implements Scene {
 
     private Vector3f lastCameraPos;
     private Vector3f lastCameraFront;
+    private boolean cameraUpdate;
 
     public BattleScene(){
         active = false;
@@ -75,6 +76,7 @@ public class BattleScene implements Scene {
         switchControl = false;
         count = 0.0f;
         mousePicker = new MousePicker();
+        cameraUpdate = false;
 
         cursorHud = new Cursor();
         graundAim = new GraundAim("./data/content/texture/zona/cursor.png");
@@ -203,20 +205,24 @@ public class BattleScene implements Scene {
         // обновляем все объекты сцены
         studyArea.update(targetElement, pixel);
         // обновляем камеру
-        if(studyArea.getBattleGround().isActive()){
+        if(studyArea.getBattleGround().isActive()){ // ЕСЛИ БОЕВОЙ РЕЖИМ АКТИВИРОВАН!
             graundAim.setVisible(false);
             aimDrawConfig = 0;
-            Camera.getInstance().update(
-                    studyArea.getBattleGround().getMinW(), studyArea.getBattleGround().getMaxW(),
-                    studyArea.getBattleGround().getMinH(),studyArea.getBattleGround().getMaxH(),
-                    studyArea.getGrid());
-            if(lastCameraPos != null) {
-                if (lastCameraPos.sub(Camera.getInstance().getPos()).length() > 2.0f) {
+            if(cameraUpdate){
+                Camera.getInstance().update(studyArea.getBattleGround().getMinW(), studyArea.getBattleGround().getMaxW(),
+                        studyArea.getBattleGround().getMinH(), studyArea.getBattleGround().getMaxH(), studyArea.getGrid());
+                if(Math.abs(lastCameraPos.sub(Camera.getInstance().getPos()).length()) > 2.0f) {
                     Camera.getInstance().setPos(lastCameraPos);
-                    Camera.getInstance().setFront(lastCameraFront);
+                }
+            }else{
+                if(Camera.getInstance().cameraMove(studyArea.getBattleGround().getLocalPoint())) {
+                    cameraUpdate = true;
+                }else{
+                    Camera.getInstance().update(0.0f, studyArea.getMapX(), 0.0f, studyArea.getMapZ(), studyArea.getGrid());
                 }
             }
-        }else {
+        }else { // ОБЫЧНЫЙ РЕЖИМ
+            cameraUpdate = false;
             Camera.getInstance().update(0.0f, studyArea.getMapX(), 0.0f, studyArea.getMapZ(), studyArea.getGrid());
         }
 
@@ -374,8 +380,6 @@ public class BattleScene implements Scene {
     }
 
     private void generate(int seed){
-        lastCameraPos = null;
-        lastCameraFront = null;
         aimDrawConfig = 0;
         graundAim.setVisible(false);
         Default.setCreatePath(true);

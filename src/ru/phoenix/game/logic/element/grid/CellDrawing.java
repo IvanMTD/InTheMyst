@@ -113,12 +113,14 @@ abstract class CellDrawing extends CellManagement {
         texture = goldZona;
         tempTexture = goldZona;
         setGoldZona(true);
+        setBlueZona(false);
     }
 
     public  void setBlueZona(){
         texture = blueZona;
         tempTexture = blueZona;
         setBlueZona(true);
+        setGoldZona(false);
     }
     // конец
 

@@ -156,7 +156,8 @@ public abstract class StudyAreaControl {
                         totalEnemies--;
                     }
                 }
-                if(totalAllies == 0 || totalEnemies == 0){
+
+                if(totalAllies == 0 || totalEnemies == 0 || enemiesInBattle.isEmpty() || alliesInBattle.isEmpty()){
                     battleGround.setActive(false);
                     prepareBattlefield = true;
                     Default.setWait(false);
