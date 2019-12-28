@@ -145,15 +145,19 @@ public class BattleScene implements Scene {
         // Обновляем информацию в сетке
         for(int x=0; x<=studyArea.getMapX(); x++) {
             for (int z = 0; z<=studyArea.getMapZ(); z++) {
-                studyArea.getGrid()[x][z].setOccupied(false);
+                if(!studyArea.getBattleGround().isActive()) {
+                    studyArea.getGrid()[x][z].setOccupied(false);
+                }
                 if (studyArea.getGrid()[x][z].isVisible()) {
                     studyArea.getGrid()[x][z].update(pixel);
                 }
             }
         }
 
-        checkOccupied(studyArea.getAllies());
-        checkOccupied(studyArea.getEnemies());
+        if(!studyArea.getBattleGround().isActive()) {
+            checkOccupied(studyArea.getAllies());
+            checkOccupied(studyArea.getEnemies());
+        }
 
         Cell targetElement = null;
 
@@ -231,6 +235,7 @@ public class BattleScene implements Scene {
 
         // TЕСТОВЫЙ ТРИГЕР - НАЧАЛО
         if(GameController.getInstance().isSpaceClick()){
+            cameraUpdate = false;
             if(index == 0) {
                 //generation(MOUNTAIN_MAP);
                 generate(MOUNTAIN_AREA);
@@ -337,6 +342,9 @@ public class BattleScene implements Scene {
     private void drawElement(boolean battle, List<Cell> elements){
         if(battle){
             for (Cell element : elements) {
+                /*shaderSprite.setUniform("battlefield",studyArea.getBattleGround().isActive() ? 1 : 0);
+                shaderSprite.setUniform("localPoint",studyArea.getBattleGround().getLocalPoint());
+                shaderSprite.setUniform("radius",studyArea.getBattleGround().getRADIUS());*/
                 element.draw(shaderSprite);
             }
         }
@@ -392,25 +400,13 @@ public class BattleScene implements Scene {
         character.setDefaultCharacteristic();
         studyArea.getAllies().add(character);
 
-        id += 0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);
-
-        id += 0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        character = new AnarchyThief(Default.getAnarchyThief(), position, lagerPoint, id, ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);
-
-        /*for(int i=0; i<5;i++) {
+        for(int i=0; i<2;i++) {
             id += 0.01f;
-            position = Generator.getRandomPos(battleGraund.getGrid(), lagerPoint, 5.0f, true);
+            position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
             character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
             character.setDefaultCharacteristic();
-            battleGraund.getAlly().add(character);
-        }*/
+            studyArea.getAllies().add(character);
+        }
 
         id+=0.01f;
         position = Generator.getRandomPos(studyArea.getGrid(),true);

@@ -107,7 +107,11 @@ public abstract class StudyAreaControl {
                                 grid[x][z].setVisible(false);
                                 grid[x][z].setWayPoint(false);
                                 grid[x][z].setParent(null);
-                                grid[x][z].setExitBattleGraund(true);
+                                if(x == 0 || z == 0 || x == getMapX() || z == getMapZ()){
+                                    grid[x][z].setBattleGraund(true);
+                                }else {
+                                    grid[x][z].setExitBattleGraund(true);
+                                }
                             }else{
                                 grid[x][z].setGrayZona();
                                 grid[x][z].setVisible(false);
@@ -120,47 +124,75 @@ public abstract class StudyAreaControl {
                 }
                 alliesInBattle.clear();
                 for(Character ally : allies){
-                    int x = Math.round(ally.getPosition().getX());
-                    int z = Math.round(ally.getPosition().getZ());
-                    if(grid[x][z].isBattleGraund() || grid[x][z].isExitBattleGraund()){
+                    int x = (int)ally.getPosition().getX();
+                    int z = (int)ally.getPosition().getZ();
+                    if(grid[x][z].isBattleGraund()){
                         ally.setBattle(true);
                         alliesInBattle.add(ally);
                     }
                 }
                 enemiesInBattle.clear();
                 for(Character enemy : enemies){
-                    int x = Math.round(enemy.getPosition().getX());
-                    int z = Math.round(enemy.getPosition().getZ());
-                    if(grid[x][z].isBattleGraund() || grid[x][z].isExitBattleGraund()){
+                    int x = (int)enemy.getPosition().getX();
+                    int z = (int)enemy.getPosition().getZ();
+                    if(grid[x][z].isBattleGraund()){
                         enemy.setBattle(true);
                         enemiesInBattle.add(enemy);
                     }
                 }
                 prepareBattlefield = false;
                 Default.setWait(false);
+                Default.setCreatePath(true);
             }else{
                 int totalAllies = alliesInBattle.size();
+                Character removeAlly = null;
                 for(Character ally : alliesInBattle){
                     ally.interaction(grid,null,pixel,enemiesInBattle,alliesInBattle,battleGround);
                     ally.update();
                     if(ally.isDead()){
                         totalAllies--;
+                    }else{
+                        Cell cell = grid[Math.round(ally.getPosition().getX())][Math.round(ally.getPosition().getZ())];
+                        if(cell.getModifiedPosition().equals(ally.getPosition()) && cell.isExitBattleGraund()){
+                            removeAlly = ally;
+                        }
                     }
                 }
 
+                if(removeAlly != null){
+                    removeAlly.setBattle(false);
+                    removeAlly.resetSettings();
+                    alliesInBattle.remove(removeAlly);
+                }
+
                 int totalEnemies = enemiesInBattle.size();
+                Character removeEnemy = null;
                 for(Character enemy : enemiesInBattle){
                     enemy.interaction(grid,null,pixel,alliesInBattle,enemiesInBattle,battleGround);
                     enemy.update();
                     if(enemy.isDead()){
                         totalEnemies--;
+                    }else{
+                        Cell cell = grid[Math.round(enemy.getPosition().getX())][Math.round(enemy.getPosition().getZ())];
+                        if(cell.getModifiedPosition().equals(enemy.getPosition()) && cell.isExitBattleGraund()){
+                            removeEnemy = enemy;
+                        }
                     }
+                }
+
+                if(removeEnemy != null){
+                    removeEnemy.setBattle(false);
+                    removeEnemy.resetSettings();
+                    enemiesInBattle.remove(removeEnemy);
+                    enemies.remove(removeEnemy);
+                    Default.setWait(false);
                 }
 
                 if(totalAllies == 0 || totalEnemies == 0 || enemiesInBattle.isEmpty() || alliesInBattle.isEmpty()){
                     battleGround.setActive(false);
                     prepareBattlefield = true;
                     Default.setWait(false);
+                    Default.setCreatePath(true);
                     for(Character ally : alliesInBattle){
                         ally.setBattle(false);
                         ally.resetSettings();

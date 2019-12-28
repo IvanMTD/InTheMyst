@@ -22,10 +22,11 @@ out flat int useShading;
 void main() {
     if(battlefield == 1){
         float size = 0.5f;
-        float minX = localPoint.x - radius - size;
-        float maxX = localPoint.x + radius + size;
-        float minZ = localPoint.z - radius - size;
-        float maxZ = localPoint.z + radius + size;
+        int r = radius - 1;
+        float minX = localPoint.x - r - size;
+        float maxX = localPoint.x + r + size;
+        float minZ = localPoint.z - r - size;
+        float maxZ = localPoint.z + r + size;
 
         int count = 0;
         for(int i=0; i<3; i++){

@@ -2,8 +2,8 @@ package ru.phoenix.game.content.characters.humans;
 
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.math.Vector3f;
-import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.logic.movement.PathSearchAlgorithm;
 import ru.phoenix.game.property.Characteristic;
 import ru.phoenix.game.hud.assembled.SelfIndicators;
 import ru.phoenix.game.logic.element.grid.Cell;
@@ -23,7 +23,7 @@ public abstract class HumanControl {
     private MotionAnimation motionAnimation;
     private List<Cell> wayPoints;
     // управление положением персонажа
-    private PathfindingAlgorithm pathfindingAlgorithm;
+    private PathSearchAlgorithm pathSearchAlgorithm;
     private Vector3f position;
     private Vector3f lagerPoint;
     private boolean turn;
@@ -209,12 +209,12 @@ public abstract class HumanControl {
     }
 
     // управление положением персонажа
-    protected PathfindingAlgorithm getPathfindingAlgorithm() {
-        return pathfindingAlgorithm;
+    protected PathSearchAlgorithm getPathfindingAlgorithm() {
+        return pathSearchAlgorithm;
     }
 
     protected void runPathfindingAlgorithm(){
-        this.pathfindingAlgorithm = new PathfindingAlgorithm();
+        this.pathSearchAlgorithm = new PathSearchAlgorithm();
     }
 
     public Vector3f getPosition() {
@@ -345,7 +345,8 @@ public abstract class HumanControl {
     // методы сетеры и гетеры - конец
 
     // вспомогательные
-    public int getPriority(Character character){
+    public int getPriority(Cell[][] grid, Character character){
+        Cell enemyPoint = grid[(int)character.getPosition().getX()][(int)character.getPosition().getZ()];
         Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
         Vector3f studyPos = new Vector3f(character.getPosition());studyPos.setY(0.0f);
         // дистанция
@@ -357,6 +358,15 @@ public abstract class HumanControl {
         int ia = character.getCharacteristic().getPhysicalPower();
         int ih = character.getCharacteristic().getHealth();
 
-        return (ih - ea) - (eh - ia) - Math.round(d);
+        int multiplier = 1;
+        if(enemyPoint.isBlueZona()){
+            multiplier = 1;
+        }else if(enemyPoint.isGoldZona()){
+            multiplier = 3;
+        }else{
+            multiplier = 6;
+        }
+
+        return (ih - ea) - (eh - ia) - Math.round(d * multiplier);
     }
 }

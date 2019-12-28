@@ -98,11 +98,11 @@ public class AnarchyThief extends HumanDraw implements Character {
     private boolean backstab;
     private boolean autoControl;
     private boolean playDead;
+    private boolean prepareMove;
     private Character allySavedCharacter;
     private Character enemySavedCharacter;
     private Cell targetPoint;
-    private Vector3f tempFinish;
-    private List<Cell> tempWayPoints;
+    private Cell tempFinish;
 
     // конструкторы класса
     // начало
@@ -219,10 +219,10 @@ public class AnarchyThief extends HumanDraw implements Character {
     @Override
     public void preset(){
         targetPoint = null;
+        tempFinish = new Cell();
         // тригеры умений
         isBaseAttack = false;
         // доп инициализация
-        tempWayPoints = new ArrayList<>();
         count = 0;
         maxCount = (int)(50.0f + Math.random() * 150.0f);
         battleEvent = PREPARED_AREA;
@@ -233,7 +233,6 @@ public class AnarchyThief extends HumanDraw implements Character {
         waitTime = (int)(250.0f + Math.random() * 250.0f);
         currentFrame = 1;
         sampleData = Time.getSecond();
-        tempFinish = new Vector3f(-1.0f,-1.0f,-1.0f);
         deadCount = 0;
         deadFrame = 1;
         damageCount = 0;
@@ -252,15 +251,16 @@ public class AnarchyThief extends HumanDraw implements Character {
         backstab = false;
         autoControl = false;
         playDead = true;
+        prepareMove = false;
     }
 
     @Override
     public void resetSettings(){
         targetPoint = null;
+        tempFinish = new Cell();
         // тригеры умений
         isBaseAttack = false;
         // доп инициализация
-        tempWayPoints = new ArrayList<>();
         count = 0;
         maxCount = (int)(50.0f + Math.random() * 150.0f);
         battleEvent = PREPARED_AREA;
@@ -271,7 +271,6 @@ public class AnarchyThief extends HumanDraw implements Character {
         waitTime = (int)(250.0f + Math.random() * 250.0f);
         currentFrame = 1;
         sampleData = Time.getSecond();
-        tempFinish = new Vector3f(-1.0f,-1.0f,-1.0f);
         if(!isDead()) {
             deadCount = 0;
             deadFrame = 1;
@@ -291,6 +290,7 @@ public class AnarchyThief extends HumanDraw implements Character {
         moveControl = true;
         backstab = false;
         autoControl = false;
+        prepareMove = false;
         if(!isDead()) {
             playDead = true;
         }
@@ -356,19 +356,20 @@ public class AnarchyThief extends HumanDraw implements Character {
                             }
                         } else {
                             if (!moveControl) {
+                                grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(true);
                                 moveControl = true;
                             } else {
-                                battleMode(grid, allies, enemies);
+                                battleMode(battleGround, grid, allies, enemies);
                             }
                         }
                     } else {
                         if(battleEvent == MOVEMENT_ANIMATION){
-                            battleMode(grid, allies, enemies);
+                            battleMode(battleGround, grid, allies, enemies);
                         }else {
                             // Заплатка! Стамина расходуется в классе MotionAnimation
                             getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
                             getCharacteristic().updateIndicators();
-                            researchMode(grid);
+                            researchMode(battleGround, grid);
                         }
                     }
                     break;
@@ -399,9 +400,10 @@ public class AnarchyThief extends HumanDraw implements Character {
                             }
                         } else {
                             if (!moveControl) {
+                                grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(true);
                                 moveControl = true;
                             } else {
-                                autoBattleMode(grid,allies,enemies);
+                                autoBattleMode(battleGround, grid, allies, enemies);
                             }
                         }
                     } else {
@@ -416,11 +418,12 @@ public class AnarchyThief extends HumanDraw implements Character {
                                 waiting = false;
                                 timer = 0;
                                 waitTime = (int) (250.0f + Math.random() * 250.0f);
+                                studyEvent = CREATE_PATH;
                             }
                         } else {
                             switch (studyEvent) {
                                 case CREATE_PATH:
-                                    createPath(grid);
+                                    createPath(battleGround, grid);
                                     break;
                                 case MOVEMENT_ANIMATION:
                                     movementAnimation();
@@ -487,84 +490,82 @@ public class AnarchyThief extends HumanDraw implements Character {
     // дополнительные методы - конец
 
     // РАСЧЕТЫ И АНИМАЦИЯ - НАЧАЛО
-    private void battleMode(Cell[][] grid, List<Character> allies, List<Character> enemies){
+    private void battleMode(BattleGround battleGround, Cell[][] grid, List<Character> allies, List<Character> enemies){
         if(Default.isWait()){
             if(action) {
                 switch (battleEvent) {
                     case PREPARED_AREA:
                         runPathfindingAlgorithm();
-                        getPathfindingAlgorithm().setup(grid, getCharacteristic(), getPosition());
+                        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, grid[(int)getPosition().getX()][(int)getPosition().getZ()]);
                         getPathfindingAlgorithm().start();
                         battleEvent = CREATE_PATH;
                         break;
                     case CREATE_PATH:
-                        isBaseAttack = fastAttack(grid,enemies);
-                        Vector3f finish = getFinishPosition(grid);
-                        if (finish == null) {
-                            for(int x=0; x<grid.length;x++){
-                                for(int z=0; z<grid[0].length;z++){
-                                    if(grid[x][z].isVisible()){
-                                        grid[x][z].setWayPoint(false);
-                                    }
-                                }
-                            }
-                        } else {
-                            if (!finish.equals(tempFinish)) {
-                                if (!getPathfindingAlgorithm().isAlive()) {
-                                    runPathfindingAlgorithm();
-                                    getPathfindingAlgorithm().setup(grid, getCharacteristic(), getPosition(), finish);
-                                    getPathfindingAlgorithm().start();
-                                }
-                            }
-
-                            // ЗАПЛАТКА!!!!
-                            boolean block = false;
-                            for(Character enemy : enemies){
-                                if(Pixel.getPixel().getX() == enemy.getId()){
-                                    block = true;
-                                }
-                            }
-                            // ЗАПЛАТКА!!!!
-
-                            if (GameController.getInstance().isLeftClick() && !block) {
-                                getWayPoints().clear();
-                                Cell finishElement = getFinishElement(grid);
-                                if (finishElement != null) {
-                                    List<Cell> reverse = new ArrayList<>();
-                                    while (finishElement.getParent() != null) {
-                                        reverse.add(finishElement);
-                                        finishElement = finishElement.getParent();
-                                    }
-                                    for (int i = reverse.size() - 1; i >= 0; i--) {
-                                        getWayPoints().add(reverse.get(i));
-                                    }
-
-                                    Cell point = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
-                                    getWayPoints().add(0,point);
-
-                                    if (!getWayPoints().isEmpty()) {
-                                        getMotionAnimation().setup(getPosition(), getWayPoints());
-                                        walkAnimation.setFrames(1);
-                                        baseStanceAnimation.setFrames(1);
-                                        jumpAnimation.setFrames(1);
-                                        goUpDownAnimation.setFrames(1);
-                                        battleEvent = MOVEMENT_ANIMATION;
-                                        setJump(false);
-                                        for(int x=0; x<grid.length; x++){
-                                            for(int z=0; z<grid[0].length; z++){
-                                                if(!grid[x][z].isWayPoint()){
-                                                    grid[x][z].setVisible(false);
-                                                }
+                        if(prepareMove){
+                            if(!getPathfindingAlgorithm().isAlive()) {
+                                if (!getWayPoints().isEmpty()) {
+                                    grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(false);
+                                    getWayPoints().add(0,grid[(int)getPosition().getX()][(int)getPosition().getZ()]);
+                                    getMotionAnimation().setup(getPosition(), getWayPoints());
+                                    walkAnimation.setFrames(1);
+                                    baseStanceAnimation.setFrames(1);
+                                    jumpAnimation.setFrames(1);
+                                    goUpDownAnimation.setFrames(1);
+                                    battleEvent = MOVEMENT_ANIMATION;
+                                    prepareMove = false;
+                                    setJump(false);
+                                    for (int x = 0; x < grid.length; x++) {
+                                        for (int z = 0; z < grid[0].length; z++) {
+                                            if (!grid[x][z].isWayPoint()) {
+                                                grid[x][z].setVisible(false);
                                             }
                                         }
                                     }
+                                }else{
+                                    System.out.println("WayPoints is empty!!");
                                 }
                             }
-                        }
-                        if (finish == null) {
-                            tempFinish = new Vector3f(-1.0f, -1.0f, -1.0f);
-                        } else {
-                            tempFinish = finish;
+                        }else {
+                            boolean action = actionControl(grid, enemies);
+                            if(!action) {
+                                Cell finish = getFinishCell(grid);
+                                if (finish == null) {
+                                    for (int x = 0; x < grid.length; x++) {
+                                        for (int z = 0; z < grid[0].length; z++) {
+                                            if (grid[x][z].isVisible()) {
+                                                grid[x][z].setWayPoint(false);
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    if (finish.getId() != tempFinish.getId()) {
+                                        if (!getPathfindingAlgorithm().isAlive()) {
+                                            runPathfindingAlgorithm();
+                                            getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, getWayPoints(), grid[(int) getPosition().getX()][(int) getPosition().getZ()], finish, false);
+                                            getPathfindingAlgorithm().start();
+                                        }
+                                    }
+
+                                    // ЗАПЛАТКА!!!!
+                                    boolean block = false;
+                                    for (Character character : enemies) {
+                                        if (Pixel.getPixel().getX() == character.getId()) {
+                                            block = true;
+                                        }
+                                    }
+                                    // ЗАПЛАТКА!!!!
+
+                                    if (GameController.getInstance().isLeftClick() && !block) {
+                                        prepareMove = true;
+                                    }
+                                }
+
+                                if(finish != null) {
+                                    tempFinish = finish;
+                                }else{
+                                    tempFinish = new Cell();
+                                }
+                            }
                         }
                         break;
                     case MOVEMENT_ANIMATION:
@@ -581,6 +582,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                             if (motion == 0) {
                                 preparingForBattle = true;
                                 Cell currentElement = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
+                                currentElement.setOccupied(true);
                                 if (currentElement.isBlueZona()) {
                                     getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
                                 } else if (currentElement.isGoldZona()) {
@@ -751,112 +753,82 @@ public class AnarchyThief extends HumanDraw implements Character {
         }
     }
 
-    private void autoBattleMode(Cell[][] grid, List<Character> allies, List<Character> enemies){
+    private void autoBattleMode(BattleGround battleGround, Cell[][] grid, List<Character> allies, List<Character> enemies){
         if(Default.isWait()){
             if(action) {
+                Pixel.getPixel().setVector(new Vector3f());
                 switch (battleEvent) {
                     case PREPARED_AREA:
                         SimpleAI.dataLoading(grid,this,allies,enemies);
                         SimpleAI.dataAnalyze();
                         counter = 0;
                         runPathfindingAlgorithm();
-                        getPathfindingAlgorithm().setup(grid, getCharacteristic(), getPosition());
+                        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, grid[(int)getPosition().getX()][(int)getPosition().getZ()]);
                         getPathfindingAlgorithm().start();
                         battleEvent = CREATE_PATH;
                         autoControl = false;
                         break;
                     case CREATE_PATH:
-                        isBaseAttack = fastAttack(grid,SimpleAI.getTargetCharacter());
-                        if(!isBaseAttack) {
-                            if(autoControl){
-                                    getWayPoints().clear();
-                                    if(tempWayPoints.size() != 0){
-                                        for(Cell cell : tempWayPoints){
-                                            if(cell.isBlueZona() || cell.isGoldZona()){
-                                                getWayPoints().add(cell);
-                                            }
-                                        }
-                                    }else {
-                                        Cell finishCell = targetPoint;
-                                        List<Cell> reverse = new ArrayList<>();
-                                        while (finishCell.getParent() != null) {
-                                            reverse.add(finishCell);
-                                            finishCell = finishCell.getParent();
-                                        }
-                                        for (int i = reverse.size() - 1; i >= 0; i--) {
-                                            getWayPoints().add(reverse.get(i));
-                                        }
-                                    }
-
-                                    if (!getWayPoints().isEmpty()) {
-                                        Cell point = grid[(int) getPosition().getX()][(int) getPosition().getZ()];
-                                        getWayPoints().add(0, point);
-                                        getMotionAnimation().setup(getPosition(), getWayPoints());
-                                        walkAnimation.setFrames(1);
-                                        baseStanceAnimation.setFrames(1);
-                                        jumpAnimation.setFrames(1);
-                                        goUpDownAnimation.setFrames(1);
-                                        battleEvent = MOVEMENT_ANIMATION;
-                                        autoControl = false;
-                                        setJump(false);
-                                        for (int x = 0; x < grid.length; x++) {
-                                            for (int z = 0; z < grid[0].length; z++) {
-                                                if (!grid[x][z].isWayPoint()) {
-                                                    grid[x][z].setVisible(false);
-                                                }
+                        if(autoControl){
+                            if (!getPathfindingAlgorithm().isAlive()) {
+                                if (!getWayPoints().isEmpty()) {
+                                    grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(false);
+                                    List<Cell>wayPoints = new ArrayList<>();
+                                    boolean last = false;
+                                    for(int i=0; i<getWayPoints().size(); i++){
+                                        if(last){
+                                            getWayPoints().get(i).setWayPoint(false);
+                                        }else {
+                                            if (getWayPoints().get(i).isBlueZona() || getWayPoints().get(i).isGoldZona()) {
+                                                wayPoints.add(getWayPoints().get(i));
+                                            } else {
+                                                getWayPoints().get(i).setWayPoint(false);
+                                                last = true;
                                             }
                                         }
                                     }
-                                //}
-                            }else{
-                                counter++;
-                                Pixel.getPixel().setVector(new Vector3f());
-                                if(counter > 200) {
-                                    tempWayPoints.clear();
-                                    Cell desiredGoal = SimpleAI.getCloserCell();
-                                    if ((desiredGoal.isBlueZona() || desiredGoal.isGoldZona()) && desiredGoal.isVisible()) {
-                                        targetPoint = desiredGoal;
-                                        targetPoint.setParent(null);
+                                    wayPoints.add(0,grid[(int)getPosition().getX()][(int)getPosition().getZ()]);
+                                    getMotionAnimation().setup(getPosition(), wayPoints);
+                                    walkAnimation.setFrames(1);
+                                    baseStanceAnimation.setFrames(1);
+                                    jumpAnimation.setFrames(1);
+                                    goUpDownAnimation.setFrames(1);
+                                    battleEvent = MOVEMENT_ANIMATION;
+                                    prepareMove = false;
+                                    setJump(false);
+                                    for (int x = 0; x < grid.length; x++) {
+                                        for (int z = 0; z < grid[0].length; z++) {
+                                            if (!grid[x][z].isWayPoint()) {
+                                                grid[x][z].setVisible(false);
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    System.out.println("WayPoints is empty!!");
+                                    for(int x=0; x<grid.length; x++){
+                                        for(int z=0; z<grid[0].length; z++){
+                                            grid[x][z].setGrayZona();
+                                            grid[x][z].setVisible(false);
+                                            grid[x][z].setWayPoint(false);
+                                        }
+                                    }
+                                    battleEvent = PREPARED_AREA;
+                                    firstStart = true;
+                                    Default.setWait(false);
+                                    this.action = false;
+                                }
+                            }
+                        }else{
+                            counter++;
+                            if(counter > 200) {
+                                boolean action = actionControl(grid,SimpleAI.getTargetCharacter());
+                                if(!action) {
+                                    if (!getPathfindingAlgorithm().isAlive()) {
                                         runPathfindingAlgorithm();
-                                        getPathfindingAlgorithm().setup(grid, getCharacteristic(), getPosition(), targetPoint.getModifiedPosition());
+                                        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, getWayPoints(), grid[(int) getPosition().getX()][(int) getPosition().getZ()], SimpleAI.getCloserCell(), true);
                                         getPathfindingAlgorithm().start();
                                         autoControl = true;
-                                    } else {
-                                        Vector3f mainPos = new Vector3f(getPosition());
-                                        mainPos.setY(0.0f);
-                                        Vector3f goalPos = new Vector3f(desiredGoal.getPosition());
-                                        goalPos.setY(0.0f);
-                                        Vector3f direction = new Vector3f(goalPos.sub(mainPos)).normalize();
-                                        float distance = Math.abs(new Vector3f(goalPos.sub(mainPos)).length());
-                                        Vector3f lastPos = new Vector3f(-1.0f, -1.0f, -1.0f);
-                                        for (float i = 2.0f; i < distance - 1.0f; i += 0.5f) {
-                                            Vector3f beam = new Vector3f(mainPos.add(direction.mul(i)));
-                                            int x = Math.round(beam.getX());
-                                            int z = Math.round(beam.getZ());
-                                            if ((grid[x][z].isBlueZona() || grid[x][z].isGoldZona()) && grid[x][z].isVisible()) {
-                                                if (!grid[x][z].isBlocked() && !grid[x][z].isOccupied()) {
-                                                    lastPos = new Vector3f(grid[x][z].getModifiedPosition());
-                                                }
-                                            } else {
-                                                break;
-                                            }
-                                        }
-
-                                        if (lastPos.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
-                                            Cell f = SimpleAI.getCloserCell();
-                                            f.setParent(null);
-                                            runPathfindingAlgorithm();
-                                            getPathfindingAlgorithm().setup(grid, getCharacteristic(), grid[(int) getPosition().getX()][(int) getPosition().getZ()], f, tempWayPoints, true);
-                                            getPathfindingAlgorithm().start();
-                                            autoControl = true;
-                                        } else {
-                                            targetPoint = grid[(int) lastPos.getX()][(int) lastPos.getZ()];
-                                            targetPoint.setParent(null);
-                                            runPathfindingAlgorithm();
-                                            getPathfindingAlgorithm().setup(grid, getCharacteristic(), getPosition(), lastPos);
-                                            getPathfindingAlgorithm().run();
-                                            autoControl = true;
-                                        }
+                                        counter = 0;
                                     }
                                 }
                             }
@@ -876,6 +848,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                             if (motion == 0) {
                                 preparingForBattle = true;
                                 Cell currentElement = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
+                                currentElement.setOccupied(true);
                                 if (currentElement.isBlueZona()) {
                                     getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
                                 } else if (currentElement.isGoldZona()) {
@@ -1050,8 +1023,9 @@ public class AnarchyThief extends HumanDraw implements Character {
         }
     }
 
-    private boolean fastAttack(Cell[][] grid, List<Character> enemy){
-        boolean fastAttack = false;
+    private boolean actionControl(Cell[][] grid, List<Character> enemy){
+        isBaseAttack = false;
+        boolean action = false;
         enemySavedCharacter = null;
         if(GameController.getInstance().isLeftClick()){
             Vector3f pixel = Pixel.getPixel();
@@ -1071,17 +1045,19 @@ public class AnarchyThief extends HumanDraw implements Character {
 
         if(enemySavedCharacter != null){
             battleEvent = ATTACK_ANIMATION;
-            fastAttack = true;
+            isBaseAttack = true;
+            action = true;
             for(int x=0; x<grid.length; x++){
                 for(int z=0; z<grid[0].length; z++){
                     grid[x][z].setVisible(false);
                 }
             }
         }
-        return fastAttack;
+        return action;
     }
 
-    private boolean fastAttack(Cell[][] grid, Character enemy){
+    private boolean actionControl(Cell[][] grid, Character enemy){
+        isBaseAttack = false;
         boolean fastAttack = false;
         enemySavedCharacter = null;
 
@@ -1100,6 +1076,7 @@ public class AnarchyThief extends HumanDraw implements Character {
         if(enemySavedCharacter != null){
             battleEvent = ATTACK_ANIMATION;
             fastAttack = true;
+            isBaseAttack = true;
             for(int x=0; x<grid.length; x++){
                 for(int z=0; z<grid[0].length; z++){
                     grid[x][z].setVisible(false);
@@ -1109,14 +1086,14 @@ public class AnarchyThief extends HumanDraw implements Character {
         return fastAttack;
     }
 
-    private void researchMode(Cell[][] grid){
+    private void researchMode(BattleGround battleGround, Cell[][] grid){
         // Заплатка! Стамина расходуется в классе MotionAnimation
         getCharacteristic().setStamina(getCharacteristic().getTotalStamina());
         if(remap){
-            studyEventMode(grid);
+            studyEventMode(battleGround, grid);
         }else {
             if (isSelected()) {
-                studyEventMode(grid);
+                studyEventMode(battleGround, grid);
             } else {
                 if (studyEvent == MOVEMENT_ANIMATION) {
                     movementAnimation();
@@ -1125,10 +1102,10 @@ public class AnarchyThief extends HumanDraw implements Character {
         }
     }
 
-    private void studyEventMode(Cell[][] grid){
+    private void studyEventMode(BattleGround battleGround, Cell[][] grid){
         switch (studyEvent){
             case CREATE_PATH:
-                createPath(grid);
+                createPath(battleGround, grid);
                 break;
             case MOVEMENT_ANIMATION:
                 if(GameController.getInstance().isLeftClick()){
@@ -1157,17 +1134,17 @@ public class AnarchyThief extends HumanDraw implements Character {
         }
     }
 
-    private void createPath(Cell[][] grid){
+    private void createPath(BattleGround battleGround, Cell[][] grid){
         if(Default.isCreatePath()) {
             if (remap) {
                 if (targetPoint != null && !pathCheck) {
                     Default.setCreatePath(false);
-                    bypass(grid);
+                    bypass(battleGround, grid);
                 }
             } else {
                 if (targetPoint != null && !pathCheck) {
                     Default.setCreatePath(false);
-                    path(grid);
+                    path(battleGround, grid);
                 }
             }
         }
@@ -1183,7 +1160,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                 if(getWayPoints().size() == 0){
                     Default.setCreatePath(true);
                     studyModeActive = false;
-                    remap = true;
+                    waiting = true;
                 }else{
                     Cell point = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
                     getWayPoints().add(0,point);
@@ -1208,21 +1185,19 @@ public class AnarchyThief extends HumanDraw implements Character {
         }
     }
 
-    private void path(Cell[][] grid){
-        Cell startPosition = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
+    private void path(BattleGround battleGround, Cell[][] grid){
         this.targetPoint.setParent(null);
         runPathfindingAlgorithm();
-        getPathfindingAlgorithm().setup(grid, getCharacteristic(), startPosition, this.targetPoint, getWayPoints(),true);
+        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, getWayPoints(), grid[(int) getPosition().getX()][(int) getPosition().getZ()], targetPoint, false);
         getPathfindingAlgorithm().start();
         pathCheck = true;
     }
 
-    private void bypass(Cell[][] grid){
-        Cell startPosition = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
+    private void bypass(BattleGround battleGround, Cell[][] grid){
         this.targetPoint.setParent(null);
         this.targetPoint.setOccupied(false);
         runPathfindingAlgorithm();
-        getPathfindingAlgorithm().setup(grid, getCharacteristic(), startPosition, this.targetPoint, getWayPoints(),false);
+        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, getWayPoints(), grid[(int) getPosition().getX()][(int) getPosition().getZ()], targetPoint, false);
         getPathfindingAlgorithm().start();
         pathCheck = true;
     }
@@ -1311,24 +1286,27 @@ public class AnarchyThief extends HumanDraw implements Character {
     private void checkInvasion(List<Character> enemies, BattleGround battleGrounds, Cell[][] grid){
         Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
         for (Character character : enemies) {
-            Vector3f enemyPos = new Vector3f(character.getPosition());
-            enemyPos.setY(0.0f);
-            if (Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()) { // Если в зоне видимости!
-                Vector3f lagerPos = new Vector3f(getLagerPoint()); lagerPos.setY(0.0f);
-                if(mainPos.sub(lagerPos).length() <= getCharacteristic().getVision()){ // если персонаж в зоне видимости лагеря
-                    battleGrounds.setActive(true);
-                    battleGrounds.setLocalPoint(getLagerPoint());
-                }else{ // если персонаж вне зоне видимости своего лагеря
-                    Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
-                    float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length() / 2.0f);
-                    Vector3f lagerPoint = new Vector3f(getPosition().add(direction.mul(distance)));
-                    int x = Math.round(lagerPoint.getX());
-                    int z = Math.round(lagerPoint.getZ());
-                    lagerPoint = grid[x][z].getModifiedPosition();
-                    battleGrounds.setActive(true);
-                    battleGrounds.setLocalPoint(lagerPoint);
+            if(!character.isDead()) {
+                Vector3f enemyPos = new Vector3f(character.getPosition());
+                enemyPos.setY(0.0f);
+                if (Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()) { // Если в зоне видимости!
+                    Vector3f lagerPos = new Vector3f(getLagerPoint());
+                    lagerPos.setY(0.0f);
+                    if (mainPos.sub(lagerPos).length() <= getCharacteristic().getVision()) { // если персонаж в зоне видимости лагеря
+                        battleGrounds.setActive(true);
+                        battleGrounds.setLocalPoint(getLagerPoint());
+                    } else { // если персонаж вне зоне видимости своего лагеря
+                        Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
+                        float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length() / 2.0f);
+                        Vector3f lagerPoint = new Vector3f(getPosition().add(direction.mul(distance)));
+                        int x = Math.round(lagerPoint.getX());
+                        int z = Math.round(lagerPoint.getZ());
+                        lagerPoint = grid[x][z].getModifiedPosition();
+                        battleGrounds.setActive(true);
+                        battleGrounds.setLocalPoint(lagerPoint);
+                    }
+                    break;
                 }
-                break;
             }
         }
     }
@@ -1360,19 +1338,21 @@ public class AnarchyThief extends HumanDraw implements Character {
         return finishElement;
     }
 
-    private Vector3f getFinishPosition(Cell[][]grid){
-        Vector3f finishPos = null;
+    private Cell getFinishCell(Cell[][]grid){
+        Cell finish = null;
         // ВРЕМЕННО! НАДО ПОДУМАТЬ!!!
         for(int x=0; x<grid.length; x++){
             for(int z=0; z<grid[0].length; z++){
-                if(grid[x][z].isTarget() && !grid[x][z].isBlocked()){
-                    finishPos = grid[x][z].getModifiedPosition();
-                    break;
+                if(grid[x][z].isTarget() && !grid[x][z].isBlocked() && !grid[x][z].isOccupied()){
+                    if(grid[x][z].isBlueZona() || grid[x][z].isGoldZona()) {
+                        finish = grid[x][z];
+                        break;
+                    }
                 }
             }
         }
 
-        return finishPos;
+        return finish;
     }
 
     private float getXOffsetOnScreen(Vector3f objectPos){

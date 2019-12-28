@@ -95,6 +95,7 @@ abstract class CellDrawing extends CellManagement {
     public void setGrayZona(){
         texture = grayZona;
         tempTexture = grayZona;
+        pointTexture = grayZona;
         setBlueZona(false);
         setGoldZona(false);
     }
@@ -226,20 +227,6 @@ abstract class CellDrawing extends CellManagement {
         glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
         shader.setUniform("image", 0);
         // end
-        mesh.draw();
-    }
-
-    public void invisibleDraw(Shader shader){
-        if(isWayPoint() || isTarget()){
-            this.texture = this.pointTexture;
-        }else{
-            this.texture = this.tempTexture;
-        }
-        if(texture == null){
-            texture = grayZona;
-        }
-        setUniforms(shader);
-        shader.setUniform("noPaint",1);
         mesh.draw();
     }
 

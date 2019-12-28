@@ -74,7 +74,7 @@ public class SimpleAI {
                 if(targetCharacter == null){
                     targetCharacter = enemy;
                 }else{
-                    if(enemy.getPriority(self) > targetCharacter.getPriority(self)){
+                    if(enemy.getPriority(grid,self) > targetCharacter.getPriority(grid,self)){
                         targetCharacter = enemy;
                     }
                 }
@@ -88,7 +88,7 @@ public class SimpleAI {
                             targetCharacter = enemy;
                         }
                     } else {
-                        if (enemy.getPriority(self) > targetCharacter.getPriority(self)) {
+                        if (enemy.getPriority(grid,self) > targetCharacter.getPriority(grid,self)) {
                             if(checkAround(enemy) != null) {
                                 targetCharacter = enemy;
                             }
@@ -103,92 +103,33 @@ public class SimpleAI {
     // поиск ближайших клеток - начало
     private static void whereToGo(){
         if(targetCharacter != null){
-            if(targetCharacter.getPriority(self) > 0){ // Большая вероятность победы!
+            if(targetCharacter.getPriority(grid,self) > 0){ // Большая вероятность победы!
                 closerCell = checkAround(targetCharacter);
             }else{ // Вероятность погибнуть!
                 if(isLowHealth()){
-                    List<Vector3f>directions = new ArrayList<>();
-                    for(Character enemy : enemies){
-                        Vector3f mainPos = new Vector3f(self.getPosition());mainPos.setY(0.0f);
-                        Vector3f enemyPos = new Vector3f(enemy.getPosition());enemyPos.setY(0.0f);
-                        Vector3f direction = new Vector3f(mainPos.sub(enemyPos));
-                        directions.add(direction);
-                    }
-                    Vector3f runAwayDirection = new Vector3f();
-                    for(Vector3f direction : directions){
-                        runAwayDirection = runAwayDirection.add(direction);
-                    }
-                    runAwayDirection = runAwayDirection.normalize().mul(self.getCharacteristic().getMove() * 2.0f);
-                    int x = (int)runAwayDirection.getX(); if(x < 0) x=0; if(x > grid.length - 1) x = grid.length - 1;
-                    int z = (int)runAwayDirection.getZ(); if(z < 0) z=0; if(z > grid.length - 1) z = grid.length - 1;
-                    if(!grid[x][z].isBlocked() && !grid[x][z].isOccupied()) {
-                        closerCell = grid[x][z];
-                    }else{
-                        Cell left = null;
-                        Cell right = null;
-                        Cell up = null;
-                        Cell down = null;
-
-                        Cell leftUp = null;
-                        Cell leftDown = null;
-                        Cell rightUp = null;
-                        Cell rightDown = null;
-                        if(0<=x-1){ // LEFT
-                            left = grid[x-1][z];
-                            if(0 <= z-1){
-                                leftDown = grid[x-1][z-1];
-                            }
-                            if(z+1 < grid[0].length){
-                                leftUp = grid[x-1][z+1];
-                            }
-                        }
-                        if(x+1 < grid.length){ // RIGHT
-                            right = grid[x+1][z];
-                            if(0 <= z-1){
-                                rightDown = grid[x+1][z-1];
-                            }
-                            if(z+1 < grid[0].length){
-                                rightUp = grid[x+1][z+1];
-                            }
-                        }
-                        if(z+1 <= grid[0].length){ // UP
-                            up = grid[x][z+1];
-                        }
-                        if(0<=z-1){ // DOWN
-                            down = grid[x][z-1];
-                        }
-                        List<Cell>cells = new ArrayList<>(Arrays.asList(left,right,up,down,leftUp,leftDown,rightUp,rightDown));
-                        closerCell = null;
-                        float tempDistance = 0;
-                        for(Cell cell : cells){
-                            if(cell != null){
-                                Vector3f mainPos = new Vector3f(self.getPosition()); mainPos.setY(0.0f);
-                                Vector3f cellPos = new Vector3f(cell.getPosition()); cellPos.setY(0.0f);
-                                float distance = Math.abs(mainPos.sub(cellPos).length());
-                                if(closerCell == null){
-                                    if(!cell.isOccupied() && !cell.isBlocked()) {
-                                        closerCell = cell;
-                                        tempDistance = distance;
-                                    }
-                                }else{
-                                    if(distance < tempDistance){
-                                        if(!cell.isOccupied() && !cell.isBlocked()) {
-                                            closerCell = cell;
-                                            tempDistance = distance;
-                                        }
-                                    }
-                                }
+                    List<Cell> exit = new ArrayList<>();
+                    Vector3f selfPos = new Vector3f(self.getPosition()); selfPos.setY(0.0f);
+                    for(int x=0; x<grid.length; x++){
+                        for(int z=0;z<grid[0].length;z++){
+                            if(grid[x][z].isExitBattleGraund()){
+                                Vector3f exitPos = new Vector3f(grid[x][z].getPosition());exitPos.setY(0.0f);
+                                float length = Math.abs(selfPos.sub(exitPos).length());
+                                grid[x][z].setDistance(length);
+                                exit.add(grid[x][z]);
                             }
                         }
                     }
+                    exit.sort((o1, o2) -> o1.getDistance() > o2.getDistance() ? 0 : -1);
+                    closerCell = exit.get(0);
                 }else{
                     // временно!
                     closerCell = checkAround(targetCharacter);
                 }
             }
         }else{
+            System.out.println("Враг не обнаружен!");
             self.setBattle(false);
-            self.preset();
+            self.resetSettings();
         }
     }
     // поиск ближайших клеток - конец

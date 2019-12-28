@@ -8,8 +8,8 @@ import ru.phoenix.game.property.Characteristic;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathSearchAlgorithm {
-    /*// РЕЖИМЫ ПОИСКА ПУТИ
+public class PathSearchAlgorithm extends Thread {
+    // РЕЖИМЫ ПОИСКА ПУТИ
     private final int STUDY_MODE          = 0x99100;
     private final int BATTLE_MODE         = 0x99101;
     private final int PREPARE_AREA        = 0x99102;
@@ -22,6 +22,7 @@ public class PathSearchAlgorithm {
     private List<Cell> wayPoints;
     private Cell start;
     private Cell finish;
+    private boolean simpleAI;
 
     // КОНСТРУКТОР
     public PathSearchAlgorithm(){
@@ -30,20 +31,22 @@ public class PathSearchAlgorithm {
     // -=-=-=-=-=END=-=-=-=-=-
 
     // ПРЕДУСТАНОВКА
-    public void setup(Characteristic characteristic, Cell[][] grid, Cell start){
+    public void setup(Characteristic characteristic, BattleGround battleGround, Cell[][] grid, Cell start){
         this.grid = grid;
+        this.battleGround = battleGround;
         this.characteristic = characteristic;
         this.start = start;
         event = PREPARE_AREA;
     }
 
-    public void setup(Characteristic characteristic, BattleGround battleGround, Cell[][] grid, List<Cell> wayPoints, Cell start, Cell finish){
+    public void setup(Characteristic characteristic, BattleGround battleGround, Cell[][] grid, List<Cell> wayPoints, Cell start, Cell finish, boolean simpleAI){
         this.characteristic = characteristic;
         this.battleGround = battleGround;
         this.grid = grid;
         this.wayPoints = wayPoints;
         this.start = start;
         this.finish = finish;
+        this.simpleAI = simpleAI;
         if(this.battleGround.isActive()){
             event = BATTLE_MODE;
         }else{
@@ -58,28 +61,25 @@ public class PathSearchAlgorithm {
             case PREPARE_AREA:
                 prepareArea();
                 break;
-            case CREATE_PATH:
-                createPathAStar();
+            case STUDY_MODE:
+                studyMode();
                 break;
-            case TOTAL_PATH:
-                createPathAStarTotal();
+            case BATTLE_MODE:
+                battleMode();
                 break;
         }
     }
     // -=-=-=-=-=END=-=-=-=-=-
 
-    // Методы поиска путей
-    // Методы поиска в ширину - начало
+    // ПОИСК В ШИРИНУ - НАЧАЛО
     private void prepareArea(){
-        frontier.clear();
-        costSoFar.clear();
-        cameFrom.clear();
-        Cell startGraph = graphs[(int)start.getX()][(int)start.getZ()];
-        startGraph.setStep(0);
-        startGraph.setCost(0);
-        frontier.add(startGraph);
-        costSoFar.add(startGraph);
-        cameFrom.add(startGraph);
+        prepareGrid();
+        showRadius();
+        List<Cell> frontier = new ArrayList<>();
+        List<Cell> cameFrom = new ArrayList<>();
+        start.setStep(0);
+        start.setCost(0);
+        frontier.add(start);
 
         int index = 0;
 
@@ -89,32 +89,24 @@ public class PathSearchAlgorithm {
                 for (Cell front : currentFrontier) {
                     if (front.getStep() < (characteristic.getMove() * characteristic.getCurentActionPoint())) {
                         // ВВЕРХ
-                        Cell upElement = findGraph(front.getModifiedPosition(), front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                        Cell upElement = findAndCheckCell(front.getModifiedPosition(), front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
                         if(upElement != null){
-                            if(checkStudyPosition(front,upElement)){
-                                setStep(front,upElement);
-                            }
+                            setStep(frontier,cameFrom,front,upElement);
                         }
                         // ЛЕВО
-                        Cell leftElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                        Cell leftElement = findAndCheckCell(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
                         if(leftElement != null){
-                            if(checkStudyPosition(front,leftElement)){
-                                setStep(front,leftElement);
-                            }
+                            setStep(frontier,cameFrom,front,leftElement);
                         }
                         // ВНИЗ
-                        Cell downElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                        Cell downElement = findAndCheckCell(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
                         if(downElement != null){
-                            if(checkStudyPosition(front,downElement)){
-                                setStep(front,downElement);
-                            }
+                            setStep(frontier,cameFrom,front,downElement);
                         }
                         // ПРАВО
-                        Cell rightElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                        Cell rightElement = findAndCheckCell(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
                         if(rightElement != null){
-                            if(checkStudyPosition(front,rightElement)){
-                                setStep(front,rightElement);
-                            }
+                            setStep(frontier,cameFrom,front,rightElement);
                         }
                     }
                     frontier.remove(front);
@@ -123,32 +115,24 @@ public class PathSearchAlgorithm {
                 for (Cell front : currentFrontier) {
                     if (front.getStep() < (characteristic.getMove() * characteristic.getCurentActionPoint())) {
                         // ПРАВО
-                        Cell rightElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                        Cell rightElement = findAndCheckCell(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(1.0f, 0.0f, 0.0f)));
                         if(rightElement != null){
-                            if(checkStudyPosition(front,rightElement)){
-                                setStep(front,rightElement);
-                            }
+                            setStep(frontier,cameFrom,front,rightElement);
                         }
                         // ВНИЗ
-                        Cell downElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                        Cell downElement = findAndCheckCell(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, -1.0f)));
                         if(downElement != null){
-                            if(checkStudyPosition(front,downElement)){
-                                setStep(front,downElement);
-                            }
+                            setStep(frontier,cameFrom,front,downElement);
                         }
                         // ЛЕВО
-                        Cell leftElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                        Cell leftElement = findAndCheckCell(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(-1.0f, 0.0f, 0.0f)));
                         if(leftElement != null){
-                            if(checkStudyPosition(front,leftElement)){
-                                setStep(front,leftElement);
-                            }
+                            setStep(frontier,cameFrom,front,leftElement);
                         }
                         // ВВЕРХ
-                        Cell upElement = findGraph(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                        Cell upElement = findAndCheckCell(front.getModifiedPosition(),front.getModifiedPosition().add(new Vector3f(0.0f, 0.0f, 1.0f)));
                         if(upElement != null){
-                            if(checkStudyPosition(front,upElement)){
-                                setStep(front,upElement);
-                            }
+                            setStep(frontier,cameFrom,front,upElement);
                         }
                     }
                     frontier.remove(front);
@@ -161,170 +145,142 @@ public class PathSearchAlgorithm {
         }
 
         for(Cell came : cameFrom){
-            if(!came.isBlocked() && !came.isOccupied()){
-                came.setVisible(true);
-            }
+            came.setVisible(true);
         }
     }
-    // Методы поиска в ширину - конец
+    // ПОИСК В ШИРИНУ - КОНЕЦ
 
-    // Метод поиска пути А* - начало
-    private void createPathAStarTotal(){
-        Cell resultFinish = null;
-        if(start != null && finish != null){
-            resultFinish = createPath(false,false);
-        }
+    // ПОИСК A* - НАЧАЛО
+    private void studyMode(){
+        prepareGrid();
+        Cell resultFinish = createPath(false,false);
         if(resultFinish != null) {
+            wayPoints.clear();
             List<Cell> reverse = new ArrayList<>();
             while (resultFinish.getParent() != null) {
                 reverse.add(resultFinish);
                 resultFinish = resultFinish.getParent();
             }
-            wayPoints.clear();
             for (int i = reverse.size() - 1; i >= 0; i--) {
                 wayPoints.add(reverse.get(i));
             }
         }else{
+            System.out.println("Путь не найден!");
             wayPoints.clear();
         }
     }
 
-    private void createPathAStar(){
-        if(finish != null){
-            graphs[(int)finish.getX()][(int)finish.getZ()].setTarget(false);
-            for(int x=0; x<=width; x++){
-                for(int z=0; z<=height; z++){
-                    if(graphs[x][z].isVisible()){
-                        graphs[x][z].setWayPoint(false);
-                    }
-                }
-            }
-            Cell resultFinish = createPath(true,true);
-            if(resultFinish == null) {
-                resultFinish = createPath(false,true);
-            }
-
+    private void battleMode(){
+        clearWayPoints();
+        Cell resultFinish = createPath(true,true);
+        if(resultFinish == null) {
+            resultFinish = createPath(false,true);
+        }
+        if(resultFinish != null) {
+            wayPoints.clear();
             List<Cell> reverse = new ArrayList<>();
-            if(resultFinish != null) { // Проверка!
-                while (resultFinish.getParent() != null) {
-                    reverse.add(resultFinish);
-                    resultFinish = resultFinish.getParent();
-                }
-
-
-                List<Cell> wayPoints = new ArrayList<>();
-                for (int i = reverse.size() - 1; i >= 0; i--) {
-                    wayPoints.add(reverse.get(i));
-                }
-
-                int currentStamina = characteristic.getStamina();
-
-                for (Cell point : wayPoints) {
-                    point.setVisible(true);
-                    point.setWayPoint(true);
-                    currentStamina -= point.getTravelCost();
-                    if (currentStamina >= 0) {
-                        point.setGreenZona();
-                    } else {
-                        point.setRedZona();
-                    }
-                }
-            }else{
-                wayPoints.clear();
+            while (resultFinish.getParent() != null) {
+                reverse.add(resultFinish);
+                resultFinish = resultFinish.getParent();
             }
+            for (int i = reverse.size() - 1; i >= 0; i--) {
+                wayPoints.add(reverse.get(i));
+            }
+            int currentStamina = characteristic.getStamina();
+            for (Cell point : wayPoints) {
+                point.setVisible(true);
+                point.setWayPoint(true);
+                currentStamina -= point.getTravelCost();
+                if (currentStamina >= 0) {
+                    point.setGreenZona();
+                } else {
+                    point.setRedZona();
+                }
+            }
+        }else{
+            System.out.println("Путь не найден!");
+            wayPoints.clear();
         }
     }
 
     private Cell createPath(boolean restriction, boolean isZones){
         Cell resultFinish = null;
-        Cell Start = findGraph(start);
-        Cell Finish = findGraph(finish);
-        if(Start != null && Finish != null) {
-            List<Cell> closedSet = new ArrayList<>();
-            List<Cell> openSet = new ArrayList<>();
-            Start.setParent(null);
-            Start.setStep(0);
-            Start.setCost(getHeuristicPathLength(Start, Finish));
-            openSet.add(Start);
-            while (!openSet.isEmpty()) {
-                Cell currentElement = minFullPathLength(openSet);
-                if (currentElement.getModifiedPosition().equals(finish)) {
-                    resultFinish = currentElement;
-                    break;
+        List<Cell> closedSet = new ArrayList<>();
+        List<Cell> openSet = new ArrayList<>();
+        start.setParent(null);
+        start.setStep(0);
+        start.setCost(getHeuristicPathLength(start, finish));
+        openSet.add(start);
+        while (!openSet.isEmpty()) {
+            Cell currentElement = minFullPathLength(openSet);
+
+            if (currentElement.getId() == finish.getId()) {
+                resultFinish = currentElement;
+                break;
+            }
+
+            openSet.remove(currentElement);
+            closedSet.add(currentElement);
+
+            for (Cell neighbour : getNeighbours(currentElement, finish, restriction, isZones)) {
+                if (checkClosedSet(neighbour, closedSet)) {
+                    continue;
                 }
-                openSet.remove(currentElement);
-                closedSet.add(currentElement);
 
-                for (Cell neighbour : getNeighbours(currentElement, Finish, restriction, isZones)) {
-                    if(!neighbour.isBlocked() && !neighbour.isOccupied()) {
-                        if (checkClosedSet(neighbour, closedSet)) {
-                            continue;
-                        }
-
-                        Cell open = getOpenSetElement(neighbour, openSet);
-                        if (open == null) {
-                            int result = 0;
-                            float h = Math.abs(currentElement.getCurrentHeight() - neighbour.getCurrentHeight());
-                            if (h > 0) {
-                                if (Math.round(h) - h == 0.5f) {
-                                    result = 1;
-                                } else {
-                                    result = 3;
-                                }
-                            }
-
-                            neighbour.setParent(currentElement);
-                            neighbour.setStep(currentElement.getStep() + neighbour.getTravelCost() + result);
-                            neighbour.setCost(getHeuristicPathLength(neighbour, Finish));
-                            openSet.add(neighbour);
-                        } else {
-                            if (open.getStep() > neighbour.getStep()) {
-                                open.setParent(currentElement);
-                                open.setStep(neighbour.getStep());
+                Cell open = getOpenSetElement(neighbour, openSet);
+                if (open == null) {
+                    int result = 0;
+                    if(!neighbour.isBevel()) {
+                        float h = Math.abs(currentElement.getCurrentHeight() - neighbour.getCurrentHeight());
+                        if (h > 0) {
+                            if (Math.round(h) - h == 0.5f) {
+                                result = 1;
+                            } else {
+                                result = 3;
                             }
                         }
+                    }
+
+                    neighbour.setParent(currentElement);
+                    neighbour.setStep(currentElement.getStep() + neighbour.getTravelCost() + result);
+                    neighbour.setCost(getHeuristicPathLength(neighbour, finish));
+                    openSet.add(neighbour);
+                } else {
+                    if (open.getStep() > neighbour.getStep()) {
+                        open.setParent(currentElement);
+                        open.setStep(neighbour.getStep());
                     }
                 }
             }
         }
         return resultFinish;
     }
-    // Метод поиска пути А* - конец
+    // ПОИСК А* - КОНЕЦ
 
-    // Методы установок - начало
-    private void setStep(Cell front, Cell studyGraph){
-        if (checkVisit(studyGraph) && (front.getStep() + 1 <= characteristic.getMove() * characteristic.getCurentActionPoint())) {
-            studyGraph.setParent(front);
-            studyGraph.setStep(front.getStep() + 1);
-            if(studyGraph.getStep() <= characteristic.getMove()){
-                studyGraph.setBlueZona();
-            }else{
-                studyGraph.setGoldZona();
-            }
-            frontier.add(studyGraph);
-            cameFrom.add(studyGraph);
-        }
-    }
-
+    // ПОИСК, КОНТРОЛЬ И ПРОВЕРКА КЛЕТОК - НАЧАЛО
     private Cell tryAddGraph(Cell element, Vector3f direction, boolean isBlueZona, boolean restriction){
         Cell finalResult = null;
         int skipInfo = 1 + characteristic.getJump() / 2;
         if(skipInfo > 1){
-            List<Cell> studyGraphs = new ArrayList<>();
+            List<Cell> studyGrids = new ArrayList<>();
             for(int i=1; i<=skipInfo; i++){
-                Cell studyGraph = findGraph(element.getModifiedPosition(),element.getModifiedPosition().add(direction.mul(i)));
+                Cell studyGraph = findAndCheckCell(element.getModifiedPosition(),element.getModifiedPosition().add(direction.mul(i)));
                 if(studyGraph != null) {
                     if (isBlueZona) {
                         if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                            studyGraphs.add(studyGraph);
+                            studyGrids.add(studyGraph);
                         } else {
                             break;
                         }
                     } else {
-                        if (studyGraph.isVisible()) {
-                            studyGraphs.add(studyGraph);
-                        } else {
-                            break;
+                        if(simpleAI){
+                            studyGrids.add(studyGraph);
+                        }else {
+                            if (studyGraph.isVisible()) {
+                                studyGrids.add(studyGraph);
+                            } else {
+                                break;
+                            }
                         }
                     }
                 }else{
@@ -332,28 +288,28 @@ public class PathSearchAlgorithm {
                 }
             }
 
-            if(!studyGraphs.isEmpty()) {
-                for (Cell studyGraph : studyGraphs) {
-                    studyGraph.setSkip(false);
-                    if (studyGraph.getCurrentHeight() <= element.getCurrentHeight() - 1) {
-                        if (!studyGraph.getModifiedPosition().equals(finish)) {
-                            studyGraph.setSkip(true);
+            if(!studyGrids.isEmpty()) {
+                for (Cell studyGrid : studyGrids) {
+                    studyGrid.setSkip(false);
+                    if (studyGrid.getCurrentHeight() <= element.getCurrentHeight() - 1) {
+                        if (studyGrid.getId() != finish.getId()) {
+                            studyGrid.setSkip(true);
                         }
                     }
                 }
 
-                for (Cell studyGraph : studyGraphs) {
-                    if (!studyGraph.isSkip()) {
-                        if (studyGraph.getCurrentHeight() == element.getCurrentHeight()) {
-                            finalResult = studyGraph;
+                for (Cell studyGrid : studyGrids) {
+                    if (!studyGrid.isSkip()) {
+                        if (studyGrid.getCurrentHeight() == element.getCurrentHeight()) {
+                            finalResult = studyGrid;
                             break;
                         } else {
                             if(restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                    finalResult = studyGraphs.get(0);
+                                if (element.getCurrentHeight() - 0.5f <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    finalResult = studyGrids.get(0);
                                 }
                             }else{
-                                finalResult = studyGraphs.get(0);
+                                finalResult = studyGrids.get(0);
                             }
                             break;
                         }
@@ -363,37 +319,45 @@ public class PathSearchAlgorithm {
                 if(finalResult == null){
                     if(isBlueZona){
                         if(restriction){
-                            if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                finalResult = studyGraphs.get(0);
+                            if (element.getCurrentHeight() - 0.5f <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                finalResult = studyGrids.get(0);
                             }
                         }else{
-                            finalResult = studyGraphs.get(0);
+                            finalResult = studyGrids.get(0);
                         }
                     }else{
                         if(restriction){
-                            if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                finalResult = studyGraphs.get(0);
+                            if (element.getCurrentHeight() - 0.5f <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                finalResult = studyGrids.get(0);
                             }
                         }else{
-                            finalResult = studyGraphs.get(0);
+                            finalResult = studyGrids.get(0);
                         }
                     }
                 }
             }else{
-                Cell studyGraph = findGraph(element.getModifiedPosition(),element.getModifiedPosition().add(direction));
+                Cell studyGraph = findAndCheckCell(element.getModifiedPosition(),element.getModifiedPosition().add(direction));
                 if(studyGraph != null) {
-                    if(checkStudyPosition(element,studyGraph)) {
-                        if (isBlueZona) {
-                            if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                                if (restriction) {
-                                    if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                        finalResult = studyGraph;
-                                    }
-                                } else {
+                    if (isBlueZona) {
+                        if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                            if (restriction) {
+                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
                                     finalResult = studyGraph;
                                 }
+                            } else {
+                                finalResult = studyGraph;
                             }
-                        } else {
+                        }
+                    } else {
+                        if(simpleAI){
+                            if (restriction) {
+                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    finalResult = studyGraph;
+                                }
+                            } else {
+                                finalResult = studyGraph;
+                            }
+                        }else {
                             if (studyGraph.isVisible()) {
                                 if (restriction) {
                                     if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
@@ -408,20 +372,28 @@ public class PathSearchAlgorithm {
                 }
             }
         }else {
-            Cell studyGraph = findGraph(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
+            Cell studyGraph = findAndCheckCell(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
             if(studyGraph != null) {
-                if(checkStudyPosition(element,studyGraph)) {
-                    if (isBlueZona) {
-                        if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
-                            if (restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
-                                    finalResult = studyGraph;
-                                }
-                            } else {
+                if (isBlueZona) {
+                    if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
+                        if (restriction) {
+                            if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
                                 finalResult = studyGraph;
                             }
+                        } else {
+                            finalResult = studyGraph;
                         }
-                    } else {
+                    }
+                } else {
+                    if(simpleAI){
+                        if (restriction) {
+                            if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                finalResult = studyGraph;
+                            }
+                        } else {
+                            finalResult = studyGraph;
+                        }
+                    }else {
                         if (studyGraph.isVisible()) {
                             if (restriction) {
                                 if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
@@ -435,6 +407,13 @@ public class PathSearchAlgorithm {
                 }
             }
         }
+
+        if(finalResult != null && !simpleAI && battleGround.isActive()){
+            if(!finalResult.isBlueZona() && !finalResult.isGoldZona()){
+                finalResult = null;
+            }
+        }
+
         return finalResult;
     }
 
@@ -444,7 +423,7 @@ public class PathSearchAlgorithm {
         if(skipInfo > 1){
             List<Cell> studyGraphs = new ArrayList<>();
             for(int i=1; i<=skipInfo; i++){
-                Cell studyGraph = findGraph(element.getModifiedPosition(), element.getModifiedPosition().add(direction.mul(i)));
+                Cell studyGraph = findAndCheckCell(element.getModifiedPosition(), element.getModifiedPosition().add(direction.mul(i)));
                 if(studyGraph != null) {
                     studyGraphs.add(studyGraph);
                 }else{
@@ -456,7 +435,7 @@ public class PathSearchAlgorithm {
                 for (Cell studyGraph : studyGraphs) {
                     studyGraph.setSkip(false);
                     if (studyGraph.getCurrentHeight() <= element.getCurrentHeight() - 1) {
-                        if (!studyGraph.getModifiedPosition().equals(finish)) {
+                        if (!studyGraph.getModifiedPosition().equals(finish.getModifiedPosition())) {
                             studyGraph.setSkip(true);
                         }
                     }
@@ -490,7 +469,7 @@ public class PathSearchAlgorithm {
                     }
                 }
             }else{
-                Cell studyGraph = findGraph(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
+                Cell studyGraph = findAndCheckCell(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
                 if(restriction) {
                     if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
                         finalResult = studyGraph;
@@ -500,7 +479,7 @@ public class PathSearchAlgorithm {
                 }
             }
         }else {
-            Cell studyGraph = findGraph(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
+            Cell studyGraph = findAndCheckCell(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
             if(restriction) {
                 if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
                     finalResult = studyGraph;
@@ -512,114 +491,13 @@ public class PathSearchAlgorithm {
 
         return finalResult;
     }
-    // методы установок - конец
 
-    // методы проверок - начало
-    private boolean checkStudyPosition(Cell parentElement, Cell studyCell){
-        boolean check = false;
-        float min = parentElement.getCurrentHeight() - (float)characteristic.getJump();
-        float max = parentElement.getCurrentHeight() + (float)characteristic.getJump();
-
-        if(!occupied){
-            if(finish != null) {
-                if (studyCell.getModifiedPosition().equals(finish)) {
-                    if (!studyCell.isBlocked()) {
-                        if (min <= studyCell.getCurrentHeight() && studyCell.getCurrentHeight() <= max) {
-                            check = true;
-                        }
-                    }
-                } else {
-                    if (!studyCell.isBlocked() && !studyCell.isOccupied()) {
-                        if (min <= studyCell.getCurrentHeight() && studyCell.getCurrentHeight() <= max) {
-                            check = true;
-                        }
-                    }
-                }
-            }
-        }else {
-            if (!studyCell.isBlocked() && !studyCell.isOccupied()) {
-                if (min <= studyCell.getCurrentHeight() && studyCell.getCurrentHeight() <= max) {
-                    check = true;
-                }
-            }
-        }
-
-        return check;
+    private Cell minFullPathLength(List<Cell> openSet){
+        openSet.sort(((o1, o2) -> o1.getEstimateFullPathLength() > o2.getEstimateFullPathLength() ? 0 : -1));
+        return openSet.get(0);
     }
 
-    private boolean checkClosedSet(Cell study, List<Cell> closedSet){
-        boolean visit = false;
-
-        for(Cell closed : closedSet){
-            if(closed.getId() == study.getId()){
-                visit = true;
-                break;
-            }
-        }
-
-        return visit;
-    }
-
-    private boolean checkVisit(Cell studyGraph){
-        boolean visit = false;
-
-        for(Cell came : cameFrom){
-            if(came.getId() == studyGraph.getId()){
-                visit = true;
-                break;
-            }
-        }
-
-        return !visit;
-    }
-    // методы проверок - конец
-
-    // методы гетеры - начало
-    private Cell minFullPathLength(List<Cell> elements){
-
-        for (Cell element : elements) {
-            float lenght = element.getModifiedPosition().sub(finish).length();
-            element.setDistance(lenght);
-        }
-
-        elements.sort(((o1, o2) -> o1.getEstimateFullPathLength() > o2.getEstimateFullPathLength() ? 0 : -1));
-
-        int num = 1;
-
-        for(int i=1; i<elements.size(); i++){
-            if(start.getY() < finish.getY()){
-                if(elements.get(0).getEstimateFullPathLength() + 1 >= elements.get(i).getEstimateFullPathLength()){
-                    if(start.getY() <= elements.get(i).getCurrentHeight()){
-                        num++;
-                    }
-                }
-            }else if(start.getY() > finish.getY()){
-                if(elements.get(0).getEstimateFullPathLength() + 1 >= elements.get(i).getEstimateFullPathLength()){
-                    if(start.getY() >= elements.get(i).getCurrentHeight()){
-                        num++;
-                    }
-                }
-            }else{
-                if(elements.get(0).getEstimateFullPathLength() == elements.get(i).getEstimateFullPathLength()){
-                    num++;
-                }
-            }
-        }
-
-        for(int i=0; i<num-1;i++){
-            for(int j=i+1; j<num; j++){
-                if(elements.get(i).getDistance() > elements.get(j).getDistance()){
-                    Cell temp = elements.get(i);
-                    elements.set(i,elements.get(j));
-                    elements.set(j,temp);
-                }
-            }
-        }
-
-        return elements.get(0);
-    }
-
-    private List<Cell> getNeighbours(Cell element, Cell finish, boolean restriction,boolean isZones) {
+    private List<Cell> getNeighbours(Cell element, Cell finish, boolean restriction, boolean isZones) {
         List<Cell> result = new ArrayList<>();
         // Вверх
         Cell upElement = null;
@@ -665,6 +543,80 @@ public class PathSearchAlgorithm {
         return result;
     }
 
+    private Cell findAndCheckCell(Vector3f parentPos, Vector3f studyPos){
+        Cell cell = null;
+        Cell testParent = null;
+        Cell testStudy = null;
+
+        if((0 <= parentPos.getX() && parentPos.getX() < grid.length) && (0 <= parentPos.getZ() && parentPos.getZ() < grid[0].length)){
+            testParent = grid[(int)parentPos.getX()][(int)parentPos.getZ()];
+        }
+
+        if((0 <= studyPos.getX() && studyPos.getX() < grid.length) && (0 <= studyPos.getZ() && studyPos.getZ() < grid[0].length)){
+            testStudy = grid[(int)studyPos.getX()][(int)studyPos.getZ()];
+        }
+
+        if(testParent != null && testStudy != null){
+            // ПРОВЕРКА ВЫСОТЫ
+            if(Math.abs(testParent.getCurrentHeight() - testStudy.getCurrentHeight()) <= characteristic.getJump()){
+                // ПРОВЕРКА ДОСТУПНОСТИ
+                if(!testStudy.isBlocked()) {
+                    if(battleGround.isActive()){
+                        if (!testStudy.isOccupied() && (testStudy.isBattleGraund() || testStudy.isExitBattleGraund())) {
+                            cell = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                        }
+                    }else{
+                        if(!testStudy.isOccupied()) { // НАДО ПОДУМАТЬ!!!!!!!
+                            cell = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                        }
+                    }
+                }
+            }
+        }
+
+        return cell;
+    }
+
+    private void setStep(List<Cell> frontier, List<Cell> cameFrom, Cell front, Cell studyCell){
+        if (checkVisit(cameFrom,studyCell) && (front.getStep() + 1 <= characteristic.getMove() * characteristic.getCurentActionPoint())) {
+            studyCell.setParent(front);
+            studyCell.setStep(front.getStep() + 1);
+            if(studyCell.getStep() <= characteristic.getMove()){
+                studyCell.setBlueZona();
+            }else{
+                studyCell.setGoldZona();
+            }
+            frontier.add(studyCell);
+            cameFrom.add(studyCell);
+        }
+    }
+
+    private boolean checkClosedSet(Cell study, List<Cell> closedSet){
+        boolean visit = false;
+
+        for(Cell closed : closedSet){
+            if(closed.getId() == study.getId()){
+                visit = true;
+                break;
+            }
+        }
+
+        return visit;
+    }
+
+    private boolean checkVisit(List<Cell> cameFrom, Cell studyGraph){
+        boolean noVisit = true;
+
+        for(Cell came : cameFrom){
+            if(came.getId() == studyGraph.getId()){
+                noVisit = false;
+                break;
+            }
+        }
+
+        return noVisit;
+    }
+
     private Cell getOpenSetElement(Cell study, List<Cell> openSet){
         Cell open = null;
 
@@ -678,40 +630,42 @@ public class PathSearchAlgorithm {
         return open;
     }
 
-    private Cell findGraph(Vector3f position){
-        Cell graph = null;
-
-        if((0 <= position.getX() && position.getX() <= width) && (0 <= position.getZ() && position.getZ() <= height)){
-            graph = graphs[(int)position.getX()][(int)position.getZ()];
-        }
-
-        return graph;
-    }
-
-    private Cell findGraph(Vector3f parentPos, Vector3f position){
-        Cell graph = null;
-        Cell testGraphParent = null;
-        Cell testGraphStudy = null;
-
-        if((0 <= parentPos.getX() && parentPos.getX() <= width) && (0 <= parentPos.getZ() && parentPos.getZ() <= height)){
-            testGraphParent = graphs[(int)parentPos.getX()][(int)parentPos.getZ()];
-        }
-
-        if((0 <= position.getX() && position.getX() <= width) && (0 <= position.getZ() && position.getZ() <= height)){
-            testGraphStudy = graphs[(int)position.getX()][(int)position.getZ()];
-        }
-
-        if(testGraphParent != null && testGraphStudy != null){
-            if(Math.abs(testGraphParent.getCurrentHeight() - testGraphStudy.getCurrentHeight()) <= characteristic.getJump()){
-                graph = graphs[(int)position.getX()][(int)position.getZ()];
-            }
-        }
-
-        return graph;
-    }
-
-    private static int getHeuristicPathLength(Cell from, Cell to) {
+    private int getHeuristicPathLength(Cell from, Cell to) {
         return (int)(Math.abs(from.getModifiedPosition().getX() - to.getModifiedPosition().getX()) + Math.abs(from.getModifiedPosition().getZ() - to.getModifiedPosition().getZ()));
     }
-    // методы гетеры - конец*/
+    // ПОИСК, КОНТРОЛЬ И ПРОВЕРКА КЛЕТОК - КОНЕЦ
+
+    // МЕТОДЫ ПРЕСЕТЫ - НАЧАЛО
+    private void showRadius(){
+        int radius = characteristic.getVision() + 1;
+        Vector3f position = new Vector3f(start.getModifiedPosition()); position.setY(0.0f);
+        for(int x=0; x<grid.length; x++){
+            for(int z=0; z<grid[0].length; z++){
+                Vector3f cellPos = new Vector3f(grid[x][z].getPosition()); cellPos.setY(0.0f);
+                if(Math.abs(cellPos.sub(position).length()) <= radius){
+                    if(!grid[x][z].isBlocked() && grid[x][z].isBattleGraund()) {
+                        grid[x][z].setVisible(true);
+                    }
+                }
+            }
+        }
+    }
+    private void prepareGrid(){
+        for(int x=0; x<grid.length; x++){
+            for(int z=0; z<grid[0].length; z++){
+                grid[x][z].setGrayZona();
+                grid[x][z].setWayPoint(false);
+                grid[x][z].setVisible(false);
+            }
+        }
+    }
+
+    private void clearWayPoints(){
+        for(int x=0; x<grid.length; x++){
+            for(int z=0; z<grid[0].length; z++){
+                grid[x][z].setWayPoint(false);
+            }
+        }
+    }
+    // МЕТОДЫ ПРЕСЕТЫ - КОНЕЦ
 }
