@@ -15,6 +15,7 @@ import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.HumanDraw;
 import ru.phoenix.game.logic.battle.BattleGround;
+import ru.phoenix.game.logic.battle.SimpleAI;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.game.logic.element.grid.Cell;
 import ru.phoenix.game.logic.generator.Generator;
@@ -102,6 +103,7 @@ public class Gehard extends HumanDraw implements Character {
     private boolean waiting;
     private boolean playDead;
     private boolean prepareMove;
+    private boolean autoControl;
     private Character allySavedCharacter;
     private Character enemySavedCharacter;
     private Cell targetPoint;
@@ -259,6 +261,7 @@ public class Gehard extends HumanDraw implements Character {
         moveControl = true;
         playDead = true;
         prepareMove = false;
+        autoControl = false;
     }
 
     @Override
@@ -296,13 +299,14 @@ public class Gehard extends HumanDraw implements Character {
         waiting = true;
         moveControl = true;
         prepareMove = false;
+        autoControl = false;
         if(!isDead()) {
             playDead = true;
         }
     }
 
     @Override
-    public void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemy, List<Character> ally, BattleGround battleGround) {
+    public void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemies, List<Character> allies, BattleGround battleGround) {
         targetControl(pixel);
 
         if (getCharacteristic().getHealth() == 0) {
@@ -312,7 +316,7 @@ public class Gehard extends HumanDraw implements Character {
         if(isDead()){
            if(playDead){
                deadCount++;
-               if(deadCount > 20){
+               if(deadCount > 40){
                    deadCount = 0;
                    deadFrame++;
                }
@@ -361,7 +365,7 @@ public class Gehard extends HumanDraw implements Character {
                                     }
                                     moveControl = false;
                                 } else {
-                                    movementAnimation();
+                                    movementAnimation(battleGround);
                                 }
                             } else {
                                 counter++;
@@ -381,11 +385,11 @@ public class Gehard extends HumanDraw implements Character {
                                 }
                             }
                         } else {
-                            battleMode(battleGround, grid, ally, enemy);
+                            battleMode(battleGround, grid, allies, enemies);
                         }
                     } else {
                         if(battleEvent == MOVEMENT_ANIMATION){
-                            battleMode(battleGround, grid, ally, enemy);
+                            battleMode(battleGround, grid, allies, enemies);
                         }else {
                             // Заплатка! Стамина расходуется в классе MotionAnimation
                             getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
@@ -418,7 +422,7 @@ public class Gehard extends HumanDraw implements Character {
                                     }
                                     moveControl = false;
                                 } else {
-                                    movementAnimation();
+                                    movementAnimation(battleGround);
                                 }
                             } else {
                                 counter++;
@@ -438,12 +442,12 @@ public class Gehard extends HumanDraw implements Character {
                                 }
                             }
                         } else {
-
+                            autoBattleMode(battleGround, grid, allies, enemies);
                         }
                     } else {
                         getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
                         getCharacteristic().updateIndicators();
-                        checkInvasion(enemy,battleGround,grid);
+                        checkInvasion(enemies,battleGround,grid);
                         if (waiting) {
                             timer++;
                             if (timer > waitTime) {
@@ -458,7 +462,7 @@ public class Gehard extends HumanDraw implements Character {
                                     createPath(battleGround, grid);
                                     break;
                                 case MOVEMENT_ANIMATION:
-                                    movementAnimation();
+                                    movementAnimation(battleGround);
                                     break;
                             }
                         }
@@ -615,7 +619,7 @@ public class Gehard extends HumanDraw implements Character {
                             firstStart = false;
                         } else {
                             Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-                            int motion = getMotionAnimation().motion(position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+                            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
                             if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
                                 setPosition(position);
                             }
@@ -760,6 +764,237 @@ public class Gehard extends HumanDraw implements Character {
         }
     }
 
+    private void autoBattleMode(BattleGround battleGround, Cell[][] grid, List<Character> allies, List<Character> enemies){
+        if(Default.isWait()){
+            if(action) {
+                Pixel.getPixel().setVector(new Vector3f());
+                switch (battleEvent) {
+                    case PREPARED_AREA:
+                        SimpleAI.dataLoading(grid,this,allies,enemies);
+                        SimpleAI.dataAnalyze();
+                        counter = 0;
+                        runPathfindingAlgorithm();
+                        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, grid[(int)getPosition().getX()][(int)getPosition().getZ()]);
+                        getPathfindingAlgorithm().start();
+                        battleEvent = CREATE_PATH;
+                        autoControl = false;
+                        break;
+                    case CREATE_PATH:
+                        if(autoControl){
+                            if (!getPathfindingAlgorithm().isAlive()) {
+                                if (!getWayPoints().isEmpty()) {
+                                    grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(false);
+                                    List<Cell>wayPoints = new ArrayList<>();
+                                    boolean last = false;
+                                    for(int i=0; i<getWayPoints().size(); i++){
+                                        if(last){
+                                            getWayPoints().get(i).setWayPoint(false);
+                                        }else {
+                                            if (getWayPoints().get(i).isBlueZona() || getWayPoints().get(i).isGoldZona()) {
+                                                wayPoints.add(getWayPoints().get(i));
+                                            } else {
+                                                getWayPoints().get(i).setWayPoint(false);
+                                                last = true;
+                                            }
+                                        }
+                                    }
+                                    wayPoints.add(0,grid[(int)getPosition().getX()][(int)getPosition().getZ()]);
+                                    getMotionAnimation().setup(getPosition(), wayPoints);
+                                    walkAnimation.setFrames(1);
+                                    baseStanceAnimation.setFrames(1);
+                                    jumpAnimation.setFrames(1);
+                                    goUpDownAnimation.setFrames(1);
+                                    battleEvent = MOVEMENT_ANIMATION;
+                                    prepareMove = false;
+                                    setJump(false);
+                                    for (int x = 0; x < grid.length; x++) {
+                                        for (int z = 0; z < grid[0].length; z++) {
+                                            if (!grid[x][z].isWayPoint()) {
+                                                grid[x][z].setVisible(false);
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    System.out.println("WayPoints is empty!!");
+                                    for(int x=0; x<grid.length; x++){
+                                        for(int z=0; z<grid[0].length; z++){
+                                            grid[x][z].setGrayZona();
+                                            grid[x][z].setVisible(false);
+                                            grid[x][z].setWayPoint(false);
+                                        }
+                                    }
+                                    battleEvent = PREPARED_AREA;
+                                    firstStart = true;
+                                    Default.setWait(false);
+                                    this.action = false;
+                                }
+                            }
+                        }else{
+                            counter++;
+                            if(counter > 200) {
+                                boolean action = actionControl(grid,SimpleAI.getTargetCharacter());
+                                if(!action) {
+                                    if (!getPathfindingAlgorithm().isAlive()) {
+                                        runPathfindingAlgorithm();
+                                        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, getWayPoints(), grid[(int) getPosition().getX()][(int) getPosition().getZ()], SimpleAI.getCloserCell(), true);
+                                        getPathfindingAlgorithm().start();
+                                        autoControl = true;
+                                        counter = 0;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case MOVEMENT_ANIMATION:
+                        if (firstStart) {
+                            setTurn();
+                            firstStart = false;
+                        } else {
+                            Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
+                            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+                            if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
+                                setPosition(position);
+                            }
+
+                            if (motion == 0) {
+                                preparingForBattle = true;
+                                Cell currentElement = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
+                                currentElement.setOccupied(true);
+                                if (currentElement.isBlueZona()) {
+                                    getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
+                                } else if (currentElement.isGoldZona()) {
+                                    getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 2);
+                                }
+                                updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                                setJump(false);
+                                for(int x=0; x<grid.length; x++){
+                                    for(int z=0; z<grid[0].length; z++){
+                                        grid[x][z].setGrayZona();
+                                        grid[x][z].setVisible(false);
+                                        grid[x][z].setWayPoint(false);
+                                    }
+                                }
+                                if (getCharacteristic().getCurentActionPoint() > 0) {
+                                    if (getCharacteristic().getStamina() > 0) {
+                                        battleEvent = PREPARED_AREA;
+                                        firstStart = true;
+                                    } else {
+                                        battleEvent = PREPARED_AREA;
+                                        firstStart = true;
+                                        Default.setWait(false);
+                                        this.action = false;
+                                    }
+                                } else {
+                                    battleEvent = PREPARED_AREA;
+                                    firstStart = true;
+                                    Default.setWait(false);
+                                    this.action = false;
+                                }
+                            }else if (motion == 1) {
+                                setJump(false);
+                                updateAnimation(walkTexture,walkAnimation);
+                            }else if (motion == 2) {
+                                setJump(true);
+                                updateAnimation(jumpTexture,jumpAnimation);
+                            }else if (motion == 3) {
+                                setJump(false);
+                                updateAnimation(goUpDownTexture,goUpDownAnimation);
+                            }else if(motion == 4){
+                                setJump(false);
+                                updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                            }
+                        }
+                        break;
+                    case ATTACK_ANIMATION:
+                        if(isBaseAttack){
+                            if(enemySavedCharacter != null) {
+                                if(firstBaseAttack){
+                                    // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
+                                    float mainXOffset = getXOffsetOnScreen(getPosition());
+                                    float enemyXOffset = getXOffsetOnScreen(enemySavedCharacter.getPosition());
+                                    if(mainXOffset < enemyXOffset){
+                                        setTurn(true);
+                                        float yaw = Camera.getInstance().getYaw();
+                                        if (90.0f < yaw && yaw < 270.0f) {
+                                            setTurn(isTurn());
+                                        } else {
+                                            setTurn(!isTurn());
+                                        }
+                                    }else{
+                                        setTurn(false);
+                                        float yaw = Camera.getInstance().getYaw();
+                                        if (90.0f < yaw && yaw < 270.0f) {
+                                            setTurn(isTurn());
+                                        } else {
+                                            setTurn(!isTurn());
+                                        }
+                                    }
+                                    // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
+                                    firstBaseAttack = false;
+                                }else {
+                                    counter++;
+                                    if (counter > 20) {
+                                        currentFrame++;
+                                        counter = 0;
+                                    }
+
+                                    if (currentFrame <= baseAttack.getRow()) {
+                                        baseAttackAnimation.setFrames(currentFrame);
+                                        updateAnimation(baseAttackTexture, baseAttackAnimation);
+                                    } else {
+                                        counter = 0;
+                                        currentFrame = 1;
+                                        isBaseAttack = false;
+                                        firstBaseAttack = true;
+                                        getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
+                                        getCharacteristic().setStamina(getCharacteristic().getStamina() - 10);
+                                        enemySavedCharacter.getCharacteristic().setHealth(enemySavedCharacter.getCharacteristic().getHealth() - getCharacteristic().getPhysicalPower());
+                                        enemySavedCharacter.setTakeDamadge(true);
+                                        if (enemySavedCharacter.getCharacteristic().getHealth() < 0) {
+                                            enemySavedCharacter.getCharacteristic().setHealth(0);
+                                        }
+                                        if (getCharacteristic().getCurentActionPoint() > 0) {
+                                            if (getCharacteristic().getStamina() > 0) {
+                                                battleEvent = PREPARED_AREA;
+                                                firstStart = true;
+                                            } else {
+                                                battleEvent = PREPARED_AREA;
+                                                firstStart = true;
+                                                Default.setWait(false);
+                                                this.action = false;
+                                            }
+                                        } else {
+                                            battleEvent = PREPARED_AREA;
+                                            firstStart = true;
+                                            Default.setWait(false);
+                                            this.action = false;
+                                        }
+                                    }
+                                }
+                            }else{
+                                System.out.println("нет врага переменная пустая ... ");
+                            }
+                        }
+                        break;
+                }
+            }
+        }else{
+            if(sampleData != Time.getSecond()){
+                getCharacteristic().setInitiative(getCharacteristic().getInitiative() + getCharacteristic().getInitiativeCharge());
+                if(getCharacteristic().getInitiative() >= 100){
+                    getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
+                    getCharacteristic().setInitiative(0);
+                    getCharacteristic().updateIndicators();
+                    this.action = true;
+                    this.firstStart = true;
+                    battleEvent = PREPARED_AREA;
+                    Default.setWait(true);
+                }
+            }
+            sampleData = Time.getSecond();
+        }
+    }
+
     private boolean actionControl(Cell[][] grid, List<Character> enemy){
         isBaseAttack = false;
         boolean action = false;
@@ -793,6 +1028,36 @@ public class Gehard extends HumanDraw implements Character {
         return action;
     }
 
+    private boolean actionControl(Cell[][] grid, Character enemy){
+        isBaseAttack = false;
+        boolean fastAttack = false;
+        enemySavedCharacter = null;
+
+        if(enemy != null){
+            if(!enemy.isDead()){
+                if(getPosition().getX() - 1.0f <= enemy.getPosition().getX() && enemy.getPosition().getX() <= getPosition().getX() + 1.0f) {
+                    if (getPosition().getZ() - 1.0f <= enemy.getPosition().getZ() && enemy.getPosition().getZ() <= getPosition().getZ() + 1.0f) {
+                        if (Math.abs(enemy.getPosition().getY() - getPosition().getY()) <= 0.5f) {
+                            enemySavedCharacter = enemy;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(enemySavedCharacter != null){
+            battleEvent = ATTACK_ANIMATION;
+            fastAttack = true;
+            isBaseAttack = true;
+            for(int x=0; x<grid.length; x++){
+                for(int z=0; z<grid[0].length; z++){
+                    grid[x][z].setVisible(false);
+                }
+            }
+        }
+        return fastAttack;
+    }
+
     private void researchMode(BattleGround battleGround, Cell[][] grid){
         if(remap){
             studyEventMode(battleGround, grid);
@@ -801,7 +1066,7 @@ public class Gehard extends HumanDraw implements Character {
                 studyEventMode(battleGround, grid);
             } else {
                 if (studyEvent == MOVEMENT_ANIMATION) {
-                    movementAnimation();
+                    movementAnimation(battleGround);
                 }
             }
         }
@@ -834,7 +1099,7 @@ public class Gehard extends HumanDraw implements Character {
                         getMotionAnimation().setWayPoints(newWayPoints);
                     }
                 }
-                movementAnimation();
+                movementAnimation(battleGround);
                 break;
         }
     }
@@ -907,13 +1172,13 @@ public class Gehard extends HumanDraw implements Character {
         pathCheck = true;
     }
 
-    private void movementAnimation(){
+    private void movementAnimation(BattleGround battleGround){
         if (firstStart) {
             setTurn();
             firstStart = false;
         } else {
             Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-            int motion = getMotionAnimation().motion(position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
 
             if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
                 setPosition(position);

@@ -9,6 +9,10 @@ import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.logic.element.Pixel;
+
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
@@ -62,13 +66,13 @@ public class Cursor {
         vbo.allocate(position,null,texCoord,null,null,null,null,null,indices);
     }
 
-    public void update(Vector3f pixel){
-        /*if(pixel.getX() == 0.0f && pixel.getY() == 0.0f && pixel.getZ() == 0.0f){
-            setRedCursor();
-        }else{
-            setHandCursor();
-        }*/
+    public void update(List<Character> enemies){
         setHandCursor();
+        for(Character enemy : enemies){
+            if(enemy.getId() == Pixel.getPixel().getR()){
+                setRedCursor();
+            }
+        }
         Vector2f cursorPos = new Vector2f(Input.getInstance().getCursorPosition());
         this.position = new Vector3f(cursorPos.getX(),cursorPos.getY(),0.0f);
         projection.getModelMatrix().identity();

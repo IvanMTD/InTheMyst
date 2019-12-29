@@ -118,6 +118,10 @@ public class Vector3f {
         return x;
     }
 
+    public float getR(){
+        return x;
+    }
+
     public void setX(float x) {
         this.x = x;
     }
@@ -126,6 +130,8 @@ public class Vector3f {
         return y;
     }
 
+    public float getG() { return y; }
+
     public void setY(float y) {
         this.y = y;
     }
@@ -133,6 +139,8 @@ public class Vector3f {
     public float getZ() {
         return z;
     }
+
+    public float getB() { return z; }
 
     public void setZ(float z) {
         this.z = z;

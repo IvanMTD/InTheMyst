@@ -194,10 +194,12 @@ public abstract class StudyAreaControl {
                     Default.setWait(false);
                     Default.setCreatePath(true);
                     for(Character ally : alliesInBattle){
+                        ally.getCharacteristic().setInitiative(0);
                         ally.setBattle(false);
                         ally.resetSettings();
                     }
                     for(Character enemy : enemiesInBattle){
+                        enemy.getCharacteristic().setInitiative(0);
                         enemy.setBattle(false);
                         enemy.resetSettings();
                     }

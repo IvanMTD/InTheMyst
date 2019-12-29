@@ -308,7 +308,7 @@ public class AnarchyThief extends HumanDraw implements Character {
         if(isDead()){
             if(playDead){
                 deadCount++;
-                if(deadCount > 20){
+                if(deadCount > 40){
                     deadCount = 0;
                     deadFrame++;
                 }
@@ -352,7 +352,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                                 }
                                 moveControl = false;
                             } else {
-                                movementAnimation();
+                                movementAnimation(battleGround);
                             }
                         } else {
                             if (!moveControl) {
@@ -396,7 +396,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                                 }
                                 moveControl = false;
                             } else {
-                                movementAnimation();
+                                movementAnimation(battleGround);
                             }
                         } else {
                             if (!moveControl) {
@@ -426,7 +426,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                                     createPath(battleGround, grid);
                                     break;
                                 case MOVEMENT_ANIMATION:
-                                    movementAnimation();
+                                    movementAnimation(battleGround);
                                     break;
                             }
                         }
@@ -574,7 +574,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                             firstStart = false;
                         } else {
                             Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-                            int motion = getMotionAnimation().motion(position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+                            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
                             if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
                                 setPosition(position);
                             }
@@ -840,7 +840,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                             firstStart = false;
                         } else {
                             Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-                            int motion = getMotionAnimation().motion(position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+                            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
                             if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
                                 setPosition(position);
                             }
@@ -1096,7 +1096,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                 studyEventMode(battleGround, grid);
             } else {
                 if (studyEvent == MOVEMENT_ANIMATION) {
-                    movementAnimation();
+                    movementAnimation(battleGround);
                 }
             }
         }
@@ -1129,7 +1129,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                         getMotionAnimation().setWayPoints(newWayPoints);
                     }
                 }
-                movementAnimation();
+                movementAnimation(battleGround);
                 break;
         }
     }
@@ -1202,13 +1202,13 @@ public class AnarchyThief extends HumanDraw implements Character {
         pathCheck = true;
     }
 
-    private void movementAnimation(){
+    private void movementAnimation(BattleGround battleGround){
         if (firstStart) {
             setTurn();
             firstStart = false;
         } else {
             Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-            int motion = getMotionAnimation().motion(position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
 
             if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
                 setPosition(position);

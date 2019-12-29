@@ -2,6 +2,7 @@ package ru.phoenix.game.logic.movement;
 
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.property.Characteristic;
 import ru.phoenix.game.logic.element.grid.Cell;
 
@@ -57,38 +58,40 @@ public class MotionAnimation {
         this.wayPoints = new ArrayList<>(wayPoints);
     }
 
-    public int motion(Vector3f position, Vector3f currentPos, Characteristic characteristic,ImageAnimation jumpAnim, ImageAnimation climbingAnim, ImageAnimation walkAnim){
+    public int motion(BattleGround battleGround, Vector3f position, Vector3f currentPos, Characteristic characteristic, ImageAnimation jumpAnim, ImageAnimation climbingAnim, ImageAnimation walkAnim){
         boolean action = true;
         int motion = 0;
         boolean isJump = false;
         boolean isClimbing = false;
 
-        if(index < wayPoints.size()){
-            if(currentPos.equals(tempPos)){
-                if(wayPoints.get(index).isOccupied()){
-                    motion = 4;
-                    if(wayPoints.get(index).getModifiedPosition().equals(wayPoints.get(wayPoints.size() - 1).getModifiedPosition())){
-                        motion = 0;
+        if(!battleGround.isActive()) {
+            if (index < wayPoints.size()) {
+                if (currentPos.equals(tempPos)) {
+                    if (wayPoints.get(index).isOccupied()) {
+                        motion = 4;
+                        if (wayPoints.get(index).getModifiedPosition().equals(wayPoints.get(wayPoints.size() - 1).getModifiedPosition())) {
+                            motion = 0;
+                        }
+                        action = false;
+                    } else {
+                        wayPoints.get(index - 1).setOccupied(false);
+                        wayPoints.get(index).setOccupied(true);
                     }
+                }
+
+                if (characteristic.getStamina() - wayPoints.get(index).getTravelCost() < 0) {
                     action = false;
-                }else{
-                    wayPoints.get(index - 1).setOccupied(false);
-                    wayPoints.get(index).setOccupied(true);
                 }
             }
 
-            if(characteristic.getStamina() - wayPoints.get(index).getTravelCost() < 0){
+            if (index < wayPoints.size()) {
+                wayPoints.get(index).setOccupied(true);
+            } else {
+                System.out.println("Current index is " + index);
+                System.out.println("Current size is " + wayPoints.size() + "\n");
+                motion = 0;
                 action = false;
             }
-        }
-
-        if(index < wayPoints.size()) {
-            wayPoints.get(index).setOccupied(true);
-        }else{
-            System.out.println("Current index is " + index);
-            System.out.println("Current size is " + wayPoints.size() + "\n");
-            motion = 0;
-            action = false;
         }
 
         if(action && (index < wayPoints.size())) {

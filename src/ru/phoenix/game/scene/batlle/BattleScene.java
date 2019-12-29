@@ -140,7 +140,7 @@ public class BattleScene implements Scene {
     public void update(){
         GameController.getInstance().update();
         pixel = Pixel.getPixel();
-        cursorHud.update(pixel);
+        cursorHud.update(studyArea.getEnemies());
 
         // Обновляем информацию в сетке
         for(int x=0; x<=studyArea.getMapX(); x++) {

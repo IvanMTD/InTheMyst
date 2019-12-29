@@ -13,6 +13,7 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
+import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.property.Characteristic;
 import ru.phoenix.game.hud.assembled.SelfIndicators;
 import ru.phoenix.game.logic.element.grid.Cell;
@@ -597,7 +598,7 @@ public class Person extends ObjectControl implements Object {
             firstStart = false;
         } else {
             Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-            int motion = motionAnimation.motion(position, getPosition(), characteristic, jump, climbing, walk);
+            int motion = motionAnimation.motion(new BattleGround(), position, getPosition(), characteristic, jump, climbing, walk);
 
             if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
                 setPosition(position);
@@ -729,7 +730,7 @@ public class Person extends ObjectControl implements Object {
                             firstStart = false;
                         } else {
                             Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-                            int motion = motionAnimation.motion(position, getPosition(), characteristic, jump, climbing, walk);
+                            int motion = motionAnimation.motion(new BattleGround(), position, getPosition(), characteristic, jump, climbing, walk);
                             if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
                                 setPosition(position);
                             }
