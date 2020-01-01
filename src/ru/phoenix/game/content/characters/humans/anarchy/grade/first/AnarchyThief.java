@@ -1135,19 +1135,16 @@ public class AnarchyThief extends HumanDraw implements Character {
     }
 
     private void createPath(BattleGround battleGround, Cell[][] grid){
-        if(Default.isCreatePath()) {
-            if (remap) {
-                if (targetPoint != null && !pathCheck) {
-                    Default.setCreatePath(false);
-                    bypass(battleGround, grid);
-                }
-            } else {
-                if (targetPoint != null && !pathCheck) {
-                    Default.setCreatePath(false);
-                    path(battleGround, grid);
-                }
+        if (remap) {
+            if (targetPoint != null && !pathCheck) {
+                bypass(battleGround, grid);
+            }
+        } else {
+            if (targetPoint != null && !pathCheck) {
+                path(battleGround, grid);
             }
         }
+
 
         if(pathCheck){
             if(!getPathfindingAlgorithm().isAlive()){
@@ -1158,7 +1155,6 @@ public class AnarchyThief extends HumanDraw implements Character {
                 Vector3f temp = this.targetPoint.getModifiedPosition();
 
                 if(getWayPoints().size() == 0){
-                    Default.setCreatePath(true);
                     studyModeActive = false;
                     waiting = true;
                 }else{
@@ -1170,7 +1166,6 @@ public class AnarchyThief extends HumanDraw implements Character {
         }
 
         if (studyModeActive) {
-            Default.setCreatePath(true);
             // Инициируем стартовые данные для анимации движенния и механики передвижения
             getMotionAnimation().setup(getPosition(), getWayPoints());
             walkAnimation.setFrames(1);

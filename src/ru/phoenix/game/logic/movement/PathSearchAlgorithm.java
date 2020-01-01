@@ -19,6 +19,7 @@ public class PathSearchAlgorithm extends Thread {
     private Characteristic characteristic;
     private BattleGround battleGround;
     private Cell[][] grid;
+    private Cell[][] studyGrid;
     private List<Cell> wayPoints;
     private Cell start;
     private Cell finish;
@@ -152,8 +153,8 @@ public class PathSearchAlgorithm extends Thread {
 
     // ПОИСК A* - НАЧАЛО
     private void studyMode(){
-        prepareGrid();
-        Cell resultFinish = createPath(false,false);
+        prepareStudyGrid();
+        Cell resultFinish = createStudyPath();
         if(resultFinish != null) {
             wayPoints.clear();
             List<Cell> reverse = new ArrayList<>();
@@ -162,7 +163,8 @@ public class PathSearchAlgorithm extends Thread {
                 resultFinish = resultFinish.getParent();
             }
             for (int i = reverse.size() - 1; i >= 0; i--) {
-                wayPoints.add(reverse.get(i));
+                Cell cell = grid[(int)reverse.get(i).getPosition().getX()][(int)reverse.get(i).getPosition().getZ()];
+                wayPoints.add(cell);
             }
         }else{
             System.out.println("Путь не найден!");
@@ -201,6 +203,58 @@ public class PathSearchAlgorithm extends Thread {
             System.out.println("Путь не найден!");
             wayPoints.clear();
         }
+    }
+
+    private Cell createStudyPath(){
+        Cell resultFinish = null;
+        List<Cell> closedSet = new ArrayList<>();
+        List<Cell> openSet = new ArrayList<>();
+        start.setParent(null);
+        start.setStep(0);
+        start.setCost(getHeuristicPathLength(start, finish));
+        openSet.add(start);
+        while (!openSet.isEmpty()) {
+            Cell currentElement = minFullPathLength(openSet);
+            if (currentElement.getId() == finish.getId()) {
+                resultFinish = currentElement;
+                break;
+            }
+
+            openSet.remove(currentElement);
+            closedSet.add(currentElement);
+
+            for (Cell neighbour : getNeighbours(currentElement, finish, false, false)) {
+                if (checkClosedSet(neighbour, closedSet)) {
+                    continue;
+                }
+
+                Cell open = getOpenSetElement(neighbour, openSet);
+                if (open == null) {
+                    int result = 0;
+                    if(!neighbour.isBevel()) {
+                        float h = Math.abs(currentElement.getCurrentHeight() - neighbour.getCurrentHeight());
+                        if (h > 0) {
+                            if (Math.round(h) - h == 0.5f) {
+                                result = 1;
+                            } else {
+                                result = 3;
+                            }
+                        }
+                    }
+
+                    neighbour.setParent(currentElement);
+                    neighbour.setStep(currentElement.getStep() + neighbour.getTravelCost() + result);
+                    neighbour.setCost(getHeuristicPathLength(neighbour, finish));
+                    openSet.add(neighbour);
+                } else {
+                    if (open.getStep() > neighbour.getStep()) {
+                        open.setParent(currentElement);
+                        open.setStep(neighbour.getStep());
+                    }
+                }
+            }
+        }
+        return resultFinish;
     }
 
     private Cell createPath(boolean restriction, boolean isZones){
@@ -549,11 +603,21 @@ public class PathSearchAlgorithm extends Thread {
         Cell testStudy = null;
 
         if((0 <= parentPos.getX() && parentPos.getX() < grid.length) && (0 <= parentPos.getZ() && parentPos.getZ() < grid[0].length)){
-            testParent = grid[(int)parentPos.getX()][(int)parentPos.getZ()];
+            if(battleGround.isActive()) {
+                testParent = grid[(int) parentPos.getX()][(int) parentPos.getZ()];
+            }else{
+                if(studyGrid != null) {
+                    testParent = studyGrid[(int) parentPos.getX()][(int) parentPos.getZ()];
+                }
+            }
         }
 
         if((0 <= studyPos.getX() && studyPos.getX() < grid.length) && (0 <= studyPos.getZ() && studyPos.getZ() < grid[0].length)){
-            testStudy = grid[(int)studyPos.getX()][(int)studyPos.getZ()];
+            if(battleGround.isActive()) {
+                testStudy = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
+            }else{
+                testStudy = studyGrid[(int) studyPos.getX()][(int) studyPos.getZ()];
+            }
         }
 
         if(testParent != null && testStudy != null){
@@ -567,7 +631,7 @@ public class PathSearchAlgorithm extends Thread {
                         }
                     }else{
                         if(!testStudy.isOccupied()) { // НАДО ПОДУМАТЬ!!!!!!!
-                            cell = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                            cell = studyGrid[(int) studyPos.getX()][(int) studyPos.getZ()];
                         }
                     }
                 }
@@ -650,6 +714,19 @@ public class PathSearchAlgorithm extends Thread {
             }
         }
     }
+
+    private void prepareStudyGrid(){
+        studyGrid = new Cell[grid.length][grid[0].length];
+        for(int x=0; x<grid.length; x++){
+            for(int z=0; z<grid[0].length; z++){
+                grid[x][z].setGrayZona();
+                grid[x][z].setWayPoint(false);
+                grid[x][z].setVisible(false);
+                studyGrid[x][z] = new Cell(grid[x][z]);
+            }
+        }
+    }
+
     private void prepareGrid(){
         for(int x=0; x<grid.length; x++){
             for(int z=0; z<grid[0].length; z++){

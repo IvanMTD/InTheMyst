@@ -142,7 +142,6 @@ public abstract class StudyAreaControl {
                 }
                 prepareBattlefield = false;
                 Default.setWait(false);
-                Default.setCreatePath(true);
             }else{
                 int totalAllies = alliesInBattle.size();
                 Character removeAlly = null;
@@ -192,7 +191,6 @@ public abstract class StudyAreaControl {
                     battleGround.setActive(false);
                     prepareBattlefield = true;
                     Default.setWait(false);
-                    Default.setCreatePath(true);
                     for(Character ally : alliesInBattle){
                         ally.getCharacteristic().setInitiative(0);
                         ally.setBattle(false);

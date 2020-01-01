@@ -390,7 +390,6 @@ public class BattleScene implements Scene {
     private void generate(int seed){
         aimDrawConfig = 0;
         graundAim.setVisible(false);
-        Default.setCreatePath(true);
         studyArea = Generator.getRandomArea(seed);
 
         float id = 0.12f;

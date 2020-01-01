@@ -56,14 +56,9 @@ public class SimpleAI {
     private static void studyOpponents(){
         List<Character>closerEnemies = new ArrayList<>();
         for(Character enemy : enemies){
-            Vector3f mainPos = new Vector3f(self.getPosition()); mainPos.setY(0.0f);
-            Vector3f enemyPos = new Vector3f(enemy.getPosition()); enemyPos.setY(0.0f);
-            float distance = Math.abs(mainPos.sub(enemyPos).length());
-            if(distance <= self.getCharacteristic().getVision()){
-                if(enemy.isBattle() && !enemy.isDead()) {
-                    if(checkAround(enemy) != null) {
-                        closerEnemies.add(enemy);
-                    }
+            if(enemy.isBattle() && !enemy.isDead()) {
+                if(checkAround(enemy) != null) {
+                    closerEnemies.add(enemy);
                 }
             }
         }
