@@ -9,6 +9,7 @@ import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
 import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
@@ -391,7 +392,7 @@ public class BattleScene implements Scene {
         aimDrawConfig = 0;
         graundAim.setVisible(false);
         studyArea = Generator.getRandomArea(seed);
-
+        // ALLIES - ВРЕМЕННО!
         float id = 0.12f;
         Vector3f position = Generator.getRandomPos(studyArea.getGrid(),true);
         Vector3f lagerPoint = position;
@@ -406,36 +407,31 @@ public class BattleScene implements Scene {
             character.setDefaultCharacteristic();
             studyArea.getAllies().add(character);
         }
+        // ALLIES - ВРЕМЕННО!
 
-        id+=0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(),true);
-        lagerPoint = position;
-        character = new AnarchyThief(Default.getAnarchyThief(),position,lagerPoint,id,ENEMY);
-        character.setDefaultCharacteristic();
-        studyArea.getEnemies().add(character);
-
-        for(int i=0; i<5; i++){
-            id+=0.01f;
-            position = Generator.getRandomPos(studyArea.getGrid(),lagerPoint,5.0f,true);
-            character = new AnarchyThief(Default.getAnarchyThief(),position,lagerPoint,id,ENEMY);
-            character.setDefaultCharacteristic();
-            studyArea.getEnemies().add(character);
+        // ENEMIES - НАЧАЛО
+        int amount = Math.round(1.0f + (float)Math.random() * 5.0f);
+        int count = Math.round(3.0f + (float)Math.random() * 6.0f);
+        for(int i=0; i<amount; i++) {
+            lagerPoint = Generator.getRandomPos(studyArea.getGrid(),true);
+            for (int j = 0; j < count; j++) {
+                int coin = (int) Math.round(Math.random());
+                if (coin == 0) {
+                    id += 0.01f;
+                    position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+                    character = new AnarchyThief(Default.getAnarchyThief(), position, lagerPoint, id, ENEMY);
+                    character.setDefaultCharacteristic();
+                    studyArea.getEnemies().add(character);
+                } else {
+                    id += 0.01f;
+                    position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+                    character = new AnarchyBandit(Default.getAnarchyBandit(), position, lagerPoint, id, ENEMY);
+                    character.setDefaultCharacteristic();
+                    studyArea.getEnemies().add(character);
+                }
+            }
         }
-
-        id+=0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(),true);
-        lagerPoint = position;
-        character = new AnarchyThief(Default.getAnarchyThief(),position,lagerPoint,id,ENEMY);
-        character.setDefaultCharacteristic();
-        studyArea.getEnemies().add(character);
-
-        for(int i=0; i<5; i++){
-            id+=0.01f;
-            position = Generator.getRandomPos(studyArea.getGrid(),lagerPoint,5.0f,true);
-            character = new AnarchyThief(Default.getAnarchyThief(),position,lagerPoint,id,ENEMY);
-            character.setDefaultCharacteristic();
-            studyArea.getEnemies().add(character);
-        }
+        // ENEMIES - КОНЕЦ
 
         first = new ArrayList<>();
         second = new ArrayList<>();
