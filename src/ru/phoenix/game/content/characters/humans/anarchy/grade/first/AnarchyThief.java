@@ -756,7 +756,6 @@ public class AnarchyThief extends HumanDraw implements Character {
     private void autoBattleMode(BattleGround battleGround, Cell[][] grid, List<Character> allies, List<Character> enemies){
         if(Default.isWait()){
             if(action) {
-                Pixel.getPixel().setVector(new Vector3f());
                 switch (battleEvent) {
                     case PREPARED_AREA:
                         SimpleAI.dataLoading(grid,this,allies,enemies);

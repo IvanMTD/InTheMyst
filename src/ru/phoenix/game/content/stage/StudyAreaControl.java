@@ -99,8 +99,8 @@ public abstract class StudyAreaControl {
                 int maxX = Math.round(battleGround.getLocalPoint().getX() + battleGround.getRADIUS()); if(maxX > getMapX()) maxX = getMapX(); battleGround.setMaxW(maxX);
                 int minZ = Math.round(battleGround.getLocalPoint().getZ() - battleGround.getRADIUS()); if(minZ < 0) minZ = 0; battleGround.setMinH(minZ);
                 int maxZ = Math.round(battleGround.getLocalPoint().getZ() + battleGround.getRADIUS()); if(maxZ > getMapZ()) maxZ = getMapZ(); battleGround.setMaxH(maxZ);
-                for(int x=0; x<getMapX(); x++){
-                    for(int z=0; z<getMapZ(); z++){
+                for(int x=0; x<=getMapX(); x++){
+                    for(int z=0; z<=getMapZ(); z++){
                         if((minX <= x && x <= maxX) && (minZ <= z && z <= maxZ)){
                             if(x == minX || x == maxX || z == minZ || z == maxZ){
                                 grid[x][z].setGrayZona();
@@ -108,7 +108,19 @@ public abstract class StudyAreaControl {
                                 grid[x][z].setWayPoint(false);
                                 grid[x][z].setParent(null);
                                 if(x == 0 || z == 0 || x == getMapX() || z == getMapZ()){
-                                    grid[x][z].setBattleGraund(true);
+                                    if(x == 0 || x == getMapX()){
+                                        if(z == minZ || z == maxZ){
+                                            grid[x][z].setExitBattleGraund(true);
+                                        }else{
+                                            grid[x][z].setBattleGraund(true);
+                                        }
+                                    }else if(z == 0 || z == getMapZ()){
+                                        if(x == minX || x == maxX){
+                                            grid[x][z].setExitBattleGraund(true);
+                                        }else{
+                                            grid[x][z].setBattleGraund(true);
+                                        }
+                                    }
                                 }else {
                                     grid[x][z].setExitBattleGraund(true);
                                 }

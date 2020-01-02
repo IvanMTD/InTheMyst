@@ -616,7 +616,9 @@ public class PathSearchAlgorithm extends Thread {
             if(battleGround.isActive()) {
                 testStudy = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
             }else{
-                testStudy = studyGrid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                if(studyGrid != null) {
+                    testStudy = studyGrid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                }
             }
         }
 
@@ -626,8 +628,20 @@ public class PathSearchAlgorithm extends Thread {
                 // ПРОВЕРКА ДОСТУПНОСТИ
                 if(!testStudy.isBlocked()) {
                     if(battleGround.isActive()){
-                        if (!testStudy.isOccupied() && (testStudy.isBattleGraund() || testStudy.isExitBattleGraund())) {
-                            cell = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                        if(event == PREPARE_AREA){
+                            if (!testStudy.isOccupied() && (testStudy.isBattleGraund() || testStudy.isExitBattleGraund())) {
+                                cell = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                            }
+                        }else {
+                            if (testStudy.getId() == finish.getId()) {
+                                if (!testStudy.isOccupied() && (testStudy.isBattleGraund() || testStudy.isExitBattleGraund())) {
+                                    cell = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                                }
+                            } else {
+                                if (!testStudy.isOccupied() && (testStudy.isBattleGraund() || !testStudy.isExitBattleGraund())) {
+                                    cell = grid[(int) studyPos.getX()][(int) studyPos.getZ()];
+                                }
+                            }
                         }
                     }else{
                         if(!testStudy.isOccupied()) { // НАДО ПОДУМАТЬ!!!!!!!

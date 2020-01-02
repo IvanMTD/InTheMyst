@@ -31,11 +31,11 @@ public class Generator {
         Mesh mesh;
         Cell[][] grid = null;
 
-        setTotalMapWidth((int)(49.0f + (float)Math.random() * 149.0f));
-        setTotalMapHeight((int)(49.0f + (float)Math.random() * 149.0f));
+        /*setTotalMapWidth((int)(49.0f + (float)Math.random() * 149.0f));
+        setTotalMapHeight((int)(49.0f + (float)Math.random() * 149.0f));*/
 
-        /*setTotalMapWidth(49);
-        setTotalMapHeight(49);*/
+        setTotalMapWidth(49);
+        setTotalMapHeight(49);
 
         System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
         if(area == PLAIN_AREA){
