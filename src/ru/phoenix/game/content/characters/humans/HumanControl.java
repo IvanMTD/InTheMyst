@@ -362,9 +362,9 @@ public abstract class HumanControl {
         if(enemyPoint.isBlueZona()){
             multiplier = 1;
         }else if(enemyPoint.isGoldZona()){
-            multiplier = 3;
+            multiplier = 2;
         }else{
-            multiplier = 6;
+            multiplier = 4;
         }
 
         return (ih - ea) - (eh - ia) - Math.round(d * multiplier);

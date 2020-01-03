@@ -396,11 +396,12 @@ public class BattleScene implements Scene {
         float id = 0.12f;
         Vector3f position = Generator.getRandomPos(studyArea.getGrid(),true);
         Vector3f lagerPoint = position;
+        Vector3f cameraLook = new Vector3f(position);
         Character character = new Gehard(Default.getGehard(),position,lagerPoint,id,ALLY);
         character.setDefaultCharacteristic();
         studyArea.getAllies().add(character);
 
-        for(int i=0; i<2;i++) {
+        for(int i=0; i<(int)(1.0f + (float)Math.random() * 4.0f);i++) {
             id += 0.01f;
             position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
             character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
@@ -410,10 +411,11 @@ public class BattleScene implements Scene {
         // ALLIES - ВРЕМЕННО!
 
         // ENEMIES - НАЧАЛО
-        int amount = Math.round(1.0f + (float)Math.random() * 5.0f);
-        int count = Math.round(3.0f + (float)Math.random() * 6.0f);
+        int percent = studyArea.getMapX() + studyArea.getMapZ();
+        int amount = Math.round(1.0f + (float)Math.random()) * percent / 100;
         for(int i=0; i<amount; i++) {
             lagerPoint = Generator.getRandomPos(studyArea.getGrid(),true);
+            int count = Math.round(3.0f + (float)Math.random() * 3.0f);
             for (int j = 0; j < count; j++) {
                 int coin = (int) Math.round(Math.random());
                 if (coin == 0) {
@@ -453,6 +455,9 @@ public class BattleScene implements Scene {
                 }
             }
         }
+
+        Vector3f reverse = new Vector3f(Camera.getInstance().getFront()).mul(-1.0f);
+        Camera.getInstance().setPos(cameraLook.add(reverse.mul(Camera.getInstance().getHypotenuse())));
 
         // КОНЕЦ ГЕНЕРАЦИИ
     }

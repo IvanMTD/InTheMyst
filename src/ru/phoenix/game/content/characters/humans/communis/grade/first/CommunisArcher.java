@@ -327,6 +327,7 @@ public class CommunisArcher extends HumanDraw implements Character {
 
         if (getCharacteristic().getHealth() == 0) {
             setDead(true);
+            grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(true);
         }
 
         if(isDead()){
@@ -364,6 +365,19 @@ public class CommunisArcher extends HumanDraw implements Character {
                                 if (moveControl) {
                                     float x = (int) Math.floor(getPosition().getX());
                                     float z = (int) Math.floor(getPosition().getZ());
+                                    if(getPosition().getX() - 1 >= 0) {
+                                        grid[Math.round(getPosition().getX() - 1)][Math.round(getPosition().getZ())].setOccupied(false);
+                                    }
+                                    if(getPosition().getX() + 1 < grid.length) {
+                                        grid[Math.round(getPosition().getX() + 1)][Math.round(getPosition().getZ())].setOccupied(false);
+                                    }
+                                    grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ())].setOccupied(false);
+                                    if(getPosition().getZ() - 1 >= 0) {
+                                        grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() - 1)].setOccupied(false);
+                                    }
+                                    if(getPosition().getZ() + 1 < grid[0].length) {
+                                        grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() + 1)].setOccupied(false);
+                                    }
                                     Vector3f currentPos = new Vector3f(x, 0.0f, z);
                                     int index = -1;
                                     for (int i = 0; i < getWayPoints().size(); i++) {
@@ -421,6 +435,19 @@ public class CommunisArcher extends HumanDraw implements Character {
                                 if (moveControl) {
                                     float x = (int) Math.floor(getPosition().getX());
                                     float z = (int) Math.floor(getPosition().getZ());
+                                    if(getPosition().getX() - 1 >= 0) {
+                                        grid[Math.round(getPosition().getX() - 1)][Math.round(getPosition().getZ())].setOccupied(false);
+                                    }
+                                    if(getPosition().getX() + 1 < grid.length) {
+                                        grid[Math.round(getPosition().getX() + 1)][Math.round(getPosition().getZ())].setOccupied(false);
+                                    }
+                                    grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ())].setOccupied(false);
+                                    if(getPosition().getZ() - 1 >= 0) {
+                                        grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() - 1)].setOccupied(false);
+                                    }
+                                    if(getPosition().getZ() + 1 < grid[0].length) {
+                                        grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() + 1)].setOccupied(false);
+                                    }
                                     Vector3f currentPos = new Vector3f(x, 0.0f, z);
                                     int index = -1;
                                     for (int i = 0; i < getWayPoints().size(); i++) {
@@ -526,7 +553,7 @@ public class CommunisArcher extends HumanDraw implements Character {
             if(count > maxCount){
                 battleStanceAnimation.nextFrame();
                 count = 0;
-                maxCount = 40;
+                maxCount = 50;
             }
         }else {
             if (getBaseStanceAnimation().getCurrentFrame() == 2) {
@@ -817,43 +844,44 @@ public class CommunisArcher extends HumanDraw implements Character {
         isBaseAttack = false;
         boolean action = false;
         enemySavedCharacter = null;
+        Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
         if(GameController.getInstance().isLeftClick()) {
             Vector3f pixel = Pixel.getPixel();
             for (Character character : enemy) {
                 if (character.getId() == pixel.getX() && !character.isDead()) {
-                    if (getPosition().getX() - getCharacteristic().getVision() <= character.getPosition().getX() && character.getPosition().getX() <= getPosition().getX() + getCharacteristic().getVision()) {
-                        if (getPosition().getZ() - getCharacteristic().getVision() <= character.getPosition().getZ() && character.getPosition().getZ() <= getPosition().getZ() + getCharacteristic().getVision()) {
-                            // начало проверки на высоту
-                            Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
-                            float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length());
-                            float halfDistance = distance / 2.0f;
-                            Vector3f p0 = new Vector3f(getPosition());
-                            Vector3f p1 = new Vector3f(getPosition().add(direction.mul(halfDistance)));
-                            p1.setY(p1.getY() + 5.0f); // 5.0f это высота полета стрелы
-                            Vector3f p2 = new Vector3f(character.getPosition());
-                            timeShift = new ArrayList<>();
-                            for(float t=0.0f; t<1.0f; t+= 1.0f / (distance * 5.0f)){
-                                float x = (1-t) * p0.getX() + t * p2.getX();
-                                float y = (float)Math.pow((1-t),2) * p0.getY() + 2 * t * (1-t) * p1.getY() + (float)Math.pow(t,2) * p2.getY();
-                                float z = (1-t) * p0.getZ() + t * p2.getZ();
-                                Vector3f time = new Vector3f(x,y,z);
-                                Cell cell = grid[Math.round(x)][Math.round(z)];
-                                //System.out.println(cell.getCurrentHeight() + " | " + time.toString());
-                                if(!cell.isBlocked() && cell.getCurrentHeight() <= time.getY() + 1.0f) {
-                                    timeShift.add(time);
-                                }else{
-                                    timeShift.clear();
-                                    break;
-                                }
-                            }
-                            //System.out.println("main pos: " + getPosition().toString());
-                            //System.out.println("enemy pos: " + character.getPosition().toString());
-                            if(timeShift.size() != 0){
-                                enemySavedCharacter = character;
+                    Vector3f enemyPos = new Vector3f(character.getPosition()); enemyPos.setY(0.0f);
+                    if(Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()){
+                        // начало проверки на высоту
+                        Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
+                        float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length());
+                        float halfDistance = distance / 2.0f;
+                        Vector3f p0 = new Vector3f(getPosition());
+                        Vector3f p1 = new Vector3f(getPosition().add(direction.mul(halfDistance)));
+                        p1.setY(p1.getY() + 5.0f); // 5.0f это высота полета стрелы
+                        Vector3f p2 = new Vector3f(character.getPosition());
+                        timeShift = new ArrayList<>();
+                        for(float t=0.0f; t<1.0f; t+= 1.0f / (distance * 5.0f)){
+                            float x = (1-t) * p0.getX() + t * p2.getX();
+                            float y = (float)Math.pow((1-t),2) * p0.getY() + 2 * t * (1-t) * p1.getY() + (float)Math.pow(t,2) * p2.getY();
+                            float z = (1-t) * p0.getZ() + t * p2.getZ();
+                            Vector3f time = new Vector3f(x,y,z);
+                            Cell cell = grid[Math.round(x)][Math.round(z)];
+                            //System.out.println(cell.getCurrentHeight() + " | " + time.toString());
+                            if(!cell.isBlocked() && cell.getCurrentHeight() <= time.getY() + 1.0f) {
+                                timeShift.add(time);
+                            }else{
+                                timeShift.clear();
                                 break;
                             }
-                            // конец проверки
                         }
+                        //System.out.println("main pos: " + getPosition().toString());
+                        //System.out.println("enemy pos: " + character.getPosition().toString());
+                        if(timeShift.size() != 0){
+                            enemySavedCharacter = character;
+                            break;
+                        }
+                        // конец проверки
+
                     }
                 }
             }

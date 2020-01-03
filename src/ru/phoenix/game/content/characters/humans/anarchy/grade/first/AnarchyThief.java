@@ -40,6 +40,8 @@ public class AnarchyThief extends HumanDraw implements Character {
     private final TextureConfig walk = new TextureConfig("./data/content/texture/person/anarchists/thief/idle_thief_walk.png",12,1);
     private final TextureConfig jump = new TextureConfig("./data/content/texture/person/anarchists/thief/idle_thief_jump.png",7,1);
     private final TextureConfig goUpDown = new TextureConfig("./data/content/texture/person/anarchists/thief/idle_thief_climbing.png",4,1);
+    private final TextureConfig battleStancePrepare = new TextureConfig("./data/content/texture/person/anarchists/thief/idle_thief_bs_open.png",6,1);
+    private final TextureConfig battleStance = new TextureConfig("./data/content/texture/person/anarchists/thief/idle_thief_bs.png",14,1);
     private final TextureConfig baseAttack = new TextureConfig("./data/content/texture/person/anarchists/thief/idle_thief_base_attack.png",10,1);
     private final TextureConfig backstabAttack = new TextureConfig("./data/content/texture/person/anarchists/thief/idle_thief_backstab.png",10,1);
     private final TextureConfig damage = new TextureConfig("./data/content/texture/person/anarchists/thief/idle_thief_damage.png",6,1);
@@ -50,6 +52,8 @@ public class AnarchyThief extends HumanDraw implements Character {
     private ImageAnimation walkAnimation;
     private ImageAnimation jumpAnimation;
     private ImageAnimation goUpDownAnimation; // может быть стоит разделить?
+    private ImageAnimation battleStancePrepareAnimation;
+    private ImageAnimation battleStanceAnimation;
     private ImageAnimation baseAttackAnimation;
     private ImageAnimation backstabAttackAnimation;
     private ImageAnimation damageAnimation;
@@ -60,6 +64,8 @@ public class AnarchyThief extends HumanDraw implements Character {
     private Texture walkTexture;
     private Texture jumpTexture;
     private Texture goUpDownTexture;
+    private Texture battleStancePrepareTexture;
+    private Texture battleStanceTexture;
     private Texture baseAttackTexture;
     private Texture backstabTexture;
     private Texture damageTexture;
@@ -143,6 +149,14 @@ public class AnarchyThief extends HumanDraw implements Character {
         goUpDownTexture = new Texture2D();
         goUpDownTexture.setup(null,goUpDown.getPath(),GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER);
         goUpDownAnimation = initAnimation(goUpDownTexture,goUpDown,widthSize);
+        // подготовка боевой стойки
+        battleStancePrepareTexture = new Texture2D();
+        battleStancePrepareTexture.setup(null,battleStancePrepare.getPath(),GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER);
+        battleStancePrepareAnimation = initAnimation(battleStancePrepareTexture,battleStancePrepare,widthSize);
+        // боевая стойка
+        battleStanceTexture = new Texture2D();
+        battleStanceTexture.setup(null,battleStance.getPath(),GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER);
+        battleStanceAnimation = initAnimation(battleStanceTexture,battleStance,widthSize);
         // базовая атака
         baseAttackTexture = new Texture2D();
         baseAttackTexture.setup(null,baseAttack.getPath(),GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER);
@@ -303,6 +317,7 @@ public class AnarchyThief extends HumanDraw implements Character {
 
         if (getCharacteristic().getHealth() == 0) {
             setDead(true);
+            grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(true);
         }
 
         if(isDead()){
@@ -324,43 +339,73 @@ public class AnarchyThief extends HumanDraw implements Character {
             }
         }else {
             blink();
-            updateAnimation(baseStanceTextrue, baseStanceAnimation);
+            if (isBattle()) {
+                updateAnimation(battleStanceTexture, battleStanceAnimation);
+            } else {
+                updateAnimation(baseStanceTextrue, baseStanceAnimation);
+            }
 
             if (isSelected() && getRecognition() == ALLY && targetElement != null) targetPoint = targetElement;
 
             switch (getRecognition()) {
                 case ALLY:
                     if (isBattle()) {
-                        if (studyEvent == MOVEMENT_ANIMATION) {
-                            if (moveControl) {
-                                float x = (int) Math.floor(getPosition().getX());
-                                float z = (int) Math.floor(getPosition().getZ());
-                                Vector3f currentPos = new Vector3f(x, 0.0f, z);
-                                int index = -1;
-                                for (int i = 0; i < getWayPoints().size(); i++) {
-                                    if (getWayPoints().get(i).getPosition().equals(currentPos)) {
-                                        index = i + 1;
+                        if (preparingForBattle) {
+                            if (studyEvent == MOVEMENT_ANIMATION) {
+                                if (moveControl) {
+                                    float x = (int) Math.floor(getPosition().getX());
+                                    float z = (int) Math.floor(getPosition().getZ());
+                                    if(getPosition().getX() - 1 >= 0) {
+                                        grid[Math.round(getPosition().getX() - 1)][Math.round(getPosition().getZ())].setOccupied(false);
                                     }
-                                }
+                                    if(getPosition().getX() + 1 < grid.length) {
+                                        grid[Math.round(getPosition().getX() + 1)][Math.round(getPosition().getZ())].setOccupied(false);
+                                    }
+                                    grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ())].setOccupied(false);
+                                    if(getPosition().getZ() - 1 >= 0) {
+                                        grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() - 1)].setOccupied(false);
+                                    }
+                                    if(getPosition().getZ() + 1 < grid[0].length) {
+                                        grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() + 1)].setOccupied(false);
+                                    }
+                                    Vector3f currentPos = new Vector3f(x, 0.0f, z);
+                                    int index = -1;
+                                    for (int i = 0; i < getWayPoints().size(); i++) {
+                                        if (getWayPoints().get(i).getPosition().equals(currentPos)) {
+                                            index = i + 1;
+                                        }
+                                    }
 
-                                if (index != -1 && index < getWayPoints().size()) {
-                                    List<Cell> newWayPoints = new ArrayList<>();
-                                    for (int i = 0; i <= index; i++) {
-                                        newWayPoints.add(getWayPoints().get(i));
+                                    if (index != -1 && index < getWayPoints().size()) {
+                                        List<Cell> newWayPoints = new ArrayList<>();
+                                        for (int i = 0; i <= index; i++) {
+                                            newWayPoints.add(getWayPoints().get(i));
+                                        }
+                                        getMotionAnimation().setWayPoints(newWayPoints);
                                     }
-                                    getMotionAnimation().setWayPoints(newWayPoints);
+                                    moveControl = false;
+                                } else {
+                                    movementAnimation(battleGround);
                                 }
-                                moveControl = false;
                             } else {
-                                movementAnimation(battleGround);
+                                counter++;
+                                if (counter > 20) {
+                                    currentFrame++;
+                                    counter = 0;
+                                }
+                                if (currentFrame <= battleStancePrepare.getRow()) {
+                                    battleStancePrepareAnimation.setFrames(currentFrame);
+                                    updateAnimation(battleStancePrepareTexture, battleStancePrepareAnimation);
+                                } else {
+                                    grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(true);
+                                    currentFrame = 1;
+                                    moveControl = true;
+                                    preparingForBattle = false;
+                                    counter = 0;
+                                }
                             }
                         } else {
-                            if (!moveControl) {
-                                grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(true);
-                                moveControl = true;
-                            } else {
-                                battleMode(battleGround, grid, allies, enemies);
-                            }
+                            battleMode(battleGround, grid, allies, enemies);
                         }
                     } else {
                         if(battleEvent == MOVEMENT_ANIMATION){
@@ -369,48 +414,73 @@ public class AnarchyThief extends HumanDraw implements Character {
                             // Заплатка! Стамина расходуется в классе MotionAnimation
                             getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
                             getCharacteristic().updateIndicators();
-                            researchMode(battleGround, grid);
+                            researchMode(battleGround,grid);
                         }
                     }
                     break;
                 case ENEMY:
                     if (isBattle()) {
-                        if (studyEvent == MOVEMENT_ANIMATION) {
-                            if (moveControl) {
-                                float x = (int) Math.floor(getPosition().getX());
-                                float z = (int) Math.floor(getPosition().getZ());
-                                Vector3f currentPos = new Vector3f(x, 0.0f, z);
-                                int index = -1;
-                                for (int i = 0; i < getWayPoints().size(); i++) {
-                                    if (getWayPoints().get(i).getPosition().equals(currentPos)) {
-                                        index = i + 1;
+                        if (preparingForBattle) {
+                            if (studyEvent == MOVEMENT_ANIMATION) {
+                                if (moveControl) {
+                                    float x = (int) Math.floor(getPosition().getX());
+                                    float z = (int) Math.floor(getPosition().getZ());
+                                    if(getPosition().getX() - 1 >= 0) {
+                                        grid[Math.round(getPosition().getX() - 1)][Math.round(getPosition().getZ())].setOccupied(false);
                                     }
-                                }
+                                    if(getPosition().getX() + 1 < grid.length) {
+                                        grid[Math.round(getPosition().getX() + 1)][Math.round(getPosition().getZ())].setOccupied(false);
+                                    }
+                                    grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ())].setOccupied(false);
+                                    if(getPosition().getZ() - 1 >= 0) {
+                                        grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() - 1)].setOccupied(false);
+                                    }
+                                    if(getPosition().getZ() + 1 < grid[0].length) {
+                                        grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() + 1)].setOccupied(false);
+                                    }
+                                    Vector3f currentPos = new Vector3f(x, 0.0f, z);
+                                    int index = -1;
+                                    for (int i = 0; i < getWayPoints().size(); i++) {
+                                        if (getWayPoints().get(i).getPosition().equals(currentPos)) {
+                                            index = i + 1;
+                                        }
+                                    }
 
-                                if (index != -1 && index < getWayPoints().size()) {
-                                    List<Cell> newWayPoints = new ArrayList<>();
-                                    for (int i = 0; i <= index; i++) {
-                                        newWayPoints.add(getWayPoints().get(i));
+                                    if (index != -1 && index < getWayPoints().size()) {
+                                        List<Cell> newWayPoints = new ArrayList<>();
+                                        for (int i = 0; i <= index; i++) {
+                                            newWayPoints.add(getWayPoints().get(i));
+                                        }
+                                        getMotionAnimation().setWayPoints(newWayPoints);
                                     }
-                                    getMotionAnimation().setWayPoints(newWayPoints);
+                                    moveControl = false;
+                                } else {
+                                    movementAnimation(battleGround);
                                 }
-                                moveControl = false;
                             } else {
-                                movementAnimation(battleGround);
+                                counter++;
+                                if (counter > 20) {
+                                    currentFrame++;
+                                    counter = 0;
+                                }
+                                if (currentFrame <= battleStancePrepare.getRow()) {
+                                    battleStancePrepareAnimation.setFrames(currentFrame);
+                                    updateAnimation(battleStancePrepareTexture, battleStancePrepareAnimation);
+                                } else {
+                                    grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(true);
+                                    currentFrame = 1;
+                                    moveControl = true;
+                                    preparingForBattle = false;
+                                    counter = 0;
+                                }
                             }
                         } else {
-                            if (!moveControl) {
-                                grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(true);
-                                moveControl = true;
-                            } else {
-                                autoBattleMode(battleGround, grid, allies, enemies);
-                            }
+                            autoBattleMode(battleGround, grid, allies, enemies);
                         }
                     } else {
-                        // полностью востанавливаем стамину!
                         getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
                         getCharacteristic().updateIndicators();
-                        checkInvasion(enemies, battleGround, grid);
+                        checkInvasion(enemies,battleGround,grid);
                         if (waiting) {
                             timer++;
                             if (timer > waitTime) {
@@ -418,7 +488,6 @@ public class AnarchyThief extends HumanDraw implements Character {
                                 waiting = false;
                                 timer = 0;
                                 waitTime = (int) (250.0f + Math.random() * 250.0f);
-                                studyEvent = CREATE_PATH;
                             }
                         } else {
                             switch (studyEvent) {
@@ -469,14 +538,23 @@ public class AnarchyThief extends HumanDraw implements Character {
 
     // дополнительные методы - начало
     private void blink(){
-        if(getBaseStanceAnimation().getCurrentFrame() == 2){
-            count += maxCount / 50.0f;
-        }
-        count++;
-        if(count > maxCount){
-            getBaseStanceAnimation().nextFrame();
-            count = 0;
-            maxCount = (int)(50.0f + Math.random() * 150.0f);
+        if(isBattle()){
+            count++;
+            if(count > maxCount){
+                battleStanceAnimation.nextFrame();
+                count = 0;
+                maxCount = 20;
+            }
+        }else {
+            if (getBaseStanceAnimation().getCurrentFrame() == 2) {
+                count += maxCount / 50.0f;
+            }
+            count++;
+            if (count > maxCount) {
+                baseStanceAnimation.nextFrame();
+                count = 0;
+                maxCount = (int) (50.0f + Math.random() * 150.0f);
+            }
         }
     }
 

@@ -14,7 +14,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {
     //constant
-    private static final float MAX_DIST = 40.0f;
+    private static final float MAX_DIST = 30.0f;
     private static final float MIN_DIST = 10.0f;
     private static final float SCROLL_SENS = 1.1f;
 
@@ -97,7 +97,7 @@ public class Camera {
         ortho = new Projection();
 
         direction = new Vector3f();
-        hypotenuse = 10.0f;
+        hypotenuse = 30.0f;
         float cathetus = (float) Math.sin(Math.toRadians(Math.abs(pitch))) * hypotenuse;
 
 

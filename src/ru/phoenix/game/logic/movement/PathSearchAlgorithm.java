@@ -715,7 +715,7 @@ public class PathSearchAlgorithm extends Thread {
 
     // МЕТОДЫ ПРЕСЕТЫ - НАЧАЛО
     private void showRadius(){
-        int radius = characteristic.getVision() + 1;
+        int radius = characteristic.getVision();
         Vector3f position = new Vector3f(start.getModifiedPosition()); position.setY(0.0f);
         for(int x=0; x<grid.length; x++){
             for(int z=0; z<grid[0].length; z++){
