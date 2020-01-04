@@ -73,7 +73,7 @@ public abstract class HumanDraw extends HumanControl {
             shader.setUniform("image", 1);
             additionalAnimation.draw();
         }
-        if(!shadow && isTarget()) {
+        if(!shadow && (isTarget() || isShowIndicators())) {
             getSelfIndicators().draw(shader);
         }
     }

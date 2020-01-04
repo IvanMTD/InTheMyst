@@ -401,7 +401,13 @@ public class BattleScene implements Scene {
         character.setDefaultCharacteristic();
         studyArea.getAllies().add(character);
 
-        for(int i=0; i<(int)(1.0f + (float)Math.random() * 4.0f);i++) {
+        id += 0.01f;
+        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+        character = new AnarchyBandit(Default.getAnarchyBandit(), position, lagerPoint, id, ALLY);
+        character.setDefaultCharacteristic();
+        studyArea.getAllies().add(character);
+
+        for(int i=0; i<(int)(1.0f + (float)Math.random() * 3.0f);i++) {
             id += 0.01f;
             position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
             character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);

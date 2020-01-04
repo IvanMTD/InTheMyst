@@ -237,7 +237,9 @@ public class PathSearchAlgorithm extends Thread {
                             if (Math.round(h) - h == 0.5f) {
                                 result = 1;
                             } else {
-                                result = 3;
+                                if(currentElement.getCurrentHeight() < neighbour.getCurrentHeight()) {
+                                    result = 3;
+                                }
                             }
                         }
                     }
@@ -290,7 +292,9 @@ public class PathSearchAlgorithm extends Thread {
                             if (Math.round(h) - h == 0.5f) {
                                 result = 1;
                             } else {
-                                result = 3;
+                                if(currentElement.getCurrentHeight() < neighbour.getCurrentHeight()) {
+                                    result = 3;
+                                }
                             }
                         }
                     }
@@ -313,6 +317,8 @@ public class PathSearchAlgorithm extends Thread {
 
     // ПОИСК, КОНТРОЛЬ И ПРОВЕРКА КЛЕТОК - НАЧАЛО
     private Cell tryAddGraph(Cell element, Vector3f direction, boolean isBlueZona, boolean restriction){
+        float low = characteristic.getJump();
+        float hei = 0.5f;
         Cell finalResult = null;
         int skipInfo = 1 + characteristic.getJump() / 2;
         if(skipInfo > 1){
@@ -359,7 +365,7 @@ public class PathSearchAlgorithm extends Thread {
                             break;
                         } else {
                             if(restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                if (element.getCurrentHeight() - low <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                     finalResult = studyGrids.get(0);
                                 }
                             }else{
@@ -373,7 +379,7 @@ public class PathSearchAlgorithm extends Thread {
                 if(finalResult == null){
                     if(isBlueZona){
                         if(restriction){
-                            if (element.getCurrentHeight() - 0.5f <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            if (element.getCurrentHeight() - low <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                 finalResult = studyGrids.get(0);
                             }
                         }else{
@@ -381,7 +387,7 @@ public class PathSearchAlgorithm extends Thread {
                         }
                     }else{
                         if(restriction){
-                            if (element.getCurrentHeight() - 0.5f <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            if (element.getCurrentHeight() - low <= studyGrids.get(0).getCurrentHeight() && studyGrids.get(0).getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                 finalResult = studyGrids.get(0);
                             }
                         }else{
@@ -395,7 +401,7 @@ public class PathSearchAlgorithm extends Thread {
                     if (isBlueZona) {
                         if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
                             if (restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                if (element.getCurrentHeight() - low <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                     finalResult = studyGraph;
                                 }
                             } else {
@@ -405,7 +411,7 @@ public class PathSearchAlgorithm extends Thread {
                     } else {
                         if(simpleAI){
                             if (restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                if (element.getCurrentHeight() - low <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                     finalResult = studyGraph;
                                 }
                             } else {
@@ -414,7 +420,7 @@ public class PathSearchAlgorithm extends Thread {
                         }else {
                             if (studyGraph.isVisible()) {
                                 if (restriction) {
-                                    if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                    if (element.getCurrentHeight() - low <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                         finalResult = studyGraph;
                                     }
                                 } else {
@@ -431,7 +437,7 @@ public class PathSearchAlgorithm extends Thread {
                 if (isBlueZona) {
                     if (studyGraph.isVisible() && studyGraph.isBlueZona()) {
                         if (restriction) {
-                            if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            if (element.getCurrentHeight() - low <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                 finalResult = studyGraph;
                             }
                         } else {
@@ -441,7 +447,7 @@ public class PathSearchAlgorithm extends Thread {
                 } else {
                     if(simpleAI){
                         if (restriction) {
-                            if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                            if (element.getCurrentHeight() - low <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                 finalResult = studyGraph;
                             }
                         } else {
@@ -450,7 +456,7 @@ public class PathSearchAlgorithm extends Thread {
                     }else {
                         if (studyGraph.isVisible()) {
                             if (restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                if (element.getCurrentHeight() - low <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                     finalResult = studyGraph;
                                 }
                             } else {
@@ -473,6 +479,8 @@ public class PathSearchAlgorithm extends Thread {
 
     private Cell tryAddGraph(Cell element, Vector3f direction, boolean restriction){
         Cell finalResult = null;
+        float low = characteristic.getJump();
+        float hei = 0.5f;
         int skipInfo = 1 + characteristic.getJump() / 2;
         if(skipInfo > 1){
             List<Cell> studyGraphs = new ArrayList<>();
@@ -502,7 +510,7 @@ public class PathSearchAlgorithm extends Thread {
                             break;
                         } else {
                             if(restriction) {
-                                if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                                if (element.getCurrentHeight() - low <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + hei) {
                                     finalResult = studyGraphs.get(0);
                                 }
                             }else{
@@ -515,7 +523,7 @@ public class PathSearchAlgorithm extends Thread {
 
                 if(finalResult == null){
                     if(restriction){
-                        if (element.getCurrentHeight() - 0.5f <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                        if (element.getCurrentHeight() - low <= studyGraphs.get(0).getCurrentHeight() && studyGraphs.get(0).getCurrentHeight() <= element.getCurrentHeight() + hei) {
                             finalResult = studyGraphs.get(0);
                         }
                     }else{
@@ -525,7 +533,7 @@ public class PathSearchAlgorithm extends Thread {
             }else{
                 Cell studyGraph = findAndCheckCell(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
                 if(restriction) {
-                    if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                    if (element.getCurrentHeight() - low <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + hei) {
                         finalResult = studyGraph;
                     }
                 }else{
@@ -535,7 +543,7 @@ public class PathSearchAlgorithm extends Thread {
         }else {
             Cell studyGraph = findAndCheckCell(element.getModifiedPosition(), element.getModifiedPosition().add(direction));
             if(restriction) {
-                if (element.getCurrentHeight() - 0.5f <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + 0.5f) {
+                if (element.getCurrentHeight() - low <= studyGraph.getCurrentHeight() && studyGraph.getCurrentHeight() <= element.getCurrentHeight() + hei) {
                     finalResult = studyGraph;
                 }
             }else{

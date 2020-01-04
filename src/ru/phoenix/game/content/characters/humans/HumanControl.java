@@ -31,6 +31,7 @@ public abstract class HumanControl {
     private float tempZ;
     // индификаторы персонажа
     private SelfIndicators selfIndicators;
+    private boolean showIndicators;
     private float id;
     private int group;
     private int recognition;
@@ -58,6 +59,7 @@ public abstract class HumanControl {
         tempZ = 0.0f;
         // индификаторы персонажа
         selfIndicators = new SelfIndicators(1.2f,new Vector3f(0.0f,1.7f,0.0f));
+        setShowIndicators(false);
         setId(0.0f);
         setGroup(GROUP_A);
         setRecognition(NEUTRAL);
@@ -85,6 +87,7 @@ public abstract class HumanControl {
         tempZ = 0.0f;
         // индификаторы персонажа
         selfIndicators = new SelfIndicators(1.2f,new Vector3f(0.0f,1.7f,0.0f));
+        setShowIndicators(false);
         setId(character.getId());
         setGroup(character.getGroup());
         setRecognition(character.getRecognition());
@@ -262,6 +265,14 @@ public abstract class HumanControl {
         this.selfIndicators = selfIndicators;
     }
 
+    public boolean isShowIndicators() {
+        return showIndicators;
+    }
+
+    public void setShowIndicators(boolean showIndicators) {
+        this.showIndicators = showIndicators;
+    }
+
     public float getId() {
         return id;
     }
@@ -362,9 +373,9 @@ public abstract class HumanControl {
         if(enemyPoint.isBlueZona()){
             multiplier = 1;
         }else if(enemyPoint.isGoldZona()){
-            multiplier = 2;
+            multiplier = 3;
         }else{
-            multiplier = 4;
+            multiplier = 5;
         }
 
         return (ih - ea) - (eh - ia) - Math.round(d * multiplier);

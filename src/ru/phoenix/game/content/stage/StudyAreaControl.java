@@ -95,10 +95,10 @@ public abstract class StudyAreaControl {
 
         if(battleGround.isActive()){
             if(prepareBattlefield){
-                int minX = Math.round(battleGround.getLocalPoint().getX() - battleGround.getRADIUS()); if(minX < 0) minX = 0; battleGround.setMinW(minX);
-                int maxX = Math.round(battleGround.getLocalPoint().getX() + battleGround.getRADIUS()); if(maxX > getMapX()) maxX = getMapX(); battleGround.setMaxW(maxX);
-                int minZ = Math.round(battleGround.getLocalPoint().getZ() - battleGround.getRADIUS()); if(minZ < 0) minZ = 0; battleGround.setMinH(minZ);
-                int maxZ = Math.round(battleGround.getLocalPoint().getZ() + battleGround.getRADIUS()); if(maxZ > getMapZ()) maxZ = getMapZ(); battleGround.setMaxH(maxZ);
+                int minX = Math.round(battleGround.getLocalPoint().getX() - battleGround.getRadius()); if(minX < 0) minX = 0; battleGround.setMinW(minX);
+                int maxX = Math.round(battleGround.getLocalPoint().getX() + battleGround.getRadius()); if(maxX > getMapX()) maxX = getMapX(); battleGround.setMaxW(maxX);
+                int minZ = Math.round(battleGround.getLocalPoint().getZ() - battleGround.getRadius()); if(minZ < 0) minZ = 0; battleGround.setMinH(minZ);
+                int maxZ = Math.round(battleGround.getLocalPoint().getZ() + battleGround.getRadius()); if(maxZ > getMapZ()) maxZ = getMapZ(); battleGround.setMaxH(maxZ);
                 for(int x=0; x<=getMapX(); x++){
                     for(int z=0; z<=getMapZ(); z++){
                         if((minX <= x && x <= maxX) && (minZ <= z && z <= maxZ)){
@@ -164,7 +164,7 @@ public abstract class StudyAreaControl {
                         totalAllies--;
                     }else{
                         Cell cell = grid[Math.round(ally.getPosition().getX())][Math.round(ally.getPosition().getZ())];
-                        if(cell.getModifiedPosition().equals(ally.getPosition()) && cell.isExitBattleGraund()){
+                        if(cell.getModifiedPosition().equals(ally.getPosition()) && cell.isExitBattleGraund() && !ally.isJump()){
                             removeAlly = ally;
                         }
                     }
@@ -173,6 +173,7 @@ public abstract class StudyAreaControl {
                 if(removeAlly != null){
                     removeAlly.setBattle(false);
                     removeAlly.resetSettings();
+                    removeAlly.setShowIndicators(false);
                     alliesInBattle.remove(removeAlly);
                 }
 
@@ -185,7 +186,7 @@ public abstract class StudyAreaControl {
                         totalEnemies--;
                     }else{
                         Cell cell = grid[Math.round(enemy.getPosition().getX())][Math.round(enemy.getPosition().getZ())];
-                        if(cell.getModifiedPosition().equals(enemy.getPosition()) && cell.isExitBattleGraund()){
+                        if(cell.getModifiedPosition().equals(enemy.getPosition()) && cell.isExitBattleGraund() && !enemy.isJump()){
                             removeEnemy = enemy;
                         }
                     }
@@ -194,6 +195,7 @@ public abstract class StudyAreaControl {
                 if(removeEnemy != null){
                     removeEnemy.setBattle(false);
                     removeEnemy.resetSettings();
+                    removeEnemy.setShowIndicators(false);
                     enemiesInBattle.remove(removeEnemy);
                     enemies.remove(removeEnemy);
                     Default.setWait(false);
@@ -206,11 +208,13 @@ public abstract class StudyAreaControl {
                     for(Character ally : alliesInBattle){
                         ally.getCharacteristic().setInitiative(0);
                         ally.setBattle(false);
+                        ally.setShowIndicators(false);
                         ally.resetSettings();
                     }
                     for(Character enemy : enemiesInBattle){
                         enemy.getCharacteristic().setInitiative(0);
                         enemy.setBattle(false);
+                        enemy.setShowIndicators(false);
                         enemy.resetSettings();
                     }
                     for(int x=0; x<getMapX(); x++){
@@ -289,7 +293,7 @@ public abstract class StudyAreaControl {
         shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
         // доп данные
         shader.setUniform("localPoint",battleGround.getLocalPoint());
-        shader.setUniform("radius",battleGround.getRADIUS());
+        shader.setUniform("radius",battleGround.getRadius());
         shader.setUniform("shininess",64.0f);
         shader.setUniform("group",GROUP_A);
         shader.setUniform("id",0.0f);
@@ -304,7 +308,7 @@ public abstract class StudyAreaControl {
         for (Block block : blocks) {
             shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
             shader.setUniform("localPoint",battleGround.getLocalPoint());
-            shader.setUniform("radius",battleGround.getRADIUS());
+            shader.setUniform("radius",battleGround.getRadius());
             block.draw(shader);
         }
         glDisable(GL_CULL_FACE);
@@ -314,7 +318,7 @@ public abstract class StudyAreaControl {
         for(Object object : sprites){
             shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
             shader.setUniform("localPoint",battleGround.getLocalPoint());
-            shader.setUniform("radius",battleGround.getRADIUS());
+            shader.setUniform("radius",battleGround.getRadius());
             object.draw(shader,false);
         }
     }
@@ -337,7 +341,7 @@ public abstract class StudyAreaControl {
         if(waterReservoir != null) {
             shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
             shader.setUniform("localPoint",battleGround.getLocalPoint());
-            shader.setUniform("radius",battleGround.getRADIUS());
+            shader.setUniform("radius",battleGround.getRadius());
             waterReservoir.draw(shader);
         }
     }
@@ -354,14 +358,14 @@ public abstract class StudyAreaControl {
         for(Character ally : allies){
             shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
             shader.setUniform("localPoint",battleGround.getLocalPoint());
-            shader.setUniform("radius",battleGround.getRADIUS());
+            shader.setUniform("radius",battleGround.getRadius());
             ally.draw(shader,shadow);
         }
 
         for(Character enemy : enemies){
             shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
             shader.setUniform("localPoint",battleGround.getLocalPoint());
-            shader.setUniform("radius",battleGround.getRADIUS());
+            shader.setUniform("radius",battleGround.getRadius());
             enemy.draw(shader,shadow);
         }
     }

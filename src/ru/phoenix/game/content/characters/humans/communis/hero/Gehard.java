@@ -563,8 +563,10 @@ public class Gehard extends HumanDraw implements Character {
 
     // РАСЧЕТЫ И АНИМАЦИЯ - НАЧАЛО
     private void battleMode(BattleGround battleGround, Cell[][] grid, List<Character> allies, List<Character> enemies){
+        setShowIndicators(false);
         if(Default.isWait()){
             if(action) {
+                setShowIndicators(true);
                 switch (battleEvent) {
                     case PREPARED_AREA:
                         runPathfindingAlgorithm();
@@ -792,9 +794,10 @@ public class Gehard extends HumanDraw implements Character {
     }
 
     private void autoBattleMode(BattleGround battleGround, Cell[][] grid, List<Character> allies, List<Character> enemies){
+        setShowIndicators(false);
         if(Default.isWait()){
             if(action) {
-                Pixel.getPixel().setVector(new Vector3f());
+                setShowIndicators(true);
                 switch (battleEvent) {
                     case PREPARED_AREA:
                         SimpleAI.dataLoading(grid,this,allies,enemies);
@@ -1277,24 +1280,35 @@ public class Gehard extends HumanDraw implements Character {
     private void checkInvasion(List<Character> enemies, BattleGround battleGrounds, Cell[][] grid){
         Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
         for (Character character : enemies) {
-            Vector3f enemyPos = new Vector3f(character.getPosition());
-            enemyPos.setY(0.0f);
-            if (Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()) { // Если в зоне видимости!
-                Vector3f lagerPos = new Vector3f(getLagerPoint()); lagerPos.setY(0.0f);
-                if(mainPos.sub(lagerPos).length() <= getCharacteristic().getVision()){ // если персонаж в зоне видимости лагеря
-                    battleGrounds.setActive(true);
-                    battleGrounds.setLocalPoint(getLagerPoint());
-                }else{ // если персонаж вне зоне видимости своего лагеря
-                    Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
-                    float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length() / 2.0f);
-                    Vector3f lagerPoint = new Vector3f(getPosition().add(direction.mul(distance)));
-                    int x = Math.round(lagerPoint.getX());
-                    int z = Math.round(lagerPoint.getZ());
-                    lagerPoint = grid[x][z].getModifiedPosition();
-                    battleGrounds.setActive(true);
-                    battleGrounds.setLocalPoint(lagerPoint);
+            if(!character.isDead()) {
+                Vector3f enemyPos = new Vector3f(character.getPosition());
+                enemyPos.setY(0.0f);
+                if (Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()) { // Если в зоне видимости!
+                    Vector3f lagerPos = new Vector3f(getLagerPoint());
+                    lagerPos.setY(0.0f);
+                    if (mainPos.sub(lagerPos).length() <= getCharacteristic().getVision()) { // если персонаж в зоне видимости лагеря
+                        Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
+                        float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length() / 2.0f);
+                        Vector3f lagerPoint = new Vector3f(getPosition().add(direction.mul(distance)));
+                        int x = Math.round(lagerPoint.getX());
+                        int z = Math.round(lagerPoint.getZ());
+                        lagerPoint = grid[x][z].getModifiedPosition();
+                        battleGrounds.setActive(true);
+                        battleGrounds.setLocalPoint(lagerPoint);
+                        battleGrounds.setRadius(15);
+                    } else { // если персонаж вне зоне видимости своего лагеря
+                        Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
+                        float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length() / 2.0f);
+                        Vector3f lagerPoint = new Vector3f(getPosition().add(direction.mul(distance)));
+                        int x = Math.round(lagerPoint.getX());
+                        int z = Math.round(lagerPoint.getZ());
+                        lagerPoint = grid[x][z].getModifiedPosition();
+                        battleGrounds.setActive(true);
+                        battleGrounds.setLocalPoint(lagerPoint);
+                        battleGrounds.setRadius(10);
+                    }
+                    break;
                 }
-                break;
             }
         }
     }

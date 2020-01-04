@@ -3,8 +3,8 @@ package ru.phoenix.game.logic.battle;
 import ru.phoenix.core.math.Vector3f;
 
 public class BattleGround {
-    private final int RADIUS = 20;
     private Vector3f localPoint;
+    private int radius;
     private boolean active;
 
     private float minW;
@@ -65,7 +65,11 @@ public class BattleGround {
         this.maxH = maxH;
     }
 
-    public int getRADIUS() {
-        return RADIUS;
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }

@@ -82,6 +82,8 @@ public interface Character {
     // индификаторы персонажа
     SelfIndicators getSelfIndicators();
     void setSelfIndicators(SelfIndicators selfIndicators);
+    boolean isShowIndicators();
+    void setShowIndicators(boolean showIndicators);
     float getId();
     void setId(float id);
     int getGroup();
