@@ -2,12 +2,15 @@ package ru.phoenix.game.logic.movement;
 
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.property.Characteristic;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.phoenix.core.config.Constants.*;
 
 public class MotionAnimation {
     private float goal;
@@ -58,11 +61,13 @@ public class MotionAnimation {
         this.wayPoints = new ArrayList<>(wayPoints);
     }
 
-    public int motion(BattleGround battleGround, Vector3f position, Vector3f currentPos, Characteristic characteristic, ImageAnimation jumpAnim, ImageAnimation climbingAnim, ImageAnimation walkAnim){
+    public int motion(Character character, BattleGround battleGround, Vector3f position, Vector3f currentPos, Characteristic characteristic, ImageAnimation jumpAnim, ImageAnimation climbingAnim, ImageAnimation walkAnim){
         boolean action = true;
         int motion = 0;
         boolean isJump = false;
         boolean isClimbing = false;
+
+        turnControl(character);
 
         if(!battleGround.isActive()) {
             if (index < wayPoints.size()) {
@@ -142,6 +147,23 @@ public class MotionAnimation {
         }
 
         return motion;
+    }
+
+    private void turnControl(Character character){
+        if(index < wayPoints.size()){
+            Vector3f nextPosition = new Vector3f(wayPoints.get(index).getPosition()); nextPosition.setY(0.0f);
+            Vector3f currentPos = new Vector3f(character.getPosition()); currentPos.setY(0.0f);
+            Vector3f direction = new Vector3f(nextPosition.sub(currentPos)).normalize();
+            if(direction.getZ() == 1.0f){ // NORTH
+                character.setLook(NORTH);
+            }else if(direction.getX() == 1.0f){ // WEST
+                character.setLook(WEST);
+            }else if(direction.getZ() == -1.0f){ // SOUTH
+                character.setLook(SOUTH);
+            }else if(direction.getX() == -1.0f){ // EAST
+                character.setLook(EAST);
+            }
+        }
     }
 
     private boolean move(Vector3f position, Characteristic characteristic){

@@ -42,6 +42,12 @@ public class Constants {
     public static final int ENEMY               = 0x13101;
     public static final int NEUTRAL             = 0x13102;
 
+    // direction
+    public static final int NORTH               = 0x13200;
+    public static final int WEST                = 0x13201;
+    public static final int SOUTH               = 0x13202;
+    public static final int EAST                = 0x13203;
+
     // person id
     // communists
     public static final int ID_COMMUNIST_GEHARD  = 0x12101;

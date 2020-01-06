@@ -73,11 +73,12 @@ public interface Character {
     // контрль положения персонажа
     Vector3f getPosition();
     void setPosition(Vector3f position);
+    int getLook();
+    void setLook(int look);
     Vector3f getLagerPoint();
     void setLagerPoint(Vector3f lagerPoint);
     boolean isTurn();
     void setTurn(boolean turn);
-    void updateTemplate();
     Vector3f getPositionTemplate();
     // индификаторы персонажа
     SelfIndicators getSelfIndicators();

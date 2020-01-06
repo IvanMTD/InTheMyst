@@ -1,6 +1,8 @@
 package ru.phoenix.game.content.characters.humans;
 
 import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.kernel.Window;
+import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.logic.movement.PathSearchAlgorithm;
@@ -13,8 +15,7 @@ import ru.phoenix.game.logic.movement.PathfindingAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.phoenix.core.config.Constants.GROUP_A;
-import static ru.phoenix.core.config.Constants.NEUTRAL;
+import static ru.phoenix.core.config.Constants.*;
 
 public abstract class HumanControl {
     // характеристики
@@ -25,6 +26,7 @@ public abstract class HumanControl {
     // управление положением персонажа
     private PathSearchAlgorithm pathSearchAlgorithm;
     private Vector3f position;
+    private int look;
     private Vector3f lagerPoint;
     private boolean turn;
     private float tempX;
@@ -53,6 +55,7 @@ public abstract class HumanControl {
         wayPoints = new ArrayList<>();
         // управление положением персонажа
         setPosition(new Vector3f());
+        setLook(EAST);
         setLagerPoint(new Vector3f());
         setTurn(false);
         tempX = 0.0f;
@@ -81,6 +84,7 @@ public abstract class HumanControl {
         wayPoints = new ArrayList<>();
         // управление положением персонажа
         setPosition(character.getPosition());
+        setLook(character.getLook());
         setLagerPoint(character.getLagerPoint());
         setTurn(character.isTurn());
         tempX = 0.0f;
@@ -103,92 +107,43 @@ public abstract class HumanControl {
     // конструкторы класса - конец
 
     // методы контроля - начало
-    private void checkTurn(){
-        float yaw = Camera.getInstance().getYaw();
-        if(yaw == 46.0f || yaw == 226.0f) {
-            if (getPosition().getX() > tempX){
-                setTurn(true);
-            }else if (getPosition().getZ() < tempZ){
-                setTurn(true);
-            }else if(getPosition().getX() < tempX){
-                setTurn(false);
-            }else if (getPosition().getZ() > tempZ){
-                setTurn(false);
-            }
-            if(isJump()){
-                for (int i = 0; i < wayPoints.size(); i++) {
-                    if (wayPoints.get(i).getModifiedPosition().equals(getPosition())) {
-                        Vector3f nextPoint;
-                        if (i + 1 < wayPoints.size()) {
-                            nextPoint = wayPoints.get(i + 1).getModifiedPosition();
-                            if (nextPoint.getX() > getPosition().getX()) {
-                                setTurn(true);
-                            } else if (nextPoint.getZ() < getPosition().getZ()) {
-                                setTurn(true);
-                            } else if (nextPoint.getX() < getPosition().getX()) {
-                                setTurn(false);
-                            } else if (nextPoint.getZ() > getPosition().getZ()) {
-                                setTurn(false);
-                            }
-                        }
-                    }
-                }
-            }
+    void setTurn(){
+        Vector3f lookPoint = new Vector3f();
+        switch (getLook()){
+            case NORTH:
+                lookPoint = new Vector3f(getPosition()).add(new Vector3f(0.0f,0.0f,1.0f));
+                break;
+            case WEST:
+                lookPoint = new Vector3f(getPosition()).add(new Vector3f(1.0f,0.0f,0.0f));
+                break;
+            case SOUTH:
+                lookPoint = new Vector3f(getPosition()).add(new Vector3f(0.0f,0.0f,-1.0f));
+                break;
+            case EAST:
+                lookPoint = new Vector3f(getPosition()).add(new Vector3f(-1.0f,0.0f,0.0f));
+                break;
+            default:
+                System.out.println("Соотношение не найденно, поворот отменен!");
+                break;
+        }
+
+        float pos = getXOffsetOnScreen(getPosition());
+        float look = getXOffsetOnScreen(lookPoint);
+        if(pos < look){
+            setTurn(false);
         }else{
-            if (getPosition().getX() < tempX){
-                setTurn(true);
-            }else if(getPosition().getZ() < tempZ){
-                setTurn(true);
-            }else if(getPosition().getX() > tempX){
-                setTurn(false);
-            }else if (getPosition().getZ() > tempZ){
-                setTurn(false);
-            }
-            if(isJump()){
-                for(int i=0; i<wayPoints.size(); i++){
-                    if(wayPoints.get(i).getModifiedPosition().equals(getPosition())){
-                        Vector3f nextPoint;
-                        if(i + 1 < wayPoints.size()) {
-                            nextPoint = wayPoints.get(i + 1).getModifiedPosition();
-                            if (nextPoint.getX() < getPosition().getX()){
-                                setTurn(true);
-                            }else if(nextPoint.getZ() < getPosition().getZ()){
-                                setTurn(true);
-                            }else if(nextPoint.getX() > getPosition().getX()){
-                                setTurn(false);
-                            }else if (nextPoint.getZ() > getPosition().getZ()){
-                                setTurn(false);
-                            }
-                        }
-                    }
-                }
-            }
+            setTurn(true);
         }
     }
 
-    protected void setTurn(){
-        float yaw = Camera.getInstance().getYaw();
-        if(yaw == 46.0f || yaw == 226.0f) {
-            if (wayPoints.get(0).getModifiedPosition().getX() > getPosition().getX()) {
-                setTurn(true);
-            } else if (wayPoints.get(0).getModifiedPosition().getZ() < getPosition().getZ()) {
-                setTurn(true);
-            } else if (wayPoints.get(0).getModifiedPosition().getX() < getPosition().getX()) {
-                setTurn(false);
-            } else if (wayPoints.get(0).getModifiedPosition().getZ() > getPosition().getZ()) {
-                setTurn(false);
-            }
-        }else{
-            if (wayPoints.get(0).getModifiedPosition().getX() < getPosition().getX()){
-                setTurn(true);
-            }else if(wayPoints.get(0).getModifiedPosition().getZ() < getPosition().getZ()){
-                setTurn(true);
-            }else if(wayPoints.get(0).getModifiedPosition().getX() > getPosition().getX()){
-                setTurn(false);
-            }else if (wayPoints.get(0).getModifiedPosition().getZ() > getPosition().getZ()){
-                setTurn(false);
-            }
-        }
+    private float getXOffsetOnScreen(Vector3f objectPos){
+        Vector3f position = new Vector3f(objectPos);
+        Matrix4f perspective = new Matrix4f(Camera.getInstance().getPerspective().getProjection());
+        Matrix4f view = new Matrix4f(Camera.getInstance().getPerspective().getViewMatrix());
+        Matrix4f world = new Matrix4f(perspective.mul(view));
+        Vector3f ndcPosition = new Vector3f(world.mulOnVector(position));
+        ndcPosition = new Vector3f(ndcPosition.getX() / ndcPosition.getZ(), ndcPosition.getY() / ndcPosition.getZ(), 0.0f);
+        return (ndcPosition.getX() + 1.0f) * Window.getInstance().getWidth() / 2.0f;
     }
     // методы контроля - конец
 
@@ -228,6 +183,14 @@ public abstract class HumanControl {
         this.position = position;
     }
 
+    public int getLook() {
+        return look;
+    }
+
+    public void setLook(int look) {
+        this.look = look;
+    }
+
     public Vector3f getLagerPoint() {
         return lagerPoint;
     }
@@ -242,14 +205,6 @@ public abstract class HumanControl {
 
     public void setTurn(boolean turn) {
         this.turn = turn;
-    }
-
-    public void updateTemplate(){
-        if(tempX != getPosition().getX() || tempZ != getPosition().getZ() || isJump()) {
-            checkTurn();
-        }
-        tempX = position.getX();
-        tempZ = position.getZ();
     }
 
     public Vector3f getPositionTemplate(){

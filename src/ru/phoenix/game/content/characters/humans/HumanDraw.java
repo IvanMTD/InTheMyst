@@ -63,6 +63,7 @@ public abstract class HumanDraw extends HumanControl {
     }
 
     protected void draw(Shader shader, boolean shadow){
+        setTurn();
         setUniforms(shader);
         animation.draw();
         if(isAdditionalAnimation()){
@@ -79,14 +80,6 @@ public abstract class HumanDraw extends HumanControl {
     }
 
     private void setUniforms(Shader shader){
-        boolean currentTurn;
-        float yaw = Camera.getInstance().getYaw();
-        if (90.0f < yaw && yaw < 270.0f) {
-            currentTurn = !isTurn();
-        } else {
-            currentTurn = isTurn();
-        }
-
         shader.setUniform("instance", 0);
         shader.setUniform("animated", 0);
         shader.setUniform("board", 1);
@@ -94,37 +87,11 @@ public abstract class HumanDraw extends HumanControl {
         shader.setUniform("isActive", 1);
         shader.setUniform("bigTree", 0);
         shader.setUniform("viewDirect", new Vector3f(Camera.getInstance().getFront().normalize()));
-        shader.setUniform("turn", currentTurn ? 1 : 0);
+        shader.setUniform("turn", isTurn() ? 1 : 0);
         shader.setUniform("discardReverse", 0);
         shader.setUniform("discardControl", -1.0f);
         shader.setUniform("noPaint", 0);
-        // доп данные
-        /*float xOffset = 0.0f;
-        if(isTakeDamadge()){
-            if(switchController){
-                offset += 0.02f;
-                if(offset >= 0.1f){
-                    switchController = false;
-                    offset = 0.1f;
-                }
-            }else{
-                offset -=0.02f;
-                if(offset <= -0.1f){
-                    switchController = true;
-                    offset = -0.1f;
-                }
-            }
-            xOffset = offset;
-            if(offset == 0.0f){
-                index++;
-            }
-            if(index > 4){
-                setTakeDamadge(false);
-                switchController = true;
-                offset = 0.0f;
-                index = 0;
-            }
-        }*/
+
         shader.setUniform("model_m", projection.getModelMatrix());
         shader.setUniform("xOffset", 0.0f);
         shader.setUniform("yOffset", 0.0f);

@@ -2,14 +2,11 @@ package ru.phoenix.game.content.characters.humans.anarchy.grade.first;
 
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
-import ru.phoenix.core.kernel.Camera;
-import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.ImageAnimLoader;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.loader.sprite.TextureConfig;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
-import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
@@ -98,7 +95,6 @@ public class AnarchyThief extends HumanDraw implements Character {
     private boolean studyModeActive;
     private boolean preparingForBattle;
     private boolean firstBaseAttack;
-    private boolean firstStart;
     private boolean moveControl;
     private boolean waiting;
     private boolean backstab;
@@ -257,7 +253,6 @@ public class AnarchyThief extends HumanDraw implements Character {
         pathCheck = false;
         moveClick = false;
         studyModeActive = false;
-        firstStart = true;
         preparingForBattle = true;
         firstBaseAttack = true;
         waiting = true;
@@ -297,7 +292,6 @@ public class AnarchyThief extends HumanDraw implements Character {
         pathCheck = false;
         moveClick = false;
         studyModeActive = false;
-        firstStart = true;
         preparingForBattle = true;
         firstBaseAttack = true;
         waiting = true;
@@ -505,7 +499,6 @@ public class AnarchyThief extends HumanDraw implements Character {
                     System.out.println("NOT WORK YET");
                     break;
             }
-            updateTemplate();
         }
     }
 
@@ -649,63 +642,55 @@ public class AnarchyThief extends HumanDraw implements Character {
                         }
                         break;
                     case MOVEMENT_ANIMATION:
-                        if (firstStart) {
-                            setTurn();
-                            firstStart = false;
-                        } else {
-                            Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-                            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
-                            if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
-                                setPosition(position);
-                            }
+                        Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
+                        int motion = getMotionAnimation().motion(this, battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+                        if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
+                            setPosition(position);
+                        }
 
-                            if (motion == 0) {
-                                preparingForBattle = true;
-                                Cell currentElement = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
-                                currentElement.setOccupied(true);
-                                if (currentElement.isBlueZona()) {
-                                    getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
-                                } else if (currentElement.isGoldZona()) {
-                                    getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 2);
+                        if (motion == 0) {
+                            preparingForBattle = true;
+                            Cell currentElement = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
+                            currentElement.setOccupied(true);
+                            if (currentElement.isBlueZona()) {
+                                getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
+                            } else if (currentElement.isGoldZona()) {
+                                getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 2);
+                            }
+                            updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                            setJump(false);
+                            for(int x=0; x<grid.length; x++){
+                                for(int z=0; z<grid[0].length; z++){
+                                    grid[x][z].setGrayZona();
+                                    grid[x][z].setVisible(false);
+                                    grid[x][z].setWayPoint(false);
                                 }
-                                updateAnimation(baseStanceTextrue,baseStanceAnimation);
-                                setJump(false);
-                                for(int x=0; x<grid.length; x++){
-                                    for(int z=0; z<grid[0].length; z++){
-                                        grid[x][z].setGrayZona();
-                                        grid[x][z].setVisible(false);
-                                        grid[x][z].setWayPoint(false);
-                                    }
-                                }
-                                if (getCharacteristic().getCurentActionPoint() > 0) {
-                                    if (getCharacteristic().getStamina() > 0) {
-                                        battleEvent = PREPARED_AREA;
-                                        firstStart = true;
-                                    } else {
-                                        battleEvent = PREPARED_AREA;
-                                        firstStart = true;
-                                        Default.setWait(false);
-                                        this.action = false;
-                                    }
+                            }
+                            if (getCharacteristic().getCurentActionPoint() > 0) {
+                                if (getCharacteristic().getStamina() > 0) {
+                                    battleEvent = PREPARED_AREA;
                                 } else {
                                     battleEvent = PREPARED_AREA;
-                                    firstStart = true;
                                     Default.setWait(false);
                                     this.action = false;
                                 }
-                            }else if (motion == 1) {
-                                setJump(false);
-                                updateAnimation(walkTexture,walkAnimation);
-                            }else if (motion == 2) {
-                                setJump(true);
-                                updateAnimation(jumpTexture,jumpAnimation);
-                            }else if (motion == 3) {
-                                setJump(false);
-                                updateAnimation(goUpDownTexture,goUpDownAnimation);
-                            }else if(motion == 4){
-                                setJump(false);
-                                updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                            } else {
+                                battleEvent = PREPARED_AREA;
+                                Default.setWait(false);
+                                this.action = false;
                             }
+                        }else if (motion == 1) {
+                            setJump(false);
+                            updateAnimation(walkTexture,walkAnimation);
+                        }else if (motion == 2) {
+                            setJump(true);
+                            updateAnimation(jumpTexture,jumpAnimation);
+                        }else if (motion == 3) {
+                            setJump(false);
+                            updateAnimation(goUpDownTexture,goUpDownAnimation);
+                        }else if(motion == 4){
+                            setJump(false);
+                            updateAnimation(baseStanceTextrue,baseStanceAnimation);
                         }
                         break;
                     case ATTACK_ANIMATION:
@@ -713,29 +698,17 @@ public class AnarchyThief extends HumanDraw implements Character {
                             if(enemySavedCharacter != null) {
                                 if(firstBaseAttack){
                                     // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
-                                    float mainXOffset = getXOffsetOnScreen(getPosition());
-                                    float enemyXOffset = getXOffsetOnScreen(enemySavedCharacter.getPosition());
-                                    if(mainXOffset < enemyXOffset){
-                                        setTurn(true);
-                                        float yaw = Camera.getInstance().getYaw();
-                                        if (90.0f < yaw && yaw < 270.0f) {
-                                            setTurn(isTurn());
-                                        } else {
-                                            setTurn(!isTurn());
-                                        }
-                                    }else{
-                                        setTurn(false);
-                                        float yaw = Camera.getInstance().getYaw();
-                                        if (90.0f < yaw && yaw < 270.0f) {
-                                            setTurn(isTurn());
-                                        } else {
-                                            setTurn(!isTurn());
-                                        }
-                                    }
-                                    if(isTurn() == enemySavedCharacter.isTurn()){
-                                        backstab = true;
-                                    }else{
-                                        backstab = false;
+                                    Vector3f enemyPos = new Vector3f(enemySavedCharacter.getPosition()); enemyPos.setY(0.0f);
+                                    Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
+                                    Vector3f direction = new Vector3f(enemyPos.sub(currentPos)).normalize();
+                                    if(direction.getZ() >= 0.5f){ // NORTH
+                                        setLook(NORTH);
+                                    }else if(direction.getX() >= 0.5f){ // WEST
+                                        setLook(WEST);
+                                    }else if(direction.getZ() <= -0.5f){ // SOUTH
+                                        setLook(SOUTH);
+                                    }else if(direction.getX() <= -0.5f){ // EAST
+                                        setLook(EAST);
                                     }
                                     // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
                                     firstBaseAttack = false;
@@ -764,7 +737,6 @@ public class AnarchyThief extends HumanDraw implements Character {
                                             if (getCharacteristic().getCurentActionPoint() > 0) {
                                                 if (getCharacteristic().getStamina() > 0) {
                                                     battleEvent = PREPARED_AREA;
-                                                    firstStart = true;
                                                 } else {
                                                     Default.setWait(false);
                                                     this.action = false;
@@ -793,16 +765,13 @@ public class AnarchyThief extends HumanDraw implements Character {
                                             if (getCharacteristic().getCurentActionPoint() > 0) {
                                                 if (getCharacteristic().getStamina() > 0) {
                                                     battleEvent = PREPARED_AREA;
-                                                    firstStart = true;
                                                 } else {
                                                     battleEvent = PREPARED_AREA;
-                                                    firstStart = true;
                                                     Default.setWait(false);
                                                     this.action = false;
                                                 }
                                             } else {
                                                 battleEvent = PREPARED_AREA;
-                                                firstStart = true;
                                                 Default.setWait(false);
                                                 this.action = false;
                                             }
@@ -824,7 +793,6 @@ public class AnarchyThief extends HumanDraw implements Character {
                     getCharacteristic().setInitiative(0);
                     getCharacteristic().updateIndicators();
                     this.action = true;
-                    this.firstStart = true;
                     battleEvent = PREPARED_AREA;
                     Default.setWait(true);
                 }
@@ -894,7 +862,6 @@ public class AnarchyThief extends HumanDraw implements Character {
                                         }
                                     }
                                     battleEvent = PREPARED_AREA;
-                                    firstStart = true;
                                     Default.setWait(false);
                                     this.action = false;
                                 }
@@ -916,63 +883,55 @@ public class AnarchyThief extends HumanDraw implements Character {
                         }
                         break;
                     case MOVEMENT_ANIMATION:
-                        if (firstStart) {
-                            setTurn();
-                            firstStart = false;
-                        } else {
-                            Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-                            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
-                            if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
-                                setPosition(position);
-                            }
+                        Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
+                        int motion = getMotionAnimation().motion(this, battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+                        if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
+                            setPosition(position);
+                        }
 
-                            if (motion == 0) {
-                                preparingForBattle = true;
-                                Cell currentElement = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
-                                currentElement.setOccupied(true);
-                                if (currentElement.isBlueZona()) {
-                                    getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
-                                } else if (currentElement.isGoldZona()) {
-                                    getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 2);
+                        if (motion == 0) {
+                            preparingForBattle = true;
+                            Cell currentElement = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
+                            currentElement.setOccupied(true);
+                            if (currentElement.isBlueZona()) {
+                                getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
+                            } else if (currentElement.isGoldZona()) {
+                                getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 2);
+                            }
+                            updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                            setJump(false);
+                            for(int x=0; x<grid.length; x++){
+                                for(int z=0; z<grid[0].length; z++){
+                                    grid[x][z].setGrayZona();
+                                    grid[x][z].setVisible(false);
+                                    grid[x][z].setWayPoint(false);
                                 }
-                                updateAnimation(baseStanceTextrue,baseStanceAnimation);
-                                setJump(false);
-                                for(int x=0; x<grid.length; x++){
-                                    for(int z=0; z<grid[0].length; z++){
-                                        grid[x][z].setGrayZona();
-                                        grid[x][z].setVisible(false);
-                                        grid[x][z].setWayPoint(false);
-                                    }
-                                }
-                                if (getCharacteristic().getCurentActionPoint() > 0) {
-                                    if (getCharacteristic().getStamina() > 0) {
-                                        battleEvent = PREPARED_AREA;
-                                        firstStart = true;
-                                    } else {
-                                        battleEvent = PREPARED_AREA;
-                                        firstStart = true;
-                                        Default.setWait(false);
-                                        this.action = false;
-                                    }
+                            }
+                            if (getCharacteristic().getCurentActionPoint() > 0) {
+                                if (getCharacteristic().getStamina() > 0) {
+                                    battleEvent = PREPARED_AREA;
                                 } else {
                                     battleEvent = PREPARED_AREA;
-                                    firstStart = true;
                                     Default.setWait(false);
                                     this.action = false;
                                 }
-                            }else if (motion == 1) {
-                                setJump(false);
-                                updateAnimation(walkTexture,walkAnimation);
-                            }else if (motion == 2) {
-                                setJump(true);
-                                updateAnimation(jumpTexture,jumpAnimation);
-                            }else if (motion == 3) {
-                                setJump(false);
-                                updateAnimation(goUpDownTexture,goUpDownAnimation);
-                            }else if(motion == 4){
-                                setJump(false);
-                                updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                            } else {
+                                battleEvent = PREPARED_AREA;
+                                Default.setWait(false);
+                                this.action = false;
                             }
+                        }else if (motion == 1) {
+                            setJump(false);
+                            updateAnimation(walkTexture,walkAnimation);
+                        }else if (motion == 2) {
+                            setJump(true);
+                            updateAnimation(jumpTexture,jumpAnimation);
+                        }else if (motion == 3) {
+                            setJump(false);
+                            updateAnimation(goUpDownTexture,goUpDownAnimation);
+                        }else if(motion == 4){
+                            setJump(false);
+                            updateAnimation(baseStanceTextrue,baseStanceAnimation);
                         }
                         break;
                     case ATTACK_ANIMATION:
@@ -980,29 +939,17 @@ public class AnarchyThief extends HumanDraw implements Character {
                             if(enemySavedCharacter != null) {
                                 if(firstBaseAttack){
                                     // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
-                                    float mainXOffset = getXOffsetOnScreen(getPosition());
-                                    float enemyXOffset = getXOffsetOnScreen(enemySavedCharacter.getPosition());
-                                    if(mainXOffset < enemyXOffset){
-                                        setTurn(true);
-                                        float yaw = Camera.getInstance().getYaw();
-                                        if (90.0f < yaw && yaw < 270.0f) {
-                                            setTurn(isTurn());
-                                        } else {
-                                            setTurn(!isTurn());
-                                        }
-                                    }else{
-                                        setTurn(false);
-                                        float yaw = Camera.getInstance().getYaw();
-                                        if (90.0f < yaw && yaw < 270.0f) {
-                                            setTurn(isTurn());
-                                        } else {
-                                            setTurn(!isTurn());
-                                        }
-                                    }
-                                    if(isTurn() == enemySavedCharacter.isTurn()){
-                                        backstab = true;
-                                    }else{
-                                        backstab = false;
+                                    Vector3f enemyPos = new Vector3f(enemySavedCharacter.getPosition()); enemyPos.setY(0.0f);
+                                    Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
+                                    Vector3f direction = new Vector3f(enemyPos.sub(currentPos)).normalize();
+                                    if(direction.getZ() >= 0.5f){ // NORTH
+                                        setLook(NORTH);
+                                    }else if(direction.getX() >= 0.5f){ // WEST
+                                        setLook(WEST);
+                                    }else if(direction.getZ() <= -0.5f){ // SOUTH
+                                        setLook(SOUTH);
+                                    }else if(direction.getX() <= -0.5f){ // EAST
+                                        setLook(EAST);
                                     }
                                     // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
                                     firstBaseAttack = false;
@@ -1031,16 +978,13 @@ public class AnarchyThief extends HumanDraw implements Character {
                                             if (getCharacteristic().getCurentActionPoint() > 0) {
                                                 if (getCharacteristic().getStamina() > 0) {
                                                     battleEvent = PREPARED_AREA;
-                                                    firstStart = true;
                                                 } else {
                                                     battleEvent = PREPARED_AREA;
-                                                    firstStart = true;
                                                     Default.setWait(false);
                                                     this.action = false;
                                                 }
                                             } else {
                                                 battleEvent = PREPARED_AREA;
-                                                firstStart = true;
                                                 Default.setWait(false);
                                                 this.action = false;
                                             }
@@ -1064,16 +1008,13 @@ public class AnarchyThief extends HumanDraw implements Character {
                                             if (getCharacteristic().getCurentActionPoint() > 0) {
                                                 if (getCharacteristic().getStamina() > 0) {
                                                     battleEvent = PREPARED_AREA;
-                                                    firstStart = true;
                                                 } else {
                                                     battleEvent = PREPARED_AREA;
-                                                    firstStart = true;
                                                     Default.setWait(false);
                                                     this.action = false;
                                                 }
                                             } else {
                                                 battleEvent = PREPARED_AREA;
-                                                firstStart = true;
                                                 Default.setWait(false);
                                                 this.action = false;
                                             }
@@ -1095,7 +1036,6 @@ public class AnarchyThief extends HumanDraw implements Character {
                     getCharacteristic().setInitiative(0);
                     getCharacteristic().updateIndicators();
                     this.action = true;
-                    this.firstStart = true;
                     battleEvent = PREPARED_AREA;
                     Default.setWait(true);
                 }
@@ -1256,7 +1196,6 @@ public class AnarchyThief extends HumanDraw implements Character {
             studyEvent = MOVEMENT_ANIMATION;
             setJump(false);
             studyModeActive = false;
-            firstStart = true;
             counter = 0;
         }
     }
@@ -1279,67 +1218,62 @@ public class AnarchyThief extends HumanDraw implements Character {
     }
 
     private void movementAnimation(BattleGround battleGround){
-        if (firstStart) {
-            setTurn();
-            firstStart = false;
-        } else {
-            Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
-            int motion = getMotionAnimation().motion(battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+        Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
+        int motion = getMotionAnimation().motion(this, battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
 
-            if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
-                setPosition(position);
+        if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
+            setPosition(position);
+        }
+
+        if (motion == 0) {
+            if(moveClick){
+                remap = true;
+                moveClick = false;
+            }else {
+                this.targetPoint = null;
             }
-
-            if (motion == 0) {
-                if(moveClick){
+            counter = 0;
+            updateAnimation(baseStanceTextrue, baseStanceAnimation);
+            setJump(false);
+            studyEvent = CREATE_PATH;
+            waiting = true;
+        }else if (motion == 1) {
+            counter = 0;
+            setJump(false);
+            updateAnimation(walkTexture,walkAnimation);
+        }else if (motion == 2) {
+            counter = 0;
+            setJump(true);
+            updateAnimation(jumpTexture,jumpAnimation);
+        }else if (motion == 3) {
+            counter = 0;
+            setJump(false);
+            updateAnimation(goUpDownTexture,goUpDownAnimation);
+        }else if(motion == 4){
+            counter++;
+            if(counter > counterMax) {
+                Vector3f currentPos = new Vector3f(getPosition());
+                currentPos.setY(0.0f);
+                Vector3f wayPointPos = new Vector3f(getWayPoints().get(getWayPoints().size() - 1).getModifiedPosition());
+                wayPointPos.setY(0.0f);
+                if(currentPos.sub(wayPointPos).length() >= 3.0f) {
+                    studyEvent = CREATE_PATH;
+                    this.targetPoint = getWayPoints().get(getWayPoints().size() - 1);
                     remap = true;
-                    moveClick = false;
-                }else {
+                    counter = 0;
+                    counterMax = (int)(200.0f + (float)Math.random() * 300.0f);
+                }else{
                     this.targetPoint = null;
-                }
-                counter = 0;
-                updateAnimation(baseStanceTextrue, baseStanceAnimation);
-                setJump(false);
-                studyEvent = CREATE_PATH;
-                waiting = true;
-            }else if (motion == 1) {
-                counter = 0;
-                setJump(false);
-                updateAnimation(walkTexture,walkAnimation);
-            }else if (motion == 2) {
-                counter = 0;
-                setJump(true);
-                updateAnimation(jumpTexture,jumpAnimation);
-            }else if (motion == 3) {
-                counter = 0;
-                setJump(false);
-                updateAnimation(goUpDownTexture,goUpDownAnimation);
-            }else if(motion == 4){
-                counter++;
-                if(counter > counterMax) {
-                    Vector3f currentPos = new Vector3f(getPosition());
-                    currentPos.setY(0.0f);
-                    Vector3f wayPointPos = new Vector3f(getWayPoints().get(getWayPoints().size() - 1).getModifiedPosition());
-                    wayPointPos.setY(0.0f);
-                    if(currentPos.sub(wayPointPos).length() >= 3.0f) {
-                        studyEvent = CREATE_PATH;
-                        this.targetPoint = getWayPoints().get(getWayPoints().size() - 1);
-                        remap = true;
-                        counter = 0;
-                        counterMax = (int)(200.0f + (float)Math.random() * 300.0f);
-                    }else{
-                        this.targetPoint = null;
-                        updateAnimation(baseStanceTextrue,baseStanceAnimation);
-                        setJump(false);
-                        studyEvent = CREATE_PATH;
-                        waiting = true;
-                        counter = 0;
-                        counterMax = (int)(200.0f + (float)Math.random() * 300.0f);
-                    }
-                }else {
                     updateAnimation(baseStanceTextrue,baseStanceAnimation);
                     setJump(false);
+                    studyEvent = CREATE_PATH;
+                    waiting = true;
+                    counter = 0;
+                    counterMax = (int)(200.0f + (float)Math.random() * 300.0f);
                 }
+            }else {
+                updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                setJump(false);
             }
         }
 
@@ -1437,16 +1371,6 @@ public class AnarchyThief extends HumanDraw implements Character {
         }
 
         return finish;
-    }
-
-    private float getXOffsetOnScreen(Vector3f objectPos){
-        Vector3f position = new Vector3f(objectPos);
-        Matrix4f perspective = new Matrix4f(Camera.getInstance().getPerspective().getProjection());
-        Matrix4f view = new Matrix4f(Camera.getInstance().getPerspective().getViewMatrix());
-        Matrix4f world = new Matrix4f(perspective.mul(view));
-        Vector3f ndcPosition = new Vector3f(world.mulOnVector(position));
-        ndcPosition = new Vector3f(ndcPosition.getX() / ndcPosition.getZ(), ndcPosition.getY() / ndcPosition.getZ(), 0.0f);
-        return (ndcPosition.getX() + 1.0f) * Window.getInstance().getWidth() / 2.0f;
     }
     // РАСЧЕТЫ И АНИМАЦИЯ - КОНЕЦ
 
