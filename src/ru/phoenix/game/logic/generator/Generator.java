@@ -94,6 +94,7 @@ public class Generator {
             return getRandomPos(grid,point,radius,occupied);
         }
     }
+
     // методы получения свободного поля - конец
 
     // методы проверки - начало

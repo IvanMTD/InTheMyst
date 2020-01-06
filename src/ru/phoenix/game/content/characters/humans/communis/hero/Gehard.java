@@ -9,17 +9,20 @@ import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.core.util.ActionVerification;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.HumanDraw;
 import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.logic.battle.SimpleAI;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.game.logic.element.grid.Cell;
-import ru.phoenix.game.logic.generator.Generator;
+import ru.phoenix.game.logic.generator.RandomPosition;
 import ru.phoenix.game.property.GameController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
@@ -34,6 +37,7 @@ public class Gehard extends HumanDraw implements Character {
     private final int CREATE_PATH           = 0x90002;
     private final int MOVEMENT_ANIMATION    = 0x90003;
     private final int ATTACK_ANIMATION      = 0x90004;
+    private final int CHOICE_DIRECTION      = 0x90005;
 
     // константы класса
     private final TextureConfig baseStance = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_stand.png",3,1);
@@ -100,10 +104,14 @@ public class Gehard extends HumanDraw implements Character {
     private boolean playDead;
     private boolean prepareMove;
     private boolean autoControl;
+    private boolean flowControl;
+    private boolean choiceDirection;
     private Character allySavedCharacter;
     private Character enemySavedCharacter;
     private Cell targetPoint;
+    private Vector3f targetPos;
     private Cell tempFinish;
+    private RandomPosition randomPosition;
 
     // конструкторы класса
     // начало
@@ -257,6 +265,8 @@ public class Gehard extends HumanDraw implements Character {
         playDead = true;
         prepareMove = false;
         autoControl = false;
+        flowControl = false;
+        choiceDirection = false;
     }
 
     @Override
@@ -294,6 +304,8 @@ public class Gehard extends HumanDraw implements Character {
         moveControl = true;
         prepareMove = false;
         autoControl = false;
+        flowControl = false;
+        choiceDirection = false;
         if(!isDead()) {
             playDead = true;
         }
@@ -470,12 +482,24 @@ public class Gehard extends HumanDraw implements Character {
                         getCharacteristic().updateIndicators();
                         checkInvasion(enemies,battleGround,grid);
                         if (waiting) {
-                            timer++;
-                            if (timer > waitTime) {
-                                this.targetPoint = getElement(grid, Generator.getRandomPos(grid, getLagerPoint(), 5.0f, true));
-                                waiting = false;
-                                timer = 0;
-                                waitTime = (int) (250.0f + Math.random() * 250.0f);
+                            if(flowControl){
+                                if(!randomPosition.isAlive()){
+                                    if(targetPos.getX() != -1.0f && targetPos.getZ() != -1.0f){
+                                        this.targetPoint = getElement(grid,targetPos);
+                                        waiting = false;
+                                        flowControl = false;
+                                    }
+                                }
+                            }else{
+                                timer++;
+                                if (timer > waitTime) {
+                                    timer = 0;
+                                    waitTime = (int) (250.0f + Math.random() * 250.0f);
+                                    flowControl = true;
+                                    targetPos = new Vector3f(-1.0f,-1.0f,-1.0f);
+                                    randomPosition = new RandomPosition(targetPos,getLagerPoint(),grid,5.0f,true);
+                                    randomPosition.start();
+                                }
                             }
                         } else {
                             switch (studyEvent) {
@@ -664,14 +688,10 @@ public class Gehard extends HumanDraw implements Character {
                                 if (getCharacteristic().getStamina() > 0) {
                                     battleEvent = PREPARED_AREA;
                                 } else {
-                                    battleEvent = PREPARED_AREA;
-                                    Default.setWait(false);
-                                    this.action = false;
+                                    battleEvent = CHOICE_DIRECTION;
                                 }
                             } else {
-                                battleEvent = PREPARED_AREA;
-                                Default.setWait(false);
-                                this.action = false;
+                                battleEvent = CHOICE_DIRECTION;
                             }
                         }else if (motion == 1) {
                             setJump(false);
@@ -731,20 +751,80 @@ public class Gehard extends HumanDraw implements Character {
                                             if (getCharacteristic().getStamina() > 0) {
                                                 battleEvent = PREPARED_AREA;
                                             } else {
-                                                battleEvent = PREPARED_AREA;
-                                                Default.setWait(false);
-                                                this.action = false;
+                                                battleEvent = CHOICE_DIRECTION;
                                             }
                                         } else {
-                                            battleEvent = PREPARED_AREA;
-                                            Default.setWait(false);
-                                            this.action = false;
+                                            battleEvent = CHOICE_DIRECTION;
                                         }
                                     }
                                 }
                             }else{
                                 System.out.println("нет врага переменна пустая ... ");
                             }
+                        }
+                        break;
+                    case CHOICE_DIRECTION:
+                        if(choiceDirection){
+                            boolean end = false;
+                            Cell tempCell = null;
+                            for(int x=0; x<grid.length; x++){
+                                for(int z=0; z<grid[0].length; z++){
+                                    if(grid[x][z].isTarget()){
+                                        grid[x][z].setGreenZona();
+                                        // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
+                                        Vector3f lookPos = new Vector3f(grid[x][z].getPosition()); lookPos.setY(0.0f);
+                                        Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
+                                        Vector3f direction = new Vector3f(lookPos.sub(currentPos)).normalize();
+                                        if(direction.getZ() >= 0.5f){ // NORTH
+                                            setLook(NORTH);
+                                        }else if(direction.getX() >= 0.5f){ // WEST
+                                            setLook(WEST);
+                                        }else if(direction.getZ() <= -0.5f){ // SOUTH
+                                            setLook(SOUTH);
+                                        }else if(direction.getX() <= -0.5f){ // EAST
+                                            setLook(EAST);
+                                        }
+                                        // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
+                                        setTurn();
+                                        tempCell = grid[x][z];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if(GameController.getInstance().isLeftClick() && tempCell != null){
+                                end = true;
+                            }
+
+                            if(end) {
+                                for(int x=0; x<grid.length; x++){
+                                    for(int z=0; z<grid[0].length; z++){
+                                        grid[x][z].setGrayZona();
+                                        grid[x][z].setWayPoint(false);
+                                        grid[x][z].setVisible(false);
+                                    }
+                                }
+                                setStop(false);
+                                choiceDirection = false;
+                                battleEvent = PREPARED_AREA;
+                                Default.setWait(false);
+                                this.action = false;
+                            }
+                        }else{
+                            setStop(true);
+                            Map<Integer,Vector3f> directions = new HashMap<>();
+                            directions.put(0,new Vector3f(0.0f,0.0f,1.0f));
+                            directions.put(1,new Vector3f(-1.0f,0.0f,0.0f));
+                            directions.put(2,new Vector3f(0.0f,0.0f,-1.0f));
+                            directions.put(3,new Vector3f(1.0f,0.0f,0.0f));
+                            for(int key = 0; key < 4; key++){
+                                Cell cell = getElement(grid,new Vector3f(getPosition()).add(directions.get(key)));
+                                if(cell != null){
+                                    cell.setGrayZona();
+                                    cell.setVisible(true);
+                                }
+                            }
+                            choiceDirection = true;
                         }
                         break;
                 }

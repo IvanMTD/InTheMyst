@@ -107,7 +107,7 @@ public abstract class HumanControl {
     // конструкторы класса - конец
 
     // методы контроля - начало
-    void setTurn(){
+    protected void setTurn(){
         Vector3f lookPoint = new Vector3f();
         switch (getLook()){
             case NORTH:

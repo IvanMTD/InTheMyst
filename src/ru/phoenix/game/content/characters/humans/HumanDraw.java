@@ -25,11 +25,8 @@ public abstract class HumanDraw extends HumanControl {
     private ImageAnimation additionalAnimation;
     private Texture additionalTexture;
     private Projection additionalProjection;
-
     // контроль анимации
-    private int index;
-    private boolean switchController;
-    private float offset;
+    private boolean stop;
 
     // конструкторы - начало
     protected HumanDraw(){
@@ -37,11 +34,9 @@ public abstract class HumanDraw extends HumanControl {
         animation = new ImageAnimation();
         texture = new Texture2D();
         projection = new Projection();
-        index = 0;
-        switchController = true;
-        offset = 0.0f;
         useAdditionalAnimation = false;
         additionalProjection = new Projection();
+        stop = false;
     }
 
     protected HumanDraw(Character character){
@@ -49,11 +44,9 @@ public abstract class HumanDraw extends HumanControl {
         animation = new ImageAnimation();
         texture = new Texture2D();
         projection = new Projection();
-        index = 0;
-        switchController = true;
-        offset = 0.0f;
         useAdditionalAnimation = false;
         additionalProjection = new Projection();
+        stop = false;
     }
     // конструкторы - конец
 
@@ -62,8 +55,18 @@ public abstract class HumanDraw extends HumanControl {
         setAnimation(animation);
     }
 
+    public boolean isStop() {
+        return stop;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
+    }
+
     protected void draw(Shader shader, boolean shadow){
-        setTurn();
+        if(!isStop()) {
+            setTurn();
+        }
         setUniforms(shader);
         animation.draw();
         if(isAdditionalAnimation()){
