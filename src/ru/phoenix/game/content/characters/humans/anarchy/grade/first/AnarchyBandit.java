@@ -352,17 +352,17 @@ public class AnarchyBandit extends HumanDraw implements Character {
                                 if (moveControl) {
                                     float x = (int) Math.floor(getPosition().getX());
                                     float z = (int) Math.floor(getPosition().getZ());
-                                    if(getPosition().getX() - 1 >= 0) {
+                                    if(Math.round(getPosition().getX() - 1) >= 0) {
                                         grid[Math.round(getPosition().getX() - 1)][Math.round(getPosition().getZ())].setOccupied(false);
                                     }
-                                    if(getPosition().getX() + 1 < grid.length) {
+                                    if(Math.round(getPosition().getX() + 1) < grid.length) {
                                         grid[Math.round(getPosition().getX() + 1)][Math.round(getPosition().getZ())].setOccupied(false);
                                     }
                                     grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ())].setOccupied(false);
-                                    if(getPosition().getZ() - 1 >= 0) {
+                                    if(Math.round(getPosition().getZ() - 1) >= 0) {
                                         grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() - 1)].setOccupied(false);
                                     }
-                                    if(getPosition().getZ() + 1 < grid[0].length) {
+                                    if(Math.round(getPosition().getZ() + 1) < grid[0].length) {
                                         grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() + 1)].setOccupied(false);
                                     }
                                     Vector3f currentPos = new Vector3f(x, 0.0f, z);
@@ -422,17 +422,17 @@ public class AnarchyBandit extends HumanDraw implements Character {
                                 if (moveControl) {
                                     float x = (int) Math.floor(getPosition().getX());
                                     float z = (int) Math.floor(getPosition().getZ());
-                                    if(getPosition().getX() - 1 >= 0) {
+                                    if(Math.round(getPosition().getX() - 1) >= 0) {
                                         grid[Math.round(getPosition().getX() - 1)][Math.round(getPosition().getZ())].setOccupied(false);
                                     }
-                                    if(getPosition().getX() + 1 < grid.length) {
+                                    if(Math.round(getPosition().getX() + 1) < grid.length) {
                                         grid[Math.round(getPosition().getX() + 1)][Math.round(getPosition().getZ())].setOccupied(false);
                                     }
                                     grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ())].setOccupied(false);
-                                    if(getPosition().getZ() - 1 >= 0) {
+                                    if(Math.round(getPosition().getZ() - 1) >= 0) {
                                         grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() - 1)].setOccupied(false);
                                     }
-                                    if(getPosition().getZ() + 1 < grid[0].length) {
+                                    if(Math.round(getPosition().getZ() + 1) < grid[0].length) {
                                         grid[Math.round(getPosition().getX())][Math.round(getPosition().getZ() + 1)].setOccupied(false);
                                     }
                                     Vector3f currentPos = new Vector3f(x, 0.0f, z);
