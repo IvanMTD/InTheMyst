@@ -331,14 +331,6 @@ public class BattleScene implements Scene {
         }
 
         cursorHud.draw(curor2D);
-
-        /*rayTester.useProgram();
-        rayTester.setUniformBlock("matrices", 0);
-        rayTester.setUniform("model_m", new Projection().getModelMatrix());
-        rayTester.setUniform("color",new Vector3f(1.0f,0.0f,0.0f));
-        rayVbo.draw();
-        rayTester.setUniform("color",new Vector3f(0.0f,1.0f,0.0f));
-        cameraRayVbo.draw();*/
     }
 
     private void drawElement(boolean battle, List<Cell> elements){

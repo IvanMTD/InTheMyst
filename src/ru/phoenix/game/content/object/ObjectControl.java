@@ -53,6 +53,7 @@ public abstract class ObjectControl {
     private boolean jump;
     private boolean turn;
     private boolean bigTree;
+    private boolean tree;
 
     private boolean isIndicatorOn;
     private boolean tapStop;
@@ -77,6 +78,7 @@ public abstract class ObjectControl {
         active = false;
         water = false;
         bigTree = false;
+        tree = false;
         group = GROUP_A;
     }
 
@@ -300,6 +302,14 @@ public abstract class ObjectControl {
         this.bigTree = bigTree;
     }
 
+    protected boolean isTree() {
+        return tree;
+    }
+
+    protected void setTree(boolean tree) {
+        this.tree = tree;
+    }
+
     public void draw(Shader shader, boolean shadow){
 
         if(checkObjectOnScreen() || sprite.getVbo().isInstances()) {
@@ -325,6 +335,7 @@ public abstract class ObjectControl {
             shader.setUniform("grid", 0);
             shader.setUniform("isActive", isActive() ? 1 : 0);
             shader.setUniform("bigTree", isBigTree() ? 1 : 0);
+            shader.setUniform("tree", isTree() ? 1 : 0);
             shader.setUniform("viewDirect", new Vector3f(Camera.getInstance().getFront().normalize()));
             shader.setUniform("turn", currentTurn ? 1 : 0);
             shader.setUniform("discardReverse", 0);

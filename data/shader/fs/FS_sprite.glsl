@@ -11,9 +11,10 @@ layout (location = 2) out vec4 bright_color;
 
 
 in vec2 textureCoord;
-flat in int isBoard;
-flat in int isGrid;
+in flat int isBoard;
+in flat int isGrid;
 in flat int useShading;
+in flat int battle;
 
 uniform sampler2D image;
 uniform int group;
@@ -21,6 +22,7 @@ uniform float id;
 // switch
 uniform int onTarget;
 uniform int water;
+uniform int tree;
 uniform int discardReverse;
 uniform int noPaint;
 uniform float discardControl;
@@ -65,7 +67,17 @@ void main(){
             if(water == 1){
                 fragment_color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
             }else{
-                fragment_color = rgba;
+                if(battle == 1){
+                    vec3 rgb = vec3(rgba);
+                    float a = rgba.a / 2.0f;
+                    if(tree == 1){
+                        fragment_color = vec4(rgb,a);
+                    }else{
+                        fragment_color = rgba;
+                    }
+                }else{
+                    fragment_color = rgba;
+                }
             }
         }
     }

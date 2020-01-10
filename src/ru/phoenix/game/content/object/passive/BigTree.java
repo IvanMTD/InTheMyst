@@ -6,7 +6,6 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
-import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ public class BigTree extends ObjectControl implements Object {
         setShadow(true);
         setAnimated(true);
         setBigTree(true);
+        setTree(true);
     }
 
     public BigTree(BigTree object){
@@ -46,6 +46,7 @@ public class BigTree extends ObjectControl implements Object {
         setShadow(true);
         setAnimated(true);
         setBigTree(true);
+        setTree(true);
     }
 
     public BigTree(BigTree object, int seed){
@@ -62,6 +63,7 @@ public class BigTree extends ObjectControl implements Object {
         setShadow(true);
         setAnimated(true);
         setBigTree(true);
+        setTree(true);
     }
 
     @Override

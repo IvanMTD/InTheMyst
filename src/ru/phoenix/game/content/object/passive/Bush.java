@@ -40,6 +40,7 @@ public class Bush extends ObjectControl implements Object {
         setBoard(true);
         setShadow(true);
         setAnimated(true);
+        setTree(true);
     }
 
     public Bush(Bush object){
@@ -50,6 +51,7 @@ public class Bush extends ObjectControl implements Object {
         setBoard(true);
         setShadow(true);
         setAnimated(true);
+        setTree(true);
     }
 
     public Bush(Bush object, int seed){
@@ -71,6 +73,7 @@ public class Bush extends ObjectControl implements Object {
         setBoard(true);
         setShadow(true);
         setAnimated(true);
+        setTree(true);
     }
 
     @Override

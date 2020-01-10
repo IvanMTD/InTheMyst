@@ -42,9 +42,11 @@ struct DirectLight{
 };
 
 in flat int useShading;
+in flat int useBorder;
 
 // target highlight
 uniform int onTarget;
+uniform float radiance;
 uniform float shininess;
 uniform Material material;
 uniform DirectLight directLight;
@@ -70,15 +72,22 @@ void main() {
     if(onTarget == 1){
         fragment_color = targetHighlight();
     }else{
-        if(useShading == 0){
+        if(useShading == 0 && useBorder == 0){
             vec3 result = getDirectLight(directLight, normal, viewDirection,fs_in.TexCoords);
             float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
             fragment_color = vec4(result, alpha);
         }else{
-            vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
-            float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-            //float average = 0.2126 * result.r + 0.7152 * result.g + 0.0722 * result.b; // Градации серого
-            fragment_color = vec4(result / 10.0f,alpha);
+            if(useBorder == 1){
+                vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
+                float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+                float rad = radiance * radiance;
+                fragment_color = vec4(result.r * rad, result.g / radiance, result.b / radiance, alpha);
+            }
+            if(useShading == 1){
+                vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
+                float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+                fragment_color = vec4(result / 10.0f,alpha);
+            }
         }
     }
 

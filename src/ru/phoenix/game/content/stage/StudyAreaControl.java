@@ -34,6 +34,7 @@ public abstract class StudyAreaControl {
     // БОЕВЫЕ ЗОНЫ
     private BattleGround battleGround;
     private boolean prepareBattlefield;
+    private boolean invert;
 
     private List<Character> allies;
     private List<Character> alliesInBattle;
@@ -52,6 +53,7 @@ public abstract class StudyAreaControl {
         enemiesInBattle = new ArrayList<>();
         battleGround = new BattleGround();
         prepareBattlefield = true;
+        invert = false;
     }
 
     protected void setup(Cell[][] grid, GraundModel graundModel, Reservoir waterReservoir, List<Block> blocks, List<Object>sprites, int mapX, int mapZ){
@@ -95,6 +97,8 @@ public abstract class StudyAreaControl {
 
         if(battleGround.isActive()){
             if(prepareBattlefield){
+                Default.setRadiance(1.0f);
+                invert = false;
                 int minX = Math.round(battleGround.getLocalPoint().getX() - battleGround.getRadius()); if(minX < 0) minX = 0; battleGround.setMinW(minX);
                 int maxX = Math.round(battleGround.getLocalPoint().getX() + battleGround.getRadius()); if(maxX > getMapX()) maxX = getMapX(); battleGround.setMaxW(maxX);
                 int minZ = Math.round(battleGround.getLocalPoint().getZ() - battleGround.getRadius()); if(minZ < 0) minZ = 0; battleGround.setMinH(minZ);
@@ -155,6 +159,20 @@ public abstract class StudyAreaControl {
                 prepareBattlefield = false;
                 Default.setWait(false);
             }else{
+                if(invert){
+                    Default.setRadiance(Default.getRadiance() - 0.03f);
+                    if(Default.getRadiance() < 1.0f){
+                        Default.setRadiance(1.0f);
+                        invert = false;
+                    }
+                }else{
+                    Default.setRadiance(Default.getRadiance() + 0.03f);
+                    if(Default.getRadiance() > 10.0f){
+                        Default.setRadiance(10.0f);
+                        invert = true;
+                    }
+                }
+
                 int totalAllies = alliesInBattle.size();
                 Character removeAlly = null;
                 for(Character ally : alliesInBattle){
@@ -299,6 +317,7 @@ public abstract class StudyAreaControl {
         shader.setUniform("group",GROUP_A);
         shader.setUniform("id",0.0f);
         shader.setUniform("onTarget", 0);
+        shader.setUniform("radiance", Default.getRadiance());
         shader.setUniform("board",0);
         // end
         glEnable(GL_CULL_FACE);

@@ -37,6 +37,7 @@ public class Tree extends ObjectControl implements Object {
         setBoard(true);
         setShadow(true);
         setAnimated(true);
+        setTree(true);
     }
 
     public Tree(Tree object){
@@ -47,6 +48,7 @@ public class Tree extends ObjectControl implements Object {
         setBoard(true);
         setShadow(true);
         setAnimated(true);
+        setTree(true);
     }
 
     public Tree(Tree object, int seed){
@@ -60,6 +62,7 @@ public class Tree extends ObjectControl implements Object {
         setBoard(true);
         setShadow(true);
         setAnimated(true);
+        setTree(true);
     }
 
     @Override

@@ -18,8 +18,10 @@ out vec2 textureCoord;
 out flat int isBoard;
 out flat int isGrid;
 out flat int useShading;
+out flat int battle;
 
 void main() {
+    battle = battlefield;
     if(battlefield == 1){
         float size = 0.5f;
         int r = radius - 1;

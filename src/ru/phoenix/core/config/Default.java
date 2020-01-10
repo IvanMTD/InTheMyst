@@ -19,6 +19,7 @@ public class Default {
     private static Character anarchyThief;
     private static Character anarchyArcher;
 
+    private static float radiance;
     private static float offset;
     private static boolean wait;
     private static float cursorAngle;
@@ -46,6 +47,14 @@ public class Default {
         glClearColor(0.0f,0.0f,0.0f,1.0f);
         glClearDepth(1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    }
+
+    public static float getRadiance() {
+        return radiance;
+    }
+
+    public static void setRadiance(float radiance) {
+        Default.radiance = radiance;
     }
 
     public static float getOffset() {

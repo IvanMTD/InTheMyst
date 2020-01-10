@@ -31,6 +31,7 @@ out GS_OUT {
 } gs_out;
 
 out flat int useShading;
+out flat int useBorder;
 
 void main() {
     if(battlefield == 1){
@@ -41,13 +42,29 @@ void main() {
         float minZ = localPoint.z - r - size;
         float maxZ = localPoint.z + r + size;
 
+        float minW = localPoint.x - radius - size;
+        float maxW = localPoint.x + radius + size;
+        float minH = localPoint.z - radius - size;
+        float maxH = localPoint.z + radius + size;
+
         int count = 0;
         for(int i=0; i<3; i++){
             if((minX <= gs_in[i].localPos.x && gs_in[i].localPos.x <= maxX) && (minZ <= gs_in[i].localPos.z && gs_in[i].localPos.z <= maxZ)){
                 count++;
             }
         }
+        if(count == 3){
+            useBorder = 0;
+        }else{
+            useBorder = 1;
+        }
 
+        count = 0;
+        for(int i=0; i<3; i++){
+            if((minW <= gs_in[i].localPos.x && gs_in[i].localPos.x <= maxW) && (minH <= gs_in[i].localPos.z && gs_in[i].localPos.z <= maxH)){
+                count++;
+            }
+        }
         if(count == 3){
             useShading = 0;
         }else{
@@ -90,6 +107,7 @@ void main() {
         EndPrimitive();
     }else{
         useShading = 0;
+        useBorder = 0;
 
         gl_Position = gl_in[0].gl_Position;
         gs_out.FragPos = gs_in[0].FragPos;
