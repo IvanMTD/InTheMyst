@@ -26,8 +26,10 @@ import java.util.Map;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.*;
+import static ru.phoenix.core.config.Constants.EAST;
+import static ru.phoenix.core.config.Constants.SOUTH;
 
-public class AnarchyBandit extends HumanDraw implements Character {
+public class AnarchyArcher extends HumanDraw implements Character {
     // константы
     private final int PREPARED_AREA         = 0x90001;
     private final int CREATE_PATH           = 0x90002;
@@ -36,17 +38,21 @@ public class AnarchyBandit extends HumanDraw implements Character {
     private final int CHOICE_DIRECTION      = 0x90005;
 
     // константы класса
-    private final TextureConfig baseStance = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_stand.png",3,1);
-    private final TextureConfig walk = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_walk.png",12,1);
-    private final TextureConfig jump = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_jump.png",7,1);
-    private final TextureConfig goUpDown = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_climbing.png",4,1);
-    private final TextureConfig battleStancePrepare = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_bs_open.png",8,1);
-    private final TextureConfig battleStance = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_bs.png",6,1);
-    private final TextureConfig baseAttack = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_base_attack.png",10,1);
-    private final TextureConfig damage = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_damage.png",6,1);
-    private final TextureConfig dead = new TextureConfig("./data/content/texture/person/anarchists/bandit/idle_bandit_dead.png",6,1);
+    private final TextureConfig baseStance = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_stand.png",3,1);
+    private final TextureConfig walk = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_walk.png",12,1);
+    private final TextureConfig jump = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_jump.png",7,1);
+    private final TextureConfig goUpDown = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_climbing.png",4,1);
+    private final TextureConfig battleStancePrepare = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_bs_open.png",8,1);
+    private final TextureConfig battleStance = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_bs.png",6,1);
+    private final TextureConfig baseAttack = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_base_attack.png",10,1);
+    private final TextureConfig damage = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_damage.png",6,1);
+    private final TextureConfig dead = new TextureConfig("./data/content/texture/person/anarchists/archer/idle_archer_dead.png",6,1);
+
+    // константы боеприпасов
+    private final TextureConfig simpleArrow = new TextureConfig("./data/content/texture/items/ammo/simple_arrow.png",2,1);
 
     // анимации
+    // персонаж
     private ImageAnimation baseStanceAnimation;
     private ImageAnimation walkAnimation;
     private ImageAnimation jumpAnimation;
@@ -56,8 +62,11 @@ public class AnarchyBandit extends HumanDraw implements Character {
     private ImageAnimation baseAttackAnimation;
     private ImageAnimation damageAnimation;
     private ImageAnimation deadAnimation;
+    // боеприпасы
+    private ImageAnimation simpleArrowAnimation;
 
     // текстуры
+    // персонаж
     private Texture baseStanceTextrue;
     private Texture walkTexture;
     private Texture jumpTexture;
@@ -67,6 +76,8 @@ public class AnarchyBandit extends HumanDraw implements Character {
     private Texture baseAttackTexture;
     private Texture damageTexture;
     private Texture deadTexture;
+    // боеприпасы
+    private Texture simpleArrowTexture;
 
     // тригеры умений
     private boolean isBaseAttack;
@@ -97,11 +108,12 @@ public class AnarchyBandit extends HumanDraw implements Character {
     private boolean firstBaseAttack;
     private boolean moveControl;
     private boolean waiting;
+    private boolean doubleAnimation;
     private boolean playDead;
     private boolean prepareMove;
-    private boolean autoControl;
     private boolean flowControl;
     private boolean choiceDirection;
+    private boolean autoControl;
     private boolean prepareDirection;
     private Character allySavedCharacter;
     private Character enemySavedCharacter;
@@ -109,15 +121,18 @@ public class AnarchyBandit extends HumanDraw implements Character {
     private Vector3f targetPos;
     private Cell tempFinish;
     private RandomPosition randomPosition;
+    private List<Vector3f> timeShift;
+    private int index;
+    private float lastY;
 
     // конструкторы класса
     // начало
-    public AnarchyBandit(){
+    public AnarchyArcher(){
         super();
         init();
     }
 
-    public AnarchyBandit(Character character, Vector3f position, Vector3f lagerPoint, float id, int recognition){
+    public AnarchyArcher(Character character, Vector3f position, Vector3f lagerPoint, float id, int recognition){
         super(character);
         init();
         setId(id);
@@ -125,6 +140,7 @@ public class AnarchyBandit extends HumanDraw implements Character {
         setRecognition(recognition);
         setPosition(position);
         setLagerPoint(lagerPoint);
+
         preset();
     }
     // конец
@@ -168,6 +184,11 @@ public class AnarchyBandit extends HumanDraw implements Character {
         deadTexture = new Texture2D();
         deadTexture.setup(null,dead.getPath(),GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         deadAnimation = initAnimation(deadTexture,dead,widthSize);
+
+        // БОЕПРИПАСЫ
+        simpleArrowTexture = new Texture2D();
+        simpleArrowTexture.setup(null,simpleArrow.getPath(),GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        simpleArrowAnimation = initAnimation(simpleArrowTexture,simpleArrow,widthSize);
     }
 
     private void init(Character character){
@@ -203,9 +224,9 @@ public class AnarchyBandit extends HumanDraw implements Character {
         getCharacteristic().setExperience(0);
         getCharacteristic().setLevel(1);
         // Инициатива
-        getCharacteristic().setInitiativeCharge(15);
+        getCharacteristic().setInitiativeCharge(14);
         // Здоровье
-        getCharacteristic().setTotalHealth(40);
+        getCharacteristic().setTotalHealth(30);
         getCharacteristic().setHealth(getCharacteristic().getTotalHealth());
         getCharacteristic().setHealthCharge(0);
         // Манна
@@ -213,20 +234,19 @@ public class AnarchyBandit extends HumanDraw implements Character {
         getCharacteristic().setManna(getCharacteristic().getTotalManna());
         getCharacteristic().setMannaCharge(0);
         // Стамина
-        getCharacteristic().setTotalStamina(120);
+        getCharacteristic().setTotalStamina(100);
         getCharacteristic().setStamina(getCharacteristic().getTotalStamina());
-        getCharacteristic().setStaminaCharge(15);
+        getCharacteristic().setStaminaCharge(14);
         // Характеристики
-        getCharacteristic().setPhysicalPower(20);
+        getCharacteristic().setPhysicalPower(10);
         getCharacteristic().setMagicPower(10);
         // Движения
-        getCharacteristic().setMove(5);
-        getCharacteristic().setJump(1);
+        getCharacteristic().setMove(4);
+        getCharacteristic().setJump(2);
         getCharacteristic().setSpeed(2);
         // Обзор
-        getCharacteristic().setVision(10);
+        getCharacteristic().setVision(12);
     }
-    // методы инициализации - конец
 
     @Override
     public void preset(){
@@ -235,16 +255,17 @@ public class AnarchyBandit extends HumanDraw implements Character {
         // тригеры умений
         isBaseAttack = false;
         // доп инициализация
-        battleEvent = PREPARED_AREA;
-        studyEvent = CREATE_PATH;
         count = 0;
         maxCount = (int)(50.0f + Math.random() * 150.0f);
+        battleEvent = PREPARED_AREA;
+        studyEvent = CREATE_PATH;
         counter = 0;
         counterMax = (int)(200.0f + (float)Math.random() * 300.0f);
         timer = 0;
         waitTime = (int)(250.0f + Math.random() * 250.0f);
         currentFrame = 1;
         sampleData = Time.getSecond();
+        index = 0;
         deadCount = 0;
         deadFrame = 1;
         damageCount = 0;
@@ -259,9 +280,9 @@ public class AnarchyBandit extends HumanDraw implements Character {
         firstBaseAttack = true;
         waiting = true;
         moveControl = true;
+        doubleAnimation = false;
         playDead = true;
         prepareMove = false;
-        autoControl = false;
         flowControl = false;
         choiceDirection = false;
         prepareDirection = true;
@@ -274,16 +295,17 @@ public class AnarchyBandit extends HumanDraw implements Character {
         // тригеры умений
         isBaseAttack = false;
         // доп инициализация
-        battleEvent = PREPARED_AREA;
-        studyEvent = CREATE_PATH;
         count = 0;
         maxCount = (int)(50.0f + Math.random() * 150.0f);
+        battleEvent = PREPARED_AREA;
+        studyEvent = CREATE_PATH;
         counter = 0;
         counterMax = (int)(200.0f + (float)Math.random() * 300.0f);
         timer = 0;
         waitTime = (int)(250.0f + Math.random() * 250.0f);
         currentFrame = 1;
         sampleData = Time.getSecond();
+        index = 0;
         if(!isDead()) {
             deadCount = 0;
             deadFrame = 1;
@@ -300,15 +322,17 @@ public class AnarchyBandit extends HumanDraw implements Character {
         firstBaseAttack = true;
         waiting = true;
         moveControl = true;
+        doubleAnimation = false;
         prepareMove = false;
-        autoControl = false;
         flowControl = false;
         choiceDirection = false;
+        autoControl = false;
         prepareDirection = true;
         if(!isDead()) {
             playDead = true;
         }
     }
+    // методы инициализации - конец
 
     @Override
     public void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemies, List<Character> allies, BattleGround battleGround) {
@@ -423,12 +447,12 @@ public class AnarchyBandit extends HumanDraw implements Character {
                         }
                     } else {
                         if(battleEvent == MOVEMENT_ANIMATION){
-                            battleMode(battleGround, grid, allies, enemies);
+                            battleMode(battleGround, grid,allies,enemies);
                         }else {
                             // Заплатка! Стамина расходуется в классе MotionAnimation
                             getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
                             getCharacteristic().updateIndicators();
-                            researchMode(battleGround,grid);
+                            researchMode(battleGround, grid);
                         }
                     }
                     break;
@@ -585,7 +609,7 @@ public class AnarchyBandit extends HumanDraw implements Character {
             if(count > maxCount){
                 battleStanceAnimation.nextFrame();
                 count = 0;
-                maxCount = 20;
+                maxCount = 50;
             }
         }else {
             if (getBaseStanceAnimation().getCurrentFrame() == 2) {
@@ -741,41 +765,36 @@ public class AnarchyBandit extends HumanDraw implements Character {
                     case ATTACK_ANIMATION:
                         if(isBaseAttack){
                             if(enemySavedCharacter != null) {
-                                if(firstBaseAttack){
-                                    // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
-                                    Vector3f enemyPos = new Vector3f(enemySavedCharacter.getPosition()); enemyPos.setY(0.0f);
-                                    Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
-                                    Vector3f direction = new Vector3f(enemyPos.sub(currentPos)).normalize();
-                                    if(direction.getZ() >= 0.5f){ // NORTH
-                                        setLook(NORTH);
-                                    }else if(direction.getX() >= 0.5f){ // WEST
-                                        setLook(WEST);
-                                    }else if(direction.getZ() <= -0.5f){ // SOUTH
-                                        setLook(SOUTH);
-                                    }else if(direction.getX() <= -0.5f){ // EAST
-                                        setLook(EAST);
-                                    }
-                                    // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
-                                    firstBaseAttack = false;
-                                }else {
-                                    counter++;
-                                    if (counter > 10) {
-                                        currentFrame++;
-                                        counter = 0;
-                                    }
-                                    if (currentFrame <= baseAttack.getRow()) {
-                                        baseAttackAnimation.setFrames(currentFrame);
-                                        updateAnimation(baseAttackTexture, baseAttackAnimation);
-                                    } else {
+                                if(doubleAnimation){
+                                    if(index < timeShift.size()) {
+                                        counter++;
+                                        setAdditionalProjection(timeShift.get(index));
+                                        if(timeShift.get(index).getY() < lastY){
+                                            simpleArrowAnimation.setFrames(2);
+                                        }
+                                        baseAttackAnimation.setFrames(baseAttack.getRow());
+                                        updateAnimation(baseAttackTexture,baseAttackAnimation);
+                                        updateAdditionalAnimation(simpleArrowTexture,simpleArrowAnimation);
+                                        lastY = timeShift.get(index).getY();
+                                        if (counter > 2) {
+                                            counter = 0;
+                                            index++;
+                                        }
+                                    }else{
+                                        // контролеры
+                                        index = 0;
                                         counter = 0;
                                         currentFrame = 1;
                                         isBaseAttack = false;
                                         firstBaseAttack = true;
+                                        doubleAnimation = false;
+                                        useAdditionalAnimation(false);
+                                        // результаты
                                         getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
                                         getCharacteristic().setStamina(getCharacteristic().getStamina() - 10);
                                         enemySavedCharacter.getCharacteristic().setHealth(enemySavedCharacter.getCharacteristic().getHealth() - getCharacteristic().getPhysicalPower());
                                         enemySavedCharacter.setTakeDamadge(true);
-                                        if(enemySavedCharacter.getCharacteristic().getHealth() < 0){
+                                        if (enemySavedCharacter.getCharacteristic().getHealth() < 0) {
                                             enemySavedCharacter.getCharacteristic().setHealth(0);
                                         }
                                         if (getCharacteristic().getCurentActionPoint() > 0) {
@@ -786,6 +805,44 @@ public class AnarchyBandit extends HumanDraw implements Character {
                                             }
                                         } else {
                                             battleEvent = CHOICE_DIRECTION;
+                                        }
+                                    }
+                                }else {
+                                    if (firstBaseAttack) {
+                                        // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
+                                        Vector3f enemyPos = new Vector3f(enemySavedCharacter.getPosition()); enemyPos.setY(0.0f);
+                                        Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
+                                        Vector3f direction = new Vector3f(enemyPos.sub(currentPos)).normalize();
+                                        if(direction.getZ() >= 0.5f){ // NORTH
+                                            setLook(NORTH);
+                                        }else if(direction.getX() >= 0.5f){ // WEST
+                                            setLook(WEST);
+                                        }else if(direction.getZ() <= -0.5f){ // SOUTH
+                                            setLook(SOUTH);
+                                        }else if(direction.getX() <= -0.5f){ // EAST
+                                            setLook(EAST);
+                                        }
+                                        // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
+                                        firstBaseAttack = false;
+                                    } else {
+                                        counter++;
+                                        if (counter > 20) {
+                                            currentFrame++;
+                                            counter = 0;
+                                        }
+                                        if (currentFrame <= baseAttack.getRow()) {
+                                            baseAttackAnimation.setFrames(currentFrame);
+                                            updateAnimation(baseAttackTexture, baseAttackAnimation);
+                                        } else {
+                                            doubleAnimation = true;
+                                            currentFrame = 1;
+                                            counter = 0;
+                                            index = 0;
+                                            useAdditionalAnimation(true);
+                                            setAdditionalProjection(timeShift.get(0));
+                                            simpleArrowAnimation.setFrames(1);
+                                            updateAdditionalAnimation(simpleArrowTexture,simpleArrowAnimation);
+                                            lastY = timeShift.get(0).getY();
                                         }
                                     }
                                 }
@@ -883,7 +940,7 @@ public class AnarchyBandit extends HumanDraw implements Character {
                 setShowIndicators(true);
                 switch (battleEvent) {
                     case PREPARED_AREA:
-                        SimpleAI.dataLoading(grid,this,allies,enemies,MELEE_COMBAT);
+                        SimpleAI.dataLoading(grid,this,allies,enemies,RANGE_COMBAT);
                         SimpleAI.dataAnalyze();
                         counter = 0;
                         runPathfindingAlgorithm();
@@ -1012,37 +1069,31 @@ public class AnarchyBandit extends HumanDraw implements Character {
                     case ATTACK_ANIMATION:
                         if(isBaseAttack){
                             if(enemySavedCharacter != null) {
-                                if(firstBaseAttack){
-                                    // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
-                                    Vector3f enemyPos = new Vector3f(enemySavedCharacter.getPosition()); enemyPos.setY(0.0f);
-                                    Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
-                                    Vector3f direction = new Vector3f(enemyPos.sub(currentPos)).normalize();
-                                    if(direction.getZ() >= 0.5f){ // NORTH
-                                        setLook(NORTH);
-                                    }else if(direction.getX() >= 0.5f){ // WEST
-                                        setLook(WEST);
-                                    }else if(direction.getZ() <= -0.5f){ // SOUTH
-                                        setLook(SOUTH);
-                                    }else if(direction.getX() <= -0.5f){ // EAST
-                                        setLook(EAST);
-                                    }
-                                    // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
-                                    firstBaseAttack = false;
-                                }else {
-                                    counter++;
-                                    if (counter > 10) {
-                                        currentFrame++;
-                                        counter = 0;
-                                    }
-
-                                    if (currentFrame <= baseAttack.getRow()) {
-                                        baseAttackAnimation.setFrames(currentFrame);
-                                        updateAnimation(baseAttackTexture, baseAttackAnimation);
-                                    } else {
+                                if(doubleAnimation){
+                                    if(index < timeShift.size()) {
+                                        counter++;
+                                        setAdditionalProjection(timeShift.get(index));
+                                        if(timeShift.get(index).getY() < lastY){
+                                            simpleArrowAnimation.setFrames(2);
+                                        }
+                                        baseAttackAnimation.setFrames(baseAttack.getRow());
+                                        updateAnimation(baseAttackTexture,baseAttackAnimation);
+                                        updateAdditionalAnimation(simpleArrowTexture,simpleArrowAnimation);
+                                        lastY = timeShift.get(index).getY();
+                                        if (counter > 2) {
+                                            counter = 0;
+                                            index++;
+                                        }
+                                    }else{
+                                        // контролеры
+                                        index = 0;
                                         counter = 0;
                                         currentFrame = 1;
                                         isBaseAttack = false;
                                         firstBaseAttack = true;
+                                        doubleAnimation = false;
+                                        useAdditionalAnimation(false);
+                                        // результаты
                                         getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
                                         getCharacteristic().setStamina(getCharacteristic().getStamina() - 10);
                                         enemySavedCharacter.getCharacteristic().setHealth(enemySavedCharacter.getCharacteristic().getHealth() - getCharacteristic().getPhysicalPower());
@@ -1064,9 +1115,47 @@ public class AnarchyBandit extends HumanDraw implements Character {
                                             this.action = false;
                                         }
                                     }
+                                }else {
+                                    if (firstBaseAttack) {
+                                        // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
+                                        Vector3f enemyPos = new Vector3f(enemySavedCharacter.getPosition()); enemyPos.setY(0.0f);
+                                        Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
+                                        Vector3f direction = new Vector3f(enemyPos.sub(currentPos)).normalize();
+                                        if(direction.getZ() >= 0.5f){ // NORTH
+                                            setLook(NORTH);
+                                        }else if(direction.getX() >= 0.5f){ // WEST
+                                            setLook(WEST);
+                                        }else if(direction.getZ() <= -0.5f){ // SOUTH
+                                            setLook(SOUTH);
+                                        }else if(direction.getX() <= -0.5f){ // EAST
+                                            setLook(EAST);
+                                        }
+                                        // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
+                                        firstBaseAttack = false;
+                                    } else {
+                                        counter++;
+                                        if (counter > 20) {
+                                            currentFrame++;
+                                            counter = 0;
+                                        }
+                                        if (currentFrame <= baseAttack.getRow()) {
+                                            baseAttackAnimation.setFrames(currentFrame);
+                                            updateAnimation(baseAttackTexture, baseAttackAnimation);
+                                        } else {
+                                            doubleAnimation = true;
+                                            currentFrame = 1;
+                                            counter = 0;
+                                            index = 0;
+                                            useAdditionalAnimation(true);
+                                            setAdditionalProjection(timeShift.get(0));
+                                            simpleArrowAnimation.setFrames(1);
+                                            updateAdditionalAnimation(simpleArrowTexture,simpleArrowAnimation);
+                                            lastY = timeShift.get(0).getY();
+                                        }
+                                    }
                                 }
                             }else{
-                                System.out.println("нет врага переменная пустая ... ");
+                                System.out.println("нет врага переменна пустая ... ");
                             }
                         }
                         break;
@@ -1092,17 +1181,44 @@ public class AnarchyBandit extends HumanDraw implements Character {
         isBaseAttack = false;
         boolean action = false;
         enemySavedCharacter = null;
-        if(GameController.getInstance().isLeftClick()){
+        Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
+        if(GameController.getInstance().isLeftClick()) {
             Vector3f pixel = Pixel.getPixel();
-            for(Character character : enemy){
-                if(character.getId() == pixel.getX() && !character.isDead()){
-                    if(getPosition().getX() - 1.0f <= character.getPosition().getX() && character.getPosition().getX() <= getPosition().getX() + 1.0f) {
-                        if (getPosition().getZ() - 1.0f <= character.getPosition().getZ() && character.getPosition().getZ() <= getPosition().getZ() + 1.0f) {
-                            if (Math.abs(character.getPosition().getY() - getPosition().getY()) <= 0.5f) {
-                                enemySavedCharacter = character;
+            for (Character character : enemy) {
+                if (character.getId() == pixel.getX() && !character.isDead()) {
+                    Vector3f enemyPos = new Vector3f(character.getPosition()); enemyPos.setY(0.0f);
+                    if(Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()){
+                        // начало проверки на высоту
+                        Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
+                        float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length());
+                        float halfDistance = distance / 2.0f;
+                        Vector3f p0 = new Vector3f(getPosition());
+                        Vector3f p1 = new Vector3f(getPosition().add(direction.mul(halfDistance)));
+                        p1.setY(p1.getY() + 5.0f); // 5.0f это высота полета стрелы
+                        Vector3f p2 = new Vector3f(character.getPosition());
+                        timeShift = new ArrayList<>();
+                        for(float t=0.0f; t<1.0f; t+= 1.0f / (distance * 5.0f)){
+                            float x = (1-t) * p0.getX() + t * p2.getX();
+                            float y = (float)Math.pow((1-t),2) * p0.getY() + 2 * t * (1-t) * p1.getY() + (float)Math.pow(t,2) * p2.getY();
+                            float z = (1-t) * p0.getZ() + t * p2.getZ();
+                            Vector3f time = new Vector3f(x,y,z);
+                            Cell cell = grid[Math.round(x)][Math.round(z)];
+                            //System.out.println(cell.getCurrentHeight() + " | " + time.toString());
+                            if(!cell.isBlocked() && cell.getCurrentHeight() <= time.getY() + 1.0f) {
+                                timeShift.add(time);
+                            }else{
+                                timeShift.clear();
                                 break;
                             }
                         }
+                        //System.out.println("main pos: " + getPosition().toString());
+                        //System.out.println("enemy pos: " + character.getPosition().toString());
+                        if(timeShift.size() != 0){
+                            enemySavedCharacter = character;
+                            break;
+                        }
+                        // конец проверки
+
                     }
                 }
             }
@@ -1110,8 +1226,8 @@ public class AnarchyBandit extends HumanDraw implements Character {
 
         if(enemySavedCharacter != null){
             battleEvent = ATTACK_ANIMATION;
-            action = true;
             isBaseAttack = true;
+            action = true;
             for(int x=0; x<grid.length; x++){
                 for(int z=0; z<grid[0].length; z++){
                     grid[x][z].setVisible(false);
@@ -1123,35 +1239,63 @@ public class AnarchyBandit extends HumanDraw implements Character {
 
     private boolean actionControl(Cell[][] grid, Character enemy){
         isBaseAttack = false;
-        boolean fastAttack = false;
+        boolean action = false;
         enemySavedCharacter = null;
-
+        Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
         if(enemy != null){
-            if(!enemy.isDead()){
-                if(getPosition().getX() - 1.0f <= enemy.getPosition().getX() && enemy.getPosition().getX() <= getPosition().getX() + 1.0f) {
-                    if (getPosition().getZ() - 1.0f <= enemy.getPosition().getZ() && enemy.getPosition().getZ() <= getPosition().getZ() + 1.0f) {
-                        if (Math.abs(enemy.getPosition().getY() - getPosition().getY()) <= 0.5f) {
-                            enemySavedCharacter = enemy;
+            if (!enemy.isDead()) {
+                Vector3f enemyPos = new Vector3f(enemy.getPosition()); enemyPos.setY(0.0f);
+                if(Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()){
+                    // начало проверки на высоту
+                    Vector3f direction = new Vector3f(enemy.getPosition().sub(getPosition())).normalize();
+                    float distance = Math.abs(new Vector3f(enemy.getPosition().sub(getPosition())).length());
+                    float halfDistance = distance / 2.0f;
+                    Vector3f p0 = new Vector3f(getPosition());
+                    Vector3f p1 = new Vector3f(getPosition().add(direction.mul(halfDistance)));
+                    p1.setY(p1.getY() + 5.0f); // 5.0f это высота полета стрелы
+                    Vector3f p2 = new Vector3f(enemy.getPosition());
+                    timeShift = new ArrayList<>();
+                    for(float t=0.0f; t<1.0f; t+= 1.0f / (distance * 5.0f)){
+                        float x = (1-t) * p0.getX() + t * p2.getX();
+                        float y = (float)Math.pow((1-t),2) * p0.getY() + 2 * t * (1-t) * p1.getY() + (float)Math.pow(t,2) * p2.getY();
+                        float z = (1-t) * p0.getZ() + t * p2.getZ();
+                        Vector3f time = new Vector3f(x,y,z);
+                        Cell cell = grid[Math.round(x)][Math.round(z)];
+                        //System.out.println(cell.getCurrentHeight() + " | " + time.toString());
+                        if(!cell.isBlocked() && cell.getCurrentHeight() <= time.getY() + 1.0f) {
+                            timeShift.add(time);
+                        }else{
+                            timeShift.clear();
+                            break;
                         }
                     }
+                    //System.out.println("main pos: " + getPosition().toString());
+                    //System.out.println("enemy pos: " + character.getPosition().toString());
+                    if(timeShift.size() != 0){
+                        enemySavedCharacter = enemy;
+                    }
+                    // конец проверки
+
                 }
             }
         }
 
         if(enemySavedCharacter != null){
             battleEvent = ATTACK_ANIMATION;
-            fastAttack = true;
             isBaseAttack = true;
+            action = true;
             for(int x=0; x<grid.length; x++){
                 for(int z=0; z<grid[0].length; z++){
                     grid[x][z].setVisible(false);
                 }
             }
         }
-        return fastAttack;
+        return action;
     }
 
     private void researchMode(BattleGround battleGround, Cell[][] grid){
+        // Заплатка! Стамина расходуется в классе MotionAnimation
+        getCharacteristic().setStamina(getCharacteristic().getTotalStamina());
         if(remap){
             studyEventMode(battleGround, grid);
         }else {

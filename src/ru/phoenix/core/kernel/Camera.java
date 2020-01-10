@@ -14,7 +14,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {
     //constant
-    private static final float MAX_DIST = 30.0f;
+    private static final float MAX_DIST = 30.0f; // 30 по умолчанию
     private static final float MIN_DIST = 10.0f;
     private static final float SCROLL_SENS = 1.1f;
 

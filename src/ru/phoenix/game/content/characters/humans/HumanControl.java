@@ -37,6 +37,7 @@ public abstract class HumanControl {
     private float id;
     private int group;
     private int recognition;
+    private float distance;
     // контроль состояний персонажа
     private boolean target;
     private boolean marker;
@@ -252,6 +253,14 @@ public abstract class HumanControl {
         this.recognition = recognition;
     }
 
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
     // контроль состояний персонажа
     public boolean isTarget() {
         return target;
@@ -311,20 +320,20 @@ public abstract class HumanControl {
     // методы сетеры и гетеры - конец
 
     // вспомогательные
-    public int getPriority(Cell[][] grid, Character character){
+    public int getPriority(Cell[][] grid, Character character, int behavior){
         Cell enemyPoint = grid[(int)character.getPosition().getX()][(int)character.getPosition().getZ()];
         Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
         Vector3f studyPos = new Vector3f(character.getPosition());studyPos.setY(0.0f);
         // дистанция
         float d = Math.abs(new Vector3f(mainPos.sub(studyPos)).length());
-        // враг
+        // рассматриваемый
         int ea = getCharacteristic().getPhysicalPower();
         int eh = getCharacteristic().getHealth();
-        // я
+        // расматривающий
         int ia = character.getCharacteristic().getPhysicalPower();
         int ih = character.getCharacteristic().getHealth();
 
-        int multiplier = 1;
+        int multiplier;
         if(enemyPoint.isBlueZona()){
             multiplier = 1;
         }else if(enemyPoint.isGoldZona()){
@@ -333,6 +342,17 @@ public abstract class HumanControl {
             multiplier = 5;
         }
 
-        return (ih - ea) - (eh - ia) - Math.round(d * multiplier);
+        int result = 0;
+        switch(behavior){
+            case MELEE_COMBAT:
+                result = (ih - ea) - (eh - ia) - Math.round(d * multiplier);
+                break;
+            case MIDDLE_COMBAT:
+                break;
+            case RANGE_COMBAT:
+                result = (eh - ia) - (ih - ea) - Math.round(d * multiplier);
+                break;
+        }
+        return result;
     }
 }

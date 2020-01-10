@@ -9,6 +9,7 @@ import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
@@ -401,13 +402,7 @@ public class BattleScene implements Scene {
         character.setDefaultCharacteristic();
         studyArea.getAllies().add(character);
 
-        id += 0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        character = new AnarchyBandit(Default.getAnarchyBandit(), position, lagerPoint, id, ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);
-
-        for(int i=0; i<(int)(1.0f + (float)Math.random() * 3.0f);i++) {
+        for(int i=0; i<(int)(1.0f + (float)Math.random() * 4.0f);i++) {
             id += 0.01f;
             position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
             character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
@@ -423,17 +418,23 @@ public class BattleScene implements Scene {
             lagerPoint = Generator.getRandomPos(studyArea.getGrid(),true);
             int count = Math.round(3.0f + (float)Math.random() * 3.0f);
             for (int j = 0; j < count; j++) {
-                int coin = (int) Math.round(Math.random());
+                int coin = (int) Math.round(Math.random() * 2.0f);
                 if (coin == 0) {
                     id += 0.01f;
                     position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
                     character = new AnarchyThief(Default.getAnarchyThief(), position, lagerPoint, id, ENEMY);
                     character.setDefaultCharacteristic();
                     studyArea.getEnemies().add(character);
-                } else {
+                } else if(coin == 1) {
                     id += 0.01f;
                     position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
                     character = new AnarchyBandit(Default.getAnarchyBandit(), position, lagerPoint, id, ENEMY);
+                    character.setDefaultCharacteristic();
+                    studyArea.getEnemies().add(character);
+                } else if(coin == 2){
+                    id += 0.01f;
+                    position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+                    character = new AnarchyArcher(Default.getAnarchyArcher(), position, lagerPoint, id, ENEMY);
                     character.setDefaultCharacteristic();
                     studyArea.getEnemies().add(character);
                 }

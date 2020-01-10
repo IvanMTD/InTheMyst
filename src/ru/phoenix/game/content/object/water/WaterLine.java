@@ -7,7 +7,6 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
-import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;

@@ -107,6 +107,7 @@ public class AnarchyThief extends HumanDraw implements Character {
     private boolean prepareMove;
     private boolean flowControl;
     private boolean choiceDirection;
+    private boolean prepareDirection;
     private Character allySavedCharacter;
     private Character enemySavedCharacter;
     private Cell targetPoint;
@@ -271,6 +272,7 @@ public class AnarchyThief extends HumanDraw implements Character {
         prepareMove = false;
         flowControl = false;
         choiceDirection = false;
+        prepareDirection = true;
     }
 
     @Override
@@ -311,6 +313,7 @@ public class AnarchyThief extends HumanDraw implements Character {
         prepareMove = false;
         flowControl = false;
         choiceDirection = false;
+        prepareDirection = true;
         if(!isDead()) {
             playDead = true;
         }
@@ -394,6 +397,21 @@ public class AnarchyThief extends HumanDraw implements Character {
                                     movementAnimation(battleGround);
                                 }
                             } else {
+                                if(prepareDirection){
+                                    Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
+                                    Vector3f localPos = new Vector3f(battleGround.getLocalPoint()); localPos.setY(0.0f);
+                                    Vector3f direction = new Vector3f(localPos.sub(mainPos)).normalize();
+                                    if(direction.getX() > 0.5f){
+                                        setLook(WEST);
+                                    }else if(direction.getX() < -0.5f){
+                                        setLook(EAST);
+                                    }else if(direction.getZ() > 0.5f){
+                                        setLook(NORTH);
+                                    }else if(direction.getZ() < -0.5f){
+                                        setLook(SOUTH);
+                                    }
+                                    prepareDirection = false;
+                                }
                                 counter++;
                                 if (counter > 20) {
                                     currentFrame++;
@@ -464,6 +482,21 @@ public class AnarchyThief extends HumanDraw implements Character {
                                     movementAnimation(battleGround);
                                 }
                             } else {
+                                if(prepareDirection){
+                                    Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
+                                    Vector3f localPos = new Vector3f(battleGround.getLocalPoint()); localPos.setY(0.0f);
+                                    Vector3f direction = new Vector3f(localPos.sub(mainPos)).normalize();
+                                    if(direction.getX() > 0.5f){
+                                        setLook(WEST);
+                                    }else if(direction.getX() < -0.5f){
+                                        setLook(EAST);
+                                    }else if(direction.getZ() > 0.5f){
+                                        setLook(NORTH);
+                                    }else if(direction.getZ() < -0.5f){
+                                        setLook(SOUTH);
+                                    }
+                                    prepareDirection = false;
+                                }
                                 counter++;
                                 if (counter > 20) {
                                     currentFrame++;
@@ -812,13 +845,13 @@ public class AnarchyThief extends HumanDraw implements Character {
                                         Vector3f lookPos = new Vector3f(grid[x][z].getPosition()); lookPos.setY(0.0f);
                                         Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
                                         Vector3f direction = new Vector3f(lookPos.sub(currentPos)).normalize();
-                                        if(direction.getZ() >= 0.5f){ // NORTH
+                                        if(direction.getZ() == 1.0f){ // NORTH
                                             setLook(NORTH);
-                                        }else if(direction.getX() >= 0.5f){ // WEST
+                                        }else if(direction.getX() == 1.0f){ // WEST
                                             setLook(WEST);
-                                        }else if(direction.getZ() <= -0.5f){ // SOUTH
+                                        }else if(direction.getZ() == -1.0f){ // SOUTH
                                             setLook(SOUTH);
-                                        }else if(direction.getX() <= -0.5f){ // EAST
+                                        }else if(direction.getX() == -1.0f){ // EAST
                                             setLook(EAST);
                                         }
                                         // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
@@ -889,7 +922,7 @@ public class AnarchyThief extends HumanDraw implements Character {
                 setShowIndicators(true);
                 switch (battleEvent) {
                     case PREPARED_AREA:
-                        SimpleAI.dataLoading(grid,this,allies,enemies);
+                        SimpleAI.dataLoading(grid,this,allies,enemies,MELEE_COMBAT);
                         SimpleAI.dataAnalyze();
                         counter = 0;
                         runPathfindingAlgorithm();

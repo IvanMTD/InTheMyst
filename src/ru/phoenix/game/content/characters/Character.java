@@ -91,6 +91,8 @@ public interface Character {
     void setGroup(int group);
     int getRecognition();
     void setRecognition(int recognition);
+    float getDistance();
+    void setDistance(float distance);
     // контроль состояний персонажа
     boolean isTarget();
     void setTarget(boolean target);
@@ -107,5 +109,5 @@ public interface Character {
     boolean isDead();
     void setDead(boolean dead);
     // вспомогательные
-    int getPriority(Cell[][]grid, Character character);
+    int getPriority(Cell[][]grid, Character character, int behavior);
 }

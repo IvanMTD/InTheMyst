@@ -1,4 +1,4 @@
-full_screen false
+full_screen true
 window_width 1280
 window_height 720
 samples 4

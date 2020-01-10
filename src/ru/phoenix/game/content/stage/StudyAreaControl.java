@@ -21,7 +21,7 @@ import java.util.List;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static ru.phoenix.core.config.Constants.GROUP_A;
+import static ru.phoenix.core.config.Constants.*;
 
 public abstract class StudyAreaControl {
     private Cell[][] grid;
@@ -174,6 +174,7 @@ public abstract class StudyAreaControl {
                     removeAlly.setBattle(false);
                     removeAlly.resetSettings();
                     removeAlly.setShowIndicators(false);
+                    Default.setWait(false);
                     alliesInBattle.remove(removeAlly);
                 }
 
@@ -196,9 +197,9 @@ public abstract class StudyAreaControl {
                     removeEnemy.setBattle(false);
                     removeEnemy.resetSettings();
                     removeEnemy.setShowIndicators(false);
+                    Default.setWait(false);
                     enemiesInBattle.remove(removeEnemy);
                     enemies.remove(removeEnemy);
-                    Default.setWait(false);
                 }
 
                 if(totalAllies == 0 || totalEnemies == 0 || enemiesInBattle.isEmpty() || alliesInBattle.isEmpty()){

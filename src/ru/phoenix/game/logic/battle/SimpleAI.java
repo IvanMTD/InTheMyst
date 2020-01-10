@@ -8,7 +8,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.phoenix.core.config.Constants.MELEE_COMBAT;
+import static ru.phoenix.core.config.Constants.MIDDLE_COMBAT;
+import static ru.phoenix.core.config.Constants.RANGE_COMBAT;
+
 public class SimpleAI {
+
+    private static int behavior;
 
     private static Cell[][] grid;
     private static Character self;
@@ -20,7 +26,8 @@ public class SimpleAI {
     private static Cell closerCell;
 
     // загрузка данных - начало
-    public static void dataLoading(Cell[][]grid, Character self, List<Character> allies, List<Character> enemies){
+    public static void dataLoading(Cell[][]grid, Character self, List<Character> allies, List<Character> enemies, int behavior){
+        setBehavior(behavior);
         setGrid(grid);
         setSelf(self);
         setAllies(allies);
@@ -54,60 +61,89 @@ public class SimpleAI {
 
     // методы поиска врагов - начало
     private static void studyOpponents(){
-        List<Character>closerEnemies = new ArrayList<>();
+        targetCharacter = null;
+        List<Character> closerEnemy = new ArrayList<>();
+        Vector3f selfPos = new Vector3f(self.getPosition()); selfPos.setY(0.0f);
         for(Character enemy : enemies){
-            if(enemy.isBattle() && !enemy.isDead()) {
-                if(checkAround(enemy) != null) {
-                    closerEnemies.add(enemy);
+            if(enemy.isBattle() && !enemy.isDead()){
+                if(behavior == MELEE_COMBAT) {
+                    if(checkAround(enemy) != null) {
+                        Vector3f enemyPos = new Vector3f(enemy.getPosition());
+                        enemyPos.setY(0.0f);
+                        enemy.setDistance(new Vector3f(selfPos.sub(enemyPos)).length());
+                        closerEnemy.add(enemy);
+                    }
+                }else if(behavior == MIDDLE_COMBAT){
+                    break;
+                }else if(behavior == RANGE_COMBAT){
+                    Vector3f enemyPos = new Vector3f(enemy.getPosition());
+                    enemyPos.setY(0.0f);
+                    enemy.setDistance(new Vector3f(selfPos.sub(enemyPos)).length());
+                    closerEnemy.add(enemy);
                 }
             }
         }
+        closerEnemy.sort((o1, o2) -> o1.getDistance() > o2.getDistance() ? 0 : -1);
+        if(!closerEnemy.isEmpty()) {
+            targetCharacter = closerEnemy.get(0);
+        }
 
-        if(closerEnemies.size() != 0){
-            targetCharacter = null;
-            for(Character enemy : closerEnemies){
-                if(targetCharacter == null){
+        /*targetCharacter = null;
+        for (Character enemy : enemies) {
+            if (checkAround(enemy) != null && enemy.isBattle() && !enemy.isDead()) {
+                if (targetCharacter == null) {
                     targetCharacter = enemy;
-                }else{
-                    if(enemy.getPriority(grid,self) > targetCharacter.getPriority(grid,self)){
+                } else {
+                    if (enemy.getPriority(grid, self, behavior) > targetCharacter.getPriority(grid, self, behavior)) {
                         targetCharacter = enemy;
                     }
                 }
             }
-        }else{
-            targetCharacter = null;
-            for(Character enemy : enemies){
-                if(enemy.isBattle() && !enemy.isDead()) {
-                    if (targetCharacter == null) {
-                        if(checkAround(enemy) != null) {
-                            targetCharacter = enemy;
-                        }
-                    } else {
-                        if (enemy.getPriority(grid,self) > targetCharacter.getPriority(grid,self)) {
-                            if(checkAround(enemy) != null) {
-                                targetCharacter = enemy;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        }*/
     }
     // методы поиска врагов - конец
 
     // поиск ближайших клеток - начало
     private static void whereToGo(){
-        if(targetCharacter != null){
-            if(targetCharacter.getPriority(grid,self) > 0){ // Большая вероятность победы!
-                closerCell = checkAround(targetCharacter);
-            }else{ // Вероятность погибнуть!
-                if(isLowHealth()){
+        switch (behavior) {
+            case MELEE_COMBAT:
+                if (targetCharacter != null) {
+                    if (targetCharacter.getPriority(grid, self, behavior) > 0) { // Большая вероятность победы!
+                        closerCell = checkAround(targetCharacter);
+                    } else { // Вероятность погибнуть!
+                        if (isLowHealth()) {
+                            List<Cell> exit = new ArrayList<>();
+                            Vector3f selfPos = new Vector3f(self.getPosition());
+                            selfPos.setY(0.0f);
+                            for (int x = 0; x < grid.length; x++) {
+                                for (int z = 0; z < grid[0].length; z++) {
+                                    if (grid[x][z].isExitBattleGraund()) {
+                                        Vector3f exitPos = new Vector3f(grid[x][z].getPosition());
+                                        exitPos.setY(0.0f);
+                                        float length = Math.abs(selfPos.sub(exitPos).length());
+                                        grid[x][z].setDistance(length);
+                                        exit.add(grid[x][z]);
+                                    }
+                                }
+                            }
+                            exit.sort((o1, o2) -> o1.getDistance() > o2.getDistance() ? 0 : -1);
+                            closerCell = exit.get(0);
+                            targetCharacter = null;
+                        } else {
+                            // временно!
+                            closerCell = checkAround(targetCharacter);
+                        }
+                    }
+                } else {
+                    System.out.println("Враг не обнаружен!");
                     List<Cell> exit = new ArrayList<>();
-                    Vector3f selfPos = new Vector3f(self.getPosition()); selfPos.setY(0.0f);
-                    for(int x=0; x<grid.length; x++){
-                        for(int z=0;z<grid[0].length;z++){
-                            if(grid[x][z].isExitBattleGraund()){
-                                Vector3f exitPos = new Vector3f(grid[x][z].getPosition());exitPos.setY(0.0f);
+                    Vector3f selfPos = new Vector3f(self.getPosition());
+                    selfPos.setY(0.0f);
+                    for (int x = 0; x < grid.length; x++) {
+                        for (int z = 0; z < grid[0].length; z++) {
+                            if (grid[x][z].isExitBattleGraund()) {
+                                Vector3f exitPos = new Vector3f(grid[x][z].getPosition());
+                                exitPos.setY(0.0f);
                                 float length = Math.abs(selfPos.sub(exitPos).length());
                                 grid[x][z].setDistance(length);
                                 exit.add(grid[x][z]);
@@ -116,15 +152,78 @@ public class SimpleAI {
                     }
                     exit.sort((o1, o2) -> o1.getDistance() > o2.getDistance() ? 0 : -1);
                     closerCell = exit.get(0);
-                }else{
-                    // временно!
-                    closerCell = checkAround(targetCharacter);
                 }
-            }
-        }else{
-            System.out.println("Враг не обнаружен!");
-            self.setBattle(false);
-            self.resetSettings();
+                break;
+            case MIDDLE_COMBAT:
+                break;
+            case RANGE_COMBAT:
+                if(targetCharacter != null){
+                    if(isLowHealth()){
+                        List<Cell> exit = new ArrayList<>();
+                        Vector3f selfPos = new Vector3f(self.getPosition()); selfPos.setY(0.0f);
+                        for (int x = 0; x < grid.length; x++) {
+                            for (int z = 0; z < grid[0].length; z++) {
+                                if (grid[x][z].isExitBattleGraund()) {
+                                    Vector3f exitPos = new Vector3f(grid[x][z].getPosition()); exitPos.setY(0.0f);
+                                    float length = Math.abs(selfPos.sub(exitPos).length());
+                                    grid[x][z].setDistance(length);
+                                    exit.add(grid[x][z]);
+                                }
+                            }
+                        }
+                        exit.sort((o1, o2) -> o1.getDistance() > o2.getDistance() ? 0 : -1);
+                        closerCell = exit.get(0);
+                        targetCharacter = null;
+                    }else {
+                        Vector3f selfPos = new Vector3f(self.getPosition());
+                        selfPos.setY(0.0f);
+                        Vector3f enemyPos = new Vector3f(targetCharacter.getPosition());
+                        enemyPos.setY(0.0f);
+                        Vector3f direction = new Vector3f(selfPos.sub(enemyPos)).normalize();
+                        float distance = Math.abs(selfPos.sub(enemyPos).length());
+                        if (self.getCharacteristic().getVision() < distance) {
+                            Vector3f pos = new Vector3f(enemyPos.add(direction.mul(self.getCharacteristic().getVision() - 1.0f)));
+                            int x = Math.round(pos.getX());
+                            if (x < 0) x = 0;
+                            if (x >= grid.length) x = grid.length - 1;
+                            int z = Math.round(pos.getZ());
+                            if (z < 0) z = 0;
+                            if (z >= grid[0].length) z = grid[0].length - 1;
+                            closerCell = grid[x][z];
+                        } else {
+                            if (distance < self.getCharacteristic().getVision() / 2.0f) {
+                                Vector3f pos = new Vector3f(enemyPos.add(direction.mul(self.getCharacteristic().getVision() - 1.0f)));
+                                int x = Math.round(pos.getX());
+                                if (x < 0) x = 0;
+                                if (x >= grid.length) x = grid.length - 1;
+                                int z = Math.round(pos.getZ());
+                                if (z < 0) z = 0;
+                                if (z >= grid[0].length) z = grid[0].length - 1;
+                                Cell studyCell = grid[x][z];
+                                if(studyCell.isBattleGraund()){
+                                    closerCell = studyCell;
+                                    targetCharacter = null;
+                                }else{
+                                    direction = new Vector3f(direction.mul(-1.0f)).normalize();
+                                    pos = new Vector3f(enemyPos.add(direction.mul(self.getCharacteristic().getVision() - 1.0f)));
+                                    x = Math.round(pos.getX());
+                                    if (x < 0) x = 0;
+                                    if (x >= grid.length) x = grid.length - 1;
+                                    z = Math.round(pos.getZ());
+                                    if (z < 0) z = 0;
+                                    if (z >= grid[0].length) z = grid[0].length - 1;
+                                    studyCell = grid[x][z];
+                                    if(studyCell.isBattleGraund()){
+                                        closerCell = studyCell;
+                                        targetCharacter = null;
+                                    }
+                                }
+                                // ДОРАБОТАТЬ!
+                            }
+                        }
+                    }
+                }
+                break;
         }
     }
     // поиск ближайших клеток - конец
@@ -196,6 +295,16 @@ public class SimpleAI {
     // алгоритмы принятия решений - конец
 
     // сетеры и гетеры - начало
+
+
+    public static int getBehavior() {
+        return behavior;
+    }
+
+    public static void setBehavior(int behavior) {
+        SimpleAI.behavior = behavior;
+    }
+
     public static Cell[][] getGrid() {
         return grid;
     }

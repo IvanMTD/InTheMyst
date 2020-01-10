@@ -1,6 +1,7 @@
 package ru.phoenix.core.config;
 
 import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
@@ -16,6 +17,7 @@ public class Default {
     // anarchy
     private static Character anarchyBandit;
     private static Character anarchyThief;
+    private static Character anarchyArcher;
 
     private static float offset;
     private static boolean wait;
@@ -28,6 +30,7 @@ public class Default {
         // anarchy
         anarchyBandit = new AnarchyBandit();
         anarchyThief = new AnarchyThief();
+        anarchyArcher = new AnarchyArcher();
 
         cursorAngle = 0.0f;
         glEnable(GL_DEPTH_TEST);
@@ -85,5 +88,9 @@ public class Default {
 
     public static Character getAnarchyThief() {
         return anarchyThief;
+    }
+
+    public static Character getAnarchyArcher() {
+        return anarchyArcher;
     }
 }

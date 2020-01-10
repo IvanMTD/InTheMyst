@@ -12,9 +12,9 @@ import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.HumanDraw;
 import ru.phoenix.game.logic.battle.BattleGround;
+import ru.phoenix.game.logic.battle.SimpleAI;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.game.logic.element.grid.Cell;
-import ru.phoenix.game.logic.generator.Generator;
 import ru.phoenix.game.logic.generator.RandomPosition;
 import ru.phoenix.game.property.GameController;
 
@@ -111,6 +111,8 @@ public class CommunisArcher extends HumanDraw implements Character {
     private boolean prepareMove;
     private boolean flowControl;
     private boolean choiceDirection;
+    private boolean autoControl;
+    private boolean prepareDirection;
     private Character allySavedCharacter;
     private Character enemySavedCharacter;
     private Cell targetPoint;
@@ -281,6 +283,7 @@ public class CommunisArcher extends HumanDraw implements Character {
         prepareMove = false;
         flowControl = false;
         choiceDirection = false;
+        prepareDirection = true;
     }
 
     @Override
@@ -321,6 +324,8 @@ public class CommunisArcher extends HumanDraw implements Character {
         prepareMove = false;
         flowControl = false;
         choiceDirection = false;
+        autoControl = false;
+        prepareDirection = true;
         if(!isDead()) {
             playDead = true;
         }
@@ -328,7 +333,7 @@ public class CommunisArcher extends HumanDraw implements Character {
     // методы инициализации - конец
 
     @Override
-    public void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemy, List<Character> ally, BattleGround battleGround) {
+    public void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemies, List<Character> allies, BattleGround battleGround) {
         targetControl(pixel);
 
         if (getCharacteristic().getHealth() == 0) {
@@ -404,6 +409,21 @@ public class CommunisArcher extends HumanDraw implements Character {
                                     movementAnimation(battleGround);
                                 }
                             } else {
+                                if(prepareDirection){
+                                    Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
+                                    Vector3f localPos = new Vector3f(battleGround.getLocalPoint()); localPos.setY(0.0f);
+                                    Vector3f direction = new Vector3f(localPos.sub(mainPos)).normalize();
+                                    if(direction.getX() > 0.5f){
+                                        setLook(WEST);
+                                    }else if(direction.getX() < -0.5f){
+                                        setLook(EAST);
+                                    }else if(direction.getZ() > 0.5f){
+                                        setLook(NORTH);
+                                    }else if(direction.getZ() < -0.5f){
+                                        setLook(SOUTH);
+                                    }
+                                    prepareDirection = false;
+                                }
                                 counter++;
                                 if (counter > 20) {
                                     currentFrame++;
@@ -421,11 +441,11 @@ public class CommunisArcher extends HumanDraw implements Character {
                                 }
                             }
                         } else {
-                            battleMode(battleGround, grid, ally, enemy);
+                            battleMode(battleGround, grid, allies, enemies);
                         }
                     } else {
                         if(battleEvent == MOVEMENT_ANIMATION){
-                            battleMode(battleGround, grid,ally,enemy);
+                            battleMode(battleGround, grid,allies,enemies);
                         }else {
                             // Заплатка! Стамина расходуется в классе MotionAnimation
                             getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
@@ -474,6 +494,21 @@ public class CommunisArcher extends HumanDraw implements Character {
                                     movementAnimation(battleGround);
                                 }
                             } else {
+                                if(prepareDirection){
+                                    Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
+                                    Vector3f localPos = new Vector3f(battleGround.getLocalPoint()); localPos.setY(0.0f);
+                                    Vector3f direction = new Vector3f(localPos.sub(mainPos)).normalize();
+                                    if(direction.getX() > 0.5f){
+                                        setLook(WEST);
+                                    }else if(direction.getX() < -0.5f){
+                                        setLook(EAST);
+                                    }else if(direction.getZ() > 0.5f){
+                                        setLook(NORTH);
+                                    }else if(direction.getZ() < -0.5f){
+                                        setLook(SOUTH);
+                                    }
+                                    prepareDirection = false;
+                                }
                                 counter++;
                                 if (counter > 20) {
                                     currentFrame++;
@@ -491,12 +526,12 @@ public class CommunisArcher extends HumanDraw implements Character {
                                 }
                             }
                         } else {
-
+                            autoBattleMode(battleGround, grid, allies, enemies);
                         }
                     } else {
                         getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
                         getCharacteristic().updateIndicators();
-                        checkInvasion(enemy,battleGround,grid);
+                        checkInvasion(enemies,battleGround,grid);
                         if (waiting) {
                             if(flowControl){
                                 if(!randomPosition.isAlive()){
@@ -826,13 +861,13 @@ public class CommunisArcher extends HumanDraw implements Character {
                                         Vector3f lookPos = new Vector3f(grid[x][z].getPosition()); lookPos.setY(0.0f);
                                         Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
                                         Vector3f direction = new Vector3f(lookPos.sub(currentPos)).normalize();
-                                        if(direction.getZ() >= 0.5f){ // NORTH
+                                        if(direction.getZ() == 1.0f){ // NORTH
                                             setLook(NORTH);
-                                        }else if(direction.getX() >= 0.5f){ // WEST
+                                        }else if(direction.getX() == 1.0f){ // WEST
                                             setLook(WEST);
-                                        }else if(direction.getZ() <= -0.5f){ // SOUTH
+                                        }else if(direction.getZ() == -1.0f){ // SOUTH
                                             setLook(SOUTH);
-                                        }else if(direction.getX() <= -0.5f){ // EAST
+                                        }else if(direction.getX() == -1.0f){ // EAST
                                             setLook(EAST);
                                         }
                                         // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
@@ -896,6 +931,250 @@ public class CommunisArcher extends HumanDraw implements Character {
         }
     }
 
+    private void autoBattleMode(BattleGround battleGround, Cell[][] grid, List<Character> allies, List<Character> enemies){
+        setShowIndicators(false);
+        if(Default.isWait()){
+            if(action) {
+                setShowIndicators(true);
+                switch (battleEvent) {
+                    case PREPARED_AREA:
+                        SimpleAI.dataLoading(grid,this,allies,enemies,RANGE_COMBAT);
+                        SimpleAI.dataAnalyze();
+                        counter = 0;
+                        runPathfindingAlgorithm();
+                        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, grid[(int)getPosition().getX()][(int)getPosition().getZ()]);
+                        getPathfindingAlgorithm().start();
+                        battleEvent = CREATE_PATH;
+                        autoControl = false;
+                        break;
+                    case CREATE_PATH:
+                        if(autoControl){
+                            if (!getPathfindingAlgorithm().isAlive()) {
+                                if (!getWayPoints().isEmpty()) {
+                                    grid[(int)getPosition().getX()][(int)getPosition().getZ()].setOccupied(false);
+                                    List<Cell>wayPoints = new ArrayList<>();
+                                    boolean last = false;
+                                    for(int i=0; i<getWayPoints().size(); i++){
+                                        if(last){
+                                            getWayPoints().get(i).setWayPoint(false);
+                                        }else {
+                                            if (getWayPoints().get(i).isBlueZona() || getWayPoints().get(i).isGoldZona()) {
+                                                wayPoints.add(getWayPoints().get(i));
+                                            } else {
+                                                getWayPoints().get(i).setWayPoint(false);
+                                                last = true;
+                                            }
+                                        }
+                                    }
+                                    wayPoints.add(0,grid[(int)getPosition().getX()][(int)getPosition().getZ()]);
+                                    getMotionAnimation().setup(getPosition(), wayPoints);
+                                    walkAnimation.setFrames(1);
+                                    baseStanceAnimation.setFrames(1);
+                                    jumpAnimation.setFrames(1);
+                                    goUpDownAnimation.setFrames(1);
+                                    battleEvent = MOVEMENT_ANIMATION;
+                                    prepareMove = false;
+                                    setJump(false);
+                                    for (int x = 0; x < grid.length; x++) {
+                                        for (int z = 0; z < grid[0].length; z++) {
+                                            if (!grid[x][z].isWayPoint()) {
+                                                grid[x][z].setVisible(false);
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    System.out.println("WayPoints is empty!!");
+                                    for(int x=0; x<grid.length; x++){
+                                        for(int z=0; z<grid[0].length; z++){
+                                            grid[x][z].setGrayZona();
+                                            grid[x][z].setVisible(false);
+                                            grid[x][z].setWayPoint(false);
+                                        }
+                                    }
+                                    battleEvent = PREPARED_AREA;
+                                    Default.setWait(false);
+                                    this.action = false;
+                                }
+                            }
+                        }else{
+                            counter++;
+                            if(counter > 200) {
+                                boolean action = actionControl(grid,SimpleAI.getTargetCharacter());
+                                if(!action) {
+                                    if (!getPathfindingAlgorithm().isAlive()) {
+                                        runPathfindingAlgorithm();
+                                        getPathfindingAlgorithm().setup(getCharacteristic(), battleGround, grid, getWayPoints(), grid[(int) getPosition().getX()][(int) getPosition().getZ()], SimpleAI.getCloserCell(), true);
+                                        getPathfindingAlgorithm().start();
+                                        autoControl = true;
+                                        counter = 0;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case MOVEMENT_ANIMATION:
+                        Vector3f position = new Vector3f(-1.0f, -1.0f, -1.0f);
+                        int motion = getMotionAnimation().motion(this, battleGround, position, getPosition(), getCharacteristic(), jumpAnimation, goUpDownAnimation, walkAnimation);
+                        if (!position.equals(new Vector3f(-1.0f, -1.0f, -1.0f))) {
+                            setPosition(position);
+                        }
+
+                        if (motion == 0) {
+                            preparingForBattle = true;
+                            Cell currentElement = grid[(int)getPosition().getX()][(int)getPosition().getZ()];
+                            currentElement.setOccupied(true);
+                            if (currentElement.isBlueZona()) {
+                                getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
+                            } else if (currentElement.isGoldZona()) {
+                                getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 2);
+                            }
+                            updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                            setJump(false);
+                            for(int x=0; x<grid.length; x++){
+                                for(int z=0; z<grid[0].length; z++){
+                                    grid[x][z].setGrayZona();
+                                    grid[x][z].setVisible(false);
+                                    grid[x][z].setWayPoint(false);
+                                }
+                            }
+                            if (getCharacteristic().getCurentActionPoint() > 0) {
+                                if (getCharacteristic().getStamina() > 0) {
+                                    battleEvent = PREPARED_AREA;
+                                } else {
+                                    battleEvent = PREPARED_AREA;
+                                    Default.setWait(false);
+                                    this.action = false;
+                                }
+                            } else {
+                                battleEvent = PREPARED_AREA;
+                                Default.setWait(false);
+                                this.action = false;
+                            }
+                        }else if (motion == 1) {
+                            setJump(false);
+                            updateAnimation(walkTexture,walkAnimation);
+                        }else if (motion == 2) {
+                            setJump(true);
+                            updateAnimation(jumpTexture,jumpAnimation);
+                        }else if (motion == 3) {
+                            setJump(false);
+                            updateAnimation(goUpDownTexture,goUpDownAnimation);
+                        }else if(motion == 4){
+                            setJump(false);
+                            updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                        }
+                        break;
+                    case ATTACK_ANIMATION:
+                        if(isBaseAttack){
+                            if(enemySavedCharacter != null) {
+                                if(doubleAnimation){
+                                    if(index < timeShift.size()) {
+                                        counter++;
+                                        setAdditionalProjection(timeShift.get(index));
+                                        if(timeShift.get(index).getY() < lastY){
+                                            simpleArrowAnimation.setFrames(2);
+                                        }
+                                        baseAttackAnimation.setFrames(baseAttack.getRow());
+                                        updateAnimation(baseAttackTexture,baseAttackAnimation);
+                                        updateAdditionalAnimation(simpleArrowTexture,simpleArrowAnimation);
+                                        lastY = timeShift.get(index).getY();
+                                        if (counter > 2) {
+                                            counter = 0;
+                                            index++;
+                                        }
+                                    }else{
+                                        // контролеры
+                                        index = 0;
+                                        counter = 0;
+                                        currentFrame = 1;
+                                        isBaseAttack = false;
+                                        firstBaseAttack = true;
+                                        doubleAnimation = false;
+                                        useAdditionalAnimation(false);
+                                        // результаты
+                                        getCharacteristic().setCurentActionPoint(getCharacteristic().getCurentActionPoint() - 1);
+                                        getCharacteristic().setStamina(getCharacteristic().getStamina() - 10);
+                                        enemySavedCharacter.getCharacteristic().setHealth(enemySavedCharacter.getCharacteristic().getHealth() - getCharacteristic().getPhysicalPower());
+                                        enemySavedCharacter.setTakeDamadge(true);
+                                        if (enemySavedCharacter.getCharacteristic().getHealth() < 0) {
+                                            enemySavedCharacter.getCharacteristic().setHealth(0);
+                                        }
+                                        if (getCharacteristic().getCurentActionPoint() > 0) {
+                                            if (getCharacteristic().getStamina() > 0) {
+                                                battleEvent = PREPARED_AREA;
+                                            } else {
+                                                battleEvent = PREPARED_AREA;
+                                                Default.setWait(false);
+                                                this.action = false;
+                                            }
+                                        } else {
+                                            battleEvent = PREPARED_AREA;
+                                            Default.setWait(false);
+                                            this.action = false;
+                                        }
+                                    }
+                                }else {
+                                    if (firstBaseAttack) {
+                                        // ОБРОБОТКА ПОВОРОТА - НАЧАЛО
+                                        Vector3f enemyPos = new Vector3f(enemySavedCharacter.getPosition()); enemyPos.setY(0.0f);
+                                        Vector3f currentPos = new Vector3f(getPosition()); currentPos.setY(0.0f);
+                                        Vector3f direction = new Vector3f(enemyPos.sub(currentPos)).normalize();
+                                        if(direction.getZ() >= 0.5f){ // NORTH
+                                            setLook(NORTH);
+                                        }else if(direction.getX() >= 0.5f){ // WEST
+                                            setLook(WEST);
+                                        }else if(direction.getZ() <= -0.5f){ // SOUTH
+                                            setLook(SOUTH);
+                                        }else if(direction.getX() <= -0.5f){ // EAST
+                                            setLook(EAST);
+                                        }
+                                        // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
+                                        firstBaseAttack = false;
+                                    } else {
+                                        counter++;
+                                        if (counter > 20) {
+                                            currentFrame++;
+                                            counter = 0;
+                                        }
+                                        if (currentFrame <= baseAttack.getRow()) {
+                                            baseAttackAnimation.setFrames(currentFrame);
+                                            updateAnimation(baseAttackTexture, baseAttackAnimation);
+                                        } else {
+                                            doubleAnimation = true;
+                                            currentFrame = 1;
+                                            counter = 0;
+                                            index = 0;
+                                            useAdditionalAnimation(true);
+                                            setAdditionalProjection(timeShift.get(0));
+                                            simpleArrowAnimation.setFrames(1);
+                                            updateAdditionalAnimation(simpleArrowTexture,simpleArrowAnimation);
+                                            lastY = timeShift.get(0).getY();
+                                        }
+                                    }
+                                }
+                            }else{
+                                System.out.println("нет врага переменна пустая ... ");
+                            }
+                        }
+                        break;
+                }
+            }
+        }else{
+            if(sampleData != Time.getSecond()){
+                getCharacteristic().setInitiative(getCharacteristic().getInitiative() + getCharacteristic().getInitiativeCharge());
+                if(getCharacteristic().getInitiative() >= 100){
+                    getCharacteristic().setCurentActionPoint(getCharacteristic().getTotalActionPoint());
+                    getCharacteristic().setInitiative(0);
+                    getCharacteristic().updateIndicators();
+                    this.action = true;
+                    battleEvent = PREPARED_AREA;
+                    Default.setWait(true);
+                }
+            }
+            sampleData = Time.getSecond();
+        }
+    }
+
     private boolean actionControl(Cell[][] grid, List<Character> enemy){
         isBaseAttack = false;
         boolean action = false;
@@ -939,6 +1218,62 @@ public class CommunisArcher extends HumanDraw implements Character {
                         // конец проверки
 
                     }
+                }
+            }
+        }
+
+        if(enemySavedCharacter != null){
+            battleEvent = ATTACK_ANIMATION;
+            isBaseAttack = true;
+            action = true;
+            for(int x=0; x<grid.length; x++){
+                for(int z=0; z<grid[0].length; z++){
+                    grid[x][z].setVisible(false);
+                }
+            }
+        }
+        return action;
+    }
+
+    private boolean actionControl(Cell[][] grid, Character enemy){
+        isBaseAttack = false;
+        boolean action = false;
+        enemySavedCharacter = null;
+        Vector3f mainPos = new Vector3f(getPosition()); mainPos.setY(0.0f);
+        if(enemy != null){
+            if (!enemy.isDead()) {
+                Vector3f enemyPos = new Vector3f(enemy.getPosition()); enemyPos.setY(0.0f);
+                if(Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()){
+                    // начало проверки на высоту
+                    Vector3f direction = new Vector3f(enemy.getPosition().sub(getPosition())).normalize();
+                    float distance = Math.abs(new Vector3f(enemy.getPosition().sub(getPosition())).length());
+                    float halfDistance = distance / 2.0f;
+                    Vector3f p0 = new Vector3f(getPosition());
+                    Vector3f p1 = new Vector3f(getPosition().add(direction.mul(halfDistance)));
+                    p1.setY(p1.getY() + 5.0f); // 5.0f это высота полета стрелы
+                    Vector3f p2 = new Vector3f(enemy.getPosition());
+                    timeShift = new ArrayList<>();
+                    for(float t=0.0f; t<1.0f; t+= 1.0f / (distance * 5.0f)){
+                        float x = (1-t) * p0.getX() + t * p2.getX();
+                        float y = (float)Math.pow((1-t),2) * p0.getY() + 2 * t * (1-t) * p1.getY() + (float)Math.pow(t,2) * p2.getY();
+                        float z = (1-t) * p0.getZ() + t * p2.getZ();
+                        Vector3f time = new Vector3f(x,y,z);
+                        Cell cell = grid[Math.round(x)][Math.round(z)];
+                        //System.out.println(cell.getCurrentHeight() + " | " + time.toString());
+                        if(!cell.isBlocked() && cell.getCurrentHeight() <= time.getY() + 1.0f) {
+                            timeShift.add(time);
+                        }else{
+                            timeShift.clear();
+                            break;
+                        }
+                    }
+                    //System.out.println("main pos: " + getPosition().toString());
+                    //System.out.println("enemy pos: " + character.getPosition().toString());
+                    if(timeShift.size() != 0){
+                        enemySavedCharacter = enemy;
+                    }
+                    // конец проверки
+
                 }
             }
         }
