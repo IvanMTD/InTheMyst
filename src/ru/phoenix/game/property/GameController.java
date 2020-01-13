@@ -14,6 +14,7 @@ public class GameController {
     // контролеры клавиатуры
     private ActionVerification key_space;
     private ActionVerification key_tab;
+    private ActionVerification key_f;
 
     // определение нажатия
     // мыши
@@ -22,6 +23,7 @@ public class GameController {
     // клавиатуры
     private boolean spaceClick;
     private boolean tabClick;
+    private boolean fClick;
 
     // определение зажатия
     // мыши
@@ -30,6 +32,7 @@ public class GameController {
     // клавиатуры
     private boolean spaceHold;
     private boolean tabHold;
+    private boolean fHold;
 
     private GameController(){
         // контролеры мыши
@@ -38,6 +41,7 @@ public class GameController {
         // контролеры клавиатуры
         key_space = new ActionVerification();
         key_tab = new ActionVerification();
+        key_f = new ActionVerification();
     }
 
     public void update(){
@@ -51,6 +55,8 @@ public class GameController {
         spaceHold = key_space.keyboardButton(GLFW_KEY_SPACE) == HOLD;
         tabClick = key_tab.keyboardButton(GLFW_KEY_TAB) == CLICK;
         tabHold = key_tab.keyboardButton(GLFW_KEY_TAB) == HOLD;
+        fClick = key_f.keyboardButton(GLFW_KEY_F) == CLICK;
+        fHold = key_f.keyboardButton(GLFW_KEY_F) == HOLD;
     }
 
     // результаты работы мыши
@@ -85,6 +91,14 @@ public class GameController {
 
     public boolean isTabHold() {
         return tabHold;
+    }
+
+    public boolean isfClick() {
+        return fClick;
+    }
+
+    public boolean isfHold() {
+        return fHold;
     }
 
     public static GameController getInstance(){

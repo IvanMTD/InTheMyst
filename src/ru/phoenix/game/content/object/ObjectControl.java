@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.object;
 
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.CoreEngine;
 import ru.phoenix.core.kernel.Input;
@@ -302,7 +303,7 @@ public abstract class ObjectControl {
         this.bigTree = bigTree;
     }
 
-    protected boolean isTree() {
+    public boolean isTree() {
         return tree;
     }
 
@@ -336,6 +337,7 @@ public abstract class ObjectControl {
             shader.setUniform("isActive", isActive() ? 1 : 0);
             shader.setUniform("bigTree", isBigTree() ? 1 : 0);
             shader.setUniform("tree", isTree() ? 1 : 0);
+            shader.setUniform("showAlpha", Default.isShowAlpha() ? 1 : 0);
             shader.setUniform("viewDirect", new Vector3f(Camera.getInstance().getFront().normalize()));
             shader.setUniform("turn", currentTurn ? 1 : 0);
             shader.setUniform("discardReverse", 0);

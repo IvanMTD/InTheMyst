@@ -1,5 +1,7 @@
 #version 430 core
 
+const float offset = 1.0 / 300.0;
+
 out vec4 fragment_color;
 
 in vec2 texture_coord;
@@ -7,6 +9,7 @@ in vec2 texture_coord;
 uniform sampler2D main_texture;
 uniform sampler2D blur_texture;
 uniform float gamma;
+uniform float contrast;
 uniform int shadow;
 
 /*void main(){
@@ -16,8 +19,6 @@ uniform int shadow;
     float average = 0.2126 * FragColor.r + 0.7152 * FragColor.g + 0.0722 * FragColor.b; // Градации серого
     FragColor = vec4(average, average, average, 1.0); // Градации серого
 }*/
-
-const float offset = 1.0 / 300.0;
 float exposure = 1.0f;
 
 void main(){
@@ -83,6 +84,7 @@ void main(){
         fragment_color = texture(blur_texture,texture_coord);
     }else{
         fragment_color = vec4(mapped, 1.0);
+        fragment_color.rgb = (fragment_color.rgb - 0.5f) * (1.0f + contrast) + 0.5f;
     }
 }
 

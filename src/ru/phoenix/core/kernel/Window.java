@@ -25,6 +25,7 @@ public class Window {
     private int width;
     private int height;
     private float gamma;
+    private float contrast;
 
     public static Window getInstance(){
         if(instance == null){
@@ -38,6 +39,7 @@ public class Window {
         setWidth(width);
         setHeight(height);
         setGamma(WindowConfig.getInstance().getGamma());
+        setContrast(WindowConfig.getInstance().getContrast());
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -161,5 +163,13 @@ public class Window {
 
     public void setGamma(float gamma) {
         this.gamma = gamma;
+    }
+
+    public float getContrast() {
+        return contrast;
+    }
+
+    public void setContrast(float contrast) {
+        this.contrast = contrast;
     }
 }

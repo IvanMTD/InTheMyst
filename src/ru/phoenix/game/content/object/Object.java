@@ -35,4 +35,5 @@ public interface Object {
     void draw(Shader shader, boolean shadow);
     boolean isBoard();
     void setProjection(Projection projection);
+    boolean isTree();
 }

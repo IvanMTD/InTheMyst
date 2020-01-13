@@ -33,7 +33,9 @@ public class Characteristic {
     private int jump;
     private int speed;
     // Параметры обзора
+    private int finalVision;
     private int vision;
+    private float tempVision;
 
     // Конструкторы класса
     public Characteristic(){
@@ -66,7 +68,9 @@ public class Characteristic {
         setJump(2);
         setSpeed(2);
         // Обзор
-        setVision(10);
+        setFinalVision(10);
+        setVision(getFinalVision());
+        setTempVision(getVision());
     }
 
     public Characteristic(Characteristic characteristic){
@@ -99,7 +103,9 @@ public class Characteristic {
         setJump(characteristic.getJump());
         setSpeed(characteristic.getSpeed());
         // Обзор
-        setVision(characteristic.getVision());
+        setFinalVision(characteristic.getFinalVision());
+        setVision(characteristic.getFinalVision());
+        setTempVision(characteristic.getVision());
     }
 
     // ОПЫТ И УРОВЕНЬ
@@ -286,6 +292,22 @@ public class Characteristic {
 
     public void setVision(int vision) {
         this.vision = vision;
+    }
+
+    public int getFinalVision() {
+        return finalVision;
+    }
+
+    public float getTempVision() {
+        return tempVision;
+    }
+
+    public void setTempVision(float tempVision) {
+        this.tempVision = tempVision;
+    }
+
+    public void setFinalVision(int finalVision) {
+        this.finalVision = finalVision;
     }
 
     // Формулы

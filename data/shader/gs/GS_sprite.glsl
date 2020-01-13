@@ -12,6 +12,7 @@ in VS_OUT{
     flat int isBoard;
     flat int isGrid;
     vec4 localPos;
+    float visibility;
 }gs_in[];
 
 out vec2 textureCoord;
@@ -19,6 +20,7 @@ out flat int isBoard;
 out flat int isGrid;
 out flat int useShading;
 out flat int battle;
+out float visibility;
 
 void main() {
     battle = battlefield;
@@ -47,18 +49,21 @@ void main() {
         textureCoord = gs_in[0].textureCoord;
         isBoard = gs_in[0].isBoard;
         isGrid = gs_in[0].isGrid;
+        visibility = gs_in[0].visibility;
         EmitVertex();
 
         gl_Position = gl_in[1].gl_Position;
         textureCoord = gs_in[1].textureCoord;
         isBoard = gs_in[1].isBoard;
         isGrid = gs_in[1].isGrid;
+        visibility = gs_in[1].visibility;
         EmitVertex();
 
         gl_Position = gl_in[2].gl_Position;
         textureCoord = gs_in[2].textureCoord;
         isBoard = gs_in[2].isBoard;
         isGrid = gs_in[2].isGrid;
+        visibility = gs_in[2].visibility;
         EmitVertex();
 
         EndPrimitive();
@@ -69,18 +74,21 @@ void main() {
         textureCoord = gs_in[0].textureCoord;
         isBoard = gs_in[0].isBoard;
         isGrid = gs_in[0].isGrid;
+        visibility = gs_in[0].visibility;
         EmitVertex();
 
         gl_Position = gl_in[1].gl_Position;
         textureCoord = gs_in[1].textureCoord;
         isBoard = gs_in[1].isBoard;
         isGrid = gs_in[1].isGrid;
+        visibility = gs_in[1].visibility;
         EmitVertex();
 
         gl_Position = gl_in[2].gl_Position;
         textureCoord = gs_in[2].textureCoord;
         isBoard = gs_in[2].isBoard;
         isGrid = gs_in[2].isGrid;
+        visibility = gs_in[2].visibility;
         EmitVertex();
 
         EndPrimitive();

@@ -5,6 +5,8 @@
 #define B 131075
 #define A 131076
 
+const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
+
 layout (location = 0) out vec4 fragment_color;
 layout (location = 1) out vec4 select_color;
 layout (location = 2) out vec4 bright_color;
@@ -19,6 +21,7 @@ in GS_OUT {
     vec3 ViewPos;
     vec4 FragPosLightSpace;
     mat3 TBN;
+    float visibility;
 }fs_in;
 
 // Структуры и Юниформы
@@ -90,6 +93,8 @@ void main() {
             }
         }
     }
+
+    fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
 
     vec4 rgba = texture(material.diffuseMap,fs_in.TexCoords);
     if(group == R){

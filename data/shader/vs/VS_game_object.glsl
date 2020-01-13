@@ -2,6 +2,7 @@
 
 const int MAX_JOINTS = 44;
 const int MAX_WEIGHTS = 4;
+const float gradient = 8.0f;
 
 layout (location = 0) in vec3 l_pos;
 layout (location = 1) in vec3 l_norm;
@@ -28,6 +29,13 @@ uniform mat4 lightSpaceMatrix;
 uniform vec3 viewPos;
 uniform mat4 joints_m[MAX_JOINTS];
 
+uniform vec4 unit0;
+uniform vec4 unit1;
+uniform vec4 unit2;
+uniform vec4 unit3;
+uniform vec4 unit4;
+uniform vec4 unit5;
+
 out VS_OUT {
      vec3 FragPos;
      vec3 Normal;
@@ -38,10 +46,10 @@ out VS_OUT {
      vec4 FragPosLightSpace;
      mat3 TBN;
      vec4 localPos;
+     float visibility;
 } vs_out;
 
 void main() {
-
     vec4 initNormal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
     vec4 initPos = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -70,6 +78,27 @@ void main() {
             gl_Position = perspective_m * view_m * l_instance_m * initPos;
         }else{
             initPos = vec4(l_pos, 1.0f);
+
+            vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
+            float visbl = 0;
+            for(int i=0; i<6; i++){
+                if(units[i].xyz != -1.0f){
+                    vec4 elementPos = l_instance_m * initPos;
+                    vec3 direct = vec3(elementPos.xyz - units[i].xyz);
+                    float distance = length(direct.xyz);
+                    float vis = exp(-pow((distance * units[i].w),gradient));
+                    visbl += clamp(vis,0.0f,1.0f);
+                }
+            }
+            if(visbl > 1.0f){
+                visbl = 1.0f;
+            }
+            /*vec4 elementPos = model_m * initPos;
+            vec3 direct = vec3(elementPos.xyz - masterPoint);
+            float distance = length(direct.xyz);
+            float vis = exp(-pow((distance * density),gradient));*/
+            vs_out.visibility = visbl;
+
             gl_Position = perspective_m * view_m * l_instance_m * initPos;
             initNormal = vec4(l_norm,0.0f);
         }
@@ -113,6 +142,27 @@ void main() {
             gl_Position = perspective_m * view_m * model_m * initPos;
         }else{
             initPos = vec4(l_pos, 1.0f);
+
+            vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
+            float visbl = 0;
+            for(int i=0; i<6; i++){
+                if(units[i].xyz != -1.0f){
+                    vec4 elementPos = model_m * initPos;
+                    vec3 direct = vec3(elementPos.xyz - units[i].xyz);
+                    float distance = length(direct.xyz);
+                    float vis = exp(-pow((distance * units[i].w),gradient));
+                    visbl += clamp(vis,0.0f,1.0f);
+                }
+            }
+            if(visbl > 1.0f){
+                visbl = 1.0f;
+            }
+            /*vec4 elementPos = model_m * initPos;
+            vec3 direct = vec3(elementPos.xyz - masterPoint);
+            float distance = length(direct.xyz);
+            float vis = exp(-pow((distance * density),gradient));*/
+            vs_out.visibility = visbl;
+
             gl_Position = perspective_m * view_m * model_m * initPos;
             initNormal = vec4(l_norm,0.0f);
         }

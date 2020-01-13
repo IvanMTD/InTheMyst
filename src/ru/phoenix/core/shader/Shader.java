@@ -2,6 +2,7 @@ package ru.phoenix.core.shader;
 
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.util.BufferUtil;
 
 import java.io.BufferedReader;
@@ -83,6 +84,10 @@ public class Shader {
 
     public void setUniform(String uniformName, Vector3f vector){
         glUniform3f(glGetUniformLocation(program,uniformName),vector.getX(),vector.getY(),vector.getZ());
+    }
+
+    public void setUniform(String uniformName, Vector4f vector){
+        glUniform4f(glGetUniformLocation(program,uniformName),vector.getX(),vector.getY(),vector.getZ(),vector.getW());
     }
 
     public void setUniform(String uniformName, Matrix4f matrix){

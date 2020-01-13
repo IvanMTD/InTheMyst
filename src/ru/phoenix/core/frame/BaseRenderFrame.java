@@ -135,6 +135,7 @@ public class BaseRenderFrame implements Framework {
         glBindFramebuffer(GL_FRAMEBUFFER,0);
         ndcShader.useProgram();
         ndcShader.setUniform("gamma", Window.getInstance().getGamma());
+        ndcShader.setUniform("contrast",Window.getInstance().getContrast());
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, render.getTexture());
         ndcShader.setUniform("main_texture",0);

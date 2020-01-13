@@ -45,6 +45,7 @@ public class WindowConfig {
             defaultConfig.add("window_height");defaultConfig.add(Integer.toString(720));
             defaultConfig.add("samples");defaultConfig.add(Integer.toString(4));
             defaultConfig.add("gamma");defaultConfig.add(Float.toString(2.2f));
+            defaultConfig.add("contrast");defaultConfig.add(Float.toString(0.0f));
             defaultConfig.add("z_near");defaultConfig.add(Float.toString(0.01f));
             defaultConfig.add("z_far");defaultConfig.add(Float.toString(300.0f));
             writeFile(defaultConfig);
@@ -120,6 +121,20 @@ public class WindowConfig {
 
     public float getGamma(){
         return Float.parseFloat(getParam("gamma"));
+    }
+
+    public void setContrast(float contrast){
+        List<String>param = getCurrentCopy();
+        for(int i=0; i<param.size(); i++){
+            if(param.get(i).equals("contrast")){
+                param.set(i+1,Float.toString(contrast));
+            }
+        }
+        writeFile(param);
+    }
+
+    public float getContrast(){
+        return Float.parseFloat(getParam("contrast"));
     }
 
     public void setNear(float zNear){

@@ -17,6 +17,7 @@ in VS_OUT {
      vec4 FragPosLightSpace;
      mat3 TBN;
      vec4 localPos;
+     float visibility;
 } gs_in[];
 
 out GS_OUT {
@@ -28,6 +29,7 @@ out GS_OUT {
      vec3 ViewPos;
      vec4 FragPosLightSpace;
      mat3 TBN;
+     float visibility;
 } gs_out;
 
 out flat int useShading;
@@ -80,6 +82,7 @@ void main() {
         gs_out.ViewPos = gs_in[0].ViewPos;
         gs_out.FragPosLightSpace = gs_in[0].FragPosLightSpace;
         gs_out.TBN = gs_in[0].TBN;
+        gs_out.visibility = gs_in[0].visibility;
         EmitVertex();
 
         gl_Position = gl_in[1].gl_Position;
@@ -91,6 +94,7 @@ void main() {
         gs_out.ViewPos = gs_in[1].ViewPos;
         gs_out.FragPosLightSpace = gs_in[1].FragPosLightSpace;
         gs_out.TBN = gs_in[1].TBN;
+        gs_out.visibility = gs_in[1].visibility;
         EmitVertex();
 
         gl_Position = gl_in[2].gl_Position;
@@ -102,6 +106,7 @@ void main() {
         gs_out.ViewPos = gs_in[2].ViewPos;
         gs_out.FragPosLightSpace = gs_in[2].FragPosLightSpace;
         gs_out.TBN = gs_in[2].TBN;
+        gs_out.visibility = gs_in[2].visibility;
         EmitVertex();
 
         EndPrimitive();
@@ -118,6 +123,7 @@ void main() {
         gs_out.ViewPos = gs_in[0].ViewPos;
         gs_out.FragPosLightSpace = gs_in[0].FragPosLightSpace;
         gs_out.TBN = gs_in[0].TBN;
+        gs_out.visibility = gs_in[0].visibility;
         EmitVertex();
 
         gl_Position = gl_in[1].gl_Position;
@@ -129,6 +135,7 @@ void main() {
         gs_out.ViewPos = gs_in[1].ViewPos;
         gs_out.FragPosLightSpace = gs_in[1].FragPosLightSpace;
         gs_out.TBN = gs_in[1].TBN;
+        gs_out.visibility = gs_in[1].visibility;
         EmitVertex();
 
         gl_Position = gl_in[2].gl_Position;
@@ -140,6 +147,7 @@ void main() {
         gs_out.ViewPos = gs_in[2].ViewPos;
         gs_out.FragPosLightSpace = gs_in[2].FragPosLightSpace;
         gs_out.TBN = gs_in[2].TBN;
+        gs_out.visibility = gs_in[2].visibility;
         EmitVertex();
 
         EndPrimitive();

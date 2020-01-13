@@ -22,9 +22,11 @@ public class Default {
     private static float radiance;
     private static float offset;
     private static boolean wait;
+    private static boolean showAlpha;
     private static float cursorAngle;
 
     public static void init() {
+        showAlpha = false;
         // communis
         gehard = new Gehard();
         communisArcher = new CommunisArcher();
@@ -71,6 +73,14 @@ public class Default {
 
     public static void setWait(boolean wait) {
         Default.wait = wait;
+    }
+
+    public static boolean isShowAlpha() {
+        return showAlpha;
+    }
+
+    public static void setShowAlpha(boolean showAlpha) {
+        Default.showAlpha = showAlpha;
     }
 
     public static float getCursorAngle() {

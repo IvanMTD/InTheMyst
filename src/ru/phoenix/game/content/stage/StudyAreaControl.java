@@ -3,6 +3,7 @@ package ru.phoenix.game.content.stage;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.characters.Character;
@@ -319,6 +320,43 @@ public abstract class StudyAreaControl {
         shader.setUniform("onTarget", 0);
         shader.setUniform("radiance", Default.getRadiance());
         shader.setUniform("board",0);
+        for(int i=0; i<6; i++){
+            if(i < allies.size()){
+                Vector3f p = new Vector3f(getAllies().get(i).getPosition());
+                float vision = getAllies().get(i).getCharacteristic().getVision();
+                float tempVision = getAllies().get(i).getCharacteristic().getTempVision();
+                Vector4f unit;
+                if(tempVision != vision){
+                    if(tempVision < vision){
+                        getAllies().get(i).getCharacteristic().setTempVision(tempVision + 0.01f);
+                        float v = getAllies().get(i).getCharacteristic().getTempVision() / 100.0f;
+                        float a = (0.1f - v) * -1.0f;
+                        float d = 0.1f - a;
+                        unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
+                        if(getAllies().get(i).getCharacteristic().getTempVision() > vision){
+                            getAllies().get(i).getCharacteristic().setTempVision(vision);
+                        }
+                    }else{
+                        getAllies().get(i).getCharacteristic().setTempVision(tempVision - 0.01f);
+                        float v = getAllies().get(i).getCharacteristic().getTempVision() / 100.0f;
+                        float a = (0.1f - v) * -1.0f;
+                        float d = 0.1f - a;
+                        unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
+                        if(getAllies().get(i).getCharacteristic().getTempVision() < vision){
+                            getAllies().get(i).getCharacteristic().setTempVision(vision);
+                        }
+                    }
+                }else {
+                    float v = getAllies().get(i).getCharacteristic().getVision() / 100.0f;
+                    float a = (0.1f - v) * -1.0f;
+                    float d = 0.1f - a;
+                    unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
+                }
+                shader.setUniform("unit" + i, unit);
+            }else{
+                shader.setUniform("unit" + i, new Vector4f(-1.0f,-1.0f,-1.0f,1.0f));
+            }
+        }
         // end
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CW);
@@ -336,24 +374,43 @@ public abstract class StudyAreaControl {
 
     public void drawSprites(Shader shader){
         for(Object object : sprites){
-            shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
-            shader.setUniform("localPoint",battleGround.getLocalPoint());
-            shader.setUniform("radius",battleGround.getRadius());
-            object.draw(shader,false);
+            shader.setUniform("battlefield", battleGround.isActive() ? 1 : 0);
+            shader.setUniform("localPoint", battleGround.getLocalPoint());
+            shader.setUniform("radius", battleGround.getRadius());
+            object.draw(shader, false);
+        }
+    }
+
+    public void drawTrees(Shader shader){
+        for(Object object : sprites){
+            if(object.isTree()) {
+                shader.setUniform("battlefield", battleGround.isActive() ? 1 : 0);
+                shader.setUniform("localPoint", battleGround.getLocalPoint());
+                shader.setUniform("radius", battleGround.getRadius());
+                object.draw(shader, false);
+            }
         }
     }
 
     public void drawPersons(Shader shader){
-        /*for(Object object : persons){
-            object.draw(shader,false);
-        }*/
-
         for(Character ally : allies){
             ally.draw(shader,false);
         }
 
         for(Character enemy : enemies){
             enemy.draw(shader,false);
+        }
+    }
+
+    public void drawMask(Shader shader){
+        for(Character ally : allies){
+            ally.drawMask(shader);
+        }
+
+        if(battleGround.isActive()){
+            for(Character enemy : enemies){
+                enemy.drawMask(shader);
+            }
         }
     }
 

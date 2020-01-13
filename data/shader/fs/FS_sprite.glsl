@@ -9,12 +9,14 @@ layout (location = 0) out vec4 fragment_color;
 layout (location = 1) out vec4 select_color;
 layout (location = 2) out vec4 bright_color;
 
+const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
 
 in vec2 textureCoord;
 in flat int isBoard;
 in flat int isGrid;
 in flat int useShading;
 in flat int battle;
+in float visibility;
 
 uniform sampler2D image;
 uniform int group;
@@ -26,6 +28,7 @@ uniform int tree;
 uniform int discardReverse;
 uniform int noPaint;
 uniform float discardControl;
+uniform int showAlpha;
 
 vec4 targetHighlight(vec4 rgba);
 
@@ -71,7 +74,11 @@ void main(){
                     vec3 rgb = vec3(rgba);
                     float a = rgba.a / 2.0f;
                     if(tree == 1){
-                        fragment_color = vec4(rgb,a);
+                        if(showAlpha == 1){
+                            fragment_color = vec4(rgb,a);
+                        }else{
+                            fragment_color = rgba;
+                        }
                     }else{
                         fragment_color = rgba;
                     }
@@ -85,6 +92,8 @@ void main(){
     if(noPaint == 1){
         fragment_color = vec4(0.0f,0.0f,0.0f,0.0f);
     }
+
+    fragment_color = mix(vec4(skyColor),fragment_color, visibility);
 
     // Расчитываем выбраный цвет
     if(group == R){

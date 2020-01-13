@@ -7,6 +7,7 @@ import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
@@ -38,6 +39,7 @@ public class BattleScene implements Scene {
     private Shader shaderSprite;
     private Shader curor2D;
     private Shader background3D;
+    private Shader shaderMask;
 
     private boolean active;
     private boolean init;
@@ -74,6 +76,7 @@ public class BattleScene implements Scene {
         shaderSprite = new Shader();
         curor2D = new Shader();
         background3D = new Shader();
+        shaderMask = new Shader();
         index = 0;
         switchControl = false;
         count = 0.0f;
@@ -109,6 +112,10 @@ public class BattleScene implements Scene {
         background3D.createFragmentShader("FS_background.glsl");
         background3D.createProgram();
 
+        shaderMask.createVertexShader("VS_mask.glsl");
+        shaderMask.createFragmentShader("FS_mask.glsl");
+        shaderMask.createProgram();
+
         cursorHud.init();
         graundAim.init();
 
@@ -143,6 +150,10 @@ public class BattleScene implements Scene {
         GameController.getInstance().update();
         pixel = Pixel.getPixel();
         cursorHud.update(studyArea.getEnemies());
+
+        if(GameController.getInstance().isfClick()){
+            Default.setShowAlpha(!Default.isShowAlpha());
+        }
 
         // Обновляем информацию в сетке
         for(int x=0; x<=studyArea.getMapX(); x++) {
@@ -311,6 +322,43 @@ public class BattleScene implements Scene {
 
         shaderSprite.useProgram();
         shaderSprite.setUniformBlock("matrices", 0);
+        for(int i=0; i<6; i++){
+            if(i < studyArea.getAllies().size()){
+                Vector3f p = new Vector3f(studyArea.getAllies().get(i).getPosition());
+                float vision = studyArea.getAllies().get(i).getCharacteristic().getVision();
+                float tempVision = studyArea.getAllies().get(i).getCharacteristic().getTempVision();
+                Vector4f unit;
+                if(tempVision != vision){
+                    if(tempVision < vision){
+                        studyArea.getAllies().get(i).getCharacteristic().setTempVision(tempVision + 0.01f);
+                        float v = studyArea.getAllies().get(i).getCharacteristic().getTempVision() / 100.0f;
+                        float a = (0.1f - v) * -1.0f;
+                        float d = 0.1f - a;
+                        unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
+                        if(studyArea.getAllies().get(i).getCharacteristic().getTempVision() > vision){
+                            studyArea.getAllies().get(i).getCharacteristic().setTempVision(vision);
+                        }
+                    }else{
+                        studyArea.getAllies().get(i).getCharacteristic().setTempVision(tempVision - 0.01f);
+                        float v = studyArea.getAllies().get(i).getCharacteristic().getTempVision() / 100.0f;
+                        float a = (0.1f - v) * -1.0f;
+                        float d = 0.1f - a;
+                        unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
+                        if(studyArea.getAllies().get(i).getCharacteristic().getTempVision() < vision){
+                            studyArea.getAllies().get(i).getCharacteristic().setTempVision(vision);
+                        }
+                    }
+                }else {
+                    float v = studyArea.getAllies().get(i).getCharacteristic().getVision() / 100.0f;
+                    float a = (0.1f - v) * -1.0f;
+                    float d = 0.1f - a;
+                    unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
+                }
+                shaderSprite.setUniform("unit" + i, unit);
+            }else{
+                shaderSprite.setUniform("unit" + i, new Vector4f(-1.0f,-1.0f,-1.0f,1.0f));
+            }
+        }
         // рисуем спрайты и воду
         drawElement(battle,first); // 1
         if(aimDrawConfig == 1){
