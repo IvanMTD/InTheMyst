@@ -224,6 +224,7 @@ public class AnarchyBandit extends HumanDraw implements Character {
         getCharacteristic().setJump(1);
         getCharacteristic().setSpeed(2);
         // Обзор
+        getCharacteristic().setFinalVision(10);
         getCharacteristic().setVision(10);
     }
     // методы инициализации - конец
@@ -1340,10 +1341,10 @@ public class AnarchyBandit extends HumanDraw implements Character {
             if(!character.isDead()) {
                 Vector3f enemyPos = new Vector3f(character.getPosition());
                 enemyPos.setY(0.0f);
-                if (Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getVision()) { // Если в зоне видимости!
+                if (Math.abs(mainPos.sub(enemyPos).length()) <= getCharacteristic().getFinalVision()) { // Если в зоне видимости!
                     Vector3f lagerPos = new Vector3f(getLagerPoint());
                     lagerPos.setY(0.0f);
-                    if (mainPos.sub(lagerPos).length() <= getCharacteristic().getVision()) { // если персонаж в зоне видимости лагеря
+                    if (mainPos.sub(lagerPos).length() <= getCharacteristic().getFinalVision()) { // если персонаж в зоне видимости лагеря
                         Vector3f direction = new Vector3f(character.getPosition().sub(getPosition())).normalize();
                         float distance = Math.abs(new Vector3f(character.getPosition().sub(getPosition())).length() / 2.0f);
                         Vector3f lagerPoint = new Vector3f(getPosition().add(direction.mul(distance)));

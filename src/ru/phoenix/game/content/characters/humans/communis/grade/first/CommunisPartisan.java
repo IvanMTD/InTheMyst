@@ -1,4 +1,4 @@
-package ru.phoenix.game.content.characters.humans.communis.hero;
+package ru.phoenix.game.content.characters.humans.communis.grade.first;
 
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
@@ -9,7 +9,6 @@ import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
-import ru.phoenix.core.util.ActionVerification;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.HumanDraw;
 import ru.phoenix.game.logic.battle.BattleGround;
@@ -28,10 +27,7 @@ import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.*;
 
-public class Gehard extends HumanDraw implements Character {
-    /* Описание класса: Класс Gehard являеться уникальным классом.
-    *  В его составе уникальные механики, реплики и анимации. */
-
+public class CommunisPartisan extends HumanDraw implements Character {
     // константы
     private final int PREPARED_AREA         = 0x90001;
     private final int CREATE_PATH           = 0x90002;
@@ -40,15 +36,15 @@ public class Gehard extends HumanDraw implements Character {
     private final int CHOICE_DIRECTION      = 0x90005;
 
     // константы класса
-    private final TextureConfig baseStance = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_stand.png",3,1);
-    private final TextureConfig walk = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_walk.png",12,1);
-    private final TextureConfig jump = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_jump.png",7,1);
-    private final TextureConfig goUpDown = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_climbing.png",4,1);
-    private final TextureConfig battleStancePrepare = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_bs_open.png",6,1);
-    private final TextureConfig battleStance = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_bs.png",6,1);
-    private final TextureConfig baseAttack = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_base_attack.png",10,1);
-    private final TextureConfig damage = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_damage.png",6,1);
-    private final TextureConfig dead = new TextureConfig("./data/content/texture/person/communists/gehard/idle_gh_dead.png",6,1);
+    private final TextureConfig baseStance = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_stand.png",3,1);
+    private final TextureConfig walk = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_walk.png",12,1);
+    private final TextureConfig jump = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_jump.png",7,1);
+    private final TextureConfig goUpDown = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_climbing.png",4,1);
+    private final TextureConfig battleStancePrepare = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_bs_open.png",7,1);
+    private final TextureConfig battleStance = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_bs.png",6,1);
+    private final TextureConfig baseAttack = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_base_attack.png",9,1);
+    private final TextureConfig damage = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_damage.png",6,1);
+    private final TextureConfig dead = new TextureConfig("./data/content/texture/person/communists/partisan/idle_partisan_dead.png",6,1);
 
     // анимации
     private ImageAnimation baseStanceAnimation;
@@ -116,12 +112,12 @@ public class Gehard extends HumanDraw implements Character {
 
     // конструкторы класса
     // начало
-    public Gehard(){
+    public CommunisPartisan(){
         super();
         init();
     }
 
-    public Gehard(Character character, Vector3f position, Vector3f lagerPoint, float id, int recognition){
+    public CommunisPartisan(Character character, Vector3f position, Vector3f lagerPoint, float id, int recognition){
         super(character);
         init();
         setId(id);
@@ -207,9 +203,9 @@ public class Gehard extends HumanDraw implements Character {
         getCharacteristic().setExperience(0);
         getCharacteristic().setLevel(1);
         // Инициатива
-        getCharacteristic().setInitiativeCharge(16);
+        getCharacteristic().setInitiativeCharge(15);
         // Здоровье
-        getCharacteristic().setTotalHealth(50);
+        getCharacteristic().setTotalHealth(40);
         getCharacteristic().setHealth(getCharacteristic().getTotalHealth());
         getCharacteristic().setHealthCharge(0);
         // Манна
@@ -217,15 +213,15 @@ public class Gehard extends HumanDraw implements Character {
         getCharacteristic().setManna(getCharacteristic().getTotalManna());
         getCharacteristic().setMannaCharge(0);
         // Стамина
-        getCharacteristic().setTotalStamina(150);
+        getCharacteristic().setTotalStamina(120);
         getCharacteristic().setStamina(getCharacteristic().getTotalStamina());
-        getCharacteristic().setStaminaCharge(16);
+        getCharacteristic().setStaminaCharge(15);
         // Характеристики
-        getCharacteristic().setPhysicalPower(25);
+        getCharacteristic().setPhysicalPower(20);
         getCharacteristic().setMagicPower(10);
         // Движения
-        getCharacteristic().setMove(6);
-        getCharacteristic().setJump(2);
+        getCharacteristic().setMove(5);
+        getCharacteristic().setJump(1);
         getCharacteristic().setSpeed(2);
         // Обзор
         getCharacteristic().setFinalVision(10);
@@ -325,22 +321,22 @@ public class Gehard extends HumanDraw implements Character {
         }
 
         if(isDead()){
-           if(playDead){
-               deadCount++;
-               if(deadCount > 40){
-                   deadCount = 0;
-                   deadFrame++;
-               }
-               if(deadFrame <= dead.getRow()){
-                   deadAnimation.setFrames(deadFrame);
-                   updateAnimation(deadTexture,deadAnimation);
-               }else{
-                   deadCount = 0;
-                   playDead = false;
-               }
-           }else{
-               updateAnimation(deadTexture,deadAnimation);
-           }
+            if(playDead){
+                deadCount++;
+                if(deadCount > 40){
+                    deadCount = 0;
+                    deadFrame++;
+                }
+                if(deadFrame <= dead.getRow()){
+                    deadAnimation.setFrames(deadFrame);
+                    updateAnimation(deadTexture,deadAnimation);
+                }else{
+                    deadCount = 0;
+                    playDead = false;
+                }
+            }else{
+                updateAnimation(deadTexture,deadAnimation);
+            }
         }else {
             blink();
             if (isBattle()) {

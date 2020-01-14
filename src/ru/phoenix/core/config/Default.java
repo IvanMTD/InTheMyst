@@ -5,6 +5,7 @@ import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArch
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
+import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisPartisan;
 import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -14,6 +15,7 @@ public class Default {
     // communis
     private static Character gehard;
     private static Character communisArcher;
+    private static Character communisPartisan;
     // anarchy
     private static Character anarchyBandit;
     private static Character anarchyThief;
@@ -30,6 +32,7 @@ public class Default {
         // communis
         gehard = new Gehard();
         communisArcher = new CommunisArcher();
+        communisPartisan = new CommunisPartisan();
         // anarchy
         anarchyBandit = new AnarchyBandit();
         anarchyThief = new AnarchyThief();
@@ -98,6 +101,10 @@ public class Default {
 
     public static Character getCommunisArcher() {
         return communisArcher;
+    }
+
+    public static Character getCommunisPartisan() {
+        return communisPartisan;
     }
 
     // ANARCHY

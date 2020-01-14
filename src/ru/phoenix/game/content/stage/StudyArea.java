@@ -14,9 +14,7 @@ public interface StudyArea {
     void update(Cell targetElement, Vector3f pixel);
     void draw(Shader shader);
     void drawSprites(Shader shader);
-    void drawTrees(Shader shader);
     void drawPersons(Shader shader);
-    void drawMask(Shader shader);
     void drawWater(Shader shader);
     void drawShadowSprites(Shader shader);
     void drawShadowPersons(Shader shader, boolean shadow);

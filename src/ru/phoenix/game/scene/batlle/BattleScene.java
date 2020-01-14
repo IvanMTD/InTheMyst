@@ -14,6 +14,7 @@ import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArch
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
+import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisPartisan;
 import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
 import ru.phoenix.game.content.stage.StudyArea;
 import ru.phoenix.game.hud.assembled.Cursor;
@@ -39,7 +40,6 @@ public class BattleScene implements Scene {
     private Shader shaderSprite;
     private Shader curor2D;
     private Shader background3D;
-    private Shader shaderMask;
 
     private boolean active;
     private boolean init;
@@ -76,7 +76,6 @@ public class BattleScene implements Scene {
         shaderSprite = new Shader();
         curor2D = new Shader();
         background3D = new Shader();
-        shaderMask = new Shader();
         index = 0;
         switchControl = false;
         count = 0.0f;
@@ -111,10 +110,6 @@ public class BattleScene implements Scene {
         background3D.createVertexShader("VS_background.glsl");
         background3D.createFragmentShader("FS_background.glsl");
         background3D.createProgram();
-
-        shaderMask.createVertexShader("VS_mask.glsl");
-        shaderMask.createFragmentShader("FS_mask.glsl");
-        shaderMask.createProgram();
 
         cursorHud.init();
         graundAim.init();
@@ -443,11 +438,20 @@ public class BattleScene implements Scene {
         studyArea.getAllies().add(character);
 
         for(int i=0; i<(int)(1.0f + (float)Math.random() * 4.0f);i++) {
-            id += 0.01f;
-            position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-            character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
-            character.setDefaultCharacteristic();
-            studyArea.getAllies().add(character);
+            int coin = (int) Math.round(Math.random() * 1.0f);
+            if(coin == 0){
+                id += 0.01f;
+                position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+                character = new CommunisPartisan(Default.getCommunisPartisan(), position, lagerPoint, id, ALLY);
+                character.setDefaultCharacteristic();
+                studyArea.getAllies().add(character);
+            }else {
+                id += 0.01f;
+                position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+                character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
+                character.setDefaultCharacteristic();
+                studyArea.getAllies().add(character);
+            }
         }
         // ALLIES - ВРЕМЕННО!
 

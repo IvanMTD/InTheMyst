@@ -65,7 +65,6 @@ public interface Character {
     void setTexture(Texture texture);
     Projection getProjection();
     void setProjection(Projection projection);
-    void drawMask(Shader shader);
 
     // control class
     // характеристики

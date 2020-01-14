@@ -381,17 +381,6 @@ public abstract class StudyAreaControl {
         }
     }
 
-    public void drawTrees(Shader shader){
-        for(Object object : sprites){
-            if(object.isTree()) {
-                shader.setUniform("battlefield", battleGround.isActive() ? 1 : 0);
-                shader.setUniform("localPoint", battleGround.getLocalPoint());
-                shader.setUniform("radius", battleGround.getRadius());
-                object.draw(shader, false);
-            }
-        }
-    }
-
     public void drawPersons(Shader shader){
         for(Character ally : allies){
             ally.draw(shader,false);
@@ -399,18 +388,6 @@ public abstract class StudyAreaControl {
 
         for(Character enemy : enemies){
             enemy.draw(shader,false);
-        }
-    }
-
-    public void drawMask(Shader shader){
-        for(Character ally : allies){
-            ally.drawMask(shader);
-        }
-
-        if(battleGround.isActive()){
-            for(Character enemy : enemies){
-                enemy.drawMask(shader);
-            }
         }
     }
 

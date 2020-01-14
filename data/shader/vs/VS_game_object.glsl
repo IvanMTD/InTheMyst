@@ -82,7 +82,7 @@ void main() {
             vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
             float visbl = 0;
             for(int i=0; i<6; i++){
-                if(units[i].xyz != -1.0f){
+                if(units[i].x != -1.0f){
                     vec4 elementPos = l_instance_m * initPos;
                     vec3 direct = vec3(elementPos.xyz - units[i].xyz);
                     float distance = length(direct.xyz);
@@ -146,7 +146,7 @@ void main() {
             vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
             float visbl = 0;
             for(int i=0; i<6; i++){
-                if(units[i].xyz != -1.0f){
+                if(units[i].x != -1.0f){
                     vec4 elementPos = model_m * initPos;
                     vec3 direct = vec3(elementPos.xyz - units[i].xyz);
                     float distance = length(direct.xyz);
