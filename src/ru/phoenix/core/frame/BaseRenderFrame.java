@@ -27,6 +27,7 @@ public class BaseRenderFrame implements Framework {
     private FrameBufferObject multisample;
     private FrameBufferObject render;
     private FrameBufferObject shadow;
+    private FrameBufferObject map;
 
     private VertexBufferObject ndcVbo;
     private Shader ndcShader;
@@ -136,14 +137,16 @@ public class BaseRenderFrame implements Framework {
         ndcShader.useProgram();
         ndcShader.setUniform("gamma", Window.getInstance().getGamma());
         ndcShader.setUniform("contrast",Window.getInstance().getContrast());
+        // main texture
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, render.getTexture());
         ndcShader.setUniform("main_texture",0);
-        glActiveTexture(GL_TEXTURE1);
 
+        glActiveTexture(GL_TEXTURE1);
         if(GameController.getInstance().isTabHold()){
+            glBindTexture(GL_TEXTURE_2D, map.getTexture()); // отладочный для проверки карты теней
             //glBindTexture(GL_TEXTURE_2D, shadow.getTexture()); // отладочный для проверки карты теней
-            glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
+            //glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
             ndcShader.setUniform("shadow",1);
         }else{
             glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1)); // Основной рендер
@@ -157,8 +160,12 @@ public class BaseRenderFrame implements Framework {
     }
 
     @Override
-    public void setFbo(FrameBufferObject fbo) {
-        shadow = fbo;
+    public void setFbo(FrameBufferObject fbo, int config) {
+        if(config == 0) {
+            shadow = fbo;
+        }else{
+            map = fbo;
+        }
     }
 
     @Override

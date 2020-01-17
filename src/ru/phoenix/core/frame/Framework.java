@@ -6,6 +6,6 @@ import ru.phoenix.game.scene.Scene;
 public interface Framework {
     void init();
     void draw(Scene scene);
-    void setFbo(FrameBufferObject fbo);
+    void setFbo(FrameBufferObject fbo, int config);
     FrameBufferObject getFbo();
 }

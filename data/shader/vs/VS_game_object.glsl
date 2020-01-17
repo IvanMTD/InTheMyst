@@ -52,6 +52,7 @@ out VS_OUT {
 void main() {
     vec4 initNormal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
     vec4 initPos = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    vec4 mapPos = vec4(0.0f,0.0f,0.0f,0.0f);
 
     if(instance == 1){
         if(animated == 1){

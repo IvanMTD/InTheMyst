@@ -61,7 +61,7 @@ public class ShadowRenderFrame implements Framework {
     }
 
     @Override
-    public void setFbo(FrameBufferObject fbo) {
+    public void setFbo(FrameBufferObject fbo, int config) {
         this.fbo = fbo;
     }
 

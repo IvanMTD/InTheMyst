@@ -1,7 +1,10 @@
 package ru.phoenix.game.content.stage;
 
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Input;
+import ru.phoenix.core.math.Matrix4f;
+import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
@@ -42,6 +45,7 @@ public abstract class StudyAreaControl {
     private List<Character> enemies;
     private List<Character> enemiesInBattle;
 
+    private Matrix4f mapCamera;
     private int mapX;
     private int mapZ;
 
@@ -55,6 +59,7 @@ public abstract class StudyAreaControl {
         battleGround = new BattleGround();
         prepareBattlefield = true;
         invert = false;
+        mapCamera = new Matrix4f();
     }
 
     protected void setup(Cell[][] grid, GraundModel graundModel, Reservoir waterReservoir, List<Block> blocks, List<Object>sprites, int mapX, int mapZ){
@@ -65,6 +70,16 @@ public abstract class StudyAreaControl {
         this.sprites = new ArrayList<>(sprites);
         this.mapX = mapX;
         this.mapZ = mapZ;
+        float x = mapX + 1;
+        float y = mapZ + 1;
+        Projection projection = new Projection();
+        projection.setOrtho(-x/2,x/2,-y/2,y/2, WindowConfig.getInstance().getNear(), x + y);
+        projection.setView(
+                new Vector3f(getMapX() / 2.0f, 10.0f, getMapZ() / 2.0f),
+                new Vector3f(getMapX() / 2.0f,0.0f,getMapZ()/2.0f),
+                new Vector3f(0.0f,0.0f,-1.0f)
+                );
+        mapCamera.setMatrix(projection.getProjection().mul(projection.getViewMatrix()));
     }
 
     protected void initLight(){
@@ -320,6 +335,9 @@ public abstract class StudyAreaControl {
         shader.setUniform("onTarget", 0);
         shader.setUniform("radiance", Default.getRadiance());
         shader.setUniform("board",0);
+        shader.setUniform("mapCam_m",mapCamera);
+        shader.setUniform("w",getMapX());
+        shader.setUniform("h",getMapZ());
         for(int i=0; i<6; i++){
             if(i < allies.size()){
                 Vector3f p = new Vector3f(getAllies().get(i).getPosition());

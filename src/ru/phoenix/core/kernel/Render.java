@@ -4,6 +4,7 @@ import ru.phoenix.core.config.*;
 import ru.phoenix.core.debug.HowLong;
 import ru.phoenix.core.frame.BaseRenderFrame;
 import ru.phoenix.core.frame.Framework;
+import ru.phoenix.core.frame.MapRenderFrame;
 import ru.phoenix.core.frame.ShadowRenderFrame;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.loop.SceneControl;
@@ -16,6 +17,7 @@ public class Render {
 
     private Framework baseRenderFrame;
     private Framework shadowRenderFrame;
+    private Framework mapRenderFrame;
 
     private boolean stopRender;
     private boolean firstStart;
@@ -29,6 +31,7 @@ public class Render {
         window = Window.getInstance();
         baseRenderFrame = new BaseRenderFrame(3);
         shadowRenderFrame = new ShadowRenderFrame();
+        mapRenderFrame = new MapRenderFrame();
         stopRender = false;
         firstStart = true;
 
@@ -38,6 +41,7 @@ public class Render {
     public void init(){
         baseRenderFrame.init();
         shadowRenderFrame.init();
+        mapRenderFrame.init();
     }
 
     public void render(Scene scene){
@@ -73,8 +77,10 @@ public class Render {
                 }*/
 
                 shadowRenderFrame.draw(scene);
-                baseRenderFrame.setFbo(shadowRenderFrame.getFbo());
+                baseRenderFrame.setFbo(shadowRenderFrame.getFbo(), 0);
             }
+            mapRenderFrame.draw(scene);
+            baseRenderFrame.setFbo(mapRenderFrame.getFbo(),1);
             baseRenderFrame.draw(scene);
         } else {
             if (firstStart) {
