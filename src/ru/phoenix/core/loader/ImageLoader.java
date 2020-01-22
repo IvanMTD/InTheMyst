@@ -23,13 +23,32 @@ public class ImageLoader {
 
         for(int y=0;y<img.getHeight();y++) {
             for(int x=0;x<img.getWidth();x++) {
-
                 Object pixelIm = img.getRaster().getDataElements(x, y, null);
-
                 buf.put((byte)img.getColorModel().getRed(pixelIm));
                 buf.put((byte)img.getColorModel().getGreen(pixelIm));
                 buf.put((byte)img.getColorModel().getBlue(pixelIm));
                 buf.put((byte)img.getColorModel().getAlpha(pixelIm));
+            }
+        }
+
+        buf.flip();
+    }
+
+    public static void load(float[][] heiMap) throws IOException {
+        buf = null;
+        width = heiMap.length - 1;
+        height = heiMap[0].length - 1;
+        buf = ByteBuffer.allocateDirect(height * width * 4);
+        buf.limit(height * width * 4);
+
+        for(int y=0; y<height; y++) {
+            for(int x=0; x<width; x++) { // 0 - 255
+                float hei = heiMap[x][y];
+                int color = (int)(((hei + 20 - 10) / 20) * 255);
+                buf.put((byte)color);
+                buf.put((byte)color);
+                buf.put((byte)color);
+                buf.put((byte)255);
             }
         }
 

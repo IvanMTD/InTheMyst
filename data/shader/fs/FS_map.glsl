@@ -1,6 +1,7 @@
 #version 430 core
 
-const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
+//const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
+const vec4 skyColor = vec4(0.0f,0.0f,0.0f,1.0f);
 
 out vec4 fragment_color;
 

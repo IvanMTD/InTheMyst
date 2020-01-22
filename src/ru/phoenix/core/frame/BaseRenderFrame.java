@@ -6,6 +6,7 @@ import ru.phoenix.core.buffer.fbo.MultisampleFrameBuffer;
 import ru.phoenix.core.buffer.fbo.OutputFrameBuffer;
 import ru.phoenix.core.buffer.vbo.NormalizedDeviceCoordinates;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
@@ -83,6 +84,9 @@ public class BaseRenderFrame implements Framework {
             scene.getShader().useProgram();
             scene.getShader().setUniformBlock("matrices", 0);
             scene.getShader().setUniform("viewPos", Camera.getInstance().getPos());
+            glActiveTexture(GL_TEXTURE6);
+            glBindTexture(GL_TEXTURE_2D, Default.getMapTextureId());
+            scene.getShader().setUniform("map",6);
             Matrix4f[] matrix = null;
             if (scene.getLights() != null) {
                 matrix = scene.getLights().get(0).getLightSpaceMatrix();

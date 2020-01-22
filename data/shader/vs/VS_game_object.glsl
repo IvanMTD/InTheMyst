@@ -163,7 +163,6 @@ void main() {
             float distance = length(direct.xyz);
             float vis = exp(-pow((distance * density),gradient));*/
             vs_out.visibility = visbl;
-
             gl_Position = perspective_m * view_m * model_m * initPos;
             initNormal = vec4(l_norm,0.0f);
         }

@@ -4,7 +4,6 @@ import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
-import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.property.Characteristic;

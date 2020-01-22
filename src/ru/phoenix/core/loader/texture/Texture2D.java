@@ -37,6 +37,27 @@ public class Texture2D implements Texture {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    @Override
+    public void setup(float[][] heiMap, int rgbaConfig, int filter) {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        try {
+            ImageLoader.load(heiMap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //GL_SRGB_ALPHA
+        glTexImage2D(GL_TEXTURE_2D, 0, rgbaConfig, ImageLoader.getWidth(), ImageLoader.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, ImageLoader.getBuf());
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        setFilter(filter);
+
+        width = ImageLoader.getWidth();
+        height = ImageLoader.getHeight();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     private void setFilter(int filter) {
         // GL_REPEAT (повторение текстуры), GL_MIRRORED_REPEAT (зеркальное повторение текстуры), GL_CLAMP_TO_EDGE(обрезать у празрачных текстур края)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, filter);

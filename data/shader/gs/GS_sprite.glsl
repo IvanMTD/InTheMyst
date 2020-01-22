@@ -8,12 +8,17 @@ uniform vec3 localPoint;
 uniform int radius;
 
 in VS_OUT{
+    vec4 localPos;
+    vec4 pointPos;
     vec2 textureCoord;
     flat int isBoard;
     flat int isGrid;
-    vec4 localPos;
     float visibility;
 }gs_in[];
+
+out GS_OUT{
+    vec4 pointPos;
+}gs_out;
 
 out vec2 textureCoord;
 out flat int isBoard;
@@ -44,53 +49,33 @@ void main() {
         }else{
             useShading = 1;
         }
-
-        gl_Position = gl_in[0].gl_Position;
-        textureCoord = gs_in[0].textureCoord;
-        isBoard = gs_in[0].isBoard;
-        isGrid = gs_in[0].isGrid;
-        visibility = gs_in[0].visibility;
-        EmitVertex();
-
-        gl_Position = gl_in[1].gl_Position;
-        textureCoord = gs_in[1].textureCoord;
-        isBoard = gs_in[1].isBoard;
-        isGrid = gs_in[1].isGrid;
-        visibility = gs_in[1].visibility;
-        EmitVertex();
-
-        gl_Position = gl_in[2].gl_Position;
-        textureCoord = gs_in[2].textureCoord;
-        isBoard = gs_in[2].isBoard;
-        isGrid = gs_in[2].isGrid;
-        visibility = gs_in[2].visibility;
-        EmitVertex();
-
-        EndPrimitive();
     }else{
         useShading = 0;
-
-        gl_Position = gl_in[0].gl_Position;
-        textureCoord = gs_in[0].textureCoord;
-        isBoard = gs_in[0].isBoard;
-        isGrid = gs_in[0].isGrid;
-        visibility = gs_in[0].visibility;
-        EmitVertex();
-
-        gl_Position = gl_in[1].gl_Position;
-        textureCoord = gs_in[1].textureCoord;
-        isBoard = gs_in[1].isBoard;
-        isGrid = gs_in[1].isGrid;
-        visibility = gs_in[1].visibility;
-        EmitVertex();
-
-        gl_Position = gl_in[2].gl_Position;
-        textureCoord = gs_in[2].textureCoord;
-        isBoard = gs_in[2].isBoard;
-        isGrid = gs_in[2].isGrid;
-        visibility = gs_in[2].visibility;
-        EmitVertex();
-
-        EndPrimitive();
     }
+
+    gl_Position = gl_in[0].gl_Position;
+    gs_out.pointPos = gs_in[0].pointPos;
+    textureCoord = gs_in[0].textureCoord;
+    isBoard = gs_in[0].isBoard;
+    isGrid = gs_in[0].isGrid;
+    visibility = gs_in[0].visibility;
+    EmitVertex();
+
+    gl_Position = gl_in[1].gl_Position;
+    gs_out.pointPos = gs_in[1].pointPos;
+    textureCoord = gs_in[1].textureCoord;
+    isBoard = gs_in[1].isBoard;
+    isGrid = gs_in[1].isGrid;
+    visibility = gs_in[1].visibility;
+    EmitVertex();
+
+    gl_Position = gl_in[2].gl_Position;
+    gs_out.pointPos = gs_in[2].pointPos;
+    textureCoord = gs_in[2].textureCoord;
+    isBoard = gs_in[2].isBoard;
+    isGrid = gs_in[2].isGrid;
+    visibility = gs_in[2].visibility;
+    EmitVertex();
+
+    EndPrimitive();
 }

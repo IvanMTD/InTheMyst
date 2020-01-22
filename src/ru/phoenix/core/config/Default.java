@@ -1,5 +1,7 @@
 package ru.phoenix.core.config;
 
+import ru.phoenix.core.loader.texture.Texture;
+import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
@@ -27,6 +29,9 @@ public class Default {
     private static boolean showAlpha;
     private static float cursorAngle;
 
+    private static boolean mapFrameStart;
+    private static int mapTextureId;
+
     public static void init() {
         showAlpha = false;
         // communis
@@ -37,6 +42,9 @@ public class Default {
         anarchyBandit = new AnarchyBandit();
         anarchyThief = new AnarchyThief();
         anarchyArcher = new AnarchyArcher();
+
+        mapFrameStart = false;
+        mapTextureId = 0;
 
         cursorAngle = 0.0f;
         glEnable(GL_DEPTH_TEST);
@@ -118,5 +126,23 @@ public class Default {
 
     public static Character getAnarchyArcher() {
         return anarchyArcher;
+    }
+
+    // control
+
+    public static boolean isMapFrameStart() {
+        return mapFrameStart;
+    }
+
+    public static void setMapFrameStart(boolean mapFrameStart) {
+        Default.mapFrameStart = mapFrameStart;
+    }
+
+    public static int getMapTextureId() {
+        return mapTextureId;
+    }
+
+    public static void setMapTextureId(int mapTextureId) {
+        Default.mapTextureId = mapTextureId;
     }
 }

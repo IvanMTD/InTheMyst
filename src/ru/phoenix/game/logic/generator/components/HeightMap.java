@@ -6,7 +6,11 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 public class HeightMap {
+
+    private static float[][] heiMap;
+
     public static Cell[][] get(long seed, int width, int height, int heightRange, boolean aligment){
+        heiMap = new float[width + 1][height + 1];
         HowLong.setup("карты вершин");
         Cell[][] heightMap = new Cell[width + 1][height + 1];
         Perlin2D perlin = new Perlin2D(seed);
@@ -24,6 +28,7 @@ public class HeightMap {
                 }else if(y < -4.0f){
                     y = -4.0f;
                 }
+                heiMap[x][z] = y;
                 Cell cell = new Cell();
                 cell.setId(cellId);
                 if(aligment){
@@ -49,5 +54,9 @@ public class HeightMap {
         }
         HowLong.getInformation();
         return heightMap;
+    }
+
+    public static float[][] getHeiMap() {
+        return heiMap;
     }
 }

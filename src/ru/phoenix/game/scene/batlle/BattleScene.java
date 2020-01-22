@@ -30,6 +30,11 @@ import ru.phoenix.game.scene.Scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static ru.phoenix.core.config.Constants.*;
 
 public class BattleScene implements Scene {
@@ -93,11 +98,12 @@ public class BattleScene implements Scene {
     public void init(){
         init = true;
 
+        System.out.println("Try set shader3D");
         shader3D.createVertexShader("VS_game_object.glsl");
         shader3D.createGeometryShader("GS_game_object.glsl");
         shader3D.createFragmentShader("FS_game_object.glsl");
         shader3D.createProgram();
-
+        System.out.println("Try set shader2D");
         shaderSprite.createVertexShader("VS_sprite.glsl");
         shaderSprite.createGeometryShader("GS_sprite.glsl");
         shaderSprite.createFragmentShader("FS_sprite.glsl");
@@ -317,6 +323,11 @@ public class BattleScene implements Scene {
 
         shaderSprite.useProgram();
         shaderSprite.setUniformBlock("matrices", 0);
+        shaderSprite.setUniform("w",studyArea.getMapX());
+        shaderSprite.setUniform("h",studyArea.getMapZ());
+        glActiveTexture(GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_2D, Default.getMapTextureId());
+        shaderSprite.setUniform("map", 5);
         for(int i=0; i<6; i++){
             if(i < studyArea.getAllies().size()){
                 Vector3f p = new Vector3f(studyArea.getAllies().get(i).getPosition());
@@ -425,6 +436,7 @@ public class BattleScene implements Scene {
     }
 
     private void generate(int seed){
+        Default.setMapFrameStart(false);
         aimDrawConfig = 0;
         graundAim.setVisible(false);
         studyArea = Generator.getRandomArea(seed);

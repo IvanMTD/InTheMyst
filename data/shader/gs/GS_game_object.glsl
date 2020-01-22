@@ -8,28 +8,29 @@ uniform vec3 localPoint;
 uniform int radius;
 
 in VS_OUT {
-     vec3 FragPos;
-     vec3 Normal;
-     vec2 TexCoords;
-     vec3 TangentViewPos;
-     vec3 TangentFragPos;
-     vec3 ViewPos;
-     vec4 FragPosLightSpace;
-     mat3 TBN;
-     vec4 localPos;
-     float visibility;
+    vec3 FragPos;
+    vec3 Normal;
+    vec2 TexCoords;
+    vec3 TangentViewPos;
+    vec3 TangentFragPos;
+    vec3 ViewPos;
+    vec4 FragPosLightSpace;
+    mat3 TBN;
+    vec4 localPos;
+    float visibility;
 } gs_in[];
 
 out GS_OUT {
-     vec3 FragPos;
-     vec3 Normal;
-     vec2 TexCoords;
-     vec3 TangentViewPos;
-     vec3 TangentFragPos;
-     vec3 ViewPos;
-     vec4 FragPosLightSpace;
-     mat3 TBN;
-     float visibility;
+    vec3 FragPos;
+    vec3 Normal;
+    vec2 TexCoords;
+    vec3 TangentViewPos;
+    vec3 TangentFragPos;
+    vec3 ViewPos;
+    vec4 FragPosLightSpace;
+    mat3 TBN;
+    vec4 localPos;
+    float visibility;
 } gs_out;
 
 out flat int useShading;
@@ -86,6 +87,7 @@ void main() {
     gs_out.ViewPos = gs_in[0].ViewPos;
     gs_out.FragPosLightSpace = gs_in[0].FragPosLightSpace;
     gs_out.TBN = gs_in[0].TBN;
+    gs_out.localPos = gs_in[0].localPos;
     gs_out.visibility = gs_in[0].visibility;
     EmitVertex();
 
@@ -98,6 +100,7 @@ void main() {
     gs_out.ViewPos = gs_in[1].ViewPos;
     gs_out.FragPosLightSpace = gs_in[1].FragPosLightSpace;
     gs_out.TBN = gs_in[1].TBN;
+    gs_out.localPos = gs_in[1].localPos;
     gs_out.visibility = gs_in[1].visibility;
     EmitVertex();
 
@@ -110,6 +113,7 @@ void main() {
     gs_out.ViewPos = gs_in[2].ViewPos;
     gs_out.FragPosLightSpace = gs_in[2].FragPosLightSpace;
     gs_out.TBN = gs_in[2].TBN;
+    gs_out.localPos = gs_in[2].localPos;
     gs_out.visibility = gs_in[2].visibility;
     EmitVertex();
 

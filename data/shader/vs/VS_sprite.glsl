@@ -39,10 +39,11 @@ uniform vec4 unit4;
 uniform vec4 unit5;
 
 out VS_OUT{
+    vec4 localPos;
+    vec4 pointPos;
     vec2 textureCoord;
     flat int isBoard;
     flat int isGrid;
-    vec4 localPos;
     float visibility;
 }vs_out;
 
@@ -89,6 +90,7 @@ void main() {
 
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
+            vs_out.pointPos = l_instance_m * vec4(result,1.0f);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
 
@@ -114,6 +116,7 @@ void main() {
 
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
+            vs_out.pointPos = l_instance_m * vec4(l_pos,1.0f);
         }
     }else{
         if(board == 1){
@@ -162,6 +165,7 @@ void main() {
 
             gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
+            vs_out.pointPos = model_m * vec4(result,1.0f);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
 
@@ -187,6 +191,7 @@ void main() {
 
             gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
+            vs_out.pointPos = model_m * vec4(l_pos,1.0f);
         }
     }
     vs_out.textureCoord = l_tex;

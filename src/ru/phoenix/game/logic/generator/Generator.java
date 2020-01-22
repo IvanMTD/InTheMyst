@@ -1,6 +1,8 @@
 package ru.phoenix.game.logic.generator;
 
 import ru.phoenix.core.loader.model.Mesh;
+import ru.phoenix.core.loader.texture.Texture;
+import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.object.Object;
@@ -11,6 +13,8 @@ import ru.phoenix.game.logic.generator.components.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.MOUNTAIN_AREA;
 import static ru.phoenix.core.config.Constants.PLAIN_AREA;
 
@@ -20,6 +24,8 @@ public class Generator {
     // переменные класса
     private static int totalMapWidth;
     private static int totalMapHeight;
+    // карта высот
+    private static Texture heightMap;
 
     public static RandomArena getRandomArea(int area){
 
@@ -43,6 +49,8 @@ public class Generator {
         }else if(area == MOUNTAIN_AREA){
             grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),6, true);
         }
+        heightMap = new Texture2D();
+        heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
         mesh = ModelCreater.start(-4, grid, getTotalMapWidth(), getTotalMapHeight(), area, graundTexture);
         List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),area);
         List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),area);
@@ -126,5 +134,8 @@ public class Generator {
         Generator.totalMapHeight = totalMapHeight;
     }
 
+    public static Texture getHeightMap() {
+        return heightMap;
+    }
     // методы гетеры и сетеры - конец
 }

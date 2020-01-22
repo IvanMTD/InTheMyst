@@ -5,7 +5,8 @@
 #define B 131075
 #define A 131076
 
-const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
+//const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
+const vec4 skyColor = vec4(0.0f,0.0f,0.0f,1.0f);
 
 layout (location = 0) out vec4 fragment_color;
 layout (location = 1) out vec4 select_color;
@@ -21,6 +22,7 @@ in GS_OUT {
     vec3 ViewPos;
     vec4 FragPosLightSpace;
     mat3 TBN;
+    vec4 localPos;
     float visibility;
 }fs_in;
 
@@ -48,23 +50,34 @@ in flat int useShading;
 in flat int useBorder;
 
 // target highlight
+uniform int w;
+uniform int h;
 uniform int onTarget;
 uniform float radiance;
 uniform float shininess;
 uniform Material material;
 uniform DirectLight directLight;
 uniform sampler2D shadowMap;
+uniform sampler2D map;
 uniform int group;
 uniform float id;
 
 //vec2 textureCoordinate;
 
 // Функции
+int getCorrectNum(float,int);
 vec4 targetHighlight();
 vec3 getDirectLight(DirectLight, vec3, vec3, vec2);
 float shadowCalculation(vec4, vec3, vec3);
 
 void main() {
+    float wc = w + 1;
+    float hc = h + 1;
+    float x = getCorrectNum(fs_in.localPos.x + 0.5f, w + 1) / wc;
+    float y = getCorrectNum(fs_in.localPos.z + 0.5f, h + 1) / hc;
+    vec2 tex = vec2(x,1.0f - y);
+    vec4 color = texture(map,tex);
+
     vec3 viewDirection = normalize(fs_in.ViewPos - fs_in.FragPos);
     //vec3 viewDirection = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     vec3 normal = fs_in.Normal;
@@ -79,6 +92,11 @@ void main() {
             vec3 result = getDirectLight(directLight, normal, viewDirection,fs_in.TexCoords);
             float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
             fragment_color = vec4(result, alpha);
+            /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
+                fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
+            }else{
+                fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, fs_in.visibility);
+            }*/
         }else{
             if(useBorder == 1){
                 vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
@@ -90,11 +108,21 @@ void main() {
                 vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
                 float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
                 fragment_color = vec4(result / 10.0f,alpha);
+                /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
+                    fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
+                }else{
+                    fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)),fragment_color, fs_in.visibility);
+                }*/
             }
         }
     }
 
-    fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
+
+    if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
+        fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
+    }else{
+        fragment_color = mix(vec4(vec4(fragment_color.xyz / 8.0f, fragment_color.a)),fragment_color, fs_in.visibility);
+    }
 
     vec4 rgba = texture(material.diffuseMap,fs_in.TexCoords);
     if(group == R){
@@ -116,6 +144,17 @@ void main() {
     else{
         bright_color = vec4(0.0, 0.0, 0.0, 1.0);
     }
+}
+
+int getCorrectNum(float num, int size){
+    int n = 0;
+    for(int i=0; i<=size; i++){
+        if(i-0.5f < num && num < i+0.5f){
+            n = i;
+            break;
+        }
+    }
+    return n;
 }
 
 vec4 targetHighlight(){

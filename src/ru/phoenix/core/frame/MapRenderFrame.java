@@ -3,12 +3,12 @@ package ru.phoenix.core.frame;
 import ru.phoenix.core.buffer.fbo.FrameBufferObject;
 import ru.phoenix.core.buffer.fbo.MultisampleFrameBuffer;
 import ru.phoenix.core.buffer.fbo.OutputFrameBuffer;
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.scene.Scene;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.*;
@@ -18,13 +18,11 @@ public class MapRenderFrame implements Framework {
     private FrameBufferObject multisample;
     private FrameBufferObject render;
     private Shader shader;
-    private int start;
 
     public MapRenderFrame(){
         multisample = new MultisampleFrameBuffer(1);
         render = new OutputFrameBuffer(1);
         shader = new Shader();
-        start = 0;
     }
 
     @Override
@@ -40,9 +38,9 @@ public class MapRenderFrame implements Framework {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader.useProgram();
-        shader.setUniform("start",start);
+        shader.setUniform("start", Default.isMapFrameStart() ? 1 : 0);
         glActiveTexture(GL_TEXTURE5);
-        glBindTexture(GL_TEXTURE_2D, render.getTexture());
+        glBindTexture(GL_TEXTURE_2D, Default.getMapTextureId());
         shader.setUniform("map",5);
         scene.draw(shader);
         glBindFramebuffer(GL_FRAMEBUFFER,0);
@@ -63,7 +61,8 @@ public class MapRenderFrame implements Framework {
         glBindFramebuffer(GL_FRAMEBUFFER, render.getFrameBuffer());
         glReadBuffer(GL_COLOR_ATTACHMENT1);
         glBindFramebuffer(GL_FRAMEBUFFER,0);
-        start = 1;
+        Default.setMapFrameStart(true);
+        Default.setMapTextureId(render.getTexture());
     }
 
     @Override
