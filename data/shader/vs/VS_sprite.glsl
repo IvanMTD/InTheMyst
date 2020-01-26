@@ -24,6 +24,8 @@ uniform int grid;
 uniform int isActive;
 uniform int bigTree;
 uniform int turn;
+uniform int w;
+uniform int h;
 // доп данные
 uniform mat4 model_m;
 uniform vec3 viewDirect;
@@ -40,12 +42,15 @@ uniform vec4 unit5;
 
 out VS_OUT{
     vec4 localPos;
-    vec4 pointPos;
     vec2 textureCoord;
+    vec2 mapTexCoords;
     flat int isBoard;
     flat int isGrid;
+    flat int isActive;
     float visibility;
 }vs_out;
+
+int getCorrectNum(float,int);
 
 void main() {
     vec3 cameraRight_worldspace = vec3(view_m[0][0], view_m[1][0], view_m[2][0]);
@@ -54,6 +59,7 @@ void main() {
 
     vs_out.isBoard = board;
     vs_out.isGrid = grid;
+    vs_out.isActive = isActive;
 
     if(instance == 1){
         if(board == 1){
@@ -90,7 +96,12 @@ void main() {
 
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
-            vs_out.pointPos = l_instance_m * vec4(result,1.0f);
+            vec4 pointPos = l_instance_m * vec4(result,1.0f);
+            float wc = w + 1;
+            float hc = h + 1;
+            float x = getCorrectNum(pointPos.x + 0.5f, w + 1) / wc;
+            float y = getCorrectNum(pointPos.z + 0.5f, h + 1) / hc;
+            vs_out.mapTexCoords = vec2(x,1.0f - y);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
 
@@ -116,7 +127,12 @@ void main() {
 
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
-            vs_out.pointPos = l_instance_m * vec4(l_pos,1.0f);
+            vec4 pointPos = l_instance_m * vec4(l_pos,1.0f);
+            float wc = w + 1;
+            float hc = h + 1;
+            float x = getCorrectNum(pointPos.x + 0.5f, w + 1) / wc;
+            float y = getCorrectNum(pointPos.z + 0.5f, h + 1) / hc;
+            vs_out.mapTexCoords = vec2(x,1.0f - y);
         }
     }else{
         if(board == 1){
@@ -165,7 +181,12 @@ void main() {
 
             gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
-            vs_out.pointPos = model_m * vec4(result,1.0f);
+            vec4 pointPos = model_m * vec4(result,1.0f);
+            float wc = w + 1;
+            float hc = h + 1;
+            float x = getCorrectNum(pointPos.x + 0.5f, w + 1) / wc;
+            float y = getCorrectNum(pointPos.z + 0.5f, h + 1) / hc;
+            vs_out.mapTexCoords = vec2(x,1.0f - y);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
 
@@ -191,8 +212,24 @@ void main() {
 
             gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
-            vs_out.pointPos = model_m * vec4(l_pos,1.0f);
+            vec4 pointPos = model_m * vec4(l_pos,1.0f);
+            float wc = w + 1;
+            float hc = h + 1;
+            float x = getCorrectNum(pointPos.x + 0.5f, w + 1) / wc;
+            float y = getCorrectNum(pointPos.z + 0.5f, h + 1) / hc;
+            vs_out.mapTexCoords = vec2(x,1.0f - y);
         }
     }
     vs_out.textureCoord = l_tex;
+}
+
+int getCorrectNum(float num, int size){
+    int n = 0;
+    for(int i=0; i<=size; i++){
+        if(i-0.5f < num && num < i+0.5f){
+            n = i;
+            break;
+        }
+    }
+    return n;
 }

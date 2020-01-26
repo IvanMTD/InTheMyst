@@ -316,10 +316,10 @@ public class BattleScene implements Scene {
         // рисуем поле и сетку
         studyArea.draw(shader3D);
 
-        background3D.useProgram();
+        /*background3D.useProgram();
         background3D.setUniformBlock("matrices",0);
         background3D.setUniform("model_m", new Projection().getModelMatrix());
-        background.draw();
+        background.draw();*/
 
         shaderSprite.useProgram();
         shaderSprite.setUniformBlock("matrices", 0);

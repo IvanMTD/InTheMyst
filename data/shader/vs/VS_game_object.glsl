@@ -22,6 +22,8 @@ layout (row_major, std140) uniform matrices{
 // контролеры
 uniform int animated;
 uniform int instance;
+uniform int w;
+uniform int h;
 
 // доп данные
 uniform mat4 model_m;
@@ -40,6 +42,7 @@ out VS_OUT {
      vec3 FragPos;
      vec3 Normal;
      vec2 TexCoords;
+     vec2 mapTexCoords;
      vec3 TangentViewPos;
      vec3 TangentFragPos;
      vec3 ViewPos;
@@ -48,6 +51,8 @@ out VS_OUT {
      vec4 localPos;
      float visibility;
 } vs_out;
+
+int getCorrectNum(float,int);
 
 void main() {
     vec4 initNormal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -118,6 +123,11 @@ void main() {
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
         vs_out.localPos = l_instance_m * initPos;
+        float wc = w + 1;
+        float hc = h + 1;
+        float x = getCorrectNum(vs_out.localPos.x + 0.5f, w + 1) / wc;
+        float y = getCorrectNum(vs_out.localPos.z + 0.5f, h + 1) / hc;
+        vs_out.mapTexCoords = vec2(x,1.0f - y);
     }else{
         if(animated == 1){
             int count = 0;
@@ -184,5 +194,21 @@ void main() {
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
         vs_out.localPos = model_m * initPos;
+        float wc = w + 1;
+        float hc = h + 1;
+        float x = getCorrectNum(vs_out.localPos.x + 0.5f, w + 1) / wc;
+        float y = getCorrectNum(vs_out.localPos.z + 0.5f, h + 1) / hc;
+        vs_out.mapTexCoords = vec2(x,1.0f - y);
     }
+}
+
+int getCorrectNum(float num, int size){
+    int n = 0;
+    for(int i=0; i<=size; i++){
+        if(i-0.5f < num && num < i+0.5f){
+            n = i;
+            break;
+        }
+    }
+    return n;
 }

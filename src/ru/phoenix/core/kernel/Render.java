@@ -1,12 +1,10 @@
 package ru.phoenix.core.kernel;
 
 import ru.phoenix.core.config.*;
-import ru.phoenix.core.debug.HowLong;
 import ru.phoenix.core.frame.BaseRenderFrame;
 import ru.phoenix.core.frame.Framework;
 import ru.phoenix.core.frame.MapRenderFrame;
 import ru.phoenix.core.frame.ShadowRenderFrame;
-import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
 
@@ -27,9 +25,12 @@ public class Render {
     private float angle;
     private float hyp;
 
+    private int textureNum;
+
     Render(){
+        textureNum = 3;
         window = Window.getInstance();
-        baseRenderFrame = new BaseRenderFrame(3);
+        baseRenderFrame = new BaseRenderFrame(textureNum);
         shadowRenderFrame = new ShadowRenderFrame();
         mapRenderFrame = new MapRenderFrame();
         stopRender = false;
@@ -48,7 +49,7 @@ public class Render {
         if(SceneControl.isReinit()){
             shadowRenderFrame = new ShadowRenderFrame();
             shadowRenderFrame.init();
-            baseRenderFrame = new BaseRenderFrame(3);
+            baseRenderFrame = new BaseRenderFrame(textureNum);
             baseRenderFrame.init();
             stopRender = true;
             SceneControl.setLoading(true);

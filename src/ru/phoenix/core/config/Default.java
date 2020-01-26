@@ -1,7 +1,5 @@
 package ru.phoenix.core.config;
 
-import ru.phoenix.core.loader.texture.Texture;
-import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
@@ -23,6 +21,8 @@ public class Default {
     private static Character anarchyThief;
     private static Character anarchyArcher;
 
+    private static int mapTextureId;
+    private static boolean start;
     private static float radiance;
     private static float offset;
     private static boolean wait;
@@ -30,9 +30,9 @@ public class Default {
     private static float cursorAngle;
 
     private static boolean mapFrameStart;
-    private static int mapTextureId;
 
     public static void init() {
+        start = false;
         showAlpha = false;
         // communis
         gehard = new Gehard();
@@ -100,6 +100,14 @@ public class Default {
 
     public static void setCursorAngle(float cursorAngle) {
         Default.cursorAngle = cursorAngle;
+    }
+
+    public static boolean isStart() {
+        return start;
+    }
+
+    public static void setStart(boolean start) {
+        Default.start = start;
     }
 
     // COMMUNIS

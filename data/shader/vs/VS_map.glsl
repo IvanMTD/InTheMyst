@@ -17,6 +17,8 @@ uniform int instance;
 
 uniform mat4 model_m;
 uniform mat4 mapCam_m;
+uniform int w;
+uniform int h;
 
 uniform vec4 unit0;
 uniform vec4 unit1;
@@ -26,15 +28,24 @@ uniform vec4 unit4;
 uniform vec4 unit5;
 
 out VS_OUT {
-    vec4 localPos;
     vec2 texCoord;
+    vec2 mapTexCoord;
     float visibility;
 } vs_out;
 
+int getCorrectNum(float,int);
+
 void main() {
+    float size = 64.0f;
     if(instance == 1){
-        gl_Position = mapCam_m * l_instance_m * vec4(l_pos,1.0f);
-        vs_out.localPos = l_instance_m * vec4(l_pos,1.0f);
+        vec4 pos = mapCam_m * l_instance_m * vec4(l_pos,1.0f);
+        gl_Position = vec4(pos.x * size, pos.y * size, pos.z, pos.w);
+        vec4 position = l_instance_m * vec4(l_pos,1.0f);
+        float wc = w + 1;
+        float hc = h + 1;
+        float x = getCorrectNum(position.x + 0.5f, w + 1) / wc;
+        float y = getCorrectNum(position.z + 0.5f, h + 1) / hc;
+        vs_out.mapTexCoord = vec2(x,1.0f - y);
         vs_out.texCoord = vec2(l_tex.x,1.0f - l_tex.y);
         vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
         float visbl = 0;
@@ -52,8 +63,14 @@ void main() {
         }
         vs_out.visibility = visbl;
     }else{
-        gl_Position = mapCam_m * model_m * vec4(l_pos,1.0f);
-        vs_out.localPos = model_m * vec4(l_pos,1.0f);
+        vec4 pos = mapCam_m * model_m * vec4(l_pos,1.0f);
+        gl_Position = vec4(pos.x * size, pos.y * size, pos.z, pos.w);
+        vec4 position = model_m * vec4(l_pos,1.0f);
+        float wc = w + 1;
+        float hc = h + 1;
+        float x = getCorrectNum(position.x + 0.5f, w + 1) / wc;
+        float y = getCorrectNum(position.z + 0.5f, h + 1) / hc;
+        vs_out.mapTexCoord = vec2(x,1.0f - y);
         vs_out.texCoord = vec2(l_tex.x,1.0f - l_tex.y);
         vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
         float visbl = 0;
@@ -71,4 +88,15 @@ void main() {
         }
         vs_out.visibility = visbl;
     }
+}
+
+int getCorrectNum(float num, int size){
+    int n = 0;
+    for(int i=0; i<=size; i++){
+        if(i-0.5f < num && num < i+0.5f){
+            n = i;
+            break;
+        }
+    }
+    return n;
 }

@@ -3,17 +3,18 @@
 //const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
 const vec4 skyColor = vec4(0.0f,0.0f,0.0f,1.0f);
 
+const vec4 FOG = vec4(0.0f,0.0f,0.0f,1.0f);
+const vec4 MASK = vec4(1.0f,0.0f,0.0f,1.0f);
+
 out vec4 fragment_color;
 
 // Входящий Блок
 in VS_OUT {
-    vec4 localPos;
     vec2 texCoord;
+    vec2 mapTexCoord;
     float visibility;
 } fs_in;
 
-uniform int w;
-uniform int h;
 uniform sampler2D map;
 uniform int start;
 
@@ -32,37 +33,37 @@ struct Material{
 
 uniform Material material;
 
-int getCorrectNum(float,int);
-
 void main() {
-    float wc = w + 1;
-    float hc = h + 1;
-    float x = getCorrectNum(fs_in.localPos.x + 0.5f, w + 1) / wc;
-    float y = getCorrectNum(fs_in.localPos.z + 0.5f, h + 1) / hc;
-    vec2 tex = vec2(x,1.0f - y);
-    vec4 color = texture(map,tex);
     if(start == 1){
-        if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-            fragment_color = texture(material.diffuseMap,fs_in.texCoord);
-            fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
+        vec4 pm = texture(map,fs_in.mapTexCoord);
+        vec4 nm = mix(FOG,MASK, fs_in.visibility);
+        if(nm.r < 1.0f){
+            if(nm.r > pm.r){
+                fragment_color = nm;
+            }else{
+                fragment_color = pm;
+            }
         }else{
-            fragment_color = texture(material.diffuseMap,fs_in.texCoord);
-            fragment_color = mix(vec4(vec4(fragment_color.rgb / 2.0f,fragment_color.a)),fragment_color, fs_in.visibility);
+            fragment_color = pm;
         }
-        //fragment_color = color;
+    }else{
+        fragment_color = mix(FOG,MASK, fs_in.visibility);
+    }
+    /*if(start == 1){
+        vec4 color = texture(map,fs_in.mapTexCoord);
+        vec4 newColor = texture(material.diffuseMap,fs_in.texCoord);
+        newColor = mix(vec4(skyColor),newColor, fs_in.visibility);
+        if(newColor.rgb != color.rgb){
+            if(newColor.r > color.r){
+                fragment_color = newColor;
+            }else{
+                fragment_color = color;
+            }
+        }else{
+            fragment_color = color;
+        }
     }else{
         fragment_color = texture(material.diffuseMap,fs_in.texCoord);
         fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
-    }
-}
-
-int getCorrectNum(float num, int size){
-    int n = 0;
-    for(int i=0; i<=size; i++){
-        if(i-0.5f < num && num < i+0.5f){
-            n = i;
-            break;
-        }
-    }
-    return n;
+    }*/
 }
