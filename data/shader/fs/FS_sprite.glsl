@@ -33,7 +33,7 @@ uniform int onTarget;
 uniform int water;
 uniform int tree;
 uniform int discardReverse;
-uniform int noPaint;
+uniform int indicator;
 uniform float discardControl;
 uniform int showAlpha;
 
@@ -44,9 +44,7 @@ void main(){
     // обробатываем текстуру
     vec4 rgba = texture(image,textureCoord);
     if(rgba.a < 1.0f && isBoard == 1){
-        if(noPaint == 0){
-            discard;
-        }
+        discard;
     }
 
     if(discardControl > -1.0f){
@@ -64,37 +62,16 @@ void main(){
     // Расчитываем цвет фрагмента
     if(onTarget == 1){
         fragment_color = targetHighlight(rgba);
-        /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-            fragment_color = mix(vec4(skyColor),fragment_color, visibility);
-        }else{
-            fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, visibility);
-        }*/
     }else{
         if(useShading == 1){
             if(water == 1){
                 fragment_color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
-                /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-                    fragment_color = mix(vec4(skyColor),fragment_color, visibility);
-                }else{
-                    fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, visibility);
-                }*/
             }else{
-                //float average = 0.2126 * rgba.r + 0.7152 * rgba.g + 0.0722 * rgba.b; // Градации серого
                 fragment_color = vec4(rgba.rgb / 10.0f, rgba.a);
-                /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-                    fragment_color = mix(vec4(skyColor),fragment_color, visibility);
-                }else{
-                    fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, visibility);
-                }*/
             }
         }else{
             if(water == 1){
                 fragment_color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
-                /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-                    fragment_color = mix(vec4(skyColor),fragment_color, visibility);
-                }else{
-                    fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, visibility);
-                }*/
             }else{
                 if(battle == 1){
                     vec3 rgb = vec3(rgba);
@@ -102,41 +79,17 @@ void main(){
                     if(tree == 1){
                         if(showAlpha == 1){
                             fragment_color = vec4(rgb,a);
-                            /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-                                fragment_color = mix(vec4(skyColor),fragment_color, visibility);
-                            }else{
-                                fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, visibility);
-                            }*/
                         }else{
                             fragment_color = rgba;
-                            /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-                                fragment_color = mix(vec4(skyColor),fragment_color, visibility);
-                            }else{
-                                fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, visibility);
-                            }*/
                         }
                     }else{
                         fragment_color = rgba;
-                        /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-                            fragment_color = mix(vec4(skyColor),fragment_color, visibility);
-                        }else{
-                            fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, visibility);
-                        }*/
                     }
                 }else{
                     fragment_color = rgba;
-                    /*if(color.r == skyColor.r && color.g == skyColor.g && color.b == skyColor.b){
-                        fragment_color = mix(vec4(skyColor),fragment_color, visibility);
-                    }else{
-                        fragment_color = mix(vec4(vec4(fragment_color.xyz / 10.0f, fragment_color.a)), fragment_color, visibility);
-                    }*/
                 }
             }
         }
-    }
-
-    if(noPaint == 1){
-        fragment_color = vec4(0.0f,0.0f,0.0f,0.0f);
     }
 
     if(color.r > 0.0f){
@@ -146,13 +99,16 @@ void main(){
     }
 
     if(fs_in.isActive == 1){
-        fragment_color = mix(vec4(0.0f,0.0f,0.0f,0.0f),fragment_color, visibility);
-        /*if(visibility == 0.0f){
+        if(visibility == 0.0f){
             discard;
-        }*/
+        }else {
+            fragment_color = mix(vec4(0.0f, 0.0f, 0.0f, 0.0f), fragment_color, visibility);
+        }
     }
 
-    //fragment_color = mix(vec4(skyColor),fragment_color, visibility);
+    if(indicator == 1){
+        fragment_color = rgba;
+    }
 
     // Расчитываем выбраный цвет
     if(group == R){

@@ -87,7 +87,7 @@ public abstract class BoardControl {
         shader.setUniform("turn",0);
         shader.setUniform("discardReverse",isDiscardReverse() ? 1 : 0);
         shader.setUniform("discardControl",getDiscatdControl());
-        shader.setUniform("noPaint",0);
+        shader.setUniform("indicator",1);
         // доп данные
         shader.setUniform("model_m",projection.getModelMatrix());
         shader.setUniform("xOffset",0);

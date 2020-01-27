@@ -148,9 +148,9 @@ public class BaseRenderFrame implements Framework {
 
         glActiveTexture(GL_TEXTURE1);
         if(GameController.getInstance().isTabHold()){
-            glBindTexture(GL_TEXTURE_2D, map.getTexture()); // отладочный для проверки карты теней
+            //glBindTexture(GL_TEXTURE_2D, map.getTexture()); // отладочный для проверки war fog
             //glBindTexture(GL_TEXTURE_2D, shadow.getTexture()); // отладочный для проверки карты теней
-            //glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
+            glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
             ndcShader.setUniform("shadow",1);
         }else{
             glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1)); // Основной рендер

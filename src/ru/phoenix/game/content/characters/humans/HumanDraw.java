@@ -106,7 +106,7 @@ public abstract class HumanDraw extends HumanControl {
         shader.setUniform("turn", isTurn() ? 1 : 0);
         shader.setUniform("discardReverse", 0);
         shader.setUniform("discardControl", -1.0f);
-        shader.setUniform("noPaint", 0);
+        shader.setUniform("indicator", 0);
 
         shader.setUniform("model_m", projection.getModelMatrix());
         shader.setUniform("xOffset", 0.0f);

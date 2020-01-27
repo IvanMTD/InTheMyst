@@ -84,21 +84,11 @@ void main() {
             vec3 result = getDirectLight(directLight, normal, viewDirection,fs_in.TexCoords);
             float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
             fragment_color = vec4(result, alpha);
-            //fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
             if(color.r > 0.0f){
                 fragment_color = mix(vec4(skyColor),fragment_color, color.r);
             }else{
                 fragment_color = skyColor;
             }
-            /*if(fragment_color.rgb == color.rgb){
-                fragment_color = fragment_color;
-            }else{
-                if(color.rgb == skyColor.rgb){
-                    fragment_color = fragment_color;
-                }else{
-                    fragment_color = vec4(result,alpha);
-                }
-            }*/
         }else{
             if(useBorder == 1){
                 vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
@@ -111,20 +101,10 @@ void main() {
                 float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
                 fragment_color = vec4(result / 10.0f,alpha);
                 if(color.r > 0.0f){
-                    fragment_color = mix(vec4(skyColor),fragment_color, color.r);
+                    fragment_color = mix(skyColor,fragment_color, color.r);
                 }else{
                     fragment_color = skyColor;
                 }
-                /*fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
-                if(fragment_color.rgb == color.rgb){
-                    fragment_color = fragment_color;
-                }else{
-                    if(color.rgb == skyColor.rgb){
-                        fragment_color = fragment_color;
-                    }else{
-                        fragment_color = vec4(result,alpha);
-                    }
-                }*/
             }
         }
     }

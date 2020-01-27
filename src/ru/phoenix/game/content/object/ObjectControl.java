@@ -342,7 +342,7 @@ public abstract class ObjectControl {
             shader.setUniform("turn", currentTurn ? 1 : 0);
             shader.setUniform("discardReverse", 0);
             shader.setUniform("discardControl", -1.0f);
-            shader.setUniform("noPaint", 0);
+            shader.setUniform("indicator", 0);
             // доп данные
             shader.setUniform("model_m", projection.getModelMatrix());
             shader.setUniform("xOffset", xOffset);

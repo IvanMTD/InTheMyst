@@ -49,21 +49,4 @@ void main() {
     }else{
         fragment_color = mix(FOG,MASK, fs_in.visibility);
     }
-    /*if(start == 1){
-        vec4 color = texture(map,fs_in.mapTexCoord);
-        vec4 newColor = texture(material.diffuseMap,fs_in.texCoord);
-        newColor = mix(vec4(skyColor),newColor, fs_in.visibility);
-        if(newColor.rgb != color.rgb){
-            if(newColor.r > color.r){
-                fragment_color = newColor;
-            }else{
-                fragment_color = color;
-            }
-        }else{
-            fragment_color = color;
-        }
-    }else{
-        fragment_color = texture(material.diffuseMap,fs_in.texCoord);
-        fragment_color = mix(vec4(skyColor),fragment_color, fs_in.visibility);
-    }*/
 }
