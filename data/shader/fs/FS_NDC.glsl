@@ -5,9 +5,11 @@ const float offset = 1.0 / 300.0;
 out vec4 fragment_color;
 
 in vec2 texture_coord;
+in vec2 fog_tex_coord;
 
 uniform sampler2D main_texture;
 uniform sampler2D blur_texture;
+uniform sampler2D warFog;
 uniform float gamma;
 uniform float contrast;
 uniform int shadow;
@@ -80,11 +82,16 @@ void main(){
     vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
     // gamma correction
     mapped = pow(mapped, vec3(1.0 / gamma));
+    vec4 fog = texture(warFog, fog_tex_coord);
     if(shadow == 1){
         fragment_color = texture(blur_texture,texture_coord);
     }else{
         fragment_color = vec4(mapped, 1.0);
-        fragment_color.rgb = (fragment_color.rgb - 0.5f) * (1.0f + contrast) + 0.5f;
+        if(fragment_color.r == 0.0f && fragment_color.g == 0.0f && fragment_color.b == 0.0f){
+            fragment_color = fog;
+        }else{
+            fragment_color.rgb = (fragment_color.rgb - 0.5f) * (1.0f + contrast) + 0.5f;
+        }
     }
 }
 

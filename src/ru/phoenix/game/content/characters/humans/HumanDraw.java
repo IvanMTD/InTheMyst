@@ -8,6 +8,7 @@ import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.logic.generator.Generator;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
@@ -120,6 +121,9 @@ public abstract class HumanDraw extends HumanControl {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
         shader.setUniform("image", 0);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID());
+        shader.setUniform("heightMap", 1);
     }
 
     // методы сетеры и гетеры - начало

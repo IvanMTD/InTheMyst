@@ -3,7 +3,6 @@ package ru.phoenix.game.content.stage;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Input;
-import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
@@ -74,7 +73,7 @@ public abstract class StudyAreaControl {
         float x = mapX + 1;
         float y = mapZ + 1;
         Projection projection = new Projection();
-        float size = 32.0f;
+        float size = 4.0f;
         projection.setOrtho(-x * size, x * size,-y * size,y * size, WindowConfig.getInstance().getNear(), 100.0f);
         projection.setView(
                 new Vector3f(getMapX() / 2.0f, 50.0f, getMapZ() / 2.0f),

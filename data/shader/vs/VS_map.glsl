@@ -36,7 +36,7 @@ out VS_OUT {
 int getCorrectNum(float,int);
 
 void main() {
-    float size = 64.0f;
+    float size = 8.0f;
     if(instance == 1){
         vec4 pos = mapCam_m * l_instance_m * vec4(l_pos,1.0f);
         gl_Position = vec4(pos.x * size, pos.y * size, pos.z, pos.w);

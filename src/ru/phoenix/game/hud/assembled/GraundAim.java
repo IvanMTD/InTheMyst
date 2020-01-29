@@ -8,12 +8,11 @@ import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.logic.generator.Generator;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static ru.phoenix.core.config.Constants.GROUP_A;
 
@@ -87,6 +86,7 @@ public class GraundAim {
             projection.setRotation(45.0f, new Vector3f(1.0f, 0.0f, 0.0f));
         }
         projection.setRotation(Default.getCursorAngle(),new Vector3f(0.0f,1.0f,0.0f));
+        projection.setScaling(0.8f);
         // контролеры
         shader.setUniform("instance", 0);
         shader.setUniform("animated", 0);
@@ -97,6 +97,7 @@ public class GraundAim {
         shader.setUniform("turn",0);
         shader.setUniform("discardReverse", 0);
         shader.setUniform("discardControl", -1.0f);
+        shader.setUniform("battlefield",0);
         shader.setUniform("indicator",1);
         // доп данные
         shader.setUniform("model_m", projection.getModelMatrix());
@@ -112,6 +113,9 @@ public class GraundAim {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
         shader.setUniform("image", 0);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID());
+        shader.setUniform("heightMap", 1);
     }
 
     public boolean isVisible() {

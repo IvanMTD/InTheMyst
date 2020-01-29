@@ -14,6 +14,7 @@ import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.hud.assembled.SelfIndicators;
+import ru.phoenix.game.logic.generator.Generator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,7 @@ import java.util.List;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL13.*;
 import static ru.phoenix.core.config.Constants.*;
 
 public abstract class ObjectControl {
@@ -343,6 +343,8 @@ public abstract class ObjectControl {
             shader.setUniform("discardReverse", 0);
             shader.setUniform("discardControl", -1.0f);
             shader.setUniform("indicator", 0);
+            shader.setUniform("onTarget", isOnTarget() ? 1 : 0);
+            shader.setUniform("water", isWater() ? 1 : 0);
             // доп данные
             shader.setUniform("model_m", projection.getModelMatrix());
             shader.setUniform("xOffset", xOffset);
@@ -350,12 +352,13 @@ public abstract class ObjectControl {
             shader.setUniform("zOffset", zOffset);
             shader.setUniform("group", group);
             shader.setUniform("id", id);
-            shader.setUniform("onTarget", isOnTarget() ? 1 : 0);
-            shader.setUniform("water", isWater() ? 1 : 0);
             // end
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textures.get(currentTexture).getTextureID());
             shader.setUniform("image", 0);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID());
+            shader.setUniform("heightMap", 1);
 
             sprite.draw();
 

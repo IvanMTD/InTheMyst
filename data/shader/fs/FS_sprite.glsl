@@ -11,10 +11,14 @@ layout (location = 2) out vec4 bright_color;
 
 //const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
 const vec4 skyColor = vec4(0.0f,0.0f,0.0f,1.0f);
+//const vec4 skyColor = vec4(0.5f,0.5f,0.5f,1.0f);
 
 in GS_OUT{
     vec2 mapTexCoords;
+    flat int indicator;
     flat int isActive;
+    flat int tree;
+    flat int water;
 }fs_in;
 
 in vec2 textureCoord;
@@ -30,10 +34,7 @@ uniform int group;
 uniform float id;
 // switch
 uniform int onTarget;
-uniform int water;
-uniform int tree;
 uniform int discardReverse;
-uniform int indicator;
 uniform float discardControl;
 uniform int showAlpha;
 
@@ -64,19 +65,19 @@ void main(){
         fragment_color = targetHighlight(rgba);
     }else{
         if(useShading == 1){
-            if(water == 1){
+            if(fs_in.water == 1){
                 fragment_color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
             }else{
                 fragment_color = vec4(rgba.rgb / 10.0f, rgba.a);
             }
         }else{
-            if(water == 1){
+            if(fs_in.water == 1){
                 fragment_color = vec4(rgba.r - 0.5f,rgba.g - 0.1f,rgba.b + 0.4f,rgba.a * 2.0f);
             }else{
                 if(battle == 1){
                     vec3 rgb = vec3(rgba);
                     float a = rgba.a / 2.0f;
-                    if(tree == 1){
+                    if(fs_in.tree == 1){
                         if(showAlpha == 1){
                             fragment_color = vec4(rgb,a);
                         }else{
@@ -106,7 +107,7 @@ void main(){
         }
     }
 
-    if(indicator == 1){
+    if(fs_in.indicator == 1){
         fragment_color = rgba;
     }
 

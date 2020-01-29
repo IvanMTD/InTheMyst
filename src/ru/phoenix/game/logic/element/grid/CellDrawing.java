@@ -6,10 +6,12 @@ import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.logic.generator.Generator;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static ru.phoenix.core.config.Constants.GROUP_A;
 import static ru.phoenix.core.config.Constants.GROUP_G;
@@ -226,6 +228,9 @@ abstract class CellDrawing extends CellManagement {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
         shader.setUniform("image", 0);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID());
+        shader.setUniform("heightMap", 1);
         // end
         mesh.draw();
     }
@@ -242,6 +247,7 @@ abstract class CellDrawing extends CellManagement {
         shader.setUniform("discardReverse",0);
         shader.setUniform("discardControl",-1.0f);
         shader.setUniform("battlefield",0);
+        shader.setUniform("indicator",1);
         // доп данные
         projection.getModelMatrix().identity();
         if(getPosition().getY() != getCurrentHeight()){
@@ -261,6 +267,9 @@ abstract class CellDrawing extends CellManagement {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
         shader.setUniform("image", 0);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID());
+        shader.setUniform("heightMap", 1);
         // end
     }
     // конец

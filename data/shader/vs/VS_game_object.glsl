@@ -20,6 +20,7 @@ layout (row_major, std140) uniform matrices{
 };
 
 // контролеры
+uniform sampler2D heightMap;
 uniform int animated;
 uniform int instance;
 uniform int w;
@@ -55,6 +56,7 @@ out VS_OUT {
 int getCorrectNum(float,int);
 
 void main() {
+    float gain = 3.5f;
     vec4 initNormal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
     vec4 initPos = vec4(0.0f, 0.0f, 0.0f, 0.0f);
     vec4 mapPos = vec4(0.0f,0.0f,0.0f,0.0f);
@@ -84,6 +86,19 @@ void main() {
             gl_Position = perspective_m * view_m * l_instance_m * initPos;
         }else{
             initPos = vec4(l_pos, 1.0f);
+            vs_out.localPos = l_instance_m * initPos;
+            float wc = w + 1;
+            float hc = h + 1;
+            float x = getCorrectNum(vs_out.localPos.x + 0.5f, w + 1) / wc;
+            float y = getCorrectNum(vs_out.localPos.z + 0.5f, h + 1) / hc;
+            vs_out.mapTexCoords = vec2(x,1.0f - y);
+            vec4 lPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
+            wc = w + 1;
+            hc = h + 1;
+            x = getCorrectNum(lPos.x + 0.5f, w + 1) / wc;
+            y = getCorrectNum(lPos.z + 0.5f, h + 1) / hc;
+            vec2 lt = vec2(x,1.0f-y);
+
 
             vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
             float visbl = 0;
@@ -104,7 +119,9 @@ void main() {
             float distance = length(direct.xyz);
             float vis = exp(-pow((distance * density),gradient));*/
             vs_out.visibility = visbl;
-
+            /*float offset = (texture(heightMap, lt).r * gain) + 0.5f - 1.0f;
+            vec4 res = perspective_m * view_m * l_instance_m * initPos;
+            gl_Position = vec4(res.x,res.y + offset,res.z,res.w);*/
             gl_Position = perspective_m * view_m * l_instance_m * initPos;
             initNormal = vec4(l_norm,0.0f);
         }
@@ -122,12 +139,6 @@ void main() {
         vs_out.ViewPos = viewPos;
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
-        vs_out.localPos = l_instance_m * initPos;
-        float wc = w + 1;
-        float hc = h + 1;
-        float x = getCorrectNum(vs_out.localPos.x + 0.5f, w + 1) / wc;
-        float y = getCorrectNum(vs_out.localPos.z + 0.5f, h + 1) / hc;
-        vs_out.mapTexCoords = vec2(x,1.0f - y);
     }else{
         if(animated == 1){
             int count = 0;
@@ -153,6 +164,12 @@ void main() {
             gl_Position = perspective_m * view_m * model_m * initPos;
         }else{
             initPos = vec4(l_pos, 1.0f);
+            vs_out.localPos = model_m * initPos;
+            float wc = w + 1;
+            float hc = h + 1;
+            float x = getCorrectNum(vs_out.localPos.x + 0.5f, w + 1) / wc;
+            float y = getCorrectNum(vs_out.localPos.z + 0.5f, h + 1) / hc;
+            vs_out.mapTexCoords = vec2(x,1.0f - y);
 
             vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
             float visbl = 0;
@@ -173,6 +190,9 @@ void main() {
             float distance = length(direct.xyz);
             float vis = exp(-pow((distance * density),gradient));*/
             vs_out.visibility = visbl;
+            /*float offset = (texture(heightMap, vs_out.mapTexCoords).r * gain) + 0.5f - 1.0f;
+            vec4 res = perspective_m * view_m * model_m * initPos;
+            gl_Position = vec4(res.x,res.y + offset,res.z,res.w);*/
             gl_Position = perspective_m * view_m * model_m * initPos;
             initNormal = vec4(l_norm,0.0f);
         }
@@ -193,12 +213,6 @@ void main() {
         vs_out.ViewPos = viewPos;
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
-        vs_out.localPos = model_m * initPos;
-        float wc = w + 1;
-        float hc = h + 1;
-        float x = getCorrectNum(vs_out.localPos.x + 0.5f, w + 1) / wc;
-        float y = getCorrectNum(vs_out.localPos.z + 0.5f, h + 1) / hc;
-        vs_out.mapTexCoords = vec2(x,1.0f - y);
     }
 }
 

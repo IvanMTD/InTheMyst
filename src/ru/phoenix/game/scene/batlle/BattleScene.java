@@ -316,10 +316,10 @@ public class BattleScene implements Scene {
         // рисуем поле и сетку
         studyArea.draw(shader3D);
 
-        /*background3D.useProgram();
+        background3D.useProgram();
         background3D.setUniformBlock("matrices",0);
         background3D.setUniform("model_m", new Projection().getModelMatrix());
-        background.draw();*/
+        background.draw();
 
         shaderSprite.useProgram();
         shaderSprite.setUniformBlock("matrices", 0);
@@ -443,6 +443,7 @@ public class BattleScene implements Scene {
         // ALLIES - ВРЕМЕННО!
         float id = 0.12f;
         Vector3f position = Generator.getRandomPos(studyArea.getGrid(),true);
+        //Vector3f position = studyArea.getGrid()[0][0].getModifiedPosition();
         Vector3f lagerPoint = position;
         Vector3f cameraLook = new Vector3f(position);
         Character character = new Gehard(Default.getGehard(),position,lagerPoint,id,ALLY);

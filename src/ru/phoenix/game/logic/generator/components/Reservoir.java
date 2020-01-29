@@ -106,6 +106,41 @@ public class Reservoir {
                     Vector3f p2 = new Vector3f(newPos.getX() - 0.5f, newPos.getY(),newPos.getZ() - 0.5f);
                     Vector3f p3 = new Vector3f(newPos.getX() + 0.5f, newPos.getY(),newPos.getZ() - 0.5f);
                     Vector3f p4 = new Vector3f(newPos.getX() + 0.5f, newPos.getY(),newPos.getZ() + 0.5f);
+                    if(x == 0 && z == 0){
+                        p1.setX(p1.getX() + 0.1f);
+                        p2.setX(p2.getX() + 0.1f);
+                        p2.setZ(p2.getZ() + 0.1f);
+                        p3.setZ(p3.getZ() + 0.1f);
+                    }else if(x == 0 && z == grid[0].length - 1){
+                        p1.setX(p1.getX() + 0.1f);
+                        p2.setX(p2.getX() + 0.1f);
+                        p1.setZ(p1.getZ() - 0.1f);
+                        p4.setZ(p4.getZ() - 0.1f);
+                    }else if(z == 0 && x == grid.length - 1){
+                        p3.setX(p3.getX() - 0.1f);
+                        p4.setX(p4.getX() - 0.1f);
+                        p2.setZ(p2.getZ() + 0.1f);
+                        p3.setZ(p3.getZ() + 0.1f);
+                    }else if(z == grid[0].length - 1 && x == grid.length - 1){
+                        p3.setX(p3.getX() - 0.1f);
+                        p4.setX(p4.getX() - 0.1f);
+                        p1.setZ(p1.getZ() - 0.1f);
+                        p4.setZ(p4.getZ() - 0.1f);
+                    }else {
+                        if(x == 0){
+                            p1.setX(p1.getX() + 0.1f);
+                            p2.setX(p2.getX() + 0.1f);
+                        }else if(x == grid.length - 1){
+                            p3.setX(p3.getX() - 0.1f);
+                            p4.setX(p4.getX() - 0.1f);
+                        }else if(z == 0){
+                            p2.setZ(p2.getZ() + 0.1f);
+                            p3.setZ(p3.getZ() + 0.1f);
+                        }else if(z == grid[0].length - 1){
+                            p1.setZ(p1.getZ() - 0.1f);
+                            p4.setZ(p4.getZ() - 0.1f);
+                        }
+                    }
                     positions.addAll(Arrays.asList(p1.getX(),p1.getY(),p1.getZ()));
                     positions.addAll(Arrays.asList(p2.getX(),p2.getY(),p2.getZ()));
                     positions.addAll(Arrays.asList(p3.getX(),p3.getY(),p3.getZ()));
@@ -149,13 +184,21 @@ public class Reservoir {
                     Vector3f p2;
                     Vector3f p3;
                     Vector3f p4;
+                    float correct = 0.4f;
                     if (x == 0) { // left
                         for (float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                            Vector3f p = new Vector3f((float) x - 0.48f, someY, z);
+                            Vector3f p = new Vector3f((float) x - correct, someY, z);
                             p1 = new Vector3f(p.getX(), p.getY() + 0.5f, p.getZ() + 0.5f);
                             p2 = new Vector3f(p.getX(), p.getY() - 0.5f, p.getZ() + 0.5f);
                             p3 = new Vector3f(p.getX(), p.getY() - 0.5f, p.getZ() - 0.5f);
                             p4 = new Vector3f(p.getX(), p.getY() + 0.5f, p.getZ() - 0.5f);
+                            if(z == 0){
+                                p3.setZ(p3.getZ() + 0.1f);
+                                p4.setZ(p4.getZ() + 0.1f);
+                            }else if (z == grid[0].length - 1){
+                                p1.setZ(p1.getZ() - 0.1f);
+                                p2.setZ(p2.getZ() - 0.1f);
+                            }
                             positions.addAll(Arrays.asList(p1.getX(), p1.getY(), p1.getZ()));
                             positions.addAll(Arrays.asList(p2.getX(), p2.getY(), p2.getZ()));
                             positions.addAll(Arrays.asList(p3.getX(), p3.getY(), p3.getZ()));
@@ -188,11 +231,18 @@ public class Reservoir {
                     }
                     if (x == grid.length - 1) { // right
                         for (float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                            Vector3f p = new Vector3f((float) x + 0.48f, someY, z);
+                            Vector3f p = new Vector3f((float) x + correct, someY, z);
                             p1 = new Vector3f(p.getX(), p.getY() + 0.5f, p.getZ() - 0.5f);
                             p2 = new Vector3f(p.getX(), p.getY() - 0.5f, p.getZ() - 0.5f);
                             p3 = new Vector3f(p.getX(), p.getY() - 0.5f, p.getZ() + 0.5f);
                             p4 = new Vector3f(p.getX(), p.getY() + 0.5f, p.getZ() + 0.5f);
+                            if(z == 0){
+                                p1.setZ(p1.getZ() + 0.1f);
+                                p2.setZ(p2.getZ() + 0.1f);
+                            }else if (z == grid[0].length - 1){
+                                p3.setZ(p3.getZ() - 0.1f);
+                                p4.setZ(p4.getZ() - 0.1f);
+                            }
                             positions.addAll(Arrays.asList(p1.getX(), p1.getY(), p1.getZ()));
                             positions.addAll(Arrays.asList(p2.getX(), p2.getY(), p2.getZ()));
                             positions.addAll(Arrays.asList(p3.getX(), p3.getY(), p3.getZ()));
@@ -225,11 +275,18 @@ public class Reservoir {
                     }
                     if (z == 0.0f) { // down
                         for (float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                            Vector3f p = new Vector3f(x, someY, (float) z - 0.48f);
+                            Vector3f p = new Vector3f(x, someY, (float) z - correct);
                             p1 = new Vector3f(p.getX() - 0.5f, p.getY() + 0.5f, p.getZ());
                             p2 = new Vector3f(p.getX() - 0.5f, p.getY() - 0.5f, p.getZ());
                             p3 = new Vector3f(p.getX() + 0.5f, p.getY() - 0.5f, p.getZ());
                             p4 = new Vector3f(p.getX() + 0.5f, p.getY() + 0.5f, p.getZ());
+                            if(x == 0){
+                                p1.setX(p1.getX() + 0.1f);
+                                p2.setX(p2.getX() + 0.1f);
+                            }else if(x == grid.length - 1){
+                                p3.setX(p3.getX() - 0.1f);
+                                p4.setX(p4.getX() - 0.1f);
+                            }
                             positions.addAll(Arrays.asList(p1.getX(), p1.getY(), p1.getZ()));
                             positions.addAll(Arrays.asList(p2.getX(), p2.getY(), p2.getZ()));
                             positions.addAll(Arrays.asList(p3.getX(), p3.getY(), p3.getZ()));
@@ -262,11 +319,18 @@ public class Reservoir {
                     }
                     if (z == grid[0].length - 1) { // up
                         for (float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                            Vector3f p = new Vector3f(x, someY, (float) z + 0.48f);
+                            Vector3f p = new Vector3f(x, someY, (float) z + correct);
                             p1 = new Vector3f(p.getX() + 0.5f, p.getY() + 0.5f, p.getZ());
                             p2 = new Vector3f(p.getX() + 0.5f, p.getY() - 0.5f, p.getZ());
                             p3 = new Vector3f(p.getX() - 0.5f, p.getY() - 0.5f, p.getZ());
                             p4 = new Vector3f(p.getX() - 0.5f, p.getY() + 0.5f, p.getZ());
+                            if(x == 0){
+                                p3.setX(p3.getX() + 0.1f);
+                                p4.setX(p4.getX() + 0.1f);
+                            }else if(x == grid.length - 1){
+                                p1.setX(p1.getX() - 0.1f);
+                                p2.setX(p2.getX() - 0.1f);
+                            }
                             positions.addAll(Arrays.asList(p1.getX(), p1.getY(), p1.getZ()));
                             positions.addAll(Arrays.asList(p2.getX(), p2.getY(), p2.getZ()));
                             positions.addAll(Arrays.asList(p3.getX(), p3.getY(), p3.getZ()));
@@ -409,7 +473,7 @@ public class Reservoir {
         shader.setUniform("turn", 0);
         shader.setUniform("discardReverse", 0);
         shader.setUniform("discardControl", -1.0f);
-        shader.setUniform("noPaint", 0);
+        shader.setUniform("indicator", 0);
         // доп данные
         shader.setUniform("model_m", new Projection().getModelMatrix());
         shader.setUniform("xOffset", 0.0f);

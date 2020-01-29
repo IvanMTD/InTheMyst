@@ -1,12 +1,10 @@
 package ru.phoenix.game.logic.generator.components;
 
-import ru.phoenix.core.loader.model.Vertex;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.water.WaterLine;
-import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
@@ -44,9 +42,10 @@ public class WaterBay {
                             grid[x][z].setWater(true);
                         }
 
+                        float control = 0.45f;
                         if(x == 0.0f){ // left
                             for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                                Vector3f p = new Vector3f((float)x - 0.49f, someY, z);
+                                Vector3f p = new Vector3f((float)x - control, someY, z);
                                 Projection rp = new Projection();
                                 rp.setTranslation(p);
                                 rp.setRotation(-90.0f, new Vector3f(0.0f, 0.0f, 1.0f));
@@ -55,7 +54,7 @@ public class WaterBay {
                         }
                         if(x == w){ // right
                             for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                                Vector3f p = new Vector3f((float)x + 0.49f, someY, z);
+                                Vector3f p = new Vector3f((float)x + control, someY, z);
                                 Projection rp = new Projection();
                                 rp.setTranslation(p);
                                 rp.setRotation(90.0f, new Vector3f(0.0f, 0.0f, 1.0f));
@@ -64,7 +63,7 @@ public class WaterBay {
                         }
                         if(z == 0.0f){ // down
                             for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                                Vector3f p = new Vector3f(x, someY, (float)z - 0.49f);
+                                Vector3f p = new Vector3f(x, someY, (float)z - control);
                                 Projection rp = new Projection();
                                 rp.setTranslation(p);
                                 rp.setRotation(-90.0f, new Vector3f(1.0f, 0.0f, 0.0f));
@@ -73,7 +72,7 @@ public class WaterBay {
                         }
                         if(z == h){ // up
                             for(float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
-                                Vector3f p = new Vector3f(x, someY, (float)z + 0.49f);
+                                Vector3f p = new Vector3f(x, someY, (float)z + control);
                                 Projection rp = new Projection();
                                 rp.setTranslation(p);
                                 rp.setRotation(90.0f, new Vector3f(1.0f, 0.0f, 0.0f));
@@ -95,7 +94,6 @@ public class WaterBay {
         Object waterLine_up = new WaterLine((WaterLine)water_line_main,UP_BOARD);
         waterLine_up.init(getInstanceMatrix(waterLineUpInstanceList));
         water = new ArrayList<>(Arrays.asList(waterLine_left,waterLine_right,waterLine_down,waterLine_up,water_line_main));
-
         return water;
     }
 

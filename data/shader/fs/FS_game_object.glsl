@@ -7,6 +7,7 @@
 
 //const vec4 skyColor = vec4(0.2f,0.4f,0.5f,1.0f);
 const vec4 skyColor = vec4(0.0f,0.0f,0.0f,1.0f);
+//const vec4 skyColor = vec4(0.5f,0.5f,0.5f,1.0f);
 
 layout (location = 0) out vec4 fragment_color;
 layout (location = 1) out vec4 select_color;
@@ -50,6 +51,8 @@ in flat int useShading;
 in flat int useBorder;
 
 // target highlight
+uniform int w;
+uniform int h;
 uniform int onTarget;
 uniform float radiance;
 uniform float shininess;
@@ -85,7 +88,7 @@ void main() {
             float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
             fragment_color = vec4(result, alpha);
             if(color.r > 0.0f){
-                fragment_color = mix(vec4(skyColor),fragment_color, color.r);
+                fragment_color = mix(skyColor,fragment_color, color.r);
             }else{
                 fragment_color = skyColor;
             }

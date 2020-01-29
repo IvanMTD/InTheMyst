@@ -10,6 +10,8 @@ import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
+import ru.phoenix.core.loader.texture.Texture;
+import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.core.math.Vector3f;
@@ -21,6 +23,7 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengles.GLES30.GL_DRAW_FRAMEBUFFER;
 
@@ -33,11 +36,32 @@ public class BaseRenderFrame implements Framework {
     private VertexBufferObject ndcVbo;
     private Shader ndcShader;
 
+    private int count;
+    private int index;
+    private int random;
+    private Texture texture;
+    private Texture w1;
+    private Texture w2;
+    private Texture w3;
+    private Texture w4;
+    private Texture w5;
+    private Texture w6;
+
     public BaseRenderFrame(){
         multisample = new MultisampleFrameBuffer(1);
         render = new OutputFrameBuffer(1);
         ndcVbo = new NormalizedDeviceCoordinates();
         ndcShader = new Shader();
+
+        count = 0;
+        index = 0;
+        texture = new Texture2D();
+        w1 = new Texture2D();
+        w2 = new Texture2D();
+        w3 = new Texture2D();
+        w4 = new Texture2D();
+        w5 = new Texture2D();
+        w6 = new Texture2D();
     }
 
     public BaseRenderFrame(int num_of_fbo_texture){
@@ -45,6 +69,16 @@ public class BaseRenderFrame implements Framework {
         render = new OutputFrameBuffer(num_of_fbo_texture);
         ndcVbo = new NormalizedDeviceCoordinates();
         ndcShader = new Shader();
+
+        count = 0;
+        index = 0;
+        texture = new Texture2D();
+        w1 = new Texture2D();
+        w2 = new Texture2D();
+        w3 = new Texture2D();
+        w4 = new Texture2D();
+        w5 = new Texture2D();
+        w6 = new Texture2D();
     }
 
     @Override
@@ -52,6 +86,15 @@ public class BaseRenderFrame implements Framework {
         ndcShader.createVertexShader("VS_NDC.glsl");
         ndcShader.createFragmentShader("FS_NDC.glsl");
         ndcShader.createProgram();
+        random = (int)(5.0f + Math.random() * 10.0f);
+
+        w1.setup(null,"./data/content/texture/hud/warfog/wf1.png",GL_SRGB_ALPHA,GL_REPEAT);
+        w2.setup(null,"./data/content/texture/hud/warfog/wf2.png",GL_SRGB_ALPHA,GL_REPEAT);
+        w3.setup(null,"./data/content/texture/hud/warfog/wf3.png",GL_SRGB_ALPHA,GL_REPEAT);
+        w4.setup(null,"./data/content/texture/hud/warfog/wf4.png",GL_SRGB_ALPHA,GL_REPEAT);
+        w5.setup(null,"./data/content/texture/hud/warfog/wf5.png",GL_SRGB_ALPHA,GL_REPEAT);
+        w6.setup(null,"./data/content/texture/hud/warfog/wf6.png",GL_SRGB_ALPHA,GL_REPEAT);
+        texture = w1;
 
         float[] position = new float[]{ // позиции на экране в НДС
                 -1.0f,  1.0f, // левый верхний угол
@@ -148,9 +191,9 @@ public class BaseRenderFrame implements Framework {
 
         glActiveTexture(GL_TEXTURE1);
         if(GameController.getInstance().isTabHold()){
-            //glBindTexture(GL_TEXTURE_2D, map.getTexture()); // отладочный для проверки war fog
+            glBindTexture(GL_TEXTURE_2D, map.getTexture()); // отладочный для проверки war fog
             //glBindTexture(GL_TEXTURE_2D, shadow.getTexture()); // отладочный для проверки карты теней
-            glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
+            //glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
             ndcShader.setUniform("shadow",1);
         }else{
             glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1)); // Основной рендер
@@ -160,7 +203,32 @@ public class BaseRenderFrame implements Framework {
         //glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
         //glBindTexture(GL_TEXTURE_2D, shadow.getTexture()); // отладочный для проверки карты теней
         ndcShader.setUniform("blur_texture",1);
+        glActiveTexture(GL_TEXTURE2);
+        if(count > random){
+            count = 0;
+            random = (int)(5.0f + Math.random() * 10.0f);
+            index++;
+            if (index > 5){
+                index = 0;
+            }
+            if(index == 0){
+                texture = w1;
+            }else if(index == 1){
+                texture = w2;
+            }else if(index == 2){
+                texture = w3;
+            }else if(index == 3){
+                texture = w4;
+            }else if(index == 4){
+                texture = w5;
+            }else if(index == 5){
+                texture = w6;
+            }
+        }
+        glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+        ndcShader.setUniform("warFog",2);
         ndcVbo.draw();
+        count++;
     }
 
     @Override
