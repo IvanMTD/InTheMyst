@@ -5,6 +5,7 @@ import ru.phoenix.core.buffer.vbo.VertexBufferObject;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
@@ -30,6 +31,8 @@ import ru.phoenix.game.scene.Scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F1;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F2;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -248,6 +251,13 @@ public class BattleScene implements Scene {
         lastCameraFront = new Vector3f(Camera.getInstance().getFront());
 
         // TЕСТОВЫЙ ТРИГЕР - НАЧАЛО
+
+        if(Input.getInstance().isPressed(GLFW_KEY_F1)){
+            Default.setTest(false);
+        }else if(Input.getInstance().isPressed(GLFW_KEY_F2)){
+            Default.setTest(true);
+        }
+
         if(GameController.getInstance().isSpaceClick()){
             cameraUpdate = false;
             if(index == 0) {

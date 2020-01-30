@@ -118,7 +118,7 @@ public class Generator {
 
     // методы гетеры и сетеры - начало
 
-    private static int getTotalMapWidth() {
+    public static int getTotalMapWidth() {
         return totalMapWidth;
     }
 
@@ -126,7 +126,7 @@ public class Generator {
         Generator.totalMapWidth = totalMapWidth;
     }
 
-    private static int getTotalMapHeight() {
+    public static int getTotalMapHeight() {
         return totalMapHeight;
     }
 

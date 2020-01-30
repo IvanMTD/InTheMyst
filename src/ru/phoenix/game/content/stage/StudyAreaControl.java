@@ -327,6 +327,7 @@ public abstract class StudyAreaControl {
         shader.setUniform("animated",0);
         shader.setUniform("instance", 0);
         shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
+        shader.setUniform("alternative",Default.isTest() ? 1 : 0);
         // доп данные
         shader.setUniform("localPoint",battleGround.getLocalPoint());
         shader.setUniform("radius",battleGround.getRadius());

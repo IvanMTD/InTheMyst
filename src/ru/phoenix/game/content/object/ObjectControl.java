@@ -21,8 +21,11 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static ru.phoenix.core.config.Constants.*;
 
 public abstract class ObjectControl {

@@ -83,6 +83,7 @@ public abstract class BlockControl {
             shader.setUniform("animated",0);
             shader.setUniform("instance",mesh.getVbo().isInstances() ? 1 : 0);
             shader.setUniform("board",0);
+            shader.setUniform("alternative",0);
             // доп данные
             shader.setUniform("model_m",projection.getModelMatrix());
             shader.setUniform("shininess",64.0f);

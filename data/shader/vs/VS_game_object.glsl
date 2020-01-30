@@ -23,6 +23,7 @@ layout (row_major, std140) uniform matrices{
 uniform sampler2D heightMap;
 uniform int animated;
 uniform int instance;
+uniform int alternative;
 uniform int w;
 uniform int h;
 
@@ -40,6 +41,7 @@ uniform vec4 unit4;
 uniform vec4 unit5;
 
 out VS_OUT {
+    flat int alternative;
      vec3 FragPos;
      vec3 Normal;
      vec2 TexCoords;
@@ -165,6 +167,7 @@ void main() {
         vs_out.ViewPos = viewPos;
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
+        vs_out.alternative = alternative;
     }else{
         if(animated == 1){
             int count = 0;
@@ -231,10 +234,13 @@ void main() {
             float distance = length(direct.xyz);
             float vis = exp(-pow((distance * density),gradient));*/
             vs_out.visibility = visbl;
-            /*float offset = (texture(heightMap, vs_out.mapTexCoords).r * gain) + 0.5f - 1.0f;
-            vec4 res = perspective_m * view_m * model_m * initPos;
-            gl_Position = vec4(res.x,res.y + offset,res.z,res.w);*/
-            gl_Position = perspective_m * view_m * model_m * initPos;
+            if(alternative == 1){
+                float offset = (texture(heightMap, vs_out.mapTexCoords).r * gain) + 0.5f - 1.0f;
+                vec4 res = perspective_m * view_m * model_m * initPos;
+                gl_Position = vec4(res.x,res.y + offset,res.z,res.w);
+            }else{
+                gl_Position = perspective_m * view_m * model_m * initPos;
+            }
             initNormal = vec4(l_norm,0.0f);
         }
 
@@ -254,5 +260,6 @@ void main() {
         vs_out.ViewPos = viewPos;
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
+        vs_out.alternative = alternative;
     }
 }

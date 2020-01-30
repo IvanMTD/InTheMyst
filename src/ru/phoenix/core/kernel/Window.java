@@ -7,6 +7,7 @@ import org.lwjgl.system.MemoryStack;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.loader.ImageLoader;
+import ru.phoenix.game.logic.generator.Generator;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -91,7 +92,7 @@ public class Window {
     }
 
     public void titleUpdate(int fps, String time){
-        glfwSetWindowTitle(window,TITLE + " | " + time + " | FPS: " + fps);
+        glfwSetWindowTitle(window,TITLE + " | " + time + " | MAP SIZE: " + (Generator.getTotalMapWidth() + 1) + " X " + (Generator.getTotalMapHeight() + 1) + " | FPS: " + fps);
     }
 
     public void setWindowSize(int width, int height){
