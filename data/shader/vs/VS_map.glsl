@@ -33,19 +33,30 @@ out VS_OUT {
     float visibility;
 } vs_out;
 
-int getCorrectNum(float,int);
-
 void main() {
     float size = 8.0f;
     if(instance == 1){
         vec4 pos = mapCam_m * l_instance_m * vec4(l_pos,1.0f);
         gl_Position = vec4(pos.x * size, pos.y * size, pos.z, pos.w);
         vec4 position = l_instance_m * vec4(l_pos,1.0f);
-        float wc = w + 1;
-        float hc = h + 1;
-        float x = getCorrectNum(position.x + 0.5f, w + 1) / wc;
-        float y = getCorrectNum(position.z + 0.5f, h + 1) / hc;
-        vs_out.mapTexCoord = vec2(x,1.0f - y);
+        float x = 0.0f;
+        if(position.x < 0){
+            x = 0.0f;
+        }else if(position.x > w){
+            x = 1.0f;
+        }else{
+            x = position.x / w;
+        }
+
+        float y = 0.0f;
+        if(position.z < 0){
+            y = 0.0f;
+        }else if(position.z > h){
+            y = 1.0f;
+        }else{
+            y = position.z / h;
+        }
+        vs_out.mapTexCoord = vec2(x, 1.0f - y);
         vs_out.texCoord = vec2(l_tex.x,1.0f - l_tex.y);
         vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
         float visbl = 0;
@@ -66,11 +77,25 @@ void main() {
         vec4 pos = mapCam_m * model_m * vec4(l_pos,1.0f);
         gl_Position = vec4(pos.x * size, pos.y * size, pos.z, pos.w);
         vec4 position = model_m * vec4(l_pos,1.0f);
-        float wc = w + 1;
-        float hc = h + 1;
-        float x = getCorrectNum(position.x + 0.5f, w + 1) / wc;
-        float y = getCorrectNum(position.z + 0.5f, h + 1) / hc;
-        vs_out.mapTexCoord = vec2(x,1.0f - y);
+        float x = 0.0f;
+        if(l_pos.x < 0){
+            x = 0.0f;
+        }else if(l_pos.x > w){
+            x = 1.0f;
+        }else{
+            x = l_pos.x / w;
+        }
+
+        float y = 0.0f;
+        if(l_pos.z < 0){
+            y = 0.0f;
+        }else if(l_pos.z > h){
+            y = 1.0f;
+        }else{
+            y = l_pos.z / h;
+        }
+        vs_out.mapTexCoord = vec2(x, 1.0f - y);
+
         vs_out.texCoord = vec2(l_tex.x,1.0f - l_tex.y);
         vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
         float visbl = 0;
@@ -88,15 +113,4 @@ void main() {
         }
         vs_out.visibility = visbl;
     }
-}
-
-int getCorrectNum(float num, int size){
-    int n = 0;
-    for(int i=0; i<=size; i++){
-        if(i-0.5f < num && num < i+0.5f){
-            n = i;
-            break;
-        }
-    }
-    return n;
 }

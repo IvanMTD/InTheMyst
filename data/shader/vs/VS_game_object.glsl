@@ -53,8 +53,6 @@ out VS_OUT {
      float visibility;
 } vs_out;
 
-int getCorrectNum(float,int);
-
 void main() {
     float gain = 3.5f;
     vec4 initNormal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -87,17 +85,45 @@ void main() {
         }else{
             initPos = vec4(l_pos, 1.0f);
             vs_out.localPos = l_instance_m * initPos;
-            float wc = w + 1;
-            float hc = h + 1;
-            float x = getCorrectNum(vs_out.localPos.x + 0.5f, w + 1) / wc;
-            float y = getCorrectNum(vs_out.localPos.z + 0.5f, h + 1) / hc;
+
+            float x = 0.0f;
+            if(vs_out.localPos.x < 0){
+                x = 0.0f;
+            }else if(vs_out.localPos.x > w){
+                x = 1.0f;
+            }else{
+                x = vs_out.localPos.x / w;
+            }
+
+            float y = 0.0f;
+            if(vs_out.localPos.z < 0){
+                y = 0.0f;
+            }else if(vs_out.localPos.z > h){
+                y = 1.0f;
+            }else{
+                y = vs_out.localPos.z / h;
+            }
+
             vs_out.mapTexCoords = vec2(x,1.0f - y);
             vec4 lPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
-            wc = w + 1;
-            hc = h + 1;
-            x = getCorrectNum(lPos.x + 0.5f, w + 1) / wc;
-            y = getCorrectNum(lPos.z + 0.5f, h + 1) / hc;
-            vec2 lt = vec2(x,1.0f-y);
+
+            if(lPos.x < 0){
+                x = 0.0f;
+            }else if(lPos.x > w){
+                x = 1.0f;
+            }else{
+                x = lPos.x / w;
+            }
+
+            if(lPos.z < 0){
+                y = 0.0f;
+            }else if(lPos.z > h){
+                y = 1.0f;
+            }else{
+                y = lPos.z / h;
+            }
+
+            vec2 lt = vec2(x, 1.0f - y);
 
 
             vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
@@ -165,10 +191,25 @@ void main() {
         }else{
             initPos = vec4(l_pos, 1.0f);
             vs_out.localPos = model_m * initPos;
-            float wc = w + 1;
-            float hc = h + 1;
-            float x = getCorrectNum(vs_out.localPos.x + 0.5f, w + 1) / wc;
-            float y = getCorrectNum(vs_out.localPos.z + 0.5f, h + 1) / hc;
+
+            float x = 0.0f;
+            if(vs_out.localPos.x < 0){
+                x = 0.0f;
+            }else if(vs_out.localPos.x > w){
+                x = 1.0f;
+            }else{
+                x = vs_out.localPos.x / w;
+            }
+
+            float y = 0.0f;
+            if(vs_out.localPos.z < 0){
+                y = 0.0f;
+            }else if(vs_out.localPos.z > h){
+                y = 1.0f;
+            }else{
+                y = vs_out.localPos.z / h;
+            }
+
             vs_out.mapTexCoords = vec2(x,1.0f - y);
 
             vec4[6]units = {unit0,unit1,unit2,unit3,unit4,unit5};
@@ -214,15 +255,4 @@ void main() {
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
     }
-}
-
-int getCorrectNum(float num, int size){
-    int n = 0;
-    for(int i=0; i<=size; i++){
-        if(i-0.5f < num && num < i+0.5f){
-            n = i;
-            break;
-        }
-    }
-    return n;
 }

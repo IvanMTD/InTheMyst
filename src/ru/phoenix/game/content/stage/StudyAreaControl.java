@@ -70,8 +70,8 @@ public abstract class StudyAreaControl {
         this.sprites = new ArrayList<>(sprites);
         this.mapX = mapX;
         this.mapZ = mapZ;
-        float x = mapX + 1;
-        float y = mapZ + 1;
+        float x = mapX;
+        float y = mapZ;
         Projection projection = new Projection();
         float size = 4.0f;
         projection.setOrtho(-x * size, x * size,-y * size,y * size, WindowConfig.getInstance().getNear(), 100.0f);

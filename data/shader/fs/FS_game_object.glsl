@@ -76,9 +76,9 @@ void main() {
     vec3 viewDirection = normalize(fs_in.ViewPos - fs_in.FragPos);
     //vec3 viewDirection = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     vec3 normal = fs_in.Normal;
-    //vec3 normal = texture(material.normalMap,fs_in.TexCoords).rgb;
-    //normal = normalize(normal * 2.0 - 1.0);
-    //normal = normalize(fs_in.TBN * normal);
+    /*vec3 normal = texture(material.normalMap,fs_in.TexCoords).rgb;
+    normal = normalize(normal * 2.0 - 1.0);
+    normal = normalize(fs_in.TBN * normal);*/
 
     if(onTarget == 1){
         fragment_color = targetHighlight();

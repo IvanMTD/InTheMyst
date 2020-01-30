@@ -57,8 +57,6 @@ out VS_OUT{
     float visibility;
 }vs_out;
 
-int getCorrectNum(float,int);
-
 void main() {
     float gain = 3.5f;
     vec3 cameraRight_worldspace = vec3(view_m[0][0], view_m[1][0], view_m[2][0]);
@@ -106,10 +104,22 @@ void main() {
             vs_out.visibility = visbl;
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = l_instance_m * vec4(result,1.0f);
-            float wc = w + 1;
-            float hc = h + 1;
-            float x = getCorrectNum(pointPos.x + 0.5f, w + 1) / wc;
-            float y = getCorrectNum(pointPos.z + 0.5f, h + 1) / hc;
+            float x = 0.0f;
+            if(pointPos.x < 0){
+                x = 0.0f;
+            }else if(pointPos.x > w){
+                x = 1.0f;
+            }else{
+                x = pointPos.x / w;
+            }
+            float y = 0.0f;
+            if(pointPos.z < 0){
+                y = 0.0f;
+            }else if(pointPos.z > h){
+                y = 1.0f;
+            }else{
+                y = pointPos.z / h;
+            }
             vs_out.mapTexCoords = vec2(x,1.0f - y);
             /*float offset = (texture(heightMap, vs_out.mapTexCoords).r * gain) + 0.5f - 1.0f;
             vec4 res = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
@@ -139,10 +149,22 @@ void main() {
             vs_out.visibility = visbl;
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = l_instance_m * vec4(l_pos,1.0f);
-            float wc = w + 1;
-            float hc = h + 1;
-            float x = getCorrectNum(pointPos.x + 0.5f, w + 1) / wc;
-            float y = getCorrectNum(pointPos.z + 0.5f, h + 1) / hc;
+            float x = 0.0f;
+            if(pointPos.x < 0){
+                x = 0.0f;
+            }else if(pointPos.x > w){
+                x = 1.0f;
+            }else{
+                x = pointPos.x / w;
+            }
+            float y = 0.0f;
+            if(pointPos.z < 0){
+                y = 0.0f;
+            }else if(pointPos.z > h){
+                y = 1.0f;
+            }else{
+                y = pointPos.z / h;
+            }
             vs_out.mapTexCoords = vec2(x,1.0f - y);
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
         }
@@ -192,10 +214,22 @@ void main() {
             vs_out.visibility = visbl;
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = model_m * vec4(result,1.0f);
-            float wc = w + 1;
-            float hc = h + 1;
-            float x = getCorrectNum(pointPos.x + 0.5f, w + 1) / wc;
-            float y = getCorrectNum(pointPos.z + 0.5f, h + 1) / hc;
+            float x = 0.0f;
+            if(pointPos.x < 0){
+                x = 0.0f;
+            }else if(pointPos.x > w){
+                x = 1.0f;
+            }else{
+                x = pointPos.x / w;
+            }
+            float y = 0.0f;
+            if(pointPos.z < 0){
+                y = 0.0f;
+            }else if(pointPos.z > h){
+                y = 1.0f;
+            }else{
+                y = pointPos.z / h;
+            }
             vs_out.mapTexCoords = vec2(x,1.0f - y);
             /*if(isActive == 1){
                 float wc = w + 1;
@@ -239,10 +273,22 @@ void main() {
             vs_out.visibility = visbl;
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = model_m * vec4(l_pos,1.0f);
-            float wc = w + 1;
-            float hc = h + 1;
-            float x = getCorrectNum(pointPos.x + 0.5f, w + 1) / wc;
-            float y = getCorrectNum(pointPos.z + 0.5f, h + 1) / hc;
+            float x = 0.0f;
+            if(pointPos.x < 0){
+                x = 0.0f;
+            }else if(pointPos.x > w){
+                x = 1.0f;
+            }else{
+                x = pointPos.x / w;
+            }
+            float y = 0.0f;
+            if(pointPos.z < 0){
+                y = 0.0f;
+            }else if(pointPos.z > h){
+                y = 1.0f;
+            }else{
+                y = pointPos.z / h;
+            }
             vs_out.mapTexCoords = vec2(x,1.0f - y);
             /*if(water == 1){
                 vec4 res = perspective_m * view_m * model_m * vec4(result,1.0f);
@@ -265,15 +311,4 @@ void main() {
         }
     }
     vs_out.textureCoord = l_tex;
-}
-
-int getCorrectNum(float num, int size){
-    int n = 0;
-    for(int i=0; i<=size; i++){
-        if(i-0.5f < num && num < i+0.5f){
-            n = i;
-            break;
-        }
-    }
-    return n;
 }

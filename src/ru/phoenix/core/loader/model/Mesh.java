@@ -47,6 +47,7 @@ public class Mesh {
         }else {
             vbo.allocate(getPositions(), getNormals(), getTexturesCoords(), getTangents(), getBiTangents(), null, null, null, getIndices());
         }
+        animated = false; // КОСТЫЛЬ!!!!!!
     }
 
     public void setupInstance(Matrix4f[] instanceMatrix){
