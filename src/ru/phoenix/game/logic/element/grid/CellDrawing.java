@@ -206,7 +206,7 @@ abstract class CellDrawing extends CellManagement {
         shader.setUniform("grid", 1);
         shader.setUniform("isActive", 0);
         shader.setUniform("bigTree",0);
-        shader.setUniform("noPaint", 0);
+        shader.setUniform("indicator", 1);
         shader.setUniform("discardReverse",0);
         shader.setUniform("discardControl",-1.0f);
         // доп данные
@@ -243,10 +243,9 @@ abstract class CellDrawing extends CellManagement {
         shader.setUniform("grid", 1);
         shader.setUniform("isActive", 0);
         shader.setUniform("bigTree",0);
-        shader.setUniform("noPaint", 0);
         shader.setUniform("discardReverse",0);
         shader.setUniform("discardControl",-1.0f);
-        shader.setUniform("battlefield",0);
+        shader.setUniform("battlefield",1);
         shader.setUniform("indicator",1);
         // доп данные
         projection.getModelMatrix().identity();

@@ -147,10 +147,13 @@ void main() {
             float distance = length(direct.xyz);
             float vis = exp(-pow((distance * density),gradient));*/
             vs_out.visibility = visbl;
-            /*float offset = (texture(heightMap, lt).r * gain) + 0.5f - 1.0f;
-            vec4 res = perspective_m * view_m * l_instance_m * initPos;
-            gl_Position = vec4(res.x,res.y + offset,res.z,res.w);*/
-            gl_Position = perspective_m * view_m * l_instance_m * initPos;
+            if(alternative == 1){
+                float offset = (texture(heightMap, lt).r * gain) + 0.5f - 1.0f;
+                vec4 res = perspective_m * view_m * l_instance_m * initPos;
+                gl_Position = vec4(res.x,res.y + offset,res.z,res.w);
+            }else{
+                gl_Position = perspective_m * view_m * l_instance_m * initPos;
+            }
             initNormal = vec4(l_norm,0.0f);
         }
 
@@ -167,7 +170,7 @@ void main() {
         vs_out.ViewPos = viewPos;
         vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
         vs_out.TBN = TBN;
-        vs_out.alternative = alternative;
+        vs_out.alternative = 0;
     }else{
         if(animated == 1){
             int count = 0;
@@ -236,6 +239,9 @@ void main() {
             vs_out.visibility = visbl;
             if(alternative == 1){
                 float offset = (texture(heightMap, vs_out.mapTexCoords).r * gain) + 0.5f - 1.0f;
+                if(vs_out.mapTexCoords.x == 0 || vs_out.mapTexCoords.y == 0 || vs_out.mapTexCoords.x == 1.0f || vs_out.mapTexCoords.y == 1.0f){
+                    offset = 0.0f;
+                }
                 vec4 res = perspective_m * view_m * model_m * initPos;
                 gl_Position = vec4(res.x,res.y + offset,res.z,res.w);
             }else{

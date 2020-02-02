@@ -59,6 +59,7 @@ uniform float radiance;
 uniform float shininess;
 uniform Material material;
 uniform DirectLight directLight;
+uniform sampler2D heightMap;
 uniform sampler2D shadowMap;
 uniform sampler2D map;
 uniform int group;

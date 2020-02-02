@@ -42,7 +42,7 @@ public class MapRenderFrame implements Framework {
         glActiveTexture(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, Default.getMapTextureId());
         shader.setUniform("map",5);
-        scene.draw(shader);
+        scene.draw(shader,false);
         glBindFramebuffer(GL_FRAMEBUFFER,0);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, multisample.getFrameBuffer());

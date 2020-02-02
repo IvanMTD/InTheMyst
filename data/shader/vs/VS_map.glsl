@@ -34,7 +34,7 @@ out VS_OUT {
 } vs_out;
 
 void main() {
-    float size = 8.0f;
+    float size = 32.0f;
     if(instance == 1){
         vec4 pos = mapCam_m * l_instance_m * vec4(l_pos,1.0f);
         gl_Position = vec4(pos.x * size, pos.y * size, pos.z, pos.w);

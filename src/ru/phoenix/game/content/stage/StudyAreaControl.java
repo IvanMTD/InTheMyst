@@ -73,7 +73,7 @@ public abstract class StudyAreaControl {
         float x = mapX;
         float y = mapZ;
         Projection projection = new Projection();
-        float size = 4.0f;
+        float size = 16.0f;
         projection.setOrtho(-x * size, x * size,-y * size,y * size, WindowConfig.getInstance().getNear(), 100.0f);
         projection.setView(
                 new Vector3f(getMapX() / 2.0f, 50.0f, getMapZ() / 2.0f),
@@ -327,7 +327,6 @@ public abstract class StudyAreaControl {
         shader.setUniform("animated",0);
         shader.setUniform("instance", 0);
         shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
-        shader.setUniform("alternative",Default.isTest() ? 1 : 0);
         // доп данные
         shader.setUniform("localPoint",battleGround.getLocalPoint());
         shader.setUniform("radius",battleGround.getRadius());

@@ -10,7 +10,7 @@ public interface Scene {
     void start();
     void update();
     void draw();
-    void draw(Shader shader);
+    void draw(Shader shader, boolean isShadow);
     void over();
     int getId();
     boolean isActive();

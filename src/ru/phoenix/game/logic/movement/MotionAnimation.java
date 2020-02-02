@@ -31,6 +31,8 @@ public class MotionAnimation {
     private boolean firstStart;
     private boolean endFrame;
 
+    private float correction;
+
     public MotionAnimation(){
         startPosition = new Vector3f();
         tempPos = new Vector3f();
@@ -40,6 +42,7 @@ public class MotionAnimation {
     }
 
     public void setup(Vector3f start, List<Cell> wayPoints){
+        correction = 0.0f;
         timer = 0;
         firstStart = true;
         endFrame = true;
@@ -70,6 +73,7 @@ public class MotionAnimation {
         turnControl(character);
 
         if(!battleGround.isActive()) {
+            correction = 0.0f;
             if (index < wayPoints.size()) {
                 if (currentPos.equals(tempPos)) {
                     if (wayPoints.get(index).isOccupied()) {
@@ -97,6 +101,8 @@ public class MotionAnimation {
                 motion = 0;
                 action = false;
             }
+        }else{
+            correction = 0.0025f;
         }
 
         if(action && (index < wayPoints.size())) {
@@ -168,7 +174,7 @@ public class MotionAnimation {
 
     private boolean move(Vector3f position, Characteristic characteristic){
         boolean end = false;
-        goal += characteristic.getMovementSpeed(); // фактор движения в приделах от 0-1
+        goal += (characteristic.getMovementSpeed() + correction); // фактор движения в приделах от 0-1
         walkControl++;
         Vector3f start = new Vector3f(this.tempPos); // точка старта
         Vector3f finish = new Vector3f(wayPoints.get(index).getModifiedPosition()); // точка назначения
@@ -239,7 +245,7 @@ public class MotionAnimation {
         if(isStepUp) {
             if (firstStart) {
                 walkStage = false;
-                goal += characteristic.getMovementSpeed() * speedFactor; // фактор движения в приделах от 0-1
+                goal += (characteristic.getMovementSpeed() + correction) * speedFactor; // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos3); // точка старта
                 Vector3f finish = new Vector3f(this.tempPos3.add(offset)); // точка назначения
                 Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
@@ -265,7 +271,7 @@ public class MotionAnimation {
             } else {
                 walkControl++;
                 walkStage = true;
-                goal += characteristic.getMovementSpeed(); // фактор движения в приделах от 0-1
+                goal += (characteristic.getMovementSpeed() + correction); // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos3); // точка старта
                 Vector3f finish = new Vector3f(wayPoints.get(index).getModifiedPosition()); // точка назначения
                 finish.setY(wayPoints.get(index).getCurrentHeight());
@@ -318,7 +324,7 @@ public class MotionAnimation {
             if (firstStart) {
                 walkControl++;
                 walkStage = true;
-                goal += characteristic.getMovementSpeed(); // фактор движения в приделах от 0-1
+                goal += (characteristic.getMovementSpeed() + correction); // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos3); // точка старта
                 Vector3f finish = new Vector3f(wayPoints.get(index).getModifiedPosition().add(offset.mul(-1.0f))); // точка назначения
                 Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
@@ -341,7 +347,7 @@ public class MotionAnimation {
                 }
             } else {
                 walkStage = false;
-                goal += characteristic.getMovementSpeed() * speedFactor; // фактор движения в приделах от 0-1
+                goal += (characteristic.getMovementSpeed() + correction) * speedFactor; // фактор движения в приделах от 0-1
                 Vector3f start = new Vector3f(this.tempPos3); // точка старта
                 Vector3f finish = new Vector3f(this.tempPos3.add(offset)); // точка назначения
                 Vector3f delta = finish.sub(start); // разница векторов - вектор направления движения
@@ -414,7 +420,7 @@ public class MotionAnimation {
                 timer = 0;
             }
         }else {
-            goal += 1.5f;
+            goal += (1.5f + (correction * 10.0f));
             Vector3f start = new Vector3f(this.tempPos);
             Vector3f finish = new Vector3f(wayPoints.get(index).getModifiedPosition());
             finish.setY(wayPoints.get(index).getCurrentHeight());

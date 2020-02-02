@@ -22,9 +22,6 @@ public class Render {
     private float lastTime;
     private float timer;
 
-    private float angle;
-    private float hyp;
-
     private int textureNum;
 
     Render(){
@@ -35,8 +32,6 @@ public class Render {
         mapRenderFrame = new MapRenderFrame();
         stopRender = false;
         firstStart = true;
-
-        angle = 0.0f;
     }
 
     public void init(){
@@ -51,6 +46,8 @@ public class Render {
             shadowRenderFrame.init();
             baseRenderFrame = new BaseRenderFrame(textureNum);
             baseRenderFrame.init();
+            mapRenderFrame = new MapRenderFrame();
+            mapRenderFrame.init();
             stopRender = true;
             SceneControl.setLoading(true);
         }
@@ -58,30 +55,13 @@ public class Render {
         Default.clearScreen();
 
         if (!stopRender) {
-            if (scene.getLights() != null) {
-                /*Vector3f center = new Vector3f((float)scene.getBattleGraund().getMapX() / 2.0f,0.0f,(float)scene.getBattleGraund().getMapZ()/2.0f);
-
-                int width = scene.getBattleGraund().getMapX();
-                int height = scene.getBattleGraund().getMapZ();
-                float hyp = (float)Math.sqrt(width * width + height * height);
-
-                float x = center.getX() + ((float)Math.sin(Math.toRadians(angle)) * (float)width / 2.0f);
-                float y = hyp;
-                float z = center.getZ() + ((float)Math.cos(Math.toRadians(angle)) * (float)height / 2.0f);
-
-                scene.getBattleGraund().getDirectLight().get(0).setPosition(new Vector3f(x,y,z));
-                scene.getBattleGraund().getDirectLight().get(0).updateLightSpaceMatrix();
-
-                angle += 0.1f;
-                if(angle > 360.0f){
-                    angle = 0.0f;
-                }*/
-
-                shadowRenderFrame.draw(scene);
-                baseRenderFrame.setFbo(shadowRenderFrame.getFbo(), 0);
-            }
+            // рисуем карту теней и карту тумана войны
+            shadowRenderFrame.draw(scene);
             mapRenderFrame.draw(scene);
-            baseRenderFrame.setFbo(mapRenderFrame.getFbo(),1);
+            // переводим текстуры в основной рендер
+            baseRenderFrame.setFbo(shadowRenderFrame.getFbo(), 0);
+            baseRenderFrame.setFbo(mapRenderFrame.getFbo(), 1);
+            // рисуем основной рендер
             baseRenderFrame.draw(scene);
         } else {
             if (firstStart) {

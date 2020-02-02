@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.block;
 
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.loader.LoadStaticModel;
 import ru.phoenix.core.loader.model.Material;
 import ru.phoenix.core.loader.model.Mesh;
@@ -83,7 +84,6 @@ public abstract class BlockControl {
             shader.setUniform("animated",0);
             shader.setUniform("instance",mesh.getVbo().isInstances() ? 1 : 0);
             shader.setUniform("board",0);
-            shader.setUniform("alternative",0);
             // доп данные
             shader.setUniform("model_m",projection.getModelMatrix());
             shader.setUniform("shininess",64.0f);

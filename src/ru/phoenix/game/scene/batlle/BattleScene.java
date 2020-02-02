@@ -261,10 +261,8 @@ public class BattleScene implements Scene {
         if(GameController.getInstance().isSpaceClick()){
             cameraUpdate = false;
             if(index == 0) {
-                //generation(MOUNTAIN_MAP);
                 generate(MOUNTAIN_AREA);
             }else if(index == 1){
-                //generation(PLAIN_MAP);
                 generate(PLAIN_AREA);
             }
 
@@ -324,6 +322,7 @@ public class BattleScene implements Scene {
     public void draw(){
         boolean battle = studyArea.getBattleGround().isActive();
         // рисуем поле и сетку
+        shader3D.setUniform("alternative",Default.isTest() ? 1 : 0);
         studyArea.draw(shader3D);
 
         background3D.useProgram();
@@ -335,6 +334,7 @@ public class BattleScene implements Scene {
         shaderSprite.setUniformBlock("matrices", 0);
         shaderSprite.setUniform("w",studyArea.getMapX());
         shaderSprite.setUniform("h",studyArea.getMapZ());
+        shaderSprite.setUniform("alternative",Default.isTest() ? 1 : 0);
         glActiveTexture(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, Default.getMapTextureId());
         shaderSprite.setUniform("map", 5);
@@ -409,10 +409,14 @@ public class BattleScene implements Scene {
     }
 
     @Override
-    public void draw(Shader shader){
-        studyArea.draw(shader);
-        studyArea.drawShadowSprites(shader);
-        studyArea.drawShadowPersons(shader,true);
+    public void draw(Shader shader, boolean isShadow){
+        if(isShadow) {
+            studyArea.draw(shader);
+            studyArea.drawShadowSprites(shader);
+            studyArea.drawShadowPersons(shader, true);
+        }else{
+            studyArea.draw(shader);
+        }
     }
 
     @Override
@@ -480,7 +484,8 @@ public class BattleScene implements Scene {
 
         // ENEMIES - НАЧАЛО
         int percent = studyArea.getMapX() + studyArea.getMapZ();
-        int amount = Math.round(1.0f + (float)Math.random()) * percent / 100;
+        int amount = Math.round(2.0f + (float)Math.random()) * percent / 100;
+        System.out.println("Число групп противников: " + amount);
         for(int i=0; i<amount; i++) {
             lagerPoint = Generator.getRandomPos(studyArea.getGrid(),true);
             int count = Math.round(3.0f + (float)Math.random() * 3.0f);

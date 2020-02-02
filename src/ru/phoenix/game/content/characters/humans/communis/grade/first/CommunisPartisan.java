@@ -527,7 +527,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                     waitTime = (int) (250.0f + Math.random() * 250.0f);
                                     flowControl = true;
                                     targetPos = new Vector3f(-1.0f,-1.0f,-1.0f);
-                                    randomPosition = new RandomPosition(targetPos,getLagerPoint(),grid,5.0f,true);
+                                    randomPosition = new RandomPosition(targetPos,getLagerPoint(),grid,5.0f,false);
                                     randomPosition.start();
                                 }
                             }
