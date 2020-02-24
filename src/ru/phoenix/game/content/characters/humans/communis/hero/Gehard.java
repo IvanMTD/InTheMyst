@@ -224,7 +224,7 @@ public class Gehard extends HumanDraw implements Character {
         getCharacteristic().setPhysicalPower(25);
         getCharacteristic().setMagicPower(10);
         // Движения
-        getCharacteristic().setMove(6);
+        getCharacteristic().setMove(4);
         getCharacteristic().setJump(2);
         getCharacteristic().setSpeed(2);
         // Обзор

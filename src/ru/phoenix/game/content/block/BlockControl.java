@@ -81,7 +81,6 @@ public abstract class BlockControl {
             // глобальный юниформ
             shader.setUniformBlock("matrices",0);*/
             // контролеры
-            shader.setUniform("animated",0);
             shader.setUniform("instance",mesh.getVbo().isInstances() ? 1 : 0);
             shader.setUniform("board",0);
             // доп данные

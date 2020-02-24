@@ -35,7 +35,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_F1;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F2;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static ru.phoenix.core.config.Constants.*;
@@ -252,12 +251,6 @@ public class BattleScene implements Scene {
 
         // TЕСТОВЫЙ ТРИГЕР - НАЧАЛО
 
-        if(Input.getInstance().isPressed(GLFW_KEY_F1)){
-            Default.setTest(false);
-        }else if(Input.getInstance().isPressed(GLFW_KEY_F2)){
-            Default.setTest(true);
-        }
-
         if(GameController.getInstance().isSpaceClick()){
             cameraUpdate = false;
             if(index == 0) {
@@ -322,7 +315,6 @@ public class BattleScene implements Scene {
     public void draw(){
         boolean battle = studyArea.getBattleGround().isActive();
         // рисуем поле и сетку
-        shader3D.setUniform("alternative",Default.isTest() ? 1 : 0);
         studyArea.draw(shader3D);
 
         background3D.useProgram();
@@ -334,7 +326,6 @@ public class BattleScene implements Scene {
         shaderSprite.setUniformBlock("matrices", 0);
         shaderSprite.setUniform("w",studyArea.getMapX());
         shaderSprite.setUniform("h",studyArea.getMapZ());
-        shaderSprite.setUniform("alternative",Default.isTest() ? 1 : 0);
         glActiveTexture(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, Default.getMapTextureId());
         shaderSprite.setUniform("map", 5);

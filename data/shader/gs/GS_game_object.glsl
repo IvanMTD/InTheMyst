@@ -8,32 +8,22 @@ uniform vec3 localPoint;
 uniform int radius;
 
 in VS_OUT {
-    flat int alternative;
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
     vec2 mapTexCoords;
-    vec3 TangentViewPos;
-    vec3 TangentFragPos;
     vec3 ViewPos;
     vec4 FragPosLightSpace;
-    mat3 TBN;
     vec4 localPos;
-    float visibility;
 } gs_in[];
 
 out GS_OUT {
-    flat int alternative;
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
     vec2 mapTexCoords;
-    vec3 TangentViewPos;
-    vec3 TangentFragPos;
     vec3 ViewPos;
     vec4 FragPosLightSpace;
-    mat3 TBN;
-    float visibility;
 } gs_out;
 
 out flat int useShading;
@@ -82,45 +72,30 @@ void main() {
     }
 
     gl_Position = gl_in[0].gl_Position;
-    gs_out.alternative = gs_in[0].alternative;
     gs_out.FragPos = gs_in[0].FragPos;
     gs_out.Normal = gs_in[0].Normal;
     gs_out.TexCoords = gs_in[0].TexCoords;
     gs_out.mapTexCoords = gs_in[0].mapTexCoords;
-    gs_out.TangentViewPos = gs_in[0].TangentViewPos;
-    gs_out.TangentFragPos = gs_in[0].TangentFragPos;
     gs_out.ViewPos = gs_in[0].ViewPos;
     gs_out.FragPosLightSpace = gs_in[0].FragPosLightSpace;
-    gs_out.TBN = gs_in[0].TBN;
-    gs_out.visibility = gs_in[0].visibility;
     EmitVertex();
 
     gl_Position = gl_in[1].gl_Position;
-    gs_out.alternative = gs_in[1].alternative;
     gs_out.FragPos = gs_in[1].FragPos;
     gs_out.Normal = gs_in[1].Normal;
     gs_out.TexCoords = gs_in[1].TexCoords;
     gs_out.mapTexCoords = gs_in[1].mapTexCoords;
-    gs_out.TangentViewPos = gs_in[1].TangentViewPos;
-    gs_out.TangentFragPos = gs_in[1].TangentFragPos;
     gs_out.ViewPos = gs_in[1].ViewPos;
     gs_out.FragPosLightSpace = gs_in[1].FragPosLightSpace;
-    gs_out.TBN = gs_in[1].TBN;
-    gs_out.visibility = gs_in[1].visibility;
     EmitVertex();
 
     gl_Position = gl_in[2].gl_Position;
-    gs_out.alternative = gs_in[2].alternative;
     gs_out.FragPos = gs_in[2].FragPos;
     gs_out.Normal = gs_in[2].Normal;
     gs_out.TexCoords = gs_in[2].TexCoords;
     gs_out.mapTexCoords = gs_in[2].mapTexCoords;
-    gs_out.TangentViewPos = gs_in[2].TangentViewPos;
-    gs_out.TangentFragPos = gs_in[2].TangentFragPos;
     gs_out.ViewPos = gs_in[2].ViewPos;
     gs_out.FragPosLightSpace = gs_in[2].FragPosLightSpace;
-    gs_out.TBN = gs_in[2].TBN;
-    gs_out.visibility = gs_in[2].visibility;
     EmitVertex();
 
     EndPrimitive();

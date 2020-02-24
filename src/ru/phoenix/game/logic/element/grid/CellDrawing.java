@@ -201,7 +201,6 @@ abstract class CellDrawing extends CellManagement {
         texture = cursorOnGraund;
         // контролеры
         shader.setUniform("instance", 0);
-        shader.setUniform("animated", 0);
         shader.setUniform("board", 0);
         shader.setUniform("grid", 1);
         shader.setUniform("isActive", 0);

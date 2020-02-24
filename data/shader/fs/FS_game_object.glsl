@@ -15,17 +15,12 @@ layout (location = 2) out vec4 bright_color;
 
 // Входящий Блок
 in GS_OUT {
-    flat int alternative;
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
     vec2 mapTexCoords;
-    vec3 TangentViewPos;
-    vec3 TangentFragPos;
     vec3 ViewPos;
     vec4 FragPosLightSpace;
-    mat3 TBN;
-    float visibility;
 }fs_in;
 
 // Структуры и Юниформы
@@ -76,18 +71,8 @@ void main() {
     vec4 color = texture(map,fs_in.mapTexCoords);
     //vec4 color = vec4(1.0f,1.0f,1.0f,1.0f);
 
-    vec3 viewDirection = vec3(0.0f,0.0f,0.0f);
-    vec3 normal = vec3(0.0f,0.0f,0.0f);
-
-    if(fs_in.alternative == 1){
-        viewDirection = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
-        normal = texture(material.normalMap,fs_in.TexCoords).rgb;
-        normal = normalize(normal * 2.0 - 1.0);
-        normal = normalize(fs_in.TBN * normal);
-    }else{
-        viewDirection = normalize(fs_in.ViewPos - fs_in.FragPos);
-        normal = fs_in.Normal;
-    }
+    vec3 viewDirection = normalize(fs_in.ViewPos - fs_in.FragPos);
+    vec3 normal = fs_in.Normal;
 
     if(onTarget == 1){
         fragment_color = targetHighlight();

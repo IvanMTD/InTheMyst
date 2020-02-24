@@ -24,6 +24,8 @@ public class Render {
 
     private int textureNum;
 
+    private int index;
+
     Render(){
         textureNum = 3;
         window = Window.getInstance();
@@ -38,6 +40,7 @@ public class Render {
         baseRenderFrame.init();
         shadowRenderFrame.init();
         mapRenderFrame.init();
+        index = 0;
     }
 
     public void render(Scene scene){
@@ -56,8 +59,11 @@ public class Render {
 
         if (!stopRender) {
             // рисуем карту теней и карту тумана войны
-            shadowRenderFrame.draw(scene);
-            mapRenderFrame.draw(scene);
+            if(index == 0) {
+                shadowRenderFrame.draw(scene);
+            }else {
+                mapRenderFrame.draw(scene);
+            }
             // переводим текстуры в основной рендер
             baseRenderFrame.setFbo(shadowRenderFrame.getFbo(), 0);
             baseRenderFrame.setFbo(mapRenderFrame.getFbo(), 1);
@@ -80,5 +86,10 @@ public class Render {
         }
 
         window.render();
+
+        index++;
+        if(index > 1){
+            index = 0;
+        }
     }
 }

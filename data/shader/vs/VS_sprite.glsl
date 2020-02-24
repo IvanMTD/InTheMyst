@@ -19,7 +19,6 @@ layout (row_major, std140) uniform matrices{
 
 // контролеры
 uniform sampler2D heightMap;
-uniform int alternative;
 uniform int indicator;
 uniform int instance;
 uniform int board;
@@ -57,6 +56,8 @@ out VS_OUT{
     flat int water;
     float visibility;
 }vs_out;
+
+vec2 getMapTexCoord(vec4);
 
 void main() {
     float gain = 3.5f;
@@ -98,37 +99,11 @@ void main() {
             if(visbl > 1.0f){
                 visbl = 1.0f;
             }
-            /*vec4 elementPos = model_m * initPos;
-            vec3 direct = vec3(elementPos.xyz - masterPoint);
-            float distance = length(direct.xyz);
-            float vis = exp(-pow((distance * density),gradient));*/
             vs_out.visibility = visbl;
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = l_instance_m * vec4(result,1.0f);
-            float x = 0.0f;
-            if(pointPos.x < 0){
-                x = 0.0f;
-            }else if(pointPos.x > w){
-                x = 1.0f;
-            }else{
-                x = pointPos.x / w;
-            }
-            float y = 0.0f;
-            if(pointPos.z < 0){
-                y = 0.0f;
-            }else if(pointPos.z > h){
-                y = 1.0f;
-            }else{
-                y = pointPos.z / h;
-            }
-            vs_out.mapTexCoords = vec2(x,1.0f - y);
-            if(alternative == 1){
-                float offset = (texture(heightMap, vs_out.mapTexCoords).r * gain) + 0.5f - 1.0f;
-                vec4 res = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
-                gl_Position = vec4(res.x,res.y + offset,res.z,res.w);
-            }else{
-                gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
-            }
+            vs_out.mapTexCoords = getMapTexCoord(pointPos);
+            gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
 
@@ -146,30 +121,10 @@ void main() {
             if(visbl > 1.0f){
                 visbl = 1.0f;
             }
-            /*vec4 elementPos = model_m * initPos;
-            vec3 direct = vec3(elementPos.xyz - masterPoint);
-            float distance = length(direct.xyz);
-            float vis = exp(-pow((distance * density),gradient));*/
             vs_out.visibility = visbl;
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = l_instance_m * vec4(l_pos,1.0f);
-            float x = 0.0f;
-            if(pointPos.x < 0){
-                x = 0.0f;
-            }else if(pointPos.x > w){
-                x = 1.0f;
-            }else{
-                x = pointPos.x / w;
-            }
-            float y = 0.0f;
-            if(pointPos.z < 0){
-                y = 0.0f;
-            }else if(pointPos.z > h){
-                y = 1.0f;
-            }else{
-                y = pointPos.z / h;
-            }
-            vs_out.mapTexCoords = vec2(x,1.0f - y);
+            vs_out.mapTexCoords = getMapTexCoord(pointPos);
             gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
         }
     }else{
@@ -186,8 +141,6 @@ void main() {
             }
 
             if(isActive == 1){
-                /*vec3 somePos = cameraCenter_worldspace + (cameraCenter_worldspace - result) * -1.02f;
-                result = vec3(somePos.x,result.y,somePos.z);*/
                 vec3 direction = vec3(viewDirect.x,0.0f,viewDirect.z);
                 result = result + (direction / 50);
             }
@@ -211,63 +164,12 @@ void main() {
             if(visbl > 1.0f){
                 visbl = 1.0f;
             }
-            /*vec4 elementPos = model_m * initPos;
-            vec3 direct = vec3(elementPos.xyz - masterPoint);
-            float distance = length(direct.xyz);
-            float vis = exp(-pow((distance * density),gradient));*/
+
             vs_out.visibility = visbl;
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = model_m * vec4(result,1.0f);
-            float x = 0.0f;
-            if(pointPos.x < 0){
-                x = 0.0f;
-            }else if(pointPos.x > w){
-                x = 1.0f;
-            }else{
-                x = pointPos.x / w;
-            }
-            float y = 0.0f;
-            if(pointPos.z < 0){
-                y = 0.0f;
-            }else if(pointPos.z > h){
-                y = 1.0f;
-            }else{
-                y = pointPos.z / h;
-            }
-            vs_out.mapTexCoords = vec2(x,1.0f - y);
-            if(alternative == 1){
-                if(isActive == 1){
-                    x = 0.0f;
-                    if(vs_out.localPos.x < 0){
-                        x = 0.0f;
-                    }else if(vs_out.localPos.x > w){
-                        x = 1.0f;
-                    }else{
-                        x = vs_out.localPos.x / w;
-                    }
-                    y = 0.0f;
-                    if(vs_out.localPos.z < 0){
-                        y = 0.0f;
-                    }else if(vs_out.localPos.z > h){
-                        y = 1.0f;
-                    }else{
-                        y = vs_out.localPos.z / h;
-                    }
-                    vec2 tc = vec2(x,1.0f - y);
-                    float offset = ((texture(heightMap, tc).r * gain) + 0.5f - 1.0f) + 0.1f;
-                    vec4 res = perspective_m * view_m * model_m * vec4(result,1.0f);
-                    gl_Position = vec4(res.x,res.y + offset,res.z,res.w);
-                }else{
-                    float offset = (texture(heightMap, vs_out.mapTexCoords).r * gain) + 0.5f - 1.0f;
-                    vec4 res = perspective_m * view_m * model_m * vec4(result,1.0f);
-                    if(indicator == 1 || tree == 1 || bigTree == 1){
-                        offset = 0.0f;
-                    }
-                    gl_Position = vec4(res.x,res.y + offset,res.z,res.w);
-                }
-            }else{
-                gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
-            }
+            vs_out.mapTexCoords = getMapTexCoord(pointPos);
+            gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
 
@@ -285,64 +187,33 @@ void main() {
             if(visbl > 1.0f){
                 visbl = 1.0f;
             }
-            /*vec4 elementPos = model_m * initPos;
-            vec3 direct = vec3(elementPos.xyz - masterPoint);
-            float distance = length(direct.xyz);
-            float vis = exp(-pow((distance * density),gradient));*/
+
             vs_out.visibility = visbl;
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = model_m * vec4(l_pos,1.0f);
-            float x = 0.0f;
-            if(pointPos.x < 0){
-                x = 0.0f;
-            }else if(pointPos.x > w){
-                x = 1.0f;
-            }else{
-                x = pointPos.x / w;
-            }
-            float y = 0.0f;
-            if(pointPos.z < 0){
-                y = 0.0f;
-            }else if(pointPos.z > h){
-                y = 1.0f;
-            }else{
-                y = pointPos.z / h;
-            }
-            vs_out.mapTexCoords = vec2(x,1.0f - y);
-            if(alternative == 1){
-                if(water == 1){
-                    vec4 res = perspective_m * view_m * model_m * vec4(result,1.0f);
-                    gl_Position = vec4(res.x,res.y + 0.1f,res.z,res.w);
-                }else if(indicator == 1){
-                    x = 0.0f;
-                    if(pointPos.x < 0){
-                        x = 0.0f;
-                    }else if(pointPos.x > w){
-                        x = 1.0f;
-                    }else{
-                        x = pointPos.x / w;
-                    }
-                    y = 0.0f;
-                    if(pointPos.z < 0){
-                        y = 0.0f;
-                    }else if(pointPos.z > h){
-                        y = 1.0f;
-                    }else{
-                        y = pointPos.z / h;
-                    }
-                    vec2 tc = vec2(x,1.0f - y);
-                    float offset = (texture(heightMap, tc).r * gain) + 0.5f - 1.0f;
-                    vec4 res = perspective_m * view_m * model_m * vec4(result,1.0f);
-                    gl_Position = vec4(res.x,res.y + (offset + 0.2f),res.z,res.w);
-                }else{
-                    float offset = (texture(heightMap, vs_out.mapTexCoords).r * gain) + 0.5f - 1.0f;
-                    vec4 res = perspective_m * view_m * model_m * vec4(result,1.0f);
-                    gl_Position = vec4(res.x,res.y + offset,res.z,res.w);
-                }
-            }else{
-                gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
-            }
+            vs_out.mapTexCoords = getMapTexCoord(pointPos);
+            gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
         }
     }
     vs_out.textureCoord = l_tex;
+}
+
+vec2 getMapTexCoord(vec4 pos){
+    float x = 0.0f;
+    if(pos.x < 0){
+        x = 0.0f;
+    }else if(pos.x > w){
+        x = 1.0f;
+    }else{
+        x = pos.x / w;
+    }
+    float y = 0.0f;
+    if(pos.z < 0){
+        y = 0.0f;
+    }else if(pos.z > h){
+        y = 1.0f;
+    }else{
+        y = pos.z / h;
+    }
+    return vec2(x,1.0f - y);
 }

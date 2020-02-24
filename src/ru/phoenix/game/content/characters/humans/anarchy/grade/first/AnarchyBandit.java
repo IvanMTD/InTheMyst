@@ -220,7 +220,7 @@ public class AnarchyBandit extends HumanDraw implements Character {
         getCharacteristic().setPhysicalPower(20);
         getCharacteristic().setMagicPower(10);
         // Движения
-        getCharacteristic().setMove(5);
+        getCharacteristic().setMove(3);
         getCharacteristic().setJump(1);
         getCharacteristic().setSpeed(2);
         // Обзор

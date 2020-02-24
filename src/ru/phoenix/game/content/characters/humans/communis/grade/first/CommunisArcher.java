@@ -239,7 +239,7 @@ public class CommunisArcher extends HumanDraw implements Character {
         getCharacteristic().setPhysicalPower(15);
         getCharacteristic().setMagicPower(10);
         // Движения
-        getCharacteristic().setMove(4);
+        getCharacteristic().setMove(3);
         getCharacteristic().setJump(2);
         getCharacteristic().setSpeed(2);
         // Обзор

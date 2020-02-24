@@ -29,14 +29,11 @@ public class Default {
     private static boolean showAlpha;
     private static float cursorAngle;
 
-    private static boolean test;
-
     private static boolean mapFrameStart;
 
     public static void init() {
         start = false;
         showAlpha = false;
-        test = false;
         // communis
         gehard = new Gehard();
         communisArcher = new CommunisArcher();
@@ -155,15 +152,5 @@ public class Default {
 
     public static void setMapTextureId(int mapTextureId) {
         Default.mapTextureId = mapTextureId;
-    }
-
-
-    // TEST!!!
-    public static boolean isTest() {
-        return test;
-    }
-
-    public static void setTest(boolean test) {
-        Default.test = test;
     }
 }

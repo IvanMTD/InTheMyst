@@ -10,7 +10,7 @@ public class HeightMap {
     private static float[][] heiMap;
 
     public static Cell[][] get(long seed, int width, int height, int heightRange, boolean aligment){
-        heiMap = new float[(width + 1) * 16][(height + 1) * 16];
+        heiMap = new float[(width + 1) * 8][(height + 1) * 8];
         HowLong.setup("карты вершин");
         Cell[][] heightMap = new Cell[width + 1][height + 1];
         Perlin2D perlin = new Perlin2D(seed);
