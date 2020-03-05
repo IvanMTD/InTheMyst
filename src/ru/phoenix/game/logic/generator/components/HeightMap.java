@@ -10,7 +10,7 @@ public class HeightMap {
     private static float[][] heiMap;
 
     public static Cell[][] get(long seed, int width, int height, int heightRange, boolean aligment){
-        heiMap = new float[(width + 1) * 8][(height + 1) * 8];
+        heiMap = new float[(width + 1) * 16][(height + 1) * 16];
         HowLong.setup("карты вершин");
         Cell[][] heightMap = new Cell[width + 1][height + 1];
         Perlin2D perlin = new Perlin2D(seed);
@@ -25,8 +25,8 @@ public class HeightMap {
                 float y = (result + result - 1.0f) * (float)heightRange * 2;
                 if(y > heightRange){
                     y = heightRange;
-                }else if(y < -4.0f){
-                    y = -4.0f;
+                }else if(y < -heightRange){
+                    y = -heightRange;
                 }
                 //heiMap[x][z] = y;
                 Cell cell = new Cell();
@@ -50,24 +50,32 @@ public class HeightMap {
                     cell.setPosition(new Vector3f(x, cell.getCurrentHeight(), z));
                 }
                 heightMap[x][z] = cell;
+
+                /*float num = (y + (heightRange * 2) - heightRange);
+                float percent = num * 100.0f / (heightRange * 2);
+                float res = 1.0f * percent / 100.0f;
+                heiMap[x][z] = res;*/
             }
         }
 
-        //perlin = new Perlin2D(seed);
-        for(int x = 0; x < heiMap.length; x++) {
-            for(int z = 0; z < heiMap[0].length; z++) {
-                float value = perlin.getNoise(x/accuracy,z/accuracy,8,0.5f);
+        for(int x=0; x<heiMap.length; x++){
+            for(int z=0; z<heiMap[0].length; z++){
+                float value = perlin.getNoise(x/(accuracy * 16.0f),z/(accuracy * 16.0f),8,0.5f);
                 int n = (int)(value * 255 + 128) & 255;
                 float result = ((float)n / 255.0f);
                 float y = (result + result - 1.0f) * (float)heightRange * 2;
                 if(y > heightRange){
                     y = heightRange;
-                }else if(y < -4.0f){
-                    y = -4.0f;
+                }else if(y < -heightRange){
+                    y = -heightRange;
                 }
-                heiMap[x][z] = y;
+                float num = (y + (heightRange * 2) - heightRange);
+                float percent = num * 100.0f / (heightRange * 2);
+                float res = 1.0f * percent / 100.0f;
+                heiMap[x][z] = res;
             }
         }
+
         HowLong.getInformation();
         return heightMap;
     }

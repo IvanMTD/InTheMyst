@@ -14,12 +14,10 @@ public class SceneControl {
     // methods
     public static Scene getCurrentScene(List<Scene> scenes){
         for(Scene scene : scenes){
-
             if(!scene.isInit()){
                 scene.init();
                 scene.start();
             }
-
             if(scene.isActive()){
                 return scene;
             }

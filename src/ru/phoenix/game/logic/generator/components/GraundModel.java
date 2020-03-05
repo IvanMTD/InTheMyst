@@ -15,11 +15,15 @@ public class GraundModel {
     private Mesh mesh;
     private Texture diffuseMap;
     private Texture normalMap;
+    private Texture lowDiffMap;
+    private Texture upDiffMap;
     private Texture heightMap;
 
-    public GraundModel(Mesh mesh, Texture diffuseMap, Texture normalMap){
+    public GraundModel(Mesh mesh, Texture diffuseMap, Texture normalMap, Texture lowDiffMap, Texture upDiffMap){
         this.mesh = mesh;
         this.diffuseMap = diffuseMap;
+        this.lowDiffMap = lowDiffMap;
+        this.upDiffMap = upDiffMap;
         this.normalMap = normalMap;
         this.heightMap = Generator.getHeightMap();
     }
@@ -40,6 +44,14 @@ public class GraundModel {
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, heightMap.getTextureID());
         shader.setUniform("heightMap", 2);
+
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, lowDiffMap.getTextureID());
+        shader.setUniform("material.lowDiffMap", 3);
+
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, upDiffMap.getTextureID());
+        shader.setUniform("material.upDiffMap", 4);
 
         mesh.draw();
     }

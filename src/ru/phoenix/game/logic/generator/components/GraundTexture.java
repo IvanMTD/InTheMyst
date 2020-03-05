@@ -11,6 +11,12 @@ public class GraundTexture {
     // атлас поверхностей
     private Texture graundAtlas;
     private Texture graundAtlasNormalMap;
+
+    private Texture grass;
+    private Texture dirt;
+    private Texture snow;
+    private Texture soil;
+
     // элементы сетки
     private Texture cursor;
     private Texture grayZona;
@@ -24,6 +30,10 @@ public class GraundTexture {
         // атлас поверхностей
         graundAtlas = new Texture2D();
         graundAtlasNormalMap = new Texture2D();
+        grass = new Texture2D();
+        dirt = new Texture2D();
+        snow = new Texture2D();
+        soil = new Texture2D();
         // элементы сетки
         cursor = new Texture2D();
         grayZona = new Texture2D();
@@ -40,6 +50,10 @@ public class GraundTexture {
         // атлас поверхностей
         graundAtlas.setup(null,"./data/content/texture/atlas/graund/graund_atlas.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
         graundAtlasNormalMap.setup(null,"./data/content/texture/atlas/graund/graund_atlas_normalMap.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        grass.setup(null,"./data/content/texture/atlas/graund/grass.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        dirt.setup(null,"./data/content/texture/atlas/graund/dirt.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        snow.setup(null,"./data/content/texture/atlas/graund/snow.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        soil.setup(null,"./data/content/texture/atlas/graund/soil.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
         // элементы сетки
         cursor.setup(null,"data/content/texture/zona/cursor.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         grayZona.setup(null,"./data/content/texture/zona/grid_element_gray.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
@@ -57,6 +71,22 @@ public class GraundTexture {
 
     public Texture getGraundAtlasNormalMap() {
         return graundAtlasNormalMap;
+    }
+
+    public Texture getGrass() {
+        return grass;
+    }
+
+    public Texture getDirt() {
+        return dirt;
+    }
+
+    public Texture getSnow() {
+        return snow;
+    }
+
+    public Texture getSoil() {
+        return soil;
     }
 
     public Texture getCursor() {

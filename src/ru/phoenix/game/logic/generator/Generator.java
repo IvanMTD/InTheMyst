@@ -44,14 +44,23 @@ public class Generator {
         setTotalMapHeight(199);*/
 
         System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
+        Texture low = new Texture2D();
+        Texture up = new Texture2D();
+        int floor = 0;
         if(area == PLAIN_AREA){
             grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),3, true);
+            low = graundTexture.getDirt();
+            up = graundTexture.getGrass();
+            floor = -3;
         }else if(area == MOUNTAIN_AREA){
             grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),6, true);
+            low = graundTexture.getSoil();
+            up = graundTexture.getSnow();
+            floor = -6;
         }
         heightMap = new Texture2D();
         heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
-        mesh = ModelCreater.start(-4, grid, getTotalMapWidth(), getTotalMapHeight(), area, graundTexture);
+        mesh = ModelCreater.start(floor, grid, getTotalMapWidth(), getTotalMapHeight(), area, graundTexture);
         List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),area);
         List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),area);
         List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),area);
@@ -62,7 +71,7 @@ public class Generator {
             waterReservoir.init(grid);
         }
 
-        GraundModel model = new GraundModel(mesh, graundTexture.getGraundAtlas(),graundTexture.getGraundAtlasNormalMap());
+        GraundModel model = new GraundModel(mesh, graundTexture.getGraundAtlas(),graundTexture.getGraundAtlasNormalMap(),low,up);
 
         List<Object> sprites = new ArrayList<>(trees);
         sprites.addAll(grasses);

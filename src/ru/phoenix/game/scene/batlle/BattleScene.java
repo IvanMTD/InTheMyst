@@ -5,7 +5,6 @@ import ru.phoenix.core.buffer.vbo.VertexBufferObject;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
-import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
@@ -31,8 +30,6 @@ import ru.phoenix.game.scene.Scene;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_F1;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_F2;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
@@ -454,6 +451,31 @@ public class BattleScene implements Scene {
         Character character = new Gehard(Default.getGehard(),position,lagerPoint,id,ALLY);
         character.setDefaultCharacteristic();
         studyArea.getAllies().add(character);
+        /*id += 0.01f;
+        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+        character = new CommunisPartisan(Default.getCommunisPartisan(), position, lagerPoint, id, ALLY);
+        character.setDefaultCharacteristic();
+        studyArea.getAllies().add(character);
+        id += 0.01f;
+        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+        character = new CommunisPartisan(Default.getCommunisPartisan(), position, lagerPoint, id, ALLY);
+        character.setDefaultCharacteristic();
+        studyArea.getAllies().add(character);
+        id += 0.01f;
+        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+        character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
+        character.setDefaultCharacteristic();
+        studyArea.getAllies().add(character);
+        id += 0.01f;
+        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+        character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
+        character.setDefaultCharacteristic();
+        studyArea.getAllies().add(character);
+        id += 0.01f;
+        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+        character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
+        character.setDefaultCharacteristic();
+        studyArea.getAllies().add(character);*/
 
         for(int i=0; i<(int)(1.0f + (float)Math.random() * 4.0f);i++) {
             int coin = (int) Math.round(Math.random() * 1.0f);

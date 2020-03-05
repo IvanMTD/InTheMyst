@@ -31,6 +31,9 @@ struct Material{
     sampler2D normalMap;
     sampler2D displaceMap;
 
+    sampler2D lowDiffMap;
+    sampler2D upDiffMap;
+
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -47,6 +50,7 @@ in flat int useShading;
 in flat int useBorder;
 
 // target highlight
+uniform int instance;
 uniform int w;
 uniform int h;
 uniform int onTarget;
@@ -79,8 +83,8 @@ void main() {
     }else{
         if(useShading == 0 && useBorder == 0){
             vec3 result = getDirectLight(directLight, normal, viewDirection,fs_in.TexCoords);
-            float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-            fragment_color = vec4(result, alpha);
+            //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+            fragment_color = vec4(result, 1.0f);
             if(color.r > 0.0f){
                 fragment_color = mix(skyColor,fragment_color, color.r);
             }else{
@@ -89,14 +93,14 @@ void main() {
         }else{
             if(useBorder == 1){
                 vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
-                float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+                //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
                 float rad = radiance * radiance;
-                fragment_color = vec4(result.r * rad, result.g / radiance, result.b / radiance, alpha);
+                fragment_color = vec4(result.r * rad, result.g / radiance, result.b / radiance, 1.0f);
             }
             if(useShading == 1){
                 vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
-                float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-                fragment_color = vec4(result / 10.0f,alpha);
+                //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+                fragment_color = vec4(result / 10.0f, 1.0f);
                 if(color.r > 0.0f){
                     fragment_color = mix(skyColor,fragment_color, color.r);
                 }else{
@@ -135,6 +139,55 @@ vec4 targetHighlight(){
 }
 
 vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection, vec2 tex){
+    vec3 diffuseMap;// = vec3(texture(material.diffuseMap, tex));
+    if(instance == 0){
+        if(normal.y > 0){
+            float coefficient = vec3(texture(heightMap,vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y))).r;
+            vec3 origin =  vec3(texture(material.diffuseMap, tex));
+            if(coefficient < 0.05f){
+                diffuseMap = origin - 0.05f;
+            }else if(coefficient < 0.16f){
+                diffuseMap = origin * 0.6f;
+            }else if(coefficient > 0.5f){
+                diffuseMap = origin - 0.1f;
+            }else{
+                diffuseMap = origin;
+            }
+        }else{
+            diffuseMap = vec3(texture(material.diffuseMap, tex));
+        }
+        /*if(normal.y > 0){
+            float coefficient = vec3(texture(heightMap,vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y))).r;
+            vec3 origin =  vec3(texture(material.diffuseMap, tex));
+            if(coefficient > 0.4f){
+                diffuseMap = origin * coefficient;
+            }else{
+                diffuseMap = origin;
+            }
+
+            *//*vec4 blenMapColour = texture(heightMap,vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y));
+            float backTextureAmount = 1.0f - (blenMapColour.r + blenMapColour.g + blenMapColour.b);
+            vec4 backgrond = texture(material.lowDiffMap,tex) * backTextureAmount;
+            vec4 upperTexture = texture(material.upDiffMap,tex) * blenMapColour.r;
+            diffuseMap = vec3(backgrond + upperTexture);*//*
+
+            *//*vec4 low = texture(material.lowDiffMap, tex);
+            vec4 up = texture(material.upDiffMap, tex);
+            float percent = texture(heightMap, vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y)).r;
+            percent = percent * 2.0f;
+            if(percent > 1.0f){
+                percent = 1.0f;
+            }
+            if(percent < 0.3f){
+                percent = 0.0f;
+            }
+            diffuseMap = vec3(mix(low,up,percent));*//*
+        }else{
+            diffuseMap = vec3(texture(material.diffuseMap, tex));
+        }*/
+    }else{
+        diffuseMap = vec3(texture(material.diffuseMap, tex));
+    }
     //vec3 lightDir = normalize(light.position - fs_in.TangentFragPos);
     vec3 lightDir = normalize(light.position);
     // диффузное освещение
@@ -145,9 +198,9 @@ vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection, vec2 tex
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
     // комбинируем результаты
-    vec3 ambient  = light.ambient  * vec3(texture(material.diffuseMap, tex));
-    vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuseMap, tex));
-    vec3 specular = light.specular * spec * vec3(texture(material.diffuseMap, tex));
+    vec3 ambient  = light.ambient  * diffuseMap;
+    vec3 diffuse  = light.diffuse  * diff * diffuseMap;
+    vec3 specular = light.specular * spec * diffuseMap;
 
     float shadow = shadowCalculation(fs_in.FragPosLightSpace, lightDir, normal);
     vec3 lighting = ambient + (1.0 - shadow) * (diffuse + specular);

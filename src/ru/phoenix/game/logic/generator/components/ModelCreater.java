@@ -1837,6 +1837,10 @@ public class ModelCreater {
                 v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 3.0f / 4.0f - textureOffset));
             }
         }
+        /*v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+        v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+        v2.setTexCoords(new Vector2f(1.0f, 0.0f));
+        v3.setTexCoords(new Vector2f(1.0f, 1.0f));*/
     }
 
     private static void setUpperBevelPlaneTexCoord(int currentArea, float currentHeight, Vertex v0, Vertex v1, Vertex v2, Vertex v3){
@@ -1870,12 +1874,16 @@ public class ModelCreater {
                 v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 3.0f / 4.0f - textureOffset));
             }
         }
+        /*v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+        v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+        v2.setTexCoords(new Vector2f(1.0f, 0.0f));
+        v3.setTexCoords(new Vector2f(1.0f, 1.0f));*/
     }
 
     private static void setSidePlaneTexCoord(int currentArea, float y, float currentHeight, Vertex v0, Vertex v1, Vertex v2, Vertex v3){
         if (currentArea == PLAIN_AREA) {
             if (y == currentHeight) {
-                if (y < 0) {
+                if (y < 0.0f) {
                     v0.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f - textureOffset));
                     v1.setTexCoords(new Vector2f(0.0f + textureOffset, 0.0f + textureOffset));
                     v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 0.0f + textureOffset));
@@ -1924,6 +1932,10 @@ public class ModelCreater {
                 }
             }
         }
+        /*v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+        v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+        v2.setTexCoords(new Vector2f(1.0f, 0.0f));
+        v3.setTexCoords(new Vector2f(1.0f, 1.0f));*/
     }
 
     private static void tangentBitangent(Vertex v0, Vertex v1, Vertex v2, Vertex v3){

@@ -185,8 +185,9 @@ public class Reservoir {
                     Vector3f p3;
                     Vector3f p4;
                     float correct = 0.4f;
+                    float floor = -3.25f;
                     if (x == 0) { // left
-                        for (float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
+                        for (float someY = -1.25f; someY >= floor; someY -= 1.0f) {
                             Vector3f p = new Vector3f((float) x - correct, someY, z);
                             p1 = new Vector3f(p.getX(), p.getY() + 0.5f, p.getZ() + 0.5f);
                             p2 = new Vector3f(p.getX(), p.getY() - 0.5f, p.getZ() + 0.5f);
@@ -230,7 +231,7 @@ public class Reservoir {
                         }
                     }
                     if (x == grid.length - 1) { // right
-                        for (float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
+                        for (float someY = -1.25f; someY >= floor; someY -= 1.0f) {
                             Vector3f p = new Vector3f((float) x + correct, someY, z);
                             p1 = new Vector3f(p.getX(), p.getY() + 0.5f, p.getZ() - 0.5f);
                             p2 = new Vector3f(p.getX(), p.getY() - 0.5f, p.getZ() - 0.5f);
@@ -274,7 +275,7 @@ public class Reservoir {
                         }
                     }
                     if (z == 0.0f) { // down
-                        for (float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
+                        for (float someY = -1.25f; someY >= floor; someY -= 1.0f) {
                             Vector3f p = new Vector3f(x, someY, (float) z - correct);
                             p1 = new Vector3f(p.getX() - 0.5f, p.getY() + 0.5f, p.getZ());
                             p2 = new Vector3f(p.getX() - 0.5f, p.getY() - 0.5f, p.getZ());
@@ -318,7 +319,7 @@ public class Reservoir {
                         }
                     }
                     if (z == grid[0].length - 1) { // up
-                        for (float someY = -1.25f; someY >= -4.25f; someY -= 1.0f) {
+                        for (float someY = -1.25f; someY >= floor; someY -= 1.0f) {
                             Vector3f p = new Vector3f(x, someY, (float) z + correct);
                             p1 = new Vector3f(p.getX() + 0.5f, p.getY() + 0.5f, p.getZ());
                             p2 = new Vector3f(p.getX() + 0.5f, p.getY() - 0.5f, p.getZ());

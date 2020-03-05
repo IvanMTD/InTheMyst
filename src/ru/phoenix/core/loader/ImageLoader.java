@@ -44,7 +44,7 @@ public class ImageLoader {
         for(int y=0; y<height; y++) {
             for(int x=0; x<width; x++) { // 0 - 255
                 float hei = heiMap[x][y];
-                int color = (int)(((hei + 20 - 10) / 20) * 255);
+                int color = (int)(hei * 255);
                 buf.put((byte)color);
                 buf.put((byte)color);
                 buf.put((byte)color);
