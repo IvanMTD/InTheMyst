@@ -1,4 +1,4 @@
-package ru.phoenix.game.scene.batlle;
+package ru.phoenix.game.scene.tactic;
 
 import ru.phoenix.core.buffer.vbo.MeshConfig;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
@@ -10,11 +10,6 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
-import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
-import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
-import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
-import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
-import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisPartisan;
 import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
 import ru.phoenix.game.content.stage.StudyArea;
 import ru.phoenix.game.hud.assembled.Cursor;
@@ -36,7 +31,7 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static ru.phoenix.core.config.Constants.*;
 
-public class BattleScene implements Scene {
+public class TacticalScene implements Scene {
 
     private VertexBufferObject background;
 
@@ -46,7 +41,6 @@ public class BattleScene implements Scene {
     private Shader background3D;
 
     private boolean active;
-    private boolean init;
 
     private StudyArea studyArea;
 
@@ -73,9 +67,8 @@ public class BattleScene implements Scene {
     private Vector3f lastCameraFront;
     private boolean cameraUpdate;
 
-    public BattleScene(){
+    public TacticalScene(){
         active = false;
-        init = false;
         shader3D = new Shader();
         shaderSprite = new Shader();
         curor2D = new Shader();
@@ -93,10 +86,7 @@ public class BattleScene implements Scene {
         background = new MeshConfig();
     }
 
-    @Override
     public void init(){
-        init = true;
-
         System.out.println("Try set shader3D");
         shader3D.createVertexShader("VS_game_object.glsl");
         shader3D.createGeometryShader("GS_game_object.glsl");
@@ -143,6 +133,12 @@ public class BattleScene implements Scene {
     @Override
     public void start(){
         active = true;
+        init();
+    }
+
+    @Override
+    public void over(){
+        active = false;
     }
 
     @Override
@@ -408,23 +404,13 @@ public class BattleScene implements Scene {
     }
 
     @Override
-    public void over(){
-        active = false;
-    }
-
-    @Override
-    public int getId(){
-        return Constants.SCENE_BATTLE;
+    public int getSceneId(){
+        return Constants.SCENE_TACTICAL;
     }
 
     @Override
     public boolean isActive(){
         return active;
-    }
-
-    @Override
-    public boolean isInit() {
-        return init;
     }
 
     @Override
@@ -444,13 +430,14 @@ public class BattleScene implements Scene {
         studyArea = Generator.getRandomArea(seed);
         // ALLIES - ВРЕМЕННО!
         float id = 0.12f;
-        Vector3f position = Generator.getRandomPos(studyArea.getGrid(),true);
-        //Vector3f position = studyArea.getGrid()[0][0].getModifiedPosition();
-        Vector3f lagerPoint = position;
+        //Vector3f position = Generator.getRandomPos(studyArea.getGrid(),true);
+        Vector3f lagerPoint = studyArea.getGrid()[studyArea.getGrid().length / 2][studyArea.getGrid()[0].length - 2].getModifiedPosition();
+        Vector3f position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
         Vector3f cameraLook = new Vector3f(position);
         Character character = new Gehard(Default.getGehard(),position,lagerPoint,id,ALLY);
         character.setDefaultCharacteristic();
         studyArea.getAllies().add(character);
+
         /*id += 0.01f;
         position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
         character = new CommunisPartisan(Default.getCommunisPartisan(), position, lagerPoint, id, ALLY);
@@ -477,7 +464,7 @@ public class BattleScene implements Scene {
         character.setDefaultCharacteristic();
         studyArea.getAllies().add(character);*/
 
-        for(int i=0; i<(int)(1.0f + (float)Math.random() * 4.0f);i++) {
+        /*for(int i=0; i<(int)(1.0f + (float)Math.random() * 4.0f);i++) {
             int coin = (int) Math.round(Math.random() * 1.0f);
             if(coin == 0){
                 id += 0.01f;
@@ -492,11 +479,11 @@ public class BattleScene implements Scene {
                 character.setDefaultCharacteristic();
                 studyArea.getAllies().add(character);
             }
-        }
+        }*/
         // ALLIES - ВРЕМЕННО!
 
         // ENEMIES - НАЧАЛО
-        int percent = studyArea.getMapX() + studyArea.getMapZ();
+        /*int percent = studyArea.getMapX() + studyArea.getMapZ();
         int amount = Math.round(2.0f + (float)Math.random()) * percent / 100;
         System.out.println("Число групп противников: " + amount);
         for(int i=0; i<amount; i++) {
@@ -524,7 +511,7 @@ public class BattleScene implements Scene {
                     studyArea.getEnemies().add(character);
                 }
             }
-        }
+        }*/
         // ENEMIES - КОНЕЦ
 
         first = new ArrayList<>();

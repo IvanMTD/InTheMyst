@@ -16,8 +16,7 @@ public class Perlin2D {
         float max = 0;
         float result = 0;
 
-        while (octaves-- > 0)
-        {
+        while (octaves-- > 0) {
             max += amplitude;
             result += getNoise(fx, fy) * amplitude;
             amplitude *= persistence;

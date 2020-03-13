@@ -4,11 +4,12 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import ru.phoenix.core.buffer.ubo.ProjectionUniforms;
 import ru.phoenix.core.buffer.ubo.UniformBufferObject;
 import ru.phoenix.core.config.*;
-import ru.phoenix.core.debug.HowLong;
 import ru.phoenix.game.loop.SceneControl;
-import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
-import ru.phoenix.game.scene.batlle.BattleScene;
+import ru.phoenix.game.scene.logo.LogoScene;
+import ru.phoenix.game.scene.menu.MenuScene;
+import ru.phoenix.game.scene.strategy.StrategyScene;
+import ru.phoenix.game.scene.tactic.TacticalScene;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +22,12 @@ public class CoreEngine {
     private Render render;
     private UniformBufferObject uboProjection;
 
-    private List<Scene> scenes;
+    private LogoScene logoScene;
+    private MenuScene menuScene;
+    private StrategyScene strategyScene;
+    private TacticalScene tacticalScene;
 
-    private Scene battleScene;
+    private List<Scene> scenes;
 
     private static int fps;
     private static float framerate = 200;
@@ -41,7 +45,10 @@ public class CoreEngine {
         render = new Render();
         uboProjection = new ProjectionUniforms();
 
-        battleScene = new BattleScene();
+        logoScene = new LogoScene();
+        menuScene = new MenuScene();
+        strategyScene = new StrategyScene();
+        tacticalScene = new TacticalScene();
 
         scenes = new ArrayList<>();
     }
@@ -50,11 +57,8 @@ public class CoreEngine {
         Default.init();
         render.init();
         uboProjection.allocate(0);
-
-        battleScene.init();
-        battleScene.start();
-
-        scenes = Arrays.asList(battleScene);
+        logoScene.start();
+        scenes = Arrays.asList(logoScene,menuScene,strategyScene,tacticalScene);
     }
 
     public void start(){
@@ -129,7 +133,7 @@ public class CoreEngine {
         Time.update();
         Window.getInstance().titleUpdate(getFps(), Time.getCurrentTime());
         Input.getInstance().update();
-        if(scene.isInit()) {
+        if (scene.isActive()) {
             scene.update();
         }
         uboProjection.totalUpdate();

@@ -40,8 +40,8 @@ public class Generator {
         setTotalMapWidth((int)(49.0f + (float)Math.random() * 49.0f));
         setTotalMapHeight((int)(49.0f + (float)Math.random() * 49.0f));
 
-        /*setTotalMapWidth(199);
-        setTotalMapHeight(199);*/
+        /*setTotalMapWidth(99);
+        setTotalMapHeight(99);*/
 
         System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
         Texture low = new Texture2D();

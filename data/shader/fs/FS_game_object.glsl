@@ -85,11 +85,11 @@ void main() {
             vec3 result = getDirectLight(directLight, normal, viewDirection,fs_in.TexCoords);
             //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
             fragment_color = vec4(result, 1.0f);
-            if(color.r > 0.0f){
+            /*if(color.r > 0.0f){
                 fragment_color = mix(skyColor,fragment_color, color.r);
             }else{
                 fragment_color = skyColor;
-            }
+            }*/
         }else{
             if(useBorder == 1){
                 vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
@@ -101,11 +101,11 @@ void main() {
                 vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
                 //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
                 fragment_color = vec4(result / 10.0f, 1.0f);
-                if(color.r > 0.0f){
+                /*if(color.r > 0.0f){
                     fragment_color = mix(skyColor,fragment_color, color.r);
                 }else{
                     fragment_color = skyColor;
-                }
+                }*/
             }
         }
     }

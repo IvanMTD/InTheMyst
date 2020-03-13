@@ -6,15 +6,13 @@ import ru.phoenix.game.logic.lighting.Light;
 import java.util.List;
 
 public interface Scene {
-    void init();
     void start();
+    void over();
     void update();
     void draw();
     void draw(Shader shader, boolean isShadow);
-    void over();
-    int getId();
+    int getSceneId();
     boolean isActive();
-    boolean isInit();
     List<Light> getLights();
     Shader getShader();
 }

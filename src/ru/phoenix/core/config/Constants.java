@@ -4,8 +4,8 @@ public class Constants {
     // scene indicators
     public static final int SCENE_LOGO          = 0x10000;
     public static final int SCENE_MAIN_MENU     = 0x11000;
-    public static final int SCENE_GAME          = 0x12000;
-    public static final int SCENE_BATTLE        = 0x13000;
+    public static final int SCENE_STRATEGIC     = 0x12000;
+    public static final int SCENE_TACTICAL      = 0x13000;
     public static final int SCENE_LOADING       = 0x14000;
 
     // SCENE_BATTLE - BEGIN 0x13000;

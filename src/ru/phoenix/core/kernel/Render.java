@@ -59,14 +59,16 @@ public class Render {
 
         if (!stopRender) {
             // рисуем карту теней и карту тумана войны
-            if(index == 0) {
-                shadowRenderFrame.draw(scene);
-            }else {
-                mapRenderFrame.draw(scene);
+            if(scene.getSceneId() == Constants.SCENE_TACTICAL) {
+                if (index == 0) {
+                    shadowRenderFrame.draw(scene);
+                } else {
+                    mapRenderFrame.draw(scene);
+                }
+                // переводим текстуры в основной рендер
+                baseRenderFrame.setFbo(shadowRenderFrame.getFbo(), 0);
+                baseRenderFrame.setFbo(mapRenderFrame.getFbo(), 1);
             }
-            // переводим текстуры в основной рендер
-            baseRenderFrame.setFbo(shadowRenderFrame.getFbo(), 0);
-            baseRenderFrame.setFbo(mapRenderFrame.getFbo(), 1);
             // рисуем основной рендер
             baseRenderFrame.draw(scene);
         } else {

@@ -94,7 +94,7 @@ void main(){
         }
     }
 
-    if(color.r > 0.0f){
+    /*if(color.r > 0.0f){
         fragment_color = mix(vec4(skyColor),fragment_color, color.r);
         if(fs_in.isActive == 1){
             fragment_color = mix(vec4(rgba.rgb, 0.0f), fragment_color, visibility);
@@ -104,7 +104,7 @@ void main(){
         if(fs_in.isActive == 1){
             discard;
         }
-    }
+    }*/
 
     if(fs_in.indicator == 1){
         fragment_color = rgba;
