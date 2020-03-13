@@ -47,7 +47,18 @@ public class StrategyScene implements Scene {
             if(num > max){
                 max = num;
             }
+            currentDayBiom[i] = num;
         }
+
+        float diff = Math.abs(max - min);
+
+        for(int i=0; i<days; i++){
+            float num = currentDayBiom[i] - min;
+            float percent = num * 100.0f / diff;
+            float newNum = 1.0f * percent / 100.0f;
+            currentDayBiom[i] = newNum;
+        }
+
     }
 
     @Override
