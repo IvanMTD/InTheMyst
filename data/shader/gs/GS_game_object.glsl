@@ -15,6 +15,7 @@ in VS_OUT {
     vec3 ViewPos;
     vec4 FragPosLightSpace;
     vec4 localPos;
+    float face;
 } gs_in[];
 
 out GS_OUT {
@@ -24,6 +25,7 @@ out GS_OUT {
     vec2 mapTexCoords;
     vec3 ViewPos;
     vec4 FragPosLightSpace;
+    float face;
 } gs_out;
 
 out flat int useShading;
@@ -78,6 +80,7 @@ void main() {
     gs_out.mapTexCoords = gs_in[0].mapTexCoords;
     gs_out.ViewPos = gs_in[0].ViewPos;
     gs_out.FragPosLightSpace = gs_in[0].FragPosLightSpace;
+    gs_out.face = gs_in[0].face;
     EmitVertex();
 
     gl_Position = gl_in[1].gl_Position;
@@ -87,6 +90,7 @@ void main() {
     gs_out.mapTexCoords = gs_in[1].mapTexCoords;
     gs_out.ViewPos = gs_in[1].ViewPos;
     gs_out.FragPosLightSpace = gs_in[1].FragPosLightSpace;
+    gs_out.face = gs_in[1].face;
     EmitVertex();
 
     gl_Position = gl_in[2].gl_Position;
@@ -96,6 +100,7 @@ void main() {
     gs_out.mapTexCoords = gs_in[2].mapTexCoords;
     gs_out.ViewPos = gs_in[2].ViewPos;
     gs_out.FragPosLightSpace = gs_in[2].FragPosLightSpace;
+    gs_out.face = gs_in[2].face;
     EmitVertex();
 
     EndPrimitive();

@@ -12,10 +12,20 @@ public class GraundTexture {
     private Texture graundAtlas;
     private Texture graundAtlasNormalMap;
 
-    private Texture grass;
-    private Texture dirt;
-    private Texture snow;
-    private Texture soil;
+    private Texture desert_low;
+    private Texture desert_up;
+
+    private Texture steppe_low;
+    private Texture steppe_up;
+
+    private Texture plain_low;
+    private Texture plain_up;
+
+    private Texture forest_low;
+    private Texture forest_up;
+
+    private Texture mountains_low;
+    private Texture mountains_up;
 
     // элементы сетки
     private Texture cursor;
@@ -30,10 +40,22 @@ public class GraundTexture {
         // атлас поверхностей
         graundAtlas = new Texture2D();
         graundAtlasNormalMap = new Texture2D();
-        grass = new Texture2D();
-        dirt = new Texture2D();
-        snow = new Texture2D();
-        soil = new Texture2D();
+
+        desert_low = new Texture2D();
+        desert_up = new Texture2D();
+
+        steppe_low = new Texture2D();
+        steppe_up = new Texture2D();
+
+        plain_low = new Texture2D();
+        plain_up = new Texture2D();
+
+        forest_low = new Texture2D();
+        forest_up = new Texture2D();
+
+        mountains_low = new Texture2D();
+        mountains_up = new Texture2D();
+
         // элементы сетки
         cursor = new Texture2D();
         grayZona = new Texture2D();
@@ -50,10 +72,22 @@ public class GraundTexture {
         // атлас поверхностей
         graundAtlas.setup(null,"./data/content/texture/atlas/graund/graund_atlas.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
         graundAtlasNormalMap.setup(null,"./data/content/texture/atlas/graund/graund_atlas_normalMap.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
-        grass.setup(null,"./data/content/texture/atlas/graund/grass.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
-        dirt.setup(null,"./data/content/texture/atlas/graund/dirt.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
-        snow.setup(null,"./data/content/texture/atlas/graund/snow.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
-        soil.setup(null,"./data/content/texture/atlas/graund/soil.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+
+        desert_low.setup(null,"./data/content/texture/atlas/graund/desert_low.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        desert_up.setup(null,"./data/content/texture/atlas/graund/desert_up.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+
+        steppe_low.setup(null,"./data/content/texture/atlas/graund/steppe_low.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        steppe_up.setup(null,"./data/content/texture/atlas/graund/steppe_up.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+
+        plain_low.setup(null,"./data/content/texture/atlas/graund/plain_low.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        plain_up.setup(null,"./data/content/texture/atlas/graund/plain_up.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+
+        forest_low.setup(null,"./data/content/texture/atlas/graund/forest_low.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        forest_up.setup(null,"./data/content/texture/atlas/graund/forest_up.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+
+        mountains_low.setup(null,"./data/content/texture/atlas/graund/mountains_low.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        mountains_up.setup(null,"./data/content/texture/atlas/graund/mountains_up.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+
         // элементы сетки
         cursor.setup(null,"data/content/texture/zona/cursor.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         grayZona.setup(null,"./data/content/texture/zona/grid_element_gray.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
@@ -73,20 +107,44 @@ public class GraundTexture {
         return graundAtlasNormalMap;
     }
 
-    public Texture getGrass() {
-        return grass;
+    public Texture getDesert_low() {
+        return desert_low;
     }
 
-    public Texture getDirt() {
-        return dirt;
+    public Texture getDesert_up() {
+        return desert_up;
     }
 
-    public Texture getSnow() {
-        return snow;
+    public Texture getSteppe_low() {
+        return steppe_low;
     }
 
-    public Texture getSoil() {
-        return soil;
+    public Texture getSteppe_up() {
+        return steppe_up;
+    }
+
+    public Texture getPlain_low() {
+        return plain_low;
+    }
+
+    public Texture getPlain_up() {
+        return plain_up;
+    }
+
+    public Texture getForest_low() {
+        return forest_low;
+    }
+
+    public Texture getForest_up() {
+        return forest_up;
+    }
+
+    public Texture getMountains_low() {
+        return mountains_low;
+    }
+
+    public Texture getMountains_up() {
+        return mountains_up;
     }
 
     public Texture getCursor() {

@@ -2,6 +2,7 @@ package ru.phoenix.game.scene.menu;
 
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
@@ -9,6 +10,8 @@ import ru.phoenix.game.scene.Scene;
 import java.util.List;
 
 public class MenuScene implements Scene {
+    private List<Scene> scenes;
+
     private boolean active;
 
     public MenuScene() {
@@ -20,7 +23,8 @@ public class MenuScene implements Scene {
     }
 
     @Override
-    public void start() {
+    public void start(List<Scene> scenes){
+        this.scenes = scenes;
         active = true;
         init();
     }
@@ -31,10 +35,18 @@ public class MenuScene implements Scene {
     }
 
     @Override
+    public void preset(float currentHeight, List<Character> allies) {
+
+    }
+
+    @Override
     public void update() {
         SceneControl.setLastScene(this);
-        SceneControl.setMainMenu(false);
-        SceneControl.setStrategyGame(true);
+        for(Scene scene : scenes){
+            if(scene.getSceneId() == Constants.SCENE_STRATEGIC){
+                scene.start(scenes);
+            }
+        }
         over();
     }
 

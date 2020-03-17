@@ -21,6 +21,7 @@ in GS_OUT {
     vec2 mapTexCoords;
     vec3 ViewPos;
     vec4 FragPosLightSpace;
+    float face;
 }fs_in;
 
 // Структуры и Юниформы
@@ -31,8 +32,20 @@ struct Material{
     sampler2D normalMap;
     sampler2D displaceMap;
 
-    sampler2D lowDiffMap;
-    sampler2D upDiffMap;
+    sampler2D desert_low;
+    sampler2D desert_up;
+
+    sampler2D steppe_low;
+    sampler2D steppe_up;
+
+    sampler2D plain_low;
+    sampler2D plain_up;
+
+    sampler2D forest_low;
+    sampler2D forest_up;
+
+    sampler2D mountains_low;
+    sampler2D mountains_up;
 
     vec3 ambient;
     vec3 diffuse;
@@ -53,6 +66,7 @@ in flat int useBorder;
 uniform int instance;
 uniform int w;
 uniform int h;
+uniform float currentHeight;
 uniform int onTarget;
 uniform float radiance;
 uniform float shininess;
@@ -70,6 +84,8 @@ uniform float id;
 vec4 targetHighlight();
 vec3 getDirectLight(DirectLight, vec3, vec3, vec2);
 float shadowCalculation(vec4, vec3, vec3);
+int getInt(float);
+vec3 getDiffuseMap(vec2);
 
 void main() {
     vec4 color = texture(map,fs_in.mapTexCoords);
@@ -140,51 +156,89 @@ vec4 targetHighlight(){
 
 vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection, vec2 tex){
     vec3 diffuseMap;// = vec3(texture(material.diffuseMap, tex));
+
+    vec4 desert_low = texture(material.desert_low,tex);
+    vec4 desert_up = texture(material.desert_up,tex);
+    vec4 steppe_low = texture(material.steppe_low,tex);
+    vec4 steppe_up = texture(material.steppe_up,tex);
+    vec4 plain_low = texture(material.plain_low,tex);
+    vec4 plain_up = texture(material.plain_up,tex);
+    vec4 forest_low = texture(material.forest_low,tex);
+    vec4 forest_up = texture(material.forest_up,tex);
+    vec4 mountains_low = texture(material.mountains_low,tex);
+    vec4 mountains_up = texture(material.mountains_up,tex);
+    float normalHeight = texture(heightMap, vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y)).r;
+    float height = currentHeight + ((normalHeight + 0.5f - 1.0f) * 10.0f);
+
     if(instance == 0){
-        if(normal.y > 0){
-            float coefficient = vec3(texture(heightMap,vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y))).r;
-            vec3 origin =  vec3(texture(material.diffuseMap, tex));
-            if(coefficient < 0.05f){
-                diffuseMap = origin - 0.05f;
-            }else if(coefficient < 0.16f){
-                diffuseMap = origin * 0.6f;
-            }else if(coefficient > 0.5f){
-                diffuseMap = origin - 0.1f;
-            }else{
-                diffuseMap = origin;
-            }
+        if(normal.y > 0.0f){
+            diffuseMap = getDiffuseMap(tex);
         }else{
-            diffuseMap = vec3(texture(material.diffuseMap, tex));
+            if(fs_in.face == 0.0f){
+                int num = getInt(tex.x * 10.0f) % 3;
+                if(num == 0){
+                    if(tex.y <= 0.1f){
+                        diffuseMap = getDiffuseMap(tex);
+                    }else{
+                        if(currentHeight < 10.0f){
+                            diffuseMap = vec3(desert_low);
+                        }else if(currentHeight < 20.0f){
+                            diffuseMap = vec3(steppe_low);
+                        }else if(currentHeight < 30.0f){
+                            diffuseMap = vec3(plain_low);
+                        }else if(currentHeight < 40.0f){
+                            diffuseMap = vec3(forest_low);
+                        }else{
+                            diffuseMap = vec3(mountains_low);
+                        }
+                    }
+                }else if(num == 1){
+                    if(tex.y <= 0.2f){
+                        diffuseMap = getDiffuseMap(tex);
+                    }else{
+                        if(currentHeight < 10.0f){
+                            diffuseMap = vec3(desert_low);
+                        }else if(currentHeight < 20.0f){
+                            diffuseMap = vec3(steppe_low);
+                        }else if(currentHeight < 30.0f){
+                            diffuseMap = vec3(plain_low);
+                        }else if(currentHeight < 40.0f){
+                            diffuseMap = vec3(forest_low);
+                        }else{
+                            diffuseMap = vec3(mountains_low);
+                        }
+                    }
+                }else if(num == 2){
+                    if(tex.y <= 0.15f){
+                        diffuseMap = getDiffuseMap(tex);
+                    }else{
+                        if(currentHeight < 10.0f){
+                            diffuseMap = vec3(desert_low);
+                        }else if(currentHeight < 20.0f){
+                            diffuseMap = vec3(steppe_low);
+                        }else if(currentHeight < 30.0f){
+                            diffuseMap = vec3(plain_low);
+                        }else if(currentHeight < 40.0f){
+                            diffuseMap = vec3(forest_low);
+                        }else{
+                            diffuseMap = vec3(mountains_low);
+                        }
+                    }
+                }
+            }else{
+                if(currentHeight < 10.0f){
+                    diffuseMap = vec3(desert_low);
+                }else if(currentHeight < 20.0f){
+                    diffuseMap = vec3(steppe_low);
+                }else if(currentHeight < 30.0f){
+                    diffuseMap = vec3(plain_low);
+                }else if(currentHeight < 40.0f){
+                    diffuseMap = vec3(forest_low);
+                }else{
+                    diffuseMap = vec3(mountains_low);
+                }
+            }
         }
-        /*if(normal.y > 0){
-            float coefficient = vec3(texture(heightMap,vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y))).r;
-            vec3 origin =  vec3(texture(material.diffuseMap, tex));
-            if(coefficient > 0.4f){
-                diffuseMap = origin * coefficient;
-            }else{
-                diffuseMap = origin;
-            }
-
-            *//*vec4 blenMapColour = texture(heightMap,vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y));
-            float backTextureAmount = 1.0f - (blenMapColour.r + blenMapColour.g + blenMapColour.b);
-            vec4 backgrond = texture(material.lowDiffMap,tex) * backTextureAmount;
-            vec4 upperTexture = texture(material.upDiffMap,tex) * blenMapColour.r;
-            diffuseMap = vec3(backgrond + upperTexture);*//*
-
-            *//*vec4 low = texture(material.lowDiffMap, tex);
-            vec4 up = texture(material.upDiffMap, tex);
-            float percent = texture(heightMap, vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y)).r;
-            percent = percent * 2.0f;
-            if(percent > 1.0f){
-                percent = 1.0f;
-            }
-            if(percent < 0.3f){
-                percent = 0.0f;
-            }
-            diffuseMap = vec3(mix(low,up,percent));*//*
-        }else{
-            diffuseMap = vec3(texture(material.diffuseMap, tex));
-        }*/
     }else{
         diffuseMap = vec3(texture(material.diffuseMap, tex));
     }
@@ -236,3 +290,127 @@ float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal){
 
        return shadow;
 }
+
+int getInt(float num){
+    int newNum = 0;
+    if(num < 1.0f){
+        newNum = 0;
+    }else if(num < 2.0f){
+        newNum = 1;
+    }else if(num < 3.0f){
+        newNum = 2;
+    }else if(num < 4.0f){
+        newNum = 3;
+    }else if(num < 5.0f){
+        newNum = 4;
+    }else if(num < 6.0f){
+        newNum = 5;
+    }else if(num < 7.0f){
+        newNum = 6;
+    }else if(num < 8.0f){
+        newNum = 7;
+    }else if(num < 9.0f){
+        newNum = 8;
+    }else if(num < 10.0f){
+        newNum = 9;
+    }else{
+        newNum = 10;
+    }
+    return newNum;
+}
+
+vec3 getDiffuseMap(vec2 tex){
+    vec3 diffuseMap;
+
+    vec4 desert_low = texture(material.desert_low,tex);
+    vec4 desert_up = texture(material.desert_up,tex);
+    vec4 steppe_low = texture(material.steppe_low,tex);
+    vec4 steppe_up = texture(material.steppe_up,tex);
+    vec4 plain_low = texture(material.plain_low,tex);
+    vec4 plain_up = texture(material.plain_up,tex);
+    vec4 forest_low = texture(material.forest_low,tex);
+    vec4 forest_up = texture(material.forest_up,tex);
+    vec4 mountains_low = texture(material.mountains_low,tex);
+    vec4 mountains_up = texture(material.mountains_up,tex);
+    float normalHeight = texture(heightMap, vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y)).r;
+    float height = currentHeight + ((normalHeight + 0.5f - 1.0f) * 10.0f);
+
+    // desert
+    if(height < 0.3f){
+        diffuseMap = vec3(desert_low);
+    }else if(height < 0.5f){
+        diffuseMap = vec3(desert_low.r + 0.1f,desert_low.g + 0.1f,desert_low.b);
+    }else if(height < 0.75f){
+        diffuseMap = vec3(desert_up - 0.1f);
+    }else if(height < 1.0f){
+        diffuseMap = vec3(desert_up);
+    }else if(height < 3.5f){
+        diffuseMap = vec3(desert_up + 0.05f);
+    }else if(height < 7.0f){
+        diffuseMap = vec3(desert_up + 0.1f);
+    }else if(height < 8.0f){
+        diffuseMap = vec3(mix(desert_low,desert_up,0.25f));
+    }else if(height < 9.0f){
+        diffuseMap = vec3(desert_up);
+    }else if(height < 10.0f){
+        diffuseMap = vec3(desert_up - 0.15f);
+    }
+
+    // steppe
+    else if(height < 10.3f){
+        diffuseMap = vec3(steppe_low);
+    }else if(height < 10.6f){
+        diffuseMap = vec3(mix(steppe_low,steppe_up,0.3f));
+    }else if(height < 11.0f){
+        diffuseMap = vec3(mix(steppe_low,steppe_up,0.4f));
+    }else if(height < 13.0f){
+        diffuseMap = vec3(mix(steppe_low,steppe_up,0.5f));
+    }else if(height < 16.0f){
+        diffuseMap = vec3(mix(steppe_low,steppe_up,0.6f));
+    }else if(height < 20.0f){
+        diffuseMap = vec3(steppe_up);
+    }
+
+    // plain
+    else if(height < 20.3f){
+        diffuseMap = vec3(plain_low - 0.1f);
+    }else if(height < 20.8f){
+        diffuseMap = vec3(plain_low);
+    }else if(height < 22.5f){
+        diffuseMap = vec3(plain_up - 0.1f);
+    }else if(height < 28.5f){
+        diffuseMap = vec3(plain_up);
+    }else if(height < 30.0f){
+        diffuseMap = vec3(plain_up - 0.1f);
+    }
+
+    // forest
+    else if(height < 30.5f){
+        diffuseMap = vec3(forest_low - 0.07f);
+    }else if(height < 31.0f){
+        diffuseMap = vec3(forest_low);
+    }else if(height < 36.5f){
+        diffuseMap = vec3(forest_up);
+    }else if(height < 40.0f){
+        diffuseMap = vec3(forest_up - 0.04f);
+    }
+
+    // mountains
+    else if(height < 40.5f){
+        diffuseMap = vec3(mountains_low);
+    }else if(height < 41.0){
+        diffuseMap = vec3(mountains_low + 0.05f);
+    }else if(height < 43.0f){
+        diffuseMap = vec3(mountains_up);
+    }else{
+        diffuseMap = vec3(mountains_up + 0.3f);
+    }
+
+    return diffuseMap;
+}
+
+/*vec4 blenMapColour = texture(heightMap,vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y));
+float backTextureAmount = 1.0f - (blenMapColour.r + blenMapColour.g + blenMapColour.b);
+vec4 backgrond = texture(material.lowDiffMap,tex) * backTextureAmount;
+vec4 upperTexture = texture(material.upDiffMap,tex) * blenMapColour.r;
+diffuseMap = vec3(backgrond + upperTexture);*/

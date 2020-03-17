@@ -6,6 +6,7 @@ import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
@@ -21,6 +22,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 public class LogoScene implements Scene {
     private final String MAIN_LOGO_PATH = "./data/logo/cat_logo_683.png";
     private final String ENGINE_LOGO_PATH = "./data/logo/phoenix_version_logo.png";
+
+    private List<Scene> scenes;
 
     private Shader shader;
 
@@ -65,9 +68,10 @@ public class LogoScene implements Scene {
     }
 
     @Override
-    public void start() {
-        init();
+    public void start(List<Scene> scenes) {
         active = true;
+        this.scenes = scenes;
+        init();
     }
 
     @Override
@@ -76,11 +80,20 @@ public class LogoScene implements Scene {
     }
 
     @Override
+    public void preset(float currentHeight, List<Character> allies) {
+
+    }
+
+    @Override
     public void update(){
         if (Time.getSecond() > 10.0f || Input.getInstance().isPressed(GLFW_KEY_SPACE) || Input.getInstance().isPressed(GLFW_KEY_ESCAPE)) {
             SceneControl.setLastScene(this);
-            SceneControl.setLogo(false);
-            SceneControl.setMainMenu(true);
+            for(Scene scene : scenes){
+                if(scene.getSceneId() == Constants.SCENE_MAIN_MENU){
+                    System.out.println("TEST!");
+                    scene.start(scenes);
+                }
+            }
             over();
         }
     }

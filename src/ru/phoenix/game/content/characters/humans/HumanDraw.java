@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.characters.humans;
 
+import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.loader.texture.Texture;
@@ -12,6 +13,7 @@ import ru.phoenix.game.logic.generator.Generator;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
+import static ru.phoenix.core.config.Constants.GROUP_R;
 
 public abstract class HumanDraw extends HumanControl {
     private ImageAnimation animation;
@@ -113,7 +115,7 @@ public abstract class HumanDraw extends HumanControl {
         shader.setUniform("xOffset", 0.0f);
         shader.setUniform("yOffset", 0.0f);
         shader.setUniform("zOffset", 0.0f);
-        shader.setUniform("group", getGroup());
+        shader.setUniform("group", GROUP_R);
         shader.setUniform("id", getId());
         shader.setUniform("onTarget", isTarget() ? 1 : 0);
         shader.setUniform("water", 0);

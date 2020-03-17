@@ -57,8 +57,8 @@ public class CoreEngine {
         Default.init();
         render.init();
         uboProjection.allocate(0);
-        logoScene.start();
         scenes = Arrays.asList(logoScene,menuScene,strategyScene,tacticalScene);
+        logoScene.start(scenes);
     }
 
     public void start(){

@@ -11,16 +11,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.phoenix.core.config.Constants.MOUNTAIN_AREA;
-import static ru.phoenix.core.config.Constants.PLAIN_AREA;
-
 public class ModelCreater {
 
     private static List<Vertex> vertices = new ArrayList<>();
     private static List<Integer> indices = new ArrayList<>();
     private static float textureOffset = 0.008f;
 
-    public static Mesh start(int floor, Cell[][] grid, int width, int height, int currentArea, GraundTexture textures){
+    public static Mesh start(int floor, Cell[][] grid, int width, int height, GraundTexture textures){
+        int currentArea = 0;
         vertices.clear();
         indices.clear();
         int index = 0;
@@ -29,6 +27,8 @@ public class ModelCreater {
 
         for(int x = 0; x <= width; x++){
             for(int z = 0; z <= height; z++) {
+
+                int count = 0;
 
                 Vector3f position = new Vector3f(x,grid[x][z].getCurrentHeight(),z);
 
@@ -137,7 +137,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                           /* if (currentArea == PLAIN_AREA) {
                                 if (upPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(0.0f, 0.0f));
                                     v1.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
@@ -161,7 +161,15 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
 
                             vertices.add(v0);
                             vertices.add(v1);
@@ -183,7 +191,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (downPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -207,7 +215,14 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
 
                             vertices.add(v0);
                             vertices.add(v1);
@@ -281,7 +296,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (upPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(0.0f, 0.0f));
                                     v1.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
@@ -305,7 +320,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -326,7 +350,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (downPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -350,7 +374,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -425,7 +458,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (leftPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -449,7 +482,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -470,7 +512,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (rightPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -494,7 +536,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -567,7 +618,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (leftPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -591,7 +642,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -612,7 +672,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (rightPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -636,7 +696,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -711,7 +780,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (upPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -735,7 +804,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -756,7 +834,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (downPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -780,7 +858,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -853,7 +940,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (upPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -877,7 +964,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -898,7 +994,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (downPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -922,7 +1018,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -997,7 +1102,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (leftPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -1021,7 +1126,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -1042,7 +1156,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (rightPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -1066,7 +1180,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -1139,7 +1262,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                           /* if (currentArea == PLAIN_AREA) {
                                 if (leftPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -1163,7 +1286,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -1184,7 +1316,7 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
 
-                            if (currentArea == PLAIN_AREA) {
+                            /*if (currentArea == PLAIN_AREA) {
                                 if (rightPos.getY() < -1.0f) {
                                     v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
                                     v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -1208,7 +1340,16 @@ public class ModelCreater {
                                     v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
-                            }
+                            }*/
+
+                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+
+                            v0.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v1.setTangents(new Vector3f(count,0.0f,0.0f));
+                            v2.setTangents(new Vector3f(count,0.0f,0.0f));
+
                             vertices.add(v0);
                             vertices.add(v1);
                             vertices.add(v2);
@@ -1320,7 +1461,7 @@ public class ModelCreater {
                         Mesh cellMesh = new Mesh(cellVertices,cellIndices,null);
                         grid[x][z].setupMesh(cellMesh);
                         grid[x][z].setupTexture(textures.getCursor(),textures.getGrayZona(),textures.getRedZona(),textures.getGreenZona(),textures.getGoldZona(),textures.getBlueZona());
-
+                        count = 0;
                         if (leftHeight < currentHeight) {
                             for (float y = currentHeight; y > leftHeight; y--) {
                                 v0 = new Vertex();
@@ -1339,7 +1480,7 @@ public class ModelCreater {
                                 v3.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
                                 setSidePlaneTexCoord(currentArea,y,currentHeight,v0,v1,v2,v3);
-                                tangentBitangent(v0,v1,v2,v3);
+                                tangentBitangent(v0,v1,v2,v3,count);
 
                                 vertices.add(v0);
                                 vertices.add(v1);
@@ -1354,9 +1495,10 @@ public class ModelCreater {
                                 index += 2;
                                 indices.add(index++);
                                 indices.add(index++);
+                                count++;
                             }
                         }
-
+                        count = 0;
                         if (upHeight < currentHeight) {
                             for (float y = currentHeight; y > upHeight; y--) {
                                 v0 = new Vertex();
@@ -1375,7 +1517,7 @@ public class ModelCreater {
                                 v3.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
                                 setSidePlaneTexCoord(currentArea,y,currentHeight,v0,v1,v2,v3);
-                                tangentBitangent(v0,v1,v2,v3);
+                                tangentBitangent(v0,v1,v2,v3,count);
 
                                 vertices.add(v0);
                                 vertices.add(v1);
@@ -1390,9 +1532,10 @@ public class ModelCreater {
                                 index += 2;
                                 indices.add(index++);
                                 indices.add(index++);
+                                count++;
                             }
                         }
-
+                        count = 0;
                         if (rightHeight < currentHeight) {
                             for (float y = currentHeight; y > rightHeight; y--) {
                                 v0 = new Vertex();
@@ -1411,7 +1554,7 @@ public class ModelCreater {
                                 v3.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
 
                                 setSidePlaneTexCoord(currentArea,y,currentHeight,v0,v1,v2,v3);
-                                tangentBitangent(v0,v1,v2,v3);
+                                tangentBitangent(v0,v1,v2,v3,count);
 
                                 vertices.add(v0);
                                 vertices.add(v1);
@@ -1426,9 +1569,10 @@ public class ModelCreater {
                                 index += 2;
                                 indices.add(index++);
                                 indices.add(index++);
+                                count++;
                             }
                         }
-
+                        count = 0;
                         if (downHeight < currentHeight) {
                             for (float y = currentHeight; y > downHeight; y--) {
                                 v0 = new Vertex();
@@ -1447,7 +1591,7 @@ public class ModelCreater {
                                 v3.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
 
                                 setSidePlaneTexCoord(currentArea,y,currentHeight,v0,v1,v2,v3);
-                                tangentBitangent(v0,v1,v2,v3);
+                                tangentBitangent(v0,v1,v2,v3,count);
 
                                 vertices.add(v0);
                                 vertices.add(v1);
@@ -1462,6 +1606,7 @@ public class ModelCreater {
                                 index += 2;
                                 indices.add(index++);
                                 indices.add(index++);
+                                count++;
                             }
                         }
                     }
@@ -1515,6 +1660,7 @@ public class ModelCreater {
                     grid[x][z].setupMesh(cellMesh);
                     grid[x][z].setupTexture(textures.getCursor(),textures.getGrayZona(),textures.getRedZona(),textures.getGreenZona(),textures.getGoldZona(),textures.getBlueZona());
 
+                    count = 0;
                     if (!left) {
                         for (int y = (int) leftPos.getY(); y >= floor; y--) {
                             v0 = new Vertex();
@@ -1533,7 +1679,7 @@ public class ModelCreater {
                             v3.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
                             setSidePlaneTexCoord(currentArea,y,leftPos.getY(),v0,v1,v2,v3);
-                            tangentBitangent(v0,v1,v2,v3);
+                            tangentBitangent(v0,v1,v2,v3,count);
 
                             vertices.add(v0);
                             vertices.add(v1);
@@ -1548,6 +1694,7 @@ public class ModelCreater {
                             index += 2;
                             indices.add(index++);
                             indices.add(index++);
+                            count++;
                         }
                     } else {
                         if (leftPos.getY() < position.getY()) {
@@ -1568,7 +1715,7 @@ public class ModelCreater {
                                 v3.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
                                 setSidePlaneTexCoord(currentArea,y,position.getY(),v0,v1,v2,v3);
-                                tangentBitangent(v0,v1,v2,v3);
+                                tangentBitangent(v0,v1,v2,v3,count);
 
                                 vertices.add(v0);
                                 vertices.add(v1);
@@ -1583,10 +1730,11 @@ public class ModelCreater {
                                 index += 2;
                                 indices.add(index++);
                                 indices.add(index++);
+                                count++;
                             }
                         }
                     }
-
+                    count = 0;
                     if (!up) {
                         for (int y = (int) upPos.getY(); y >= floor; y--) {
                             v0 = new Vertex();
@@ -1605,7 +1753,7 @@ public class ModelCreater {
                             v3.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
                             setSidePlaneTexCoord(currentArea,y,upPos.getY(),v0,v1,v2,v3);
-                            tangentBitangent(v0,v1,v2,v3);
+                            tangentBitangent(v0,v1,v2,v3,count);
 
                             vertices.add(v0);
                             vertices.add(v1);
@@ -1620,6 +1768,7 @@ public class ModelCreater {
                             index += 2;
                             indices.add(index++);
                             indices.add(index++);
+                            count++;
                         }
                     } else {
                         if (upPos.getY() < position.getY()) {
@@ -1640,7 +1789,7 @@ public class ModelCreater {
                                 v3.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
                                 setSidePlaneTexCoord(currentArea,y,position.getY(),v0,v1,v2,v3);
-                                tangentBitangent(v0,v1,v2,v3);
+                                tangentBitangent(v0,v1,v2,v3,count);
 
                                 vertices.add(v0);
                                 vertices.add(v1);
@@ -1655,10 +1804,11 @@ public class ModelCreater {
                                 index += 2;
                                 indices.add(index++);
                                 indices.add(index++);
+                                count++;
                             }
                         }
                     }
-
+                    count = 0;
                     if (!right) {
                         for (int y = (int) rightPos.getY(); y >= floor; y--) {
                             v0 = new Vertex();
@@ -1677,7 +1827,7 @@ public class ModelCreater {
                             v3.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
 
                             setSidePlaneTexCoord(currentArea,y,rightPos.getY(),v0,v1,v2,v3);
-                            tangentBitangent(v0,v1,v2,v3);
+                            tangentBitangent(v0,v1,v2,v3,count);
 
                             vertices.add(v0);
                             vertices.add(v1);
@@ -1692,6 +1842,7 @@ public class ModelCreater {
                             index += 2;
                             indices.add(index++);
                             indices.add(index++);
+                            count++;
                         }
                     } else {
                         if (rightPos.getY() < position.getY()) {
@@ -1712,7 +1863,7 @@ public class ModelCreater {
                                 v3.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
 
                                 setSidePlaneTexCoord(currentArea,y,position.getY(),v0,v1,v2,v3);
-                                tangentBitangent(v0,v1,v2,v3);
+                                tangentBitangent(v0,v1,v2,v3,count);
 
                                 vertices.add(v0);
                                 vertices.add(v1);
@@ -1727,10 +1878,11 @@ public class ModelCreater {
                                 index += 2;
                                 indices.add(index++);
                                 indices.add(index++);
+                                count++;
                             }
                         }
                     }
-
+                    count = 0;
                     if (!down) {
                         for (int y = (int) downPos.getY(); y >= floor; y--) {
                             v0 = new Vertex();
@@ -1749,7 +1901,7 @@ public class ModelCreater {
                             v3.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
 
                             setSidePlaneTexCoord(currentArea,y,downPos.getY(),v0,v1,v2,v3);
-                            tangentBitangent(v0,v1,v2,v3);
+                            tangentBitangent(v0,v1,v2,v3,count);
 
                             vertices.add(v0);
                             vertices.add(v1);
@@ -1764,6 +1916,7 @@ public class ModelCreater {
                             index += 2;
                             indices.add(index++);
                             indices.add(index++);
+                            count++;
                         }
                     } else {
                         if (downPos.getY() < position.getY()) {
@@ -1784,7 +1937,7 @@ public class ModelCreater {
                                 v3.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
 
                                 setSidePlaneTexCoord(currentArea,y,position.getY(),v0,v1,v2,v3);
-                                tangentBitangent(v0,v1,v2,v3);
+                                tangentBitangent(v0,v1,v2,v3,count);
 
                                 vertices.add(v0);
                                 vertices.add(v1);
@@ -1799,6 +1952,7 @@ public class ModelCreater {
                                 index += 2;
                                 indices.add(index++);
                                 indices.add(index++);
+                                count++;
                             }
                         }
                     }
@@ -1812,7 +1966,7 @@ public class ModelCreater {
     }
 
     private static void setUpperPlaneTexCoord(int currentArea, float currentHeight, Vertex v0, Vertex v1, Vertex v2, Vertex v3){
-        if (currentArea == PLAIN_AREA) {
+        /*if (currentArea == PLAIN_AREA) {
             if (currentHeight < 0) {
                 v0.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f - textureOffset));
                 v1.setTexCoords(new Vector2f(0.0f + textureOffset, 0.0f + textureOffset));
@@ -1836,15 +1990,16 @@ public class ModelCreater {
                 v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 2.0f / 4.0f + textureOffset));
                 v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 3.0f / 4.0f - textureOffset));
             }
-        }
-        /*v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+        }*/
+
+        v0.setTexCoords(new Vector2f(0.0f, 1.0f));
         v1.setTexCoords(new Vector2f(0.0f, 0.0f));
         v2.setTexCoords(new Vector2f(1.0f, 0.0f));
-        v3.setTexCoords(new Vector2f(1.0f, 1.0f));*/
+        v3.setTexCoords(new Vector2f(1.0f, 1.0f));
     }
 
     private static void setUpperBevelPlaneTexCoord(int currentArea, float currentHeight, Vertex v0, Vertex v1, Vertex v2, Vertex v3){
-        if (currentArea == PLAIN_AREA) {
+        /*if (currentArea == PLAIN_AREA) {
             if (currentHeight < -1.0f) {
                 v0.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f - textureOffset));
                 v1.setTexCoords(new Vector2f(0.0f + textureOffset, 0.0f + textureOffset));
@@ -1873,15 +2028,15 @@ public class ModelCreater {
                 v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 2.0f / 4.0f + textureOffset));
                 v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 3.0f / 4.0f - textureOffset));
             }
-        }
-        /*v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+        }*/
+        v0.setTexCoords(new Vector2f(0.0f, 1.0f));
         v1.setTexCoords(new Vector2f(0.0f, 0.0f));
         v2.setTexCoords(new Vector2f(1.0f, 0.0f));
-        v3.setTexCoords(new Vector2f(1.0f, 1.0f));*/
+        v3.setTexCoords(new Vector2f(1.0f, 1.0f));
     }
 
     private static void setSidePlaneTexCoord(int currentArea, float y, float currentHeight, Vertex v0, Vertex v1, Vertex v2, Vertex v3){
-        if (currentArea == PLAIN_AREA) {
+        /*if (currentArea == PLAIN_AREA) {
             if (y == currentHeight) {
                 if (y < 0.0f) {
                     v0.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f - textureOffset));
@@ -1931,11 +2086,18 @@ public class ModelCreater {
                     v3.setTexCoords(new Vector2f(3.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
                 }
             }
-        }
-        /*v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+        }*/
+        v0.setTexCoords(new Vector2f(0.0f, 1.0f));
         v1.setTexCoords(new Vector2f(0.0f, 0.0f));
         v2.setTexCoords(new Vector2f(1.0f, 0.0f));
-        v3.setTexCoords(new Vector2f(1.0f, 1.0f));*/
+        v3.setTexCoords(new Vector2f(1.0f, 1.0f));
+    }
+
+    private static void tangentBitangent(Vertex v0, Vertex v1, Vertex v2, Vertex v3, int count){
+        v0.setTangents(new Vector3f(count,0.0f,0.0f));
+        v1.setTangents(new Vector3f(count,0.0f,0.0f));
+        v2.setTangents(new Vector3f(count,0.0f,0.0f));
+        v3.setTangents(new Vector3f(count,0.0f,0.0f));
     }
 
     private static void tangentBitangent(Vertex v0, Vertex v1, Vertex v2, Vertex v3){

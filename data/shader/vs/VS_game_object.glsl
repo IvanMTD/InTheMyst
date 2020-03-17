@@ -33,6 +33,7 @@ out VS_OUT {
     vec3 ViewPos;
     vec4 FragPosLightSpace;
     vec4 localPos;
+    float face;
 } vs_out;
 
 vec2 getMapTexCoord();
@@ -55,6 +56,7 @@ void main() {
     vs_out.TexCoords = texCoords;
     vs_out.ViewPos = viewPos;
     vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
+    vs_out.face = l_tan.x;
 }
 
 vec2 getMapTexCoord(){

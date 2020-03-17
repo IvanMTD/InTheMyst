@@ -10,7 +10,6 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
-import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
 import ru.phoenix.game.content.stage.StudyArea;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.hud.assembled.GraundAim;
@@ -19,6 +18,7 @@ import ru.phoenix.game.logic.element.grid.Cell;
 import ru.phoenix.game.logic.generator.Generator;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.logic.movement.MousePicker;
+import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
 
@@ -33,6 +33,10 @@ import static ru.phoenix.core.config.Constants.*;
 
 public class TacticalScene implements Scene {
 
+    private List<Scene> scenes;
+    private List<Character> allies;
+    private float currentHeight;
+
     private VertexBufferObject background;
 
     private Shader shader3D;
@@ -41,6 +45,7 @@ public class TacticalScene implements Scene {
     private Shader background3D;
 
     private boolean active;
+    private boolean init;
 
     private StudyArea studyArea;
 
@@ -69,6 +74,7 @@ public class TacticalScene implements Scene {
 
     public TacticalScene(){
         active = false;
+        init = false;
         shader3D = new Shader();
         shaderSprite = new Shader();
         curor2D = new Shader();
@@ -87,51 +93,57 @@ public class TacticalScene implements Scene {
     }
 
     public void init(){
-        System.out.println("Try set shader3D");
-        shader3D.createVertexShader("VS_game_object.glsl");
-        shader3D.createGeometryShader("GS_game_object.glsl");
-        shader3D.createFragmentShader("FS_game_object.glsl");
-        shader3D.createProgram();
-        System.out.println("Try set shader2D");
-        shaderSprite.createVertexShader("VS_sprite.glsl");
-        shaderSprite.createGeometryShader("GS_sprite.glsl");
-        shaderSprite.createFragmentShader("FS_sprite.glsl");
-        shaderSprite.createProgram();
+        if(init){
+            generate(currentHeight);
+        }else {
+            init = true;
+            System.out.println("Try set shader3D");
+            shader3D.createVertexShader("VS_game_object.glsl");
+            shader3D.createGeometryShader("GS_game_object.glsl");
+            shader3D.createFragmentShader("FS_game_object.glsl");
+            shader3D.createProgram();
+            System.out.println("Try set shader2D");
+            shaderSprite.createVertexShader("VS_sprite.glsl");
+            shaderSprite.createGeometryShader("GS_sprite.glsl");
+            shaderSprite.createFragmentShader("FS_sprite.glsl");
+            shaderSprite.createProgram();
 
-        curor2D.createVertexShader("VS_cursor.glsl");
-        curor2D.createFragmentShader("FS_cursor.glsl");
-        curor2D.createProgram();
+            curor2D.createVertexShader("VS_cursor.glsl");
+            curor2D.createFragmentShader("FS_cursor.glsl");
+            curor2D.createProgram();
 
-        background3D.createVertexShader("VS_background.glsl");
-        background3D.createFragmentShader("FS_background.glsl");
-        background3D.createProgram();
+            background3D.createVertexShader("VS_background.glsl");
+            background3D.createFragmentShader("FS_background.glsl");
+            background3D.createProgram();
 
-        cursorHud.init();
-        graundAim.init();
+            cursorHud.init();
+            graundAim.init();
 
-        //generation(PLAIN_MAP);
-        generate(PLAIN_AREA);
-        float[] pos = new float[]{
-                -100.0f,  -20.0f,  -100.0f,
-                -100.0f,  -20.0f,   300.0f,
-                 300.0f,  -20.0f,   300.0f,
-                 300.0f,  -20.0f,  -100.0f
-        };
-        float[] tex = new float[]{
-                0.0f,1.0f,
-                0.0f,0.0f,
-                1.0f,0.0f,
-                1.0f,1.0f
-        };
-        int[] indices = new int[]{
-                0,1,2,
-                0,2,3
-        };
-        background.allocate(pos,null,tex,null,null,null,null,null,indices);
+            //generation(PLAIN_MAP);
+            generate(currentHeight);
+            float[] pos = new float[]{
+                    -100.0f, -20.0f, -100.0f,
+                    -100.0f, -20.0f, 300.0f,
+                    300.0f, -20.0f, 300.0f,
+                    300.0f, -20.0f, -100.0f
+            };
+            float[] tex = new float[]{
+                    0.0f, 1.0f,
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f
+            };
+            int[] indices = new int[]{
+                    0, 1, 2,
+                    0, 2, 3
+            };
+            background.allocate(pos, null, tex, null, null, null, null, null, indices);
+        }
     }
 
     @Override
-    public void start(){
+    public void start(List<Scene> scenes){
+        this.scenes = scenes;
         active = true;
         init();
     }
@@ -139,6 +151,12 @@ public class TacticalScene implements Scene {
     @Override
     public void over(){
         active = false;
+    }
+
+    @Override
+    public void preset(float currentHeight, List<Character> allies) {
+        this.currentHeight = currentHeight;
+        this.allies = allies;
     }
 
     @Override
@@ -246,12 +264,14 @@ public class TacticalScene implements Scene {
 
         if(GameController.getInstance().isSpaceClick()){
             cameraUpdate = false;
-            if(index == 0) {
-                generate(MOUNTAIN_AREA);
-            }else if(index == 1){
-                generate(PLAIN_AREA);
+            SceneControl.setLastScene(this);
+            for(Scene scene : scenes){
+                if(scene.getSceneId() == Constants.SCENE_STRATEGIC){
+                    //scene.preset(0,allies);
+                    scene.start(scenes);
+                }
             }
-
+            over();
             index++;
             if(index > 1){
                 index = 0;
@@ -308,11 +328,14 @@ public class TacticalScene implements Scene {
     public void draw(){
         boolean battle = studyArea.getBattleGround().isActive();
         // рисуем поле и сетку
+        shader3D.setUniform("currentHeight",currentHeight);
         studyArea.draw(shader3D);
 
         background3D.useProgram();
         background3D.setUniformBlock("matrices",0);
-        background3D.setUniform("model_m", new Projection().getModelMatrix());
+        Projection projection = new Projection();
+        projection.setTranslation(new Vector3f(0.0f,currentHeight,0.0f));
+        background3D.setUniform("model_m", projection.getModelMatrix());
         background.draw();
 
         shaderSprite.useProgram();
@@ -423,63 +446,23 @@ public class TacticalScene implements Scene {
         return shader3D;
     }
 
-    private void generate(int seed){
+    private void generate(float currentHeight){
         Default.setMapFrameStart(false);
         aimDrawConfig = 0;
         graundAim.setVisible(false);
-        studyArea = Generator.getRandomArea(seed);
+        studyArea = Generator.getRandomArea(currentHeight);
         // ALLIES - ВРЕМЕННО!
         float id = 0.12f;
-        //Vector3f position = Generator.getRandomPos(studyArea.getGrid(),true);
         Vector3f lagerPoint = studyArea.getGrid()[studyArea.getGrid().length / 2][studyArea.getGrid()[0].length - 2].getModifiedPosition();
-        Vector3f position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        Vector3f cameraLook = new Vector3f(position);
-        Character character = new Gehard(Default.getGehard(),position,lagerPoint,id,ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);
-
-        /*id += 0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        character = new CommunisPartisan(Default.getCommunisPartisan(), position, lagerPoint, id, ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);
-        id += 0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        character = new CommunisPartisan(Default.getCommunisPartisan(), position, lagerPoint, id, ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);
-        id += 0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);
-        id += 0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);
-        id += 0.01f;
-        position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-        character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
-        character.setDefaultCharacteristic();
-        studyArea.getAllies().add(character);*/
-
-        /*for(int i=0; i<(int)(1.0f + (float)Math.random() * 4.0f);i++) {
-            int coin = (int) Math.round(Math.random() * 1.0f);
-            if(coin == 0){
-                id += 0.01f;
-                position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-                character = new CommunisPartisan(Default.getCommunisPartisan(), position, lagerPoint, id, ALLY);
-                character.setDefaultCharacteristic();
-                studyArea.getAllies().add(character);
-            }else {
-                id += 0.01f;
-                position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-                character = new CommunisArcher(Default.getCommunisArcher(), position, lagerPoint, id, ALLY);
-                character.setDefaultCharacteristic();
-                studyArea.getAllies().add(character);
-            }
-        }*/
+        Vector3f cameraLook = new Vector3f(lagerPoint);
+        for(Character character : allies){
+            Vector3f position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
+            character.setId(id);
+            character.setLagerPoint(lagerPoint);
+            character.setPosition(position);
+            id += 0.01f;
+            studyArea.getAllies().add(character);
+        }
         // ALLIES - ВРЕМЕННО!
 
         // ENEMIES - НАЧАЛО

@@ -27,7 +27,7 @@ public class Generator {
     // карта высот
     private static Texture heightMap;
 
-    public static RandomArena getRandomArea(int area){
+    public static RandomArena getRandomArea(float currentHeight){
 
         // проверяем состояние модулей компонентов - начало
         checkElements();
@@ -44,39 +44,23 @@ public class Generator {
         setTotalMapHeight(99);*/
 
         System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
-        Texture low = new Texture2D();
-        Texture up = new Texture2D();
-        int floor = 0;
-        if(area == PLAIN_AREA){
-            grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),3, true);
-            low = graundTexture.getDirt();
-            up = graundTexture.getGrass();
-            floor = -3;
-        }else if(area == MOUNTAIN_AREA){
-            grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),6, true);
-            low = graundTexture.getSoil();
-            up = graundTexture.getSnow();
-            floor = -6;
-        }
+        grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true);
         heightMap = new Texture2D();
         heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
-        mesh = ModelCreater.start(floor, grid, getTotalMapWidth(), getTotalMapHeight(), area, graundTexture);
-        List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),area);
-        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),area);
-        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),area);
-        List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),area);
+        mesh = ModelCreater.start((int)currentHeight - 5, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
+        List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),PLAIN_AREA);
+        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),PLAIN_AREA);
+        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),PLAIN_AREA);
+        List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),PLAIN_AREA);
         Reservoir waterReservoir = null;
-        if(area == PLAIN_AREA) {
-            waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);
-            waterReservoir.init(grid);
-        }
-
-        GraundModel model = new GraundModel(mesh, graundTexture.getGraundAtlas(),graundTexture.getGraundAtlasNormalMap(),low,up);
-
-        List<Object> sprites = new ArrayList<>(trees);
+        waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);
+        waterReservoir.init(grid,currentHeight);
+        GraundModel model = new GraundModel(mesh, graundTexture);
+        List<Object> sprites = new ArrayList<>();
+        /*sprites.addAll(trees);
         sprites.addAll(grasses);
-        sprites.addAll(things);
-        return new RandomArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight());
+        sprites.addAll(things);*/
+        return new RandomArena(grid, model, waterReservoir, new ArrayList<>(), sprites, getTotalMapWidth(), getTotalMapHeight());
         // определяем алгоритм генерации - конец
     }
 

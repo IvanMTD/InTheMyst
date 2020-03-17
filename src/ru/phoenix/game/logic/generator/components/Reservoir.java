@@ -53,7 +53,27 @@ public class Reservoir {
         textureIndex = 0;
     }
 
-    public void init(Cell[][] grid) {
+    public void init(Cell[][] grid, float currentHeight) {
+
+        if(currentHeight == 5.0f){
+
+        }else if(currentHeight == 10.0f){
+            currentHeight = 0.0f;
+        }else if(currentHeight == 15.0f){
+            currentHeight = currentHeight - 1.0f;
+        }else if(currentHeight == 20.0f){
+            currentHeight = 0.0f;
+        }else if(currentHeight == 25.0f){
+            currentHeight = currentHeight - 2.0f;
+        }else if(currentHeight == 30.0f){
+            currentHeight = 0.0f;
+        }else if(currentHeight == 35.0f){
+            currentHeight = 0.0f;
+        }else if(currentHeight == 40.0f){
+            currentHeight = 0.0f;
+        }else{
+            currentHeight = 0.0f;
+        }
 
         this.texture.setup(null, texturePath, GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
 
@@ -100,8 +120,8 @@ public class Reservoir {
 
         for (int x = 0; x < grid.length; x++) {
             for (int z = 0; z < grid[0].length; z++) {
-                if (grid[x][z].getPosition().getY() < 0) {
-                    Vector3f newPos = new Vector3f(x, -0.75f, z);
+                if (grid[x][z].getPosition().getY() < currentHeight) {
+                    Vector3f newPos = new Vector3f(x, currentHeight - 0.75f, z);
                     Vector3f p1 = new Vector3f(newPos.getX() - 0.5f, newPos.getY(),newPos.getZ() + 0.5f);
                     Vector3f p2 = new Vector3f(newPos.getX() - 0.5f, newPos.getY(),newPos.getZ() - 0.5f);
                     Vector3f p3 = new Vector3f(newPos.getX() + 0.5f, newPos.getY(),newPos.getZ() - 0.5f);
@@ -170,7 +190,7 @@ public class Reservoir {
                     indices.add(index++);
                     indices.add(index++);
 
-                    if (grid[x][z].getPosition().getY() < -0.5f) {
+                    if (grid[x][z].getPosition().getY() < currentHeight - 0.5f) {
                         grid[x][z].setWater(true);
                     }
                 }
@@ -179,15 +199,15 @@ public class Reservoir {
 
         for(int x=0; x<grid.length; x++){
             for(int z=0; z<grid[0].length; z++){
-                if (grid[x][z].getPosition().getY() < 0) {
+                if (grid[x][z].getPosition().getY() < currentHeight) {
                     Vector3f p1;
                     Vector3f p2;
                     Vector3f p3;
                     Vector3f p4;
                     float correct = 0.4f;
-                    float floor = -3.25f;
+                    float floor = currentHeight - 3.25f;
                     if (x == 0) { // left
-                        for (float someY = -1.25f; someY >= floor; someY -= 1.0f) {
+                        for (float someY = currentHeight - 1.25f; someY >= floor; someY -= 1.0f) {
                             Vector3f p = new Vector3f((float) x - correct, someY, z);
                             p1 = new Vector3f(p.getX(), p.getY() + 0.5f, p.getZ() + 0.5f);
                             p2 = new Vector3f(p.getX(), p.getY() - 0.5f, p.getZ() + 0.5f);
@@ -231,7 +251,7 @@ public class Reservoir {
                         }
                     }
                     if (x == grid.length - 1) { // right
-                        for (float someY = -1.25f; someY >= floor; someY -= 1.0f) {
+                        for (float someY = currentHeight - 1.25f; someY >= floor; someY -= 1.0f) {
                             Vector3f p = new Vector3f((float) x + correct, someY, z);
                             p1 = new Vector3f(p.getX(), p.getY() + 0.5f, p.getZ() - 0.5f);
                             p2 = new Vector3f(p.getX(), p.getY() - 0.5f, p.getZ() - 0.5f);
@@ -275,7 +295,7 @@ public class Reservoir {
                         }
                     }
                     if (z == 0.0f) { // down
-                        for (float someY = -1.25f; someY >= floor; someY -= 1.0f) {
+                        for (float someY = currentHeight - 1.25f; someY >= floor; someY -= 1.0f) {
                             Vector3f p = new Vector3f(x, someY, (float) z - correct);
                             p1 = new Vector3f(p.getX() - 0.5f, p.getY() + 0.5f, p.getZ());
                             p2 = new Vector3f(p.getX() - 0.5f, p.getY() - 0.5f, p.getZ());
@@ -319,7 +339,7 @@ public class Reservoir {
                         }
                     }
                     if (z == grid[0].length - 1) { // up
-                        for (float someY = -1.25f; someY >= floor; someY -= 1.0f) {
+                        for (float someY = currentHeight - 1.25f; someY >= floor; someY -= 1.0f) {
                             Vector3f p = new Vector3f(x, someY, (float) z + correct);
                             p1 = new Vector3f(p.getX() + 0.5f, p.getY() + 0.5f, p.getZ());
                             p2 = new Vector3f(p.getX() + 0.5f, p.getY() - 0.5f, p.getZ());

@@ -3,31 +3,81 @@ package ru.phoenix.game.scene.strategy;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.math.Perlin2D;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
+import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisPartisan;
+import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class StrategyScene implements Scene {
-    // scene info
-    private int days;
-    private float[] currentDayBiom;
+import static ru.phoenix.core.config.Constants.ALLY;
 
-    // scene control
+public class StrategyScene implements Scene {
+    // обще игровые переменные
+    private List<Character> allies;
+    private List<Scene> scenes;
+    // переменные контроля игры
+    private int days;
+    private float[] heights;
+    private int currentDay;
+    // контроль сцены
     private boolean active;
+    private boolean init;
 
     public StrategyScene() {
+        allies = new ArrayList<>();
+        scenes = new ArrayList<>();
         active = false;
+        init = false;
     }
 
     public void init(){
+        if(!init){
+            init = true;
+            createAllies();
+            createHeights();
+        }
+    }
+
+    private void createAllies(){
+        Character mainCharacter = new Gehard();
+        mainCharacter.setRecognition(ALLY);
+        mainCharacter.preset();
+        mainCharacter.setDefaultCharacteristic();
+        allies.add(mainCharacter);
+
+        //TEST
+        int random = 1 + (int)Math.round(Math.random() * 4.0f);
+        for(int i=0; i<random; i++){
+            int chance = (int)Math.round(Math.random() * 10.0f);
+            if(chance < 5){
+                Character character = new CommunisPartisan();
+                character.setRecognition(ALLY);
+                character.preset();
+                character.setDefaultCharacteristic();
+                allies.add(character);
+            }else{
+                Character character = new CommunisArcher();
+                character.setRecognition(ALLY);
+                character.preset();
+                character.setDefaultCharacteristic();
+                allies.add(character);
+            }
+        }
+        //TEST
+    }
+
+    private void createHeights(){
         days = 100;
-        currentDayBiom = new float[days];
+        currentDay = 5;
+        heights = new float[days];
         long seed = (long)(1 + Math.random() * 10000000000L);
         Perlin2D perlin = new Perlin2D(seed);
         float accuracy = 20.0f;
-        System.out.println("accuracy: " + accuracy);
         float dayMap[][] = new float[days][days];
         for(int x=0; x<days; x++){
             for(int y=0; y<days; y++){
@@ -47,22 +97,22 @@ public class StrategyScene implements Scene {
             if(num > max){
                 max = num;
             }
-            currentDayBiom[i] = num;
+            heights[i] = num;
         }
 
         float diff = Math.abs(max - min);
 
         for(int i=0; i<days; i++){
-            float num = currentDayBiom[i] - min;
-            float percent = num * 100.0f / diff;
-            float newNum = 1.0f * percent / 100.0f;
-            currentDayBiom[i] = newNum;
+            float height = heights[i] - min;
+            float percent = height * 100.0f / diff;
+            float newHeight = 1.0f * percent / 100.0f;
+            heights[i] = newHeight * 50.0f;
         }
-
     }
 
     @Override
-    public void start() {
+    public void start(List<Scene> scenes){
+        this.scenes = scenes;
         active = true;
         init();
     }
@@ -73,11 +123,52 @@ public class StrategyScene implements Scene {
     }
 
     @Override
+    public void preset(float currentHeight, List<Character> allies) {
+        this.allies = allies;
+    }
+
+    @Override
     public void update() {
         SceneControl.setLastScene(this);
-        SceneControl.setStrategyGame(false);
-        SceneControl.setTacticalGame(true);
+        for(Scene scene : scenes){
+            if(scene.getSceneId() == Constants.SCENE_TACTICAL){
+                //float num = getHeight(heights[currentDay]);
+                //System.out.println("current day: " + currentDay + " | height: " + num);
+                scene.preset(currentDay,allies);
+                scene.start(scenes);
+            }
+        }
         over();
+        currentDay+=5;
+        if(currentDay >= 50){
+            currentDay = 5;
+        }
+    }
+
+    private float getHeight(float h){
+        float result = 0.0f;
+
+        if(h < 5.0f){
+            result = 5.0f;
+        }else if(h < 10.0f){
+            result = 10.0f;
+        }else if(h < 15.0f){
+            result = 15.0f;
+        }else if(h < 20.0f){
+            result = 20.0f;
+        }else if(h < 25.0f){
+            result = 25.0f;
+        }else if(h < 30.0f){
+            result = 30.0f;
+        }else if(h < 35.0f){
+            result = 35.0f;
+        }else if(h < 40.0f){
+            result = 40.0f;
+        }else{
+            result = 45.0f;
+        }
+
+        return result;
     }
 
     @Override

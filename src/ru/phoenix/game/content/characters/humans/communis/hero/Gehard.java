@@ -9,7 +9,6 @@ import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
-import ru.phoenix.core.util.ActionVerification;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.HumanDraw;
 import ru.phoenix.game.logic.battle.BattleGround;
