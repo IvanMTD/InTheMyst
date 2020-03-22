@@ -216,9 +216,9 @@ public class ModelCreater {
                                     v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
                                 }
                             }*/
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -376,9 +376,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -484,9 +484,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -538,9 +538,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -644,9 +644,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -698,9 +698,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -806,8 +806,8 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v0.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 1.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -860,9 +860,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -966,8 +966,8 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v0.setTexCoords(new Vector2f(1.0f, 0.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 1.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -1020,9 +1020,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -1128,9 +1128,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -1182,9 +1182,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -1288,9 +1288,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));
@@ -1342,9 +1342,9 @@ public class ModelCreater {
                                 }
                             }*/
 
-                            v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                            v1.setTexCoords(new Vector2f(1.0f, 0.0f));
-                            v2.setTexCoords(new Vector2f(1.0f, 1.0f));
+                            v0.setTexCoords(new Vector2f(0.0f, 1.0f));
+                            v1.setTexCoords(new Vector2f(0.0f, 0.0f));
+                            v2.setTexCoords(new Vector2f(1.0f, 0.0f));
 
                             v0.setTangents(new Vector3f(count,0.0f,0.0f));
                             v1.setTangents(new Vector3f(count,0.0f,0.0f));

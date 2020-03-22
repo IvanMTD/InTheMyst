@@ -1,6 +1,5 @@
 package ru.phoenix.game.logic.generator.components;
 
-import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.passive.BigTree;
@@ -11,9 +10,6 @@ import ru.phoenix.game.logic.element.grid.Cell;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static ru.phoenix.core.config.Constants.MOUNTAIN_AREA;
-import static ru.phoenix.core.config.Constants.PLAIN_AREA;
 
 public class PlantingTrees {
 
@@ -26,111 +22,70 @@ public class PlantingTrees {
     private static int width;
     private static int height;
 
-    public static List<Object> start(Cell[][] grid, int w, int h, int currentArea){
+    public static List<Object> start(Cell[][] grid, int w, int h){
         trees.clear();
         width = w;
         height = h;
         initTrees();
 
         for(int x = 1; x <= width - 1; x++){
-            for(int z = 1; z <= height - 1; z++){
-                if(currentArea == PLAIN_AREA){
-                    if(grid[x][z].getCurrentHeight() >= 0){
-                        boolean isBigTree = false;
-                        boolean isSmallTree = false;
-                        if(grid[x][z].getCurrentHeight() > 0) {
-                            if (treeTest(grid, grid[x][z].getPosition(), true)) {
-                                int chance = 1;
-                                if ((int) (Math.random() * 100.0f) <= chance) {
-                                    Object bigTree = new BigTree((BigTree) big_tree_main, currentArea);
-                                    bigTree.init(null);
-                                    bigTree.setPosition(grid[x][z].getPosition().add(new Vector3f(0.5f, 0.0f, 0.5f)));
-                                    trees.add(bigTree);
-                                    grid[x][z].setBlocked(true);
-                                    grid[x + 1][z].setBlocked(true);
-                                    grid[x][z + 1].setBlocked(true);
-                                    grid[x + 1][z + 1].setBlocked(true);
-                                    isBigTree = true;
-                                }
-                            }
-                        }
-                        if(!isBigTree) {
-                            if(grid[x][z].getCurrentHeight() > 0) {
-                                if (treeTest(grid, grid[x][z].getPosition(), false)) {
-                                    int chance = 10;
-                                    if ((int) (Math.random() * 100.0f) <= chance) {
-                                        Object tree = new Tree((Tree) tree_main, currentArea);
-                                        tree.init(null);
-                                        tree.setPosition(grid[x][z].getPosition());
-                                        trees.add(tree);
-                                        grid[x][z].setBlocked(true);
-                                        isSmallTree = true;
-                                    }
-                                }
-                            }
-                            if(!isSmallTree){
-                                if(treeTest(grid,grid[x][z].getPosition(),false)) {
-                                    int chance = 1;
-                                    if ((int) (Math.random() * 100.0f) <= chance) {
-                                        Object bush = new Bush((Bush) bush_main, currentArea);
-                                        bush.init(null);
-                                        bush.setPosition(grid[x][z].getPosition());
-                                        trees.add(bush);
-                                        grid[x][z].setBlocked(true);
-                                    }
-                                }
-                            }
-                        }
+            for(int z = 1; z <= height - 1; z++) {
+                setupTrees(grid,x,z);
+            }
+        }
+
+        return trees;
+    }
+
+    private static void setupTrees(Cell[][] grid, int x, int z){
+        boolean isBigTree = false;
+        boolean isSmallTree = false;
+        float currentHeight = grid[x][z].getCurrentOriginalHeight();
+        if (treeTest(grid, grid[x][z].getPosition(), true)) {
+            int chance = Math.round(currentHeight / 20.0f);
+            if ((int) (Math.random() * 100.0f) <= chance) {
+                Object bigTree = new BigTree((BigTree) big_tree_main, currentHeight);
+                if(bigTree.isApplying()) {
+                    bigTree.init(null);
+                    bigTree.setPosition(grid[x][z].getPosition().add(new Vector3f(0.5f, 0.0f, 0.5f)));
+                    trees.add(bigTree);
+                    grid[x][z].setBlocked(true);
+                    grid[x + 1][z].setBlocked(true);
+                    grid[x][z + 1].setBlocked(true);
+                    grid[x + 1][z + 1].setBlocked(true);
+                    isBigTree = true;
+                }
+            }
+        }
+        if (!isBigTree) {
+            if (treeTest(grid, grid[x][z].getPosition(), false)) {
+                int chance = Math.round(currentHeight / 5.0f);;
+                if ((int) (Math.random() * 100.0f) <= chance) {
+                    Object tree = new Tree((Tree) tree_main, currentHeight);
+                    if(tree.isApplying()) {
+                        tree.init(null);
+                        tree.setPosition(grid[x][z].getPosition());
+                        trees.add(tree);
+                        grid[x][z].setBlocked(true);
+                        isSmallTree = true;
                     }
-                }else if(currentArea == MOUNTAIN_AREA){
-                    if(grid[x][z].getCurrentHeight() < 1.0f){
-                        boolean isBigTree = false;
-                        boolean isSmallTree = false;
-                        if(treeTest(grid,grid[x][z].getPosition(),true)) {
-                            int chance = 1;
-                            if((int)(Math.random() * 100.0f) <= chance){
-                                Object bigTree = new BigTree((BigTree) big_tree_main,currentArea);
-                                bigTree.init(null);
-                                bigTree.setPosition(grid[x][z].getPosition().add(new Vector3f(0.5f,0.0f,0.5f)));
-                                trees.add(bigTree);
-                                grid[x][z].setBlocked(true);
-                                grid[x+1][z].setBlocked(true);
-                                grid[x][z+1].setBlocked(true);
-                                grid[x+1][z+1].setBlocked(true);
-                                isBigTree = true;
-                            }
-                        }
-                        if(!isBigTree) {
-                            if (treeTest(grid, grid[x][z].getPosition(), false)) {
-                                int chance = 5;
-                                if ((int) (Math.random() * 100.0f) <= chance) {
-                                    Object tree = new Tree((Tree) tree_main, currentArea);
-                                    tree.init(null);
-                                    tree.setPosition(grid[x][z].getPosition());
-                                    trees.add(tree);
-                                    grid[x][z].setBlocked(true);
-                                    isSmallTree = true;
-                                }
-                            }
-                            if(!isSmallTree){
-                                if(treeTest(grid,grid[x][z].getPosition(),false)) {
-                                    float chance = 0.1f;
-                                    if ((int) (Math.random() * 100.0f) <= chance) {
-                                        Object bush = new Bush((Bush) bush_main, currentArea);
-                                        bush.init(null);
-                                        bush.setPosition(grid[x][z].getPosition());
-                                        trees.add(bush);
-                                        grid[x][z].setBlocked(true);
-                                    }
-                                }
-                            }
+                }
+            }
+            if (!isSmallTree) {
+                if (treeTest(grid, grid[x][z].getPosition(), false)) {
+                    int chance = Math.round(currentHeight / 5.0f);;
+                    if ((int) (Math.random() * 100.0f) <= chance) {
+                        Object bush = new Bush((Bush) bush_main, currentHeight);
+                        if(bush.isApplying()) {
+                            bush.init(null);
+                            bush.setPosition(grid[x][z].getPosition());
+                            trees.add(bush);
+                            grid[x][z].setBlocked(true);
                         }
                     }
                 }
             }
         }
-
-        return trees;
     }
 
     private static void initTrees(){

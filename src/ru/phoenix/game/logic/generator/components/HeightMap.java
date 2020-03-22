@@ -19,6 +19,11 @@ public class HeightMap {
         if(coin < 5.0f){
             accuracy = accuracy * 5.0f;
         }
+
+        if(currentHeight == 10.0f || currentHeight == 20.0f || currentHeight == 30.0f){
+            accuracy = accuracy * 5.0f;
+        }
+
         float cellId = 0.0f;
         float[][]map = new float[width + 1][height + 1];
         for(int x = 0; x <= width; x++) {
@@ -52,7 +57,20 @@ public class HeightMap {
                 cellId += 0.001f; // max 40.0f
                 float h = map[x][z] - min;
                 float percent = h * 100.0f / diff;
-                float y = currentHeight + (((1.0f * percent / 100.0f) + 0.5f - 1.0f) * (currentHeight / 3.5f));
+                float y = currentHeight + (((percent / 100.0f) + 0.5f - 1.0f) * (currentHeight / 3.5f));
+                if(currentHeight == 35.0f){
+                    y = currentHeight + (((percent / 100.0f) + 0.5f - 1.0f) * 2.0f);
+                }
+                float oy = currentHeight + ((percent / 100.0f) + 0.5f - 1.0f) * 10.0f;
+
+                float minY = currentHeight - 5.0f;
+                float maxY = currentHeight + 5.0f;
+                if(y < minY){
+                    y = minY;
+                }
+                if(y > maxY){
+                    y = maxY;
+                }
 
                 Cell cell = new Cell();
                 cell.setId(cellId);
@@ -61,17 +79,21 @@ public class HeightMap {
                     if(0.35f <= heightDifference && heightDifference <= 0.65f){
                         if(x != 0 && x != width && z != 0 && z != height) {
                             cell.setCurrentHeight((float)Math.floor(y) + 0.5f);
+                            cell.setCurrentOriginalHeight(oy);
                             cell.setPosition(new Vector3f(x,cell.getCurrentHeight(),z));
                         }else{
                             cell.setCurrentHeight((float)Math.floor(y));
+                            cell.setCurrentOriginalHeight(oy);
                             cell.setPosition(new Vector3f(x,cell.getCurrentHeight(),z));
                         }
                     }else{
                         cell.setCurrentHeight((float)Math.round(y));
+                        cell.setCurrentOriginalHeight(oy);
                         cell.setPosition(new Vector3f(x,cell.getCurrentHeight(),z));
                     }
                 }else {
                     cell.setCurrentHeight(y);
+                    cell.setCurrentOriginalHeight(oy);
                     cell.setPosition(new Vector3f(x, cell.getCurrentHeight(), z));
                 }
                 heightMap[x][z] = cell;
@@ -108,7 +130,7 @@ public class HeightMap {
             for(int z=0; z<map[0].length; z++){
                 float h = map[x][z] - min;
                 float percent = h * 100.0f / diff;
-                float y = 1.0f * percent / 100.0f;
+                float y = percent / 100.0f;
                 heiMap[x][z] = y;
             }
         }

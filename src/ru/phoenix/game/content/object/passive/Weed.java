@@ -21,18 +21,21 @@ public class Weed extends ObjectControl implements Object {
 
     private List<Texture> textures;
 
+    private boolean apply;
+
     public Weed(){
         super();
+        apply = true;
         Texture weed_grass_1 = new Texture2D();
         Texture weed_grass_2 = new Texture2D();
         Texture weed_grass_3 = new Texture2D();
         Texture weed_grass_4 = new Texture2D();
         Texture weed_grass_5 = new Texture2D();
-        weed_grass_1.setup(null,"./data/content/texture/grass/grass01.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        weed_grass_2.setup(null,"./data/content/texture/grass/grass02.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        weed_grass_3.setup(null,"./data/content/texture/grass/grass03.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        weed_grass_4.setup(null,"./data/content/texture/grass/grass04.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        weed_grass_5.setup(null,"./data/content/texture/grass/grass05.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        weed_grass_1.setup(null,"./data/content/texture/grass/grass01.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // луг
+        weed_grass_2.setup(null,"./data/content/texture/grass/grass02.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // луг
+        weed_grass_3.setup(null,"./data/content/texture/grass/grass03.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // степной
+        weed_grass_4.setup(null,"./data/content/texture/grass/grass04.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // лес
+        weed_grass_5.setup(null,"./data/content/texture/grass/grass05.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // лес
         textures = new ArrayList<>(Arrays.asList(weed_grass_1, weed_grass_2, weed_grass_3,weed_grass_4,weed_grass_5));
         setId(0.0f);
         setOnTarget(false);
@@ -42,6 +45,7 @@ public class Weed extends ObjectControl implements Object {
 
     public Weed(Weed object){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
@@ -51,6 +55,7 @@ public class Weed extends ObjectControl implements Object {
 
     public Weed(Weed object, float height){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
         if(height <= -0.5f){
             Texture texture = textures.get(2);
@@ -63,14 +68,45 @@ public class Weed extends ObjectControl implements Object {
         setAnimated(true);
     }
 
-    public Weed(Weed object, int seed){
+    public Weed(Weed object, int type){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
-        if(seed == MOUNTAIN_AREA){
-            Texture texture = textures.get(2);
+
+        if(type == 1){
+            Texture temp = textures.get(2);
             textures.clear();
-            textures.add(texture);
+            textures.add(temp);
+        }else if(type == 2){
+            Texture temp1 = textures.get(2);
+            Texture temp2 = textures.get(3);
+            textures.clear();
+            textures.add(temp1);
+            textures.add(temp2);
+        }else if(type == 3){
+            Texture temp1 = textures.get(0);
+            Texture temp2 = textures.get(1);
+            textures.clear();
+            textures.add(temp1);
+            textures.add(temp2);
+        }else if(type == 4){
+            Texture temp1 = textures.get(0);
+            Texture temp2 = textures.get(1);
+            Texture temp3 = textures.get(4);
+            textures.clear();
+            textures.add(temp1);
+            textures.add(temp2);
+            textures.add(temp3);
+        }else if(type == 5){
+            Texture temp1 = textures.get(3);
+            Texture temp2 = textures.get(4);
+            textures.clear();
+            textures.add(temp1);
+            textures.add(temp2);
+        }else{
+            apply = false;
         }
+
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
@@ -96,6 +132,11 @@ public class Weed extends ObjectControl implements Object {
     @Override
     public void update(Cell[][] grid, Vector3f pixel, Cell finishCell){
 
+    }
+
+    @Override
+    public boolean isApplying() {
+        return apply;
     }
 
     @Override

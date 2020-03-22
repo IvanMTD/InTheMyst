@@ -47,20 +47,20 @@ public class Generator {
         grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true);
         heightMap = new Texture2D();
         heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
-        mesh = ModelCreater.start((int)currentHeight - 5, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
-        List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),PLAIN_AREA);
-        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),PLAIN_AREA);
-        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),PLAIN_AREA);
+        mesh = ModelCreater.start((int)currentHeight - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
+        List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight());
+        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
+        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
         List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),PLAIN_AREA);
         Reservoir waterReservoir = null;
         waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);
         waterReservoir.init(grid,currentHeight);
         GraundModel model = new GraundModel(mesh, graundTexture);
         List<Object> sprites = new ArrayList<>();
-        /*sprites.addAll(trees);
+        sprites.addAll(trees);
         sprites.addAll(grasses);
-        sprites.addAll(things);*/
-        return new RandomArena(grid, model, waterReservoir, new ArrayList<>(), sprites, getTotalMapWidth(), getTotalMapHeight());
+        //sprites.addAll(things);
+        return new RandomArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight());
         // определяем алгоритм генерации - конец
     }
 

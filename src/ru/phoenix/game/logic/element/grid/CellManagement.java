@@ -5,6 +5,7 @@ import ru.phoenix.core.math.Vector3f;
 abstract class CellManagement {
     // контроль
     private float currentHeight;
+    private float currentOriginalHeight;
     private Vector3f position;
     private float id;
     private Cell parent;
@@ -113,6 +114,14 @@ abstract class CellManagement {
 
     public void setCurrentHeight(float currentHeight) {
         this.currentHeight = currentHeight;
+    }
+
+    public float getCurrentOriginalHeight() {
+        return currentOriginalHeight;
+    }
+
+    public void setCurrentOriginalHeight(float currentOriginalHeight) {
+        this.currentOriginalHeight = currentOriginalHeight;
     }
 
     public Vector3f getModifiedPosition(){

@@ -20,8 +20,11 @@ import static ru.phoenix.core.config.Constants.MOUNTAIN_AREA;
 public class Tree extends ObjectControl implements Object {
     private List<Texture> textures;
 
+    private boolean apply;
+
     public Tree(){
         super();
+        apply = true;
 
         Texture tree_1 = new Texture2D();
         Texture tree_2 = new Texture2D();
@@ -42,6 +45,7 @@ public class Tree extends ObjectControl implements Object {
 
     public Tree(Tree object){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
@@ -51,11 +55,18 @@ public class Tree extends ObjectControl implements Object {
         setTree(true);
     }
 
-    public Tree(Tree object, int seed){
+    public Tree(Tree object, float currentHeight){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
-        if(seed == MOUNTAIN_AREA){
+        if(23.0f < currentHeight && currentHeight < 27.0f){
+            Texture temp = textures.get(0);
+            textures.clear();
+            textures.add(temp);
+        }else if(27.0f < currentHeight && currentHeight < 42.0f){
             textures.remove(0);
+        }else{
+            apply = false;
         }
         setId(0.0f);
         setOnTarget(false);
@@ -84,6 +95,11 @@ public class Tree extends ObjectControl implements Object {
     @Override
     public void update(Cell[][] grid, Vector3f pixel, Cell finishCell){
 
+    }
+
+    @Override
+    public boolean isApplying() {
+        return apply;
     }
 
     @Override

@@ -20,19 +20,22 @@ import static ru.phoenix.core.config.Constants.*;
 public class Bush extends ObjectControl implements Object {
     private List<Texture> textures;
 
+    private boolean apply;
+
     public Bush(){
         super();
+        apply = true;
         Texture bush_1 = new Texture2D();
         Texture bush_2 = new Texture2D();
         Texture bush_3 = new Texture2D();
         Texture bush_4 = new Texture2D();
         Texture bush_5 = new Texture2D();
 
-        bush_1.setup(null,"./data/content/texture/bush/tree05.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        bush_2.setup(null,"./data/content/texture/bush/tree07.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        bush_3.setup(null,"./data/content/texture/bush/tree02.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        bush_4.setup(null,"./data/content/texture/bush/tree03.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
-        bush_5.setup(null,"./data/content/texture/bush/tree04.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
+        bush_1.setup(null,"./data/content/texture/bush/tree05.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // равнинное
+        bush_2.setup(null,"./data/content/texture/bush/tree07.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // елочка
+        bush_3.setup(null,"./data/content/texture/bush/tree02.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // равнинное
+        bush_4.setup(null,"./data/content/texture/bush/tree03.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // мертвое
+        bush_5.setup(null,"./data/content/texture/bush/tree04.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // мертвое
 
         textures = new ArrayList<>(Arrays.asList(bush_1,bush_2,bush_3,bush_4,bush_5));
         setId(0.0f);
@@ -45,6 +48,7 @@ public class Bush extends ObjectControl implements Object {
 
     public Bush(Bush object){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
@@ -54,20 +58,28 @@ public class Bush extends ObjectControl implements Object {
         setTree(true);
     }
 
-    public Bush(Bush object, int seed){
+    public Bush(Bush object, float currentHeight){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
-        if(seed == PLAIN_AREA){
-            if(Math.random() * 100.0f <= 99.0f){
-                textures.remove(4);
-                textures.remove(3);
-            }
-        }else if(seed == MOUNTAIN_AREA){
-            Texture temp = textures.get(3);
-            Texture temp1 = textures.get(4);
+
+        if(23.0f < currentHeight && currentHeight < 27.0f){
+            Texture temp1 = textures.get(0);
+            Texture temp2 = textures.get(2);
             textures.clear();
-            textures = new ArrayList<>(Arrays.asList(temp,temp1));
+            textures.add(temp1);
+            textures.add(temp2);
+        }else if(27.0f < currentHeight && currentHeight < 40.0f){
+            Texture temp1 = textures.get(1);
+            textures.clear();
+            textures.add(temp1);
+        }else if(40.0f < currentHeight && currentHeight < 43.0f){
+            textures.remove(2);
+            textures.remove(0);
+        }else{
+            apply = false;
         }
+
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
@@ -95,6 +107,11 @@ public class Bush extends ObjectControl implements Object {
     @Override
     public void update(Cell[][] grid, Vector3f pixel, Cell finishCell){
 
+    }
+
+    @Override
+    public boolean isApplying() {
+        return apply;
     }
 
     @Override

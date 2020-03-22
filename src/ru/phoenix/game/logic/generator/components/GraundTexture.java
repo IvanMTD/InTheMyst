@@ -19,6 +19,7 @@ public class GraundTexture {
     private Texture steppe_up;
 
     private Texture plain_low;
+    private Texture plain_side;
     private Texture plain_up;
 
     private Texture forest_low;
@@ -48,6 +49,7 @@ public class GraundTexture {
         steppe_up = new Texture2D();
 
         plain_low = new Texture2D();
+        plain_side = new Texture2D();
         plain_up = new Texture2D();
 
         forest_low = new Texture2D();
@@ -80,6 +82,7 @@ public class GraundTexture {
         steppe_up.setup(null,"./data/content/texture/atlas/graund/steppe_up.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
 
         plain_low.setup(null,"./data/content/texture/atlas/graund/plain_low.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        plain_side.setup(null,"./data/content/texture/atlas/graund/plain_side.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
         plain_up.setup(null,"./data/content/texture/atlas/graund/plain_up.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
 
         forest_low.setup(null,"./data/content/texture/atlas/graund/forest_low.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
@@ -125,6 +128,10 @@ public class GraundTexture {
 
     public Texture getPlain_low() {
         return plain_low;
+    }
+
+    public Texture getPlain_side() {
+        return plain_side;
     }
 
     public Texture getPlain_up() {

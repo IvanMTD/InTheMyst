@@ -20,8 +20,11 @@ import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 public class WaterFlower extends ObjectControl implements Object {
     private List<Texture> textures;
 
+    private boolean apply;
+
     public WaterFlower(){
         super();
+        apply = true;
         Texture water_flower_1 = new Texture2D();
         water_flower_1.setup(null,"./data/content/texture/water/waterflower.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         textures = new ArrayList<>(Collections.singletonList(water_flower_1));
@@ -34,6 +37,7 @@ public class WaterFlower extends ObjectControl implements Object {
 
     public WaterFlower(WaterFlower object){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
@@ -61,6 +65,11 @@ public class WaterFlower extends ObjectControl implements Object {
     @Override
     public void update(Cell[][] grid, Vector3f pixel, Cell finishCell){
         setyOffset(Default.getOffset());
+    }
+
+    @Override
+    public boolean isApplying(){
+        return apply;
     }
 
     @Override

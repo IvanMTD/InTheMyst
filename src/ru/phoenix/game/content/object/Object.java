@@ -15,6 +15,7 @@ public interface Object {
 
     void init(Matrix4f[] matrix);
     void update(Cell[][]grid, Vector3f pixel, Cell targetElement);
+    boolean isApplying();
     List<Texture> getTextures();
     int getRecognition();
     void setRecognition(int recognition);

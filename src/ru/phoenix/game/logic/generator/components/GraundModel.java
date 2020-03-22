@@ -60,24 +60,28 @@ public class GraundModel {
         shader.setUniform("material.plain_low", 14);
 
         glActiveTexture(GL_TEXTURE15);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_up().getTextureID());
-        shader.setUniform("material.plain_up", 15);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_side().getTextureID());
+        shader.setUniform("material.plain_side", 15);
 
         glActiveTexture(GL_TEXTURE16);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_low().getTextureID());
-        shader.setUniform("material.forest_low", 16);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_up().getTextureID());
+        shader.setUniform("material.plain_up", 16);
 
         glActiveTexture(GL_TEXTURE17);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_up().getTextureID());
-        shader.setUniform("material.forest_up", 17);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_low().getTextureID());
+        shader.setUniform("material.forest_low", 17);
 
         glActiveTexture(GL_TEXTURE18);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getMountains_low().getTextureID());
-        shader.setUniform("material.mountains_low", 18);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_up().getTextureID());
+        shader.setUniform("material.forest_up", 18);
 
         glActiveTexture(GL_TEXTURE19);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getMountains_low().getTextureID());
+        shader.setUniform("material.mountains_low", 19);
+
+        glActiveTexture(GL_TEXTURE20);
         glBindTexture(GL_TEXTURE_2D, graundTexture.getMountains_up().getTextureID());
-        shader.setUniform("material.mountains_up", 19);
+        shader.setUniform("material.mountains_up", 20);
 
         /*glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, lowDiffMap.getTextureID());

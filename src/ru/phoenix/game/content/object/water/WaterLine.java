@@ -23,8 +23,11 @@ public class WaterLine extends ObjectControl implements Object {
 
     private int offsetInfo;
 
+    private boolean apply;
+
     public WaterLine(){
         super();
+        apply = true;
         Texture waterLine = new Texture2D();
         waterLine.setup(null,"./data/content/texture/water/waterSet.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         textures = new ArrayList<>(Collections.singletonList(waterLine));
@@ -38,6 +41,7 @@ public class WaterLine extends ObjectControl implements Object {
 
     public WaterLine(WaterLine object, int offsetInfo){
         super();
+        apply = true;
         textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
@@ -49,6 +53,7 @@ public class WaterLine extends ObjectControl implements Object {
 
     public WaterLine(int offsetInfo){
         super();
+        apply = true;
         Texture waterLine = new Texture2D();
         waterLine.setup(null,"./data/content/texture/water/waterSet.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         textures = new ArrayList<>(Collections.singletonList(waterLine));
@@ -93,6 +98,11 @@ public class WaterLine extends ObjectControl implements Object {
                 setzOffset(Default.getOffset());
                 break;
         }
+    }
+
+    @Override
+    public boolean isApplying(){
+        return apply;
     }
 
     @Override

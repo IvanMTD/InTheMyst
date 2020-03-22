@@ -19,8 +19,11 @@ import static ru.phoenix.core.config.Constants.*;
 public class BigTree extends ObjectControl implements Object {
     private List<Texture> textures;
 
+    private boolean apply;
+
     public BigTree(){
         super();
+        apply = true;
         Texture tree_1 = new Texture2D();
         Texture tree_2 = new Texture2D();
 
@@ -39,6 +42,7 @@ public class BigTree extends ObjectControl implements Object {
 
     public BigTree(BigTree object){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
@@ -49,14 +53,19 @@ public class BigTree extends ObjectControl implements Object {
         setTree(true);
     }
 
-    public BigTree(BigTree object, int seed){
+    public BigTree(BigTree object, float currentHeight){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
-        if(seed == PLAIN_AREA) {
+
+        if(23.0f < currentHeight && currentHeight < 33.0f) {
             textures.remove(1);
-        }else if(seed == MOUNTAIN_AREA){
+        }else if(39.0f < currentHeight && currentHeight < 42.0f){
             textures.remove(0);
+        }else{
+            apply = false;
         }
+
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
@@ -85,6 +94,11 @@ public class BigTree extends ObjectControl implements Object {
     @Override
     public void update(Cell[][] grid, Vector3f pixel, Cell finishCell) {
 
+    }
+
+    @Override
+    public boolean isApplying() {
+        return apply;
     }
 
     @Override

@@ -18,8 +18,11 @@ import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 public class LittleThing extends ObjectControl implements Object {
     private List<Texture> textures;
 
+    private boolean apply;
+
     public LittleThing(){
         super();
+        apply = true;
         Texture littleThing = new Texture2D();
         littleThing.setup(null,"./data/content/texture/items/little_things.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         textures = new ArrayList<>();
@@ -33,6 +36,7 @@ public class LittleThing extends ObjectControl implements Object {
 
     public LittleThing(LittleThing object){
         super();
+        apply = true;
         this.textures = new ArrayList<>(object.getTextures());
         setId(0.0f);
         setOnTarget(false);
@@ -60,6 +64,11 @@ public class LittleThing extends ObjectControl implements Object {
     @Override
     public void update(Cell[][] grid, Vector3f pixel, Cell finishCell){
 
+    }
+
+    @Override
+    public boolean isApplying() {
+        return apply;
     }
 
     @Override
