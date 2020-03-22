@@ -132,17 +132,16 @@ public class StrategyScene implements Scene {
         SceneControl.setLastScene(this);
         for(Scene scene : scenes){
             if(scene.getSceneId() == Constants.SCENE_TACTICAL){
-                //float num = getHeight(heights[currentDay]);
-                //System.out.println("current day: " + currentDay + " | height: " + num);
-                scene.preset(currentDay,allies);
+                float num = getHeight((float)(Math.random() * 50.0f));//getHeight(heights[currentDay]);
+                scene.preset(num,allies);
                 scene.start(scenes);
             }
         }
         over();
-        currentDay+=5;
+        /*currentDay+=5;
         if(currentDay >= 50){
             currentDay = 5;
-        }
+        }*/
     }
 
     private float getHeight(float h){
