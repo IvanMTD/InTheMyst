@@ -6,7 +6,6 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
-import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
-import static ru.phoenix.core.config.Constants.MOUNTAIN_AREA;
 
 public class Tree extends ObjectControl implements Object {
     private List<Texture> textures;
@@ -29,12 +27,18 @@ public class Tree extends ObjectControl implements Object {
         Texture tree_1 = new Texture2D();
         Texture tree_2 = new Texture2D();
         Texture tree_3 = new Texture2D();
+        Texture tree_4 = new Texture2D();
+        Texture tree_5 = new Texture2D();
+        Texture tree_6 = new Texture2D();
 
         tree_1.setup(null,"./data/content/texture/tree/tree11.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // липа? 0
         tree_2.setup(null,"./data/content/texture/tree/tree12.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // сосна 1
         tree_3.setup(null,"./data/content/texture/tree/tree13.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // ель   2
+        tree_4.setup(null,"./data/content/texture/tree/tree14.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // мертвая сосна 3
+        tree_5.setup(null,"./data/content/texture/tree/tree15.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // мертвая ель 4
+        tree_6.setup(null,"./data/content/texture/tree/tree16.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // кактус 5
 
-        textures = new ArrayList<>(Arrays.asList(tree_1,tree_2,tree_3));
+        textures = new ArrayList<>(Arrays.asList(tree_1,tree_2,tree_3, tree_4,tree_5,tree_6));
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
@@ -64,7 +68,12 @@ public class Tree extends ObjectControl implements Object {
             textures.clear();
             textures.add(temp);
         }else if(27.0f < currentHeight && currentHeight < 42.0f){
+            textures.remove(5);
             textures.remove(0);
+        }else if(3.0f < currentHeight && currentHeight < 10.0f){
+            Texture temp = textures.get(5);
+            textures.clear();
+            textures.add(temp);
         }else{
             apply = false;
         }

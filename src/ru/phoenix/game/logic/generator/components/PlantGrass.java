@@ -34,7 +34,7 @@ public class PlantGrass {
                     float height = grid[x][z].getCurrentOriginalHeight();
                     if(height < 2.2f || height > 9.2f) {
                         type = 1;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 5.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -115,7 +115,7 @@ public class PlantGrass {
                     float height = grid[x][z].getCurrentOriginalHeight();
                     if(height > 10.2f && height < 12.0f) {
                         type1 = 1;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 5.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -140,7 +140,7 @@ public class PlantGrass {
                         }
                     }else if(height > 14.0f){
                         type2 = 2;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 10.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -210,7 +210,7 @@ public class PlantGrass {
                     float height = grid[x][z].getCurrentOriginalHeight();
                     if(height > 12.0f){
                         type = 2;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 15.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -291,7 +291,7 @@ public class PlantGrass {
                     float height = grid[x][z].getCurrentOriginalHeight();
                     if(height < 22.0f){
                         type1 = 2;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 10.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -316,7 +316,7 @@ public class PlantGrass {
                         }
                     }else {
                         type2 = 3;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 15.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -388,7 +388,7 @@ public class PlantGrass {
                     float height = grid[x][z].getCurrentOriginalHeight();
                     if(height < 22.0f){
                         type1 = 1;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 10.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -413,7 +413,7 @@ public class PlantGrass {
                         }
                     }else if(height > 23.5f){
                         type2 = 4;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 25.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -485,7 +485,7 @@ public class PlantGrass {
                     float height = grid[x][z].getCurrentOriginalHeight();
                     if(height < 30.0f){
                         type1 = 4;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 25.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -510,7 +510,7 @@ public class PlantGrass {
                         }
                     }else if(height > 23.5f){
                         type2 = 5;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 25.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -578,7 +578,7 @@ public class PlantGrass {
             for(int x = 0; x <= w; x++) {
                 for (int z = 0; z <= h; z++) {
                     type = 4;
-                    if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                    if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                         float chance = 25.0f;
                         if (Math.random() * 100.0f <= chance) {
                             Projection spriteProjection = new Projection();
@@ -656,7 +656,7 @@ public class PlantGrass {
                     float height = grid[x][z].getCurrentOriginalHeight();
                     if(height < 40.0f) {
                         type = 4;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 15.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();
@@ -735,7 +735,7 @@ public class PlantGrass {
                     float height = grid[x][z].getCurrentOriginalHeight();
                     if(height < 43.0f) {
                         type = 1;
-                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel()) {
+                        if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isRoad()) {
                             float chance = 10.0f;
                             if (Math.random() * 100.0f <= chance) {
                                 Projection spriteProjection = new Projection();

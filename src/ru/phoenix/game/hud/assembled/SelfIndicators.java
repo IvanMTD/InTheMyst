@@ -42,8 +42,8 @@ public class SelfIndicators {
     }
 
     public void update(Vector3f currentPos, Characteristic characteristic){
-        float h = currentPos.getY();
-        characteristic.setVision((int)(characteristic.getFinalVision() + h));
+        /*float h = currentPos.getY();
+        characteristic.setVision((int)(characteristic.getFinalVision() + h));*/
         // основной борд
         mainBoard.update(currentPos);
         // Индикаторы

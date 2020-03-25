@@ -1,6 +1,7 @@
 package ru.phoenix.core.loader.texture;
 
 import ru.phoenix.core.loader.ImageLoader;
+import ru.phoenix.core.math.Vector3f;
 
 import java.io.IOException;
 
@@ -39,6 +40,27 @@ public class Texture2D implements Texture {
 
     @Override
     public void setup(float[][] heiMap, int rgbaConfig, int filter) {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        try {
+            ImageLoader.load(heiMap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //GL_SRGB_ALPHA
+        glTexImage2D(GL_TEXTURE_2D, 0, rgbaConfig, ImageLoader.getWidth(), ImageLoader.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, ImageLoader.getBuf());
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        setFilter(filter);
+
+        width = ImageLoader.getWidth();
+        height = ImageLoader.getHeight();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    @Override
+    public void setup(Vector3f[][] heiMap, int rgbaConfig, int filter) {
         glBindTexture(GL_TEXTURE_2D, textureID);
 
         try {

@@ -65,13 +65,16 @@ void main() {
                 vec4 elementPos = l_instance_m * vec4(l_pos,1.0f);
                 vec3 direct = vec3(elementPos.xyz - units[i].xyz);
                 float distance = length(direct.xyz);
-                float vis = exp(-pow((distance * units[i].w),gradient));
-                visbl += clamp(vis,0.0f,1.0f);
+                if(distance < units[i].w){
+                    visbl = 1.0f;
+                }
+                /*float vis = exp(-pow((distance * units[i].w),gradient));
+                visbl += clamp(vis,0.0f,1.0f);*/
             }
         }
-        if(visbl > 1.0f){
+        /*if(visbl > 1.0f){
             visbl = 1.0f;
-        }
+        }*/
         vs_out.visibility = visbl;
     }else{
         vec4 pos = mapCam_m * model_m * vec4(l_pos,1.0f);
@@ -104,13 +107,16 @@ void main() {
                 vec4 elementPos = model_m * vec4(l_pos,1.0f);
                 vec3 direct = vec3(elementPos.xyz - units[i].xyz);
                 float distance = length(direct.xyz);
-                float vis = exp(-pow((distance * units[i].w),gradient));
-                visbl += clamp(vis,0.0f,1.0f);
+                if(distance < units[i].w){
+                    visbl = 1.0f;
+                }
+                /*float vis = exp(-pow((distance * units[i].w),gradient));
+                visbl += clamp(vis,0.0f,1.0f);*/
             }
         }
-        if(visbl > 1.0f){
+        /*if(visbl > 1.0f){
             visbl = 1.0f;
-        }
+        }*/
         vs_out.visibility = visbl;
     }
 }

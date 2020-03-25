@@ -7,10 +7,10 @@ import ru.phoenix.game.logic.element.grid.Cell;
 
 public class HeightMap {
 
-    private static float[][] heiMap;
+    private static Vector3f[][] heiMap;
 
     public static Cell[][] get(long seed, int width, int height, float currentHeight, boolean aligment){
-        heiMap = new float[(width + 1) * 16][(height + 1) * 16];
+        heiMap = new Vector3f[(width + 1) * 16][(height + 1) * 16];
         HowLong.setup("карты вершин");
         Cell[][] heightMap = new Cell[width + 1][height + 1];
         Perlin2D perlin = new Perlin2D(seed);
@@ -20,9 +20,9 @@ public class HeightMap {
             accuracy = accuracy * 5.0f;
         }
 
-        if(currentHeight == 10.0f || currentHeight == 20.0f || currentHeight == 30.0f){
+        /*if(currentHeight == 10.0f || currentHeight == 20.0f || currentHeight == 30.0f){
             accuracy = accuracy * 5.0f;
-        }
+        }*/
 
         float cellId = 0.0f;
         float[][]map = new float[width + 1][height + 1];
@@ -57,11 +57,26 @@ public class HeightMap {
                 cellId += 0.001f; // max 40.0f
                 float h = map[x][z] - min;
                 float percent = h * 100.0f / diff;
-                float y = currentHeight + (((percent / 100.0f) + 0.5f - 1.0f) * (currentHeight / 3.5f));
-                if(currentHeight == 35.0f){
-                    y = currentHeight + (((percent / 100.0f) + 0.5f - 1.0f) * 2.0f);
+                percent = (percent / 100.0f) + 0.5f - 1.0f;
+                int pice = ((heightMap[0].length - 1) / 3);
+                int special = (heightMap[0].length - 1) - pice;
+                float proportion = 1.0f;
+                if(z > special){
+                    int num = z - special;
+                    proportion = 1.0f - (float)num / (float)pice;
                 }
-                float oy = currentHeight + ((percent / 100.0f) + 0.5f - 1.0f) * 10.0f;
+
+                if(z > heightMap[0].length - 6){
+                    proportion = 0.0f;
+                }
+
+                float oy = currentHeight + percent * 10.0f;
+                percent = percent * proportion;
+
+                float y = currentHeight + (percent * (currentHeight / 3.5f));
+                if(currentHeight == 35.0f){
+                    y = currentHeight + (percent * 3.0f);
+                }
 
                 float minY = currentHeight - 5.0f;
                 float maxY = currentHeight + 5.0f;
@@ -78,24 +93,30 @@ public class HeightMap {
                     float heightDifference = Math.abs(Math.round(y) - y);
                     if(0.35f <= heightDifference && heightDifference <= 0.65f){
                         if(x != 0 && x != width && z != 0 && z != height) {
-                            cell.setCurrentHeight((float)Math.floor(y) + 0.5f);
+                            cell.setCurrentHeight((float) Math.floor(y) + 0.5f);
                             cell.setCurrentOriginalHeight(oy);
-                            cell.setPosition(new Vector3f(x,cell.getCurrentHeight(),z));
-                        }else{
-                            cell.setCurrentHeight((float)Math.floor(y));
+                            cell.setPosition(new Vector3f(x, cell.getCurrentHeight(), z));
+                        }else {
+                            cell.setCurrentHeight((float) Math.floor(y));
                             cell.setCurrentOriginalHeight(oy);
-                            cell.setPosition(new Vector3f(x,cell.getCurrentHeight(),z));
+                            cell.setPosition(new Vector3f(x, cell.getCurrentHeight(), z));
                         }
                     }else{
                         cell.setCurrentHeight((float)Math.round(y));
                         cell.setCurrentOriginalHeight(oy);
                         cell.setPosition(new Vector3f(x,cell.getCurrentHeight(),z));
                     }
+
+                    if(z >= heightMap[0].length - 4){
+                        cell.setRoad(true);
+                    }
+
                 }else {
                     cell.setCurrentHeight(y);
                     cell.setCurrentOriginalHeight(oy);
                     cell.setPosition(new Vector3f(x, cell.getCurrentHeight(), z));
                 }
+
                 heightMap[x][z] = cell;
             }
         }
@@ -128,10 +149,18 @@ public class HeightMap {
 
         for(int x=0; x<map.length; x++){
             for(int z=0; z<map[0].length; z++){
-                float h = map[x][z] - min;
-                float percent = h * 100.0f / diff;
-                float y = percent / 100.0f;
-                heiMap[x][z] = y;
+                int offset = (int)Math.round(14.0f + Math.random() * 2.0f);
+                if(z > map[0].length - (4 * offset)){
+                    float h = map[x][z] - min;
+                    float percent = h * 100.0f / diff;
+                    float y = percent / 100.0f;
+                    heiMap[x][z] = new Vector3f(y, 0.0f, 0.0f);
+                }else {
+                    float h = map[x][z] - min;
+                    float percent = h * 100.0f / diff;
+                    float y = percent / 100.0f;
+                    heiMap[x][z] = new Vector3f(y, y, y);
+                }
             }
         }
 
@@ -139,7 +168,7 @@ public class HeightMap {
         return heightMap;
     }
 
-    public static float[][] getHeiMap() {
+    public static Vector3f[][] getHeiMap() {
         return heiMap;
     }
 }

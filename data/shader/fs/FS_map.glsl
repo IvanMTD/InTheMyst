@@ -37,14 +37,18 @@ void main() {
     if(start == 1){
         vec4 pm = texture(map,fs_in.mapTexCoord);
         vec4 nm = mix(FOG,MASK, fs_in.visibility);
-        if(nm.r < 1.0f){
-            if(nm.r > pm.r){
-                fragment_color = nm;
+        if(fs_in.visibility == 1.0f){
+            fragment_color = nm;
+        }else{
+            if(nm.r < 1.0f){
+                if(nm.r > pm.r){
+                    fragment_color = nm;
+                }else{
+                    fragment_color = pm;
+                }
             }else{
                 fragment_color = pm;
             }
-        }else{
-            fragment_color = pm;
         }
     }else{
         fragment_color = mix(FOG,MASK, fs_in.visibility);

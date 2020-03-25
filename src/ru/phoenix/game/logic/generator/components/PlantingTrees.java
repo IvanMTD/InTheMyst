@@ -42,8 +42,8 @@ public class PlantingTrees {
         boolean isSmallTree = false;
         float currentHeight = grid[x][z].getCurrentOriginalHeight();
         if (treeTest(grid, grid[x][z].getPosition(), true)) {
-            int chance = Math.round(currentHeight / 20.0f);
-            if ((int) (Math.random() * 100.0f) <= chance) {
+            float chance = (float)Math.round(currentHeight / 20.0f);
+            if ((Math.random() * 100.0f) <= chance) {
                 Object bigTree = new BigTree((BigTree) big_tree_main, currentHeight);
                 if(bigTree.isApplying()) {
                     bigTree.init(null);
@@ -59,8 +59,11 @@ public class PlantingTrees {
         }
         if (!isBigTree) {
             if (treeTest(grid, grid[x][z].getPosition(), false)) {
-                int chance = Math.round(currentHeight / 5.0f);;
-                if ((int) (Math.random() * 100.0f) <= chance) {
+                float chance = (float)Math.round(currentHeight / 5.0f);
+                if(currentHeight < 10.0f){
+                    chance = 0.1f;
+                }
+                if ((Math.random() * 100.0f) <= chance) {
                     Object tree = new Tree((Tree) tree_main, currentHeight);
                     if(tree.isApplying()) {
                         tree.init(null);
@@ -73,8 +76,11 @@ public class PlantingTrees {
             }
             if (!isSmallTree) {
                 if (treeTest(grid, grid[x][z].getPosition(), false)) {
-                    int chance = Math.round(currentHeight / 5.0f);;
-                    if ((int) (Math.random() * 100.0f) <= chance) {
+                    float chance = (float)Math.round(currentHeight / 5.0f);
+                    if(currentHeight < 10.0f){
+                        chance = 0.1f;
+                    }
+                    if ((Math.random() * 100.0f) <= chance) {
                         Object bush = new Bush((Bush) bush_main, currentHeight);
                         if(bush.isApplying()) {
                             bush.init(null);
@@ -160,7 +166,7 @@ public class PlantingTrees {
     private static boolean checkPosition(Cell[][]grid, Vector3f etalon, Vector3f studyPosition){
         boolean check = false;
         if((0 <= studyPosition.getX() && studyPosition.getX() <= width) && (0 <= studyPosition.getZ() && studyPosition.getZ() <= height)){
-            if(!grid[(int)studyPosition.getX()][(int)studyPosition.getZ()].isBlocked()) {
+            if(!grid[(int)studyPosition.getX()][(int)studyPosition.getZ()].isBlocked() && !grid[(int)studyPosition.getX()][(int)studyPosition.getZ()].isRoad()) {
                 if (grid[(int) studyPosition.getX()][(int) studyPosition.getZ()].getCurrentHeight() == etalon.getY()) {
                     check = true;
                 }

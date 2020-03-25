@@ -30,14 +30,16 @@ public class Bush extends ObjectControl implements Object {
         Texture bush_3 = new Texture2D();
         Texture bush_4 = new Texture2D();
         Texture bush_5 = new Texture2D();
+        Texture bush_6 = new Texture2D();
 
         bush_1.setup(null,"./data/content/texture/bush/tree05.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // равнинное
         bush_2.setup(null,"./data/content/texture/bush/tree07.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // елочка
         bush_3.setup(null,"./data/content/texture/bush/tree02.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // равнинное
         bush_4.setup(null,"./data/content/texture/bush/tree03.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // мертвое
         bush_5.setup(null,"./data/content/texture/bush/tree04.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // мертвое
+        bush_6.setup(null,"./data/content/texture/bush/tree08.png",GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER); // кактус
 
-        textures = new ArrayList<>(Arrays.asList(bush_1,bush_2,bush_3,bush_4,bush_5));
+        textures = new ArrayList<>(Arrays.asList(bush_1,bush_2,bush_3,bush_4,bush_5,bush_6));
         setId(0.0f);
         setOnTarget(false);
         setBoard(true);
@@ -74,8 +76,13 @@ public class Bush extends ObjectControl implements Object {
             textures.clear();
             textures.add(temp1);
         }else if(40.0f < currentHeight && currentHeight < 43.0f){
+            textures.remove(5);
             textures.remove(2);
             textures.remove(0);
+        }else if(3.0f < currentHeight && currentHeight < 10.0f){
+            Texture temp = textures.get(5);
+            textures.clear();
+            textures.add(temp);
         }else{
             apply = false;
         }

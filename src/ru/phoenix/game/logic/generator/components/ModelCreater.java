@@ -30,17 +30,19 @@ public class ModelCreater {
 
                 int count = 0;
 
-                Vector3f position = new Vector3f(x,grid[x][z].getCurrentHeight(),z);
+                Vector3f position = new Vector3f(x,grid[x][z].getCurrentHeight(),z); // достаем текущее положение
 
-                Vector3f leftPos = new Vector3f(position.add(new Vector3f(-1.0f, 0.0f, 0.0f)));
+                Vector3f leftPos = new Vector3f(position.add(new Vector3f(-1.0f, 0.0f, 0.0f))); // создаем левое положение
                 boolean left = false;
-                Vector3f upPos = new Vector3f(position.add(new Vector3f(0.0f, 0.0f, 1.0f)));
+                Vector3f upPos = new Vector3f(position.add(new Vector3f(0.0f, 0.0f, 1.0f))); // создаем верхнее положение
                 boolean up = false;
-                Vector3f rightPos = new Vector3f(position.add(new Vector3f(1.0f, 0.0f, 0.0f)));
+                Vector3f rightPos = new Vector3f(position.add(new Vector3f(1.0f, 0.0f, 0.0f))); // создаем правое положение
                 boolean right = false;
-                Vector3f downPos = new Vector3f(position.add(new Vector3f(0.0f, 0.0f, -1.0f)));
+                Vector3f downPos = new Vector3f(position.add(new Vector3f(0.0f, 0.0f, -1.0f))); // создаем нижнее положение
                 boolean down = false;
 
+
+                // проверяем и записываем положения если они существуют
                 if(0 <= leftPos.getX() && leftPos.getX() <= width && 0 <= leftPos.getZ() && leftPos.getZ() <= height) {
                     leftPos = new Vector3f(leftPos.getX(),grid[(int)leftPos.getX()][(int)leftPos.getZ()].getCurrentHeight(),leftPos.getZ());
                     left = true;
@@ -61,7 +63,7 @@ public class ModelCreater {
                     down = true;
                 }
 
-                if (left && up && right && down) {
+                if (left && up && right && down) { // если у текущего положения есть все возможные положения
 
                     boolean check = false;
 
@@ -71,7 +73,7 @@ public class ModelCreater {
                     float rightHeight = rightPos.getY();
                     float downHeight = downPos.getY();
 
-                    if (Math.abs(Math.round(currentHeight) - currentHeight) == 0.5f) {
+                    if (Math.abs(Math.round(currentHeight) - currentHeight) == 0.5f) { // если текущая высота не целочисленная а проходная
                         if (currentHeight + 0.5 == leftHeight && currentHeight - 0.5f == upHeight && currentHeight - 0.5f == rightHeight && currentHeight - 0.5f == downHeight) { // RIGHT
                             check = true;
                             Vertex v0 = new Vertex();
@@ -1610,7 +1612,7 @@ public class ModelCreater {
                             }
                         }
                     }
-                } else {
+                } else { // если у текущего положения не все возможные положения а чего то не хватает
                     Vertex v0 = new Vertex();
                     Vertex v1 = new Vertex();
                     Vertex v2 = new Vertex();

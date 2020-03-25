@@ -1,5 +1,7 @@
 package ru.phoenix.core.loader;
 
+import ru.phoenix.core.math.Vector3f;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -48,6 +50,26 @@ public class ImageLoader {
                 buf.put((byte)color);
                 buf.put((byte)color);
                 buf.put((byte)color);
+                buf.put((byte)255);
+            }
+        }
+
+        buf.flip();
+    }
+
+    public static void load(Vector3f[][] blendMap) throws IOException {
+        buf = null;
+        width = blendMap.length - 1;
+        height = blendMap[0].length - 1;
+        buf = ByteBuffer.allocateDirect(height * width * 4);
+        buf.limit(height * width * 4);
+
+        for(int y=0; y<height; y++) {
+            for(int x=0; x<width; x++) {
+                Vector3f color = blendMap[x][y];
+                buf.put((byte)((int)(color.getR() * 255)));
+                buf.put((byte)((int)(color.getG() * 255)));
+                buf.put((byte)((int)(color.getB() * 255)));
                 buf.put((byte)255);
             }
         }

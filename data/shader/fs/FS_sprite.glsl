@@ -96,9 +96,9 @@ void main(){
 
     /*if(color.r > 0.0f){
         fragment_color = mix(vec4(skyColor),fragment_color, color.r);
-        if(fs_in.isActive == 1){
+        *//*if(fs_in.isActive == 1){
             fragment_color = mix(vec4(rgba.rgb, 0.0f), fragment_color, visibility);
-        }
+        }*//*
     }else{
         fragment_color = skyColor;
         if(fs_in.isActive == 1){

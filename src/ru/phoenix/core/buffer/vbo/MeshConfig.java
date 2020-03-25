@@ -21,7 +21,9 @@ public class MeshConfig implements VertexBufferObject {
 
     private int sizeIndices;
     private int sizeInstance;
+    private int size;
 
+    private boolean skybox;
     private boolean animated;
     private boolean tangent;
     private boolean instances;
@@ -52,6 +54,7 @@ public class MeshConfig implements VertexBufferObject {
         tic2 = 0.0f;
         drawInfo = GL_STATIC_DRAW;
         drawMethod = GL_TRIANGLES;
+        skybox = false;
     }
 
     public MeshConfig(int drawInfo, int drawMethod){
@@ -73,220 +76,238 @@ public class MeshConfig implements VertexBufferObject {
         tic2 = 0.0f;
         this.drawInfo = drawInfo;
         this.drawMethod = drawMethod;
+        skybox = false;
     }
 
     @Override
     public void allocate(float[] positions, float[] normals, float[] textureCoords, float[] tangents, float[] biTangents, int[] boneIds, float[] boneWeights, Matrix4f[] instances, int[] indices){
+        if(indices != null) {
+            this.tex = textureCoords;
 
-        this.tex = textureCoords;
+            int v4size = (int) Math.pow(Float.BYTES, 2);
 
-        int v4size = (int)Math.pow(Float.BYTES, 2);
+            setBufferControl(tangents, biTangents, boneIds, boneWeights, instances);
 
-        setBufferControl(tangents,biTangents,boneIds,boneWeights,instances);
+            sizeIndices = indices.length;
+            sizeInstance = instances != null ? instances.length : 0;
 
-        sizeIndices = indices.length;
-        sizeInstance = instances != null ? instances.length : 0;
+            if (animated) {
+                glBindVertexArray(vao);
+                // Записываем все позиции в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(0));
+                if (positions != null) {
+                    glBufferData(GL_ARRAY_BUFFER, positions, drawInfo);
+                }
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+                // Записываем все нормали в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(1));
+                if (normals != null) {
+                    glBufferData(GL_ARRAY_BUFFER, normals, drawInfo);
+                }
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+                // Записываем все текстуры в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(2));
+                if (textureCoords != null) {
+                    glBufferData(GL_ARRAY_BUFFER, textureCoords, drawInfo);
+                }
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
+                // Записываем все тангенсы в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(3));
+                if (tangents != null) {
+                    glBufferData(GL_ARRAY_BUFFER, tangents, drawInfo);
+                }
+                glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
+                // Записываем все битангенсы в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(4));
+                if (biTangents != null) {
+                    glBufferData(GL_ARRAY_BUFFER, biTangents, drawInfo);
+                }
+                glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
+                // Записываем все айди костей
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(5));
+                if (boneIds != null) {
+                    glBufferData(GL_ARRAY_BUFFER, boneIds, drawInfo);
+                }
+                glVertexAttribPointer(5, 4, GL_FLOAT, false, 0, 0);
+                // Записываем все веса костей
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(6));
+                if (boneWeights != null) {
+                    glBufferData(GL_ARRAY_BUFFER, boneWeights, drawInfo);
+                }
+                glVertexAttribPointer(6, 4, GL_FLOAT, false, 0, 0);
 
-        if(animated) {
-            glBindVertexArray(vao);
-            // Записываем все позиции в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(0));
-            if (positions != null) {
-                glBufferData(GL_ARRAY_BUFFER, positions, drawInfo);
-            }
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-            // Записываем все нормали в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(1));
-            if (normals != null) {
-                glBufferData(GL_ARRAY_BUFFER, normals, drawInfo);
-            }
-            glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
-            // Записываем все текстуры в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(2));
-            if (textureCoords != null) {
-                glBufferData(GL_ARRAY_BUFFER, textureCoords, drawInfo);
-            }
-            glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
-            // Записываем все тангенсы в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(3));
-            if (tangents != null) {
-                glBufferData(GL_ARRAY_BUFFER, tangents, drawInfo);
-            }
-            glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
-            // Записываем все битангенсы в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(4));
-            if (biTangents != null) {
-                glBufferData(GL_ARRAY_BUFFER, biTangents, drawInfo);
-            }
-            glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
-            // Записываем все айди костей
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(5));
-            if (boneIds != null) {
-                glBufferData(GL_ARRAY_BUFFER, boneIds, drawInfo);
-            }
-            glVertexAttribPointer(5, 4, GL_FLOAT, false, 0, 0);
-            // Записываем все веса костей
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(6));
-            if (boneWeights != null) {
-                glBufferData(GL_ARRAY_BUFFER, boneWeights, drawInfo);
-            }
-            glVertexAttribPointer(6, 4, GL_FLOAT, false, 0, 0);
+                if (instances != null) {
+                    glBindBuffer(GL_ARRAY_BUFFER, vbo.get(7));
+                    glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), drawInfo);
+                    glVertexAttribPointer(7, 4, GL_FLOAT, false, Float.BYTES * v4size, 0);
+                    glVertexAttribPointer(8, 4, GL_FLOAT, false, Float.BYTES * v4size, v4size);
+                    glVertexAttribPointer(9, 4, GL_FLOAT, false, Float.BYTES * v4size, 2 * v4size);
+                    glVertexAttribPointer(10, 4, GL_FLOAT, false, Float.BYTES * v4size, 3 * v4size);
+                    glBindBuffer(GL_ARRAY_BUFFER, 0);
+                    glVertexAttribDivisor(7, 1);
+                    glVertexAttribDivisor(8, 1);
+                    glVertexAttribDivisor(9, 1);
+                    glVertexAttribDivisor(10, 1);
+                }
 
-            if (instances != null) {
-                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(7));
-                glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), drawInfo);
-                glVertexAttribPointer(7, 4, GL_FLOAT, false, Float.BYTES * v4size, 0);
-                glVertexAttribPointer(8, 4, GL_FLOAT, false, Float.BYTES * v4size, v4size);
-                glVertexAttribPointer(9, 4, GL_FLOAT, false, Float.BYTES * v4size, 2 * v4size);
-                glVertexAttribPointer(10, 4, GL_FLOAT, false, Float.BYTES * v4size, 3 * v4size);
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-                glVertexAttribDivisor(7, 1);
-                glVertexAttribDivisor(8, 1);
-                glVertexAttribDivisor(9, 1);
-                glVertexAttribDivisor(10, 1);
-            }
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, drawInfo);
+                glBindVertexArray(0);
+            } else {
+                glBindVertexArray(vao);
+                // Записываем все позиции в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(0));
+                if (positions != null) {
+                    glBufferData(GL_ARRAY_BUFFER, positions, drawInfo);
+                }
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+                // Записываем все нормали в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(1));
+                if (normals != null) {
+                    glBufferData(GL_ARRAY_BUFFER, normals, drawInfo);
+                }
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+                // Записываем все текстуры в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(2));
+                if (textureCoords != null) {
+                    glBufferData(GL_ARRAY_BUFFER, textureCoords, drawInfo);
+                }
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
+                // Записываем все тангенсы в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(3));
+                if (tangents != null) {
+                    glBufferData(GL_ARRAY_BUFFER, tangents, drawInfo);
+                }
+                glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
+                // Записываем все битангенсы в буфер
+                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(4));
+                if (biTangents != null) {
+                    glBufferData(GL_ARRAY_BUFFER, biTangents, drawInfo);
+                }
+                glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, drawInfo);
-            glBindVertexArray(0);
+                if (instances != null) {
+                    glBindBuffer(GL_ARRAY_BUFFER, vbo.get(7));
+                    glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), drawInfo);
+                    glVertexAttribPointer(7, 4, GL_FLOAT, false, Float.BYTES * v4size, 0);
+                    glVertexAttribPointer(8, 4, GL_FLOAT, false, Float.BYTES * v4size, v4size);
+                    glVertexAttribPointer(9, 4, GL_FLOAT, false, Float.BYTES * v4size, 2 * v4size);
+                    glVertexAttribPointer(10, 4, GL_FLOAT, false, Float.BYTES * v4size, 3 * v4size);
+                    glBindBuffer(GL_ARRAY_BUFFER, 0);
+                    glVertexAttribDivisor(7, 1);
+                    glVertexAttribDivisor(8, 1);
+                    glVertexAttribDivisor(9, 1);
+                    glVertexAttribDivisor(10, 1);
+                }
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, drawInfo);
+                glBindVertexArray(0);
+            }
         }else{
+            skybox = true;
+            size = positions.length / 3;
             glBindVertexArray(vao);
-            // Записываем все позиции в буфер
+
             glBindBuffer(GL_ARRAY_BUFFER, vbo.get(0));
-            if (positions != null) {
-                glBufferData(GL_ARRAY_BUFFER, positions, drawInfo);
-            }
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-            // Записываем все нормали в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(1));
-            if (normals != null) {
-                glBufferData(GL_ARRAY_BUFFER, normals, drawInfo);
-            }
-            glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
-            // Записываем все текстуры в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(2));
-            if (textureCoords != null) {
-                glBufferData(GL_ARRAY_BUFFER, textureCoords, drawInfo);
-            }
-            glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
-            // Записываем все тангенсы в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(3));
-            if (tangents != null) {
-                glBufferData(GL_ARRAY_BUFFER, tangents, drawInfo);
-            }
-            glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
-            // Записываем все битангенсы в буфер
-            glBindBuffer(GL_ARRAY_BUFFER, vbo.get(4));
-            if (biTangents != null) {
-                glBufferData(GL_ARRAY_BUFFER, biTangents, drawInfo);
-            }
-            glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
+            glBufferData(GL_ARRAY_BUFFER, positions, GL_STATIC_DRAW);
 
-            if (instances != null) {
-                glBindBuffer(GL_ARRAY_BUFFER, vbo.get(7));
-                glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), drawInfo);
-                glVertexAttribPointer(7, 4, GL_FLOAT, false, Float.BYTES * v4size, 0);
-                glVertexAttribPointer(8, 4, GL_FLOAT, false, Float.BYTES * v4size, v4size);
-                glVertexAttribPointer(9, 4, GL_FLOAT, false, Float.BYTES * v4size, 2 * v4size);
-                glVertexAttribPointer(10, 4, GL_FLOAT, false, Float.BYTES * v4size, 3 * v4size);
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-                glVertexAttribDivisor(7, 1);
-                glVertexAttribDivisor(8, 1);
-                glVertexAttribDivisor(9, 1);
-                glVertexAttribDivisor(10, 1);
-            }
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, drawInfo);
-            glBindVertexArray(0);
+            glVertexAttribPointer(0,3,GL_FLOAT,false,Float.BYTES * 3,0);
+            glEnableVertexAttribArray(0);
         }
     }
 
     @Override
     public void draw(){
-        if(instances){
-            if(animated){
-                glBindVertexArray(vao);
-                glEnableVertexAttribArray(0);
-                glEnableVertexAttribArray(1);
-                glEnableVertexAttribArray(2);
-                glEnableVertexAttribArray(3);
-                glEnableVertexAttribArray(4);
-                glEnableVertexAttribArray(5);
-                glEnableVertexAttribArray(6);
-                glEnableVertexAttribArray(7);
-                glEnableVertexAttribArray(8);
-                glEnableVertexAttribArray(9);
-                glEnableVertexAttribArray(10);
-                glDrawElementsInstanced(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0, sizeInstance);
-                glDisableVertexAttribArray(0);
-                glDisableVertexAttribArray(1);
-                glDisableVertexAttribArray(2);
-                glDisableVertexAttribArray(3);
-                glDisableVertexAttribArray(4);
-                glDisableVertexAttribArray(5);
-                glDisableVertexAttribArray(6);
-                glDisableVertexAttribArray(7);
-                glDisableVertexAttribArray(8);
-                glDisableVertexAttribArray(9);
-                glDisableVertexAttribArray(10);
-                glBindVertexArray(0);
-            }else{
-                glBindVertexArray(vao);
-                glEnableVertexAttribArray(0);
-                glEnableVertexAttribArray(1);
-                glEnableVertexAttribArray(2);
-                glEnableVertexAttribArray(3);
-                glEnableVertexAttribArray(4);
-                glEnableVertexAttribArray(7);
-                glEnableVertexAttribArray(8);
-                glEnableVertexAttribArray(9);
-                glEnableVertexAttribArray(10);
-                glDrawElementsInstanced(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0, sizeInstance);
-                glDisableVertexAttribArray(0);
-                glDisableVertexAttribArray(1);
-                glDisableVertexAttribArray(2);
-                glDisableVertexAttribArray(3);
-                glDisableVertexAttribArray(4);
-                glDisableVertexAttribArray(7);
-                glDisableVertexAttribArray(8);
-                glDisableVertexAttribArray(9);
-                glDisableVertexAttribArray(10);
-                glBindVertexArray(0);
-            }
-        }else{
-            if(animated){
-                glBindVertexArray(vao);
-                glEnableVertexAttribArray(0);
-                glEnableVertexAttribArray(1);
-                glEnableVertexAttribArray(2);
-                glEnableVertexAttribArray(3);
-                glEnableVertexAttribArray(4);
-                glEnableVertexAttribArray(5);
-                glEnableVertexAttribArray(6);
-                glDrawElements(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0);
-                glDisableVertexAttribArray(0);
-                glDisableVertexAttribArray(1);
-                glDisableVertexAttribArray(2);
-                glDisableVertexAttribArray(3);
-                glDisableVertexAttribArray(4);
-                glDisableVertexAttribArray(5);
-                glDisableVertexAttribArray(6);
-                glBindVertexArray(0);
-            }else{
-                glBindVertexArray(vao);
-                glEnableVertexAttribArray(0);
-                glEnableVertexAttribArray(1);
-                glEnableVertexAttribArray(2);
-                glEnableVertexAttribArray(3);
-                glEnableVertexAttribArray(4);
-                glDrawElements(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0);
-                glDisableVertexAttribArray(0);
-                glDisableVertexAttribArray(1);
-                glDisableVertexAttribArray(2);
-                glDisableVertexAttribArray(3);
-                glDisableVertexAttribArray(4);
-                glBindVertexArray(0);
+        if(skybox){
+            glBindVertexArray(vao);
+            glDrawArrays(GL_TRIANGLES, 0, size);
+            glBindVertexArray(0);
+        }else {
+            if (instances) {
+                if (animated) {
+                    glBindVertexArray(vao);
+                    glEnableVertexAttribArray(0);
+                    glEnableVertexAttribArray(1);
+                    glEnableVertexAttribArray(2);
+                    glEnableVertexAttribArray(3);
+                    glEnableVertexAttribArray(4);
+                    glEnableVertexAttribArray(5);
+                    glEnableVertexAttribArray(6);
+                    glEnableVertexAttribArray(7);
+                    glEnableVertexAttribArray(8);
+                    glEnableVertexAttribArray(9);
+                    glEnableVertexAttribArray(10);
+                    glDrawElementsInstanced(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0, sizeInstance);
+                    glDisableVertexAttribArray(0);
+                    glDisableVertexAttribArray(1);
+                    glDisableVertexAttribArray(2);
+                    glDisableVertexAttribArray(3);
+                    glDisableVertexAttribArray(4);
+                    glDisableVertexAttribArray(5);
+                    glDisableVertexAttribArray(6);
+                    glDisableVertexAttribArray(7);
+                    glDisableVertexAttribArray(8);
+                    glDisableVertexAttribArray(9);
+                    glDisableVertexAttribArray(10);
+                    glBindVertexArray(0);
+                } else {
+                    glBindVertexArray(vao);
+                    glEnableVertexAttribArray(0);
+                    glEnableVertexAttribArray(1);
+                    glEnableVertexAttribArray(2);
+                    glEnableVertexAttribArray(3);
+                    glEnableVertexAttribArray(4);
+                    glEnableVertexAttribArray(7);
+                    glEnableVertexAttribArray(8);
+                    glEnableVertexAttribArray(9);
+                    glEnableVertexAttribArray(10);
+                    glDrawElementsInstanced(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0, sizeInstance);
+                    glDisableVertexAttribArray(0);
+                    glDisableVertexAttribArray(1);
+                    glDisableVertexAttribArray(2);
+                    glDisableVertexAttribArray(3);
+                    glDisableVertexAttribArray(4);
+                    glDisableVertexAttribArray(7);
+                    glDisableVertexAttribArray(8);
+                    glDisableVertexAttribArray(9);
+                    glDisableVertexAttribArray(10);
+                    glBindVertexArray(0);
+                }
+            } else {
+                if (animated) {
+                    glBindVertexArray(vao);
+                    glEnableVertexAttribArray(0);
+                    glEnableVertexAttribArray(1);
+                    glEnableVertexAttribArray(2);
+                    glEnableVertexAttribArray(3);
+                    glEnableVertexAttribArray(4);
+                    glEnableVertexAttribArray(5);
+                    glEnableVertexAttribArray(6);
+                    glDrawElements(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0);
+                    glDisableVertexAttribArray(0);
+                    glDisableVertexAttribArray(1);
+                    glDisableVertexAttribArray(2);
+                    glDisableVertexAttribArray(3);
+                    glDisableVertexAttribArray(4);
+                    glDisableVertexAttribArray(5);
+                    glDisableVertexAttribArray(6);
+                    glBindVertexArray(0);
+                } else {
+                    glBindVertexArray(vao);
+                    glEnableVertexAttribArray(0);
+                    glEnableVertexAttribArray(1);
+                    glEnableVertexAttribArray(2);
+                    glEnableVertexAttribArray(3);
+                    glEnableVertexAttribArray(4);
+                    glDrawElements(drawMethod, sizeIndices, GL_UNSIGNED_INT, 0);
+                    glDisableVertexAttribArray(0);
+                    glDisableVertexAttribArray(1);
+                    glDisableVertexAttribArray(2);
+                    glDisableVertexAttribArray(3);
+                    glDisableVertexAttribArray(4);
+                    glBindVertexArray(0);
+                }
             }
         }
     }

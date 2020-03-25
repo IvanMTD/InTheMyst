@@ -44,44 +44,64 @@ public class GraundModel {
         shader.setUniform("material.desert_low", 10);
 
         glActiveTexture(GL_TEXTURE11);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getDesert_up().getTextureID());
-        shader.setUniform("material.desert_up", 11);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getDesert_side().getTextureID());
+        shader.setUniform("material.desert_side", 11);
 
         glActiveTexture(GL_TEXTURE12);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getSteppe_low().getTextureID());
-        shader.setUniform("material.steppe_low", 12);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getDesert_up().getTextureID());
+        shader.setUniform("material.desert_up", 12);
 
         glActiveTexture(GL_TEXTURE13);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getSteppe_up().getTextureID());
-        shader.setUniform("material.steppe_up", 13);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getSteppe_low().getTextureID());
+        shader.setUniform("material.steppe_low", 13);
 
         glActiveTexture(GL_TEXTURE14);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_low().getTextureID());
-        shader.setUniform("material.plain_low", 14);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getSteppe_side().getTextureID());
+        shader.setUniform("material.steppe_side", 14);
 
         glActiveTexture(GL_TEXTURE15);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_side().getTextureID());
-        shader.setUniform("material.plain_side", 15);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getSteppe_up().getTextureID());
+        shader.setUniform("material.steppe_up", 15);
 
         glActiveTexture(GL_TEXTURE16);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_up().getTextureID());
-        shader.setUniform("material.plain_up", 16);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_low().getTextureID());
+        shader.setUniform("material.plain_low", 16);
 
         glActiveTexture(GL_TEXTURE17);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_low().getTextureID());
-        shader.setUniform("material.forest_low", 17);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_side().getTextureID());
+        shader.setUniform("material.plain_side", 17);
 
         glActiveTexture(GL_TEXTURE18);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_up().getTextureID());
-        shader.setUniform("material.forest_up", 18);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getPlain_up().getTextureID());
+        shader.setUniform("material.plain_up", 18);
 
         glActiveTexture(GL_TEXTURE19);
-        glBindTexture(GL_TEXTURE_2D, graundTexture.getMountains_low().getTextureID());
-        shader.setUniform("material.mountains_low", 19);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_low().getTextureID());
+        shader.setUniform("material.forest_low", 19);
 
         glActiveTexture(GL_TEXTURE20);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_side().getTextureID());
+        shader.setUniform("material.forest_side", 20);
+
+        glActiveTexture(GL_TEXTURE21);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getForest_up().getTextureID());
+        shader.setUniform("material.forest_up", 21);
+
+        glActiveTexture(GL_TEXTURE22);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getMountains_low().getTextureID());
+        shader.setUniform("material.mountains_low", 22);
+
+        glActiveTexture(GL_TEXTURE23);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getMountains_side().getTextureID());
+        shader.setUniform("material.mountains_side", 23);
+
+        glActiveTexture(GL_TEXTURE24);
         glBindTexture(GL_TEXTURE_2D, graundTexture.getMountains_up().getTextureID());
-        shader.setUniform("material.mountains_up", 20);
+        shader.setUniform("material.mountains_up", 24);
+
+        glActiveTexture(GL_TEXTURE25);
+        glBindTexture(GL_TEXTURE_2D, graundTexture.getRoad().getTextureID());
+        shader.setUniform("material.road", 25);
 
         /*glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, lowDiffMap.getTextureID());

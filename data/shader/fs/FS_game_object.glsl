@@ -33,9 +33,11 @@ struct Material{
     sampler2D displaceMap;
 
     sampler2D desert_low;
+    sampler2D desert_side;
     sampler2D desert_up;
 
     sampler2D steppe_low;
+    sampler2D steppe_side;
     sampler2D steppe_up;
 
     sampler2D plain_low;
@@ -43,10 +45,14 @@ struct Material{
     sampler2D plain_up;
 
     sampler2D forest_low;
+    sampler2D forest_side;
     sampler2D forest_up;
 
     sampler2D mountains_low;
+    sampler2D mountains_side;
     sampler2D mountains_up;
+
+    sampler2D road;
 
     vec3 ambient;
     vec3 diffuse;
@@ -162,7 +168,8 @@ vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection, vec2 tex
         if(normal.y > 0.0f){
             diffuseMap = getDiffuseMap(tex);
         }else{
-            if(tex.x < 0.05f){
+            diffuseMap = getDiffuseMapSide(tex,0.0f);
+            /*if(tex.x < 0.05f){
                 diffuseMap = getDiffuseMapSide(tex,0.05f);
             }else if(tex.x < 0.1f){
                 diffuseMap = getDiffuseMapSide(tex,0.09f);
@@ -200,7 +207,7 @@ vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection, vec2 tex
                 diffuseMap = getDiffuseMapSide(tex,0.14f);
             }else{
                 diffuseMap = getDiffuseMapSide(tex,0.07f);
-            }
+            }*/
         }
     }else{
         diffuseMap = vec3(texture(material.diffuseMap, tex));
@@ -267,15 +274,17 @@ vec3 getDiffuseMap(vec2 tex){
     vec4 forest_up = texture(material.forest_up,tex);
     vec4 mountains_low = texture(material.mountains_low,tex);
     vec4 mountains_up = texture(material.mountains_up,tex);
+    vec4 road = texture(material.road,tex);
+    vec4 blend = texture(heightMap, vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y));
     float normalHeight = texture(heightMap, vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y)).r;
     float height = currentHeight + ((normalHeight + 0.5f - 1.0f) * 10.0f);
 
     if(currentHeight == 5.0f){ // Пустыня
-        if(height < 0.3f){
+        if(height < 0.4f){
             diffuseMap = vec3(desert_low);
-        }else if(height < 0.5f){
+        }else if(height < 0.7f){
             diffuseMap = vec3(desert_low.r + 0.1f,desert_low.g + 0.1f,desert_low.b);
-        }else if(height < 0.75f){
+        }else if(height < 0.85f){
             diffuseMap = vec3(desert_up - 0.1f);
         }else if(height < 1.0f){
             diffuseMap = vec3(desert_up);
@@ -298,37 +307,37 @@ vec3 getDiffuseMap(vec2 tex){
         }else if(height < 7.0f){
             diffuseMap = vec3(desert_up + 0.05f);
         }else if(height < 9.5f){
-            diffuseMap = vec3(desert_low - 0.025f);
+            diffuseMap = vec3(mix(desert_up + 0.05f, steppe_low,0.8f));//vec3(desert_low - 0.025f);
         }else if(height < 10.0f){
             diffuseMap = vec3(steppe_low);
         }else if(height < 12.0f){
-            diffuseMap = vec3(steppe_low - 0.05f);
+            diffuseMap = vec3(steppe_low - 0.1f);
         }else if(height < 14.0f){
             diffuseMap = vec3(steppe_up);
         }else{
-            diffuseMap = vec3(steppe_up - 0.05f);
+            diffuseMap = vec3(steppe_up - 0.1f);
         }
     }else if(currentHeight == 15.0f){ // Степь
         if(height < 10.3f){
-            diffuseMap = vec3(steppe_low - 0.05f);
+            diffuseMap = vec3(steppe_low - 0.1f);
         }else if(height < 10.5f){
             diffuseMap = vec3(steppe_low);
         }else if(height < 11.0f){
             diffuseMap = vec3(steppe_up);
         }else if(height < 13.0f){
-            diffuseMap = vec3(steppe_up - 0.03f);
-        }else if(height < 16.0f){
-            diffuseMap = vec3(steppe_up - 0.07f);
-        }else {
             diffuseMap = vec3(steppe_up - 0.1f);
+        }else if(height < 16.0f){
+            diffuseMap = vec3(steppe_up - 0.17f);
+        }else {
+            diffuseMap = vec3(steppe_up - 0.22f);
         }
     }else if(currentHeight == 20.0f){ // Степь --> Ровнина
         if(height < 15.3f){
-            diffuseMap = vec3(steppe_up - 0.07f);
+            diffuseMap = vec3(steppe_up - 0.22f);
         }else if(height < 15.7f){
-            diffuseMap = vec3(steppe_up - 0.05f);
+            diffuseMap = vec3(steppe_up - 0.17f);
         }else if(height < 16.0f){
-            diffuseMap = vec3(steppe_up - 0.03f);
+            diffuseMap = vec3(steppe_up - 0.1f);
         }else if(height < 19.0f){
             diffuseMap = vec3(steppe_up);
         }else if(height < 21.0f){
@@ -356,31 +365,33 @@ vec3 getDiffuseMap(vec2 tex){
         }else if(height < 28.0f){
             diffuseMap = vec3(plain_up);
         }else if(height < 30.0f){
-            diffuseMap = vec3(forest_low);
-        }else if(height < 32.0f){
-            diffuseMap = vec3(forest_low - 0.05f);
-        }else if(height < 34.0f){
             diffuseMap = vec3(forest_up);
+        }else if(height < 32.0f){
+            diffuseMap = vec3(forest_up - 0.1f);
+        }else if(height < 34.0f){
+            diffuseMap = vec3(forest_low);
         }else{
-            diffuseMap = vec3(forest_up - 0.05f);
+            diffuseMap = vec3(forest_low - 0.1f);
         }
     }else if(currentHeight == 35.0f){ // Лес
-        if(height < 30.5f){
-            diffuseMap = vec3(forest_low - 0.07f);
-        }else if(height < 31.0f){
+        if(height < 30.4f){
             diffuseMap = vec3(forest_low);
-        }else if(height < 36.5f){
-            diffuseMap = vec3(forest_up);
+        }else if(height < 31.0f){
+            diffuseMap = vec3(forest_low - 0.1f);
+        }else if(height < 35.0f){
+            diffuseMap = vec3(forest_up - 0.1f);
+        }else if(height < 36.0f){
+            diffuseMap = vec3(forest_up - 0.05f);
         }else {
-            diffuseMap = vec3(forest_up - 0.04f);
+            diffuseMap = vec3(forest_up);
         }
     }else if(currentHeight == 40.0f){ // Лес --> Горы
         if(height < 35.5f){
-            diffuseMap = vec3(forest_up - 0.05f);
-        }else if(height < 38.0f){
             diffuseMap = vec3(forest_up);
+        }else if(height < 38.0f){
+            diffuseMap = vec3(forest_up - 0.1f);
         }else if(height < 39.0f){
-            diffuseMap = vec3(mix(forest_up,mountains_low,0.5f));
+            diffuseMap = vec3(mix(forest_up - 0.1f,mountains_low,0.6f));
         }else if(height < 40.0f){
             diffuseMap = vec3(mountains_low);
         }else if(height < 41.0f){
@@ -392,12 +403,16 @@ vec3 getDiffuseMap(vec2 tex){
         if(height < 40.5f){
             diffuseMap = vec3(mountains_low);
         }else if(height < 41.0){
-            diffuseMap = vec3(mountains_low + 0.05f);
+            diffuseMap = vec3(mix(mountains_low,mountains_up,0.4f));
         }else if(height < 43.0f){
             diffuseMap = vec3(mountains_up);
         }else{
             diffuseMap = vec3(mountains_up + 0.3f);
         }
+    }
+
+    if(blend.r > 0.0f && blend.r != blend.g){
+        diffuseMap = vec3(mix(road,vec4(diffuseMap,1.0f),blend.r / 2.0f));
     }
 
     return diffuseMap;
@@ -408,15 +423,19 @@ vec3 getDiffuseMapSide(vec2 tex, float num){
     vec3 diffuseMap;
 
     vec4 desert_low = texture(material.desert_low,tex);
+    vec4 desert_side = texture(material.desert_side,tex);
     vec4 desert_up = texture(material.desert_up,tex);
     vec4 steppe_low = texture(material.steppe_low,tex);
+    vec4 steppe_side = texture(material.steppe_side,tex);
     vec4 steppe_up = texture(material.steppe_up,tex);
     vec4 plain_low = texture(material.plain_low,tex);
     vec4 plain_side = texture(material.plain_side,tex);
     vec4 plain_up = texture(material.plain_up,tex);
     vec4 forest_low = texture(material.forest_low,tex);
+    vec4 forest_side = texture(material.forest_side,tex);
     vec4 forest_up = texture(material.forest_up,tex);
     vec4 mountains_low = texture(material.mountains_low,tex);
+    vec4 mountains_side = texture(material.mountains_side,tex);
     vec4 mountains_up = texture(material.mountains_up,tex);
     float normalHeight = texture(heightMap, vec2(fs_in.mapTexCoords.x, 1.0f - fs_in.mapTexCoords.y)).r;
     float height = currentHeight + ((normalHeight + 0.5f - 1.0f) * 10.0f);
@@ -424,11 +443,129 @@ vec3 getDiffuseMapSide(vec2 tex, float num){
     float num2 = num + (normalHeight / 4.0f);
 
     if(fs_in.face == 0.0f){
-        if(currentHeight == 25.0f){
-            if(height < 20.8f){
+        if(currentHeight == 5.0f){
+            if(0.7f < height && height < 9.0f){
+                if(desert_side.a != 0.0f){
+                    diffuseMap = vec3(desert_side);
+                }else{
+                    diffuseMap = vec3(desert_low);
+                }
+            }else{
+                diffuseMap = vec3(desert_low);
+            }
+        }else if(currentHeight == 10.0f){
+            if(height < 7.0f){
+                if(desert_side.a != 0.0f){
+                    diffuseMap = vec3(desert_side);
+                }else{
+                    diffuseMap = vec3(steppe_low);
+                }
+            }else if(height < 9.5f){
+                if(desert_side.a != 0.0f){
+                    diffuseMap = vec3(mix(desert_side,steppe_low,0.8f));
+                }else{
+                    diffuseMap = vec3(steppe_low);
+                }
+            }else if(height > 12.0f){
+                if(steppe_side.a != 0.0f){
+                    diffuseMap = vec3(steppe_side);
+                }else{
+                    diffuseMap = vec3(steppe_low);
+                }
+            }else{
+                diffuseMap = vec3(steppe_low);
+            }
+        }else if(currentHeight == 15.0f){
+            if(height > 10.5f){
+                if(steppe_side.a != 0.0f){
+                    diffuseMap = vec3(steppe_side);
+                }else{
+                    diffuseMap = vec3(steppe_low);
+                }
+            }else{
+                diffuseMap = vec3(steppe_low);
+            }
+        }else if(currentHeight == 20.0f){
+            if(height < 19.0f){
+                if(steppe_side.a != 0.0f){
+                    diffuseMap = vec3(steppe_side);
+                }else{
+                    diffuseMap = vec3(plain_low);
+                }
+            }else{
+                if(plain_side.a != 0.0f){
+                    diffuseMap = vec3(plain_side);
+                }else{
+                    diffuseMap = vec3(plain_low);
+                }
+            }
+        }else if(currentHeight == 25.0f){
+            if(height > 20.8f){
+                if(plain_side.a != 0.0f){
+                    diffuseMap = vec3(plain_side);
+                }else{
+                    diffuseMap = vec3(plain_low);
+                }
+            }else{
                 diffuseMap = vec3(plain_low);
-            }else if(height < 30.0f){
-                diffuseMap = vec3(plain_side);
+            }
+        }else if(currentHeight == 30.0f){
+            if(height < 28.0f){
+                if(plain_side.a != 0.0f){
+                    diffuseMap = vec3(plain_side);
+                }else{
+                    diffuseMap = vec3(forest_low);
+                }
+            }else if(height < 32.0f){
+                if(forest_side.a != 0.0f){
+                    diffuseMap = vec3(forest_side);
+                }else{
+                    diffuseMap = vec3(forest_low);
+                }
+            }else{
+                diffuseMap = vec3(forest_low);
+            }
+        }else if(currentHeight == 35.0f){
+            if(height > 31.0f){
+                if(forest_side.a != 0.0f){
+                    diffuseMap = vec3(forest_side);
+                }else{
+                    diffuseMap = vec3(forest_low);
+                }
+            }else{
+                diffuseMap = vec3(forest_low);
+            }
+        }else if(currentHeight == 40.0f){
+            if(height < 38.0f){
+                if(forest_side.a != 0.0f){
+                    diffuseMap = vec3(forest_side);
+                }else{
+                    diffuseMap = vec3(mountains_low);
+                }
+            }else if(height < 39.0f){
+                if(forest_side.a != 0.0f){
+                    diffuseMap = vec3(mix(forest_side,mountains_low,0.6f));
+                }else{
+                    diffuseMap = vec3(mountains_low);
+                }
+            }else if(height > 41.0f){
+                if(mountains_side.a != 0.0f){
+                    diffuseMap = vec3(mountains_side);
+                }else{
+                    diffuseMap = vec3(mountains_low);
+                }
+            }else{
+                diffuseMap = vec3(mountains_low);
+            }
+        }else if(currentHeight == 45.0f){
+            if(height > 40.5f){
+                if(mountains_side.a != 0.0f){
+                    diffuseMap = vec3(mountains_side);
+                }else{
+                    diffuseMap = vec3(mountains_low);
+                }
+            }else{
+                diffuseMap = vec3(mountains_low);
             }
         }else{
             if(tex.y < num2){

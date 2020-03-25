@@ -76,7 +76,7 @@ public abstract class StudyAreaControl {
         float size = 16.0f;
         projection.setOrtho(-x * size, x * size,-y * size,y * size, WindowConfig.getInstance().getNear(), 100.0f);
         projection.setView(
-                new Vector3f(getMapX() / 2.0f, 50.0f, getMapZ() / 2.0f),
+                new Vector3f(getMapX() / 2.0f, 60.0f, getMapZ() / 2.0f),
                 new Vector3f(getMapX() / 2.0f, 0.0f, getMapZ() / 2.0f),
                 new Vector3f(0.0f,0.0f,-1.0f)
                 );
@@ -341,7 +341,10 @@ public abstract class StudyAreaControl {
         shader.setUniform("mapCam_m",mapCamera);
         for(int i=0; i<6; i++){
             if(i < allies.size()){
-                Vector3f p = new Vector3f(getAllies().get(i).getPosition());
+                Vector3f position = new Vector3f(getAllies().get(i).getPosition());
+                float distance = getAllies().get(i).getCharacteristic().getVision();
+                Vector4f unit = new Vector4f(position.getX(),position.getY(),position.getZ(),distance);
+                /*Vector3f p = new Vector3f(getAllies().get(i).getPosition());
                 float vision = getAllies().get(i).getCharacteristic().getVision();
                 float tempVision = getAllies().get(i).getCharacteristic().getTempVision();
                 Vector4f unit;
@@ -370,7 +373,7 @@ public abstract class StudyAreaControl {
                     float a = (0.1f - v) * -1.0f;
                     float d = 0.1f - a;
                     unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
-                }
+                }*/
                 shader.setUniform("unit" + i, unit);
             }else{
                 shader.setUniform("unit" + i, new Vector4f(-1.0f,-1.0f,-1.0f,1.0f));

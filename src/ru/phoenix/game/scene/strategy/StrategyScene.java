@@ -73,7 +73,7 @@ public class StrategyScene implements Scene {
 
     private void createHeights(){
         days = 100;
-        currentDay = 5;
+        currentDay = 0;
         heights = new float[days];
         long seed = (long)(1 + Math.random() * 10000000000L);
         Perlin2D perlin = new Perlin2D(seed);
@@ -133,15 +133,15 @@ public class StrategyScene implements Scene {
         for(Scene scene : scenes){
             if(scene.getSceneId() == Constants.SCENE_TACTICAL){
                 float num = getHeight((float)(Math.random() * 50.0f));//getHeight(heights[currentDay]);
-                scene.preset(num,allies);
+                scene.preset(getHeight(heights[currentDay]),allies);
                 scene.start(scenes);
             }
         }
         over();
-        /*currentDay+=5;
-        if(currentDay >= 50){
-            currentDay = 5;
-        }*/
+        currentDay++;
+        if(currentDay > 100){
+            currentDay = 0;
+        }
     }
 
     private float getHeight(float h){

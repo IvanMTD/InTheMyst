@@ -88,8 +88,8 @@ public class Camera {
 
         turn = 0.0f;
         fov = 20.0f;
-        yaw = 46.0f;
-        pitch = -30.0f;
+        yaw = 46.0f; // 46.0f origin
+        pitch = -30.0f; //-30.0f origin
         offset = 0.0f;
         cameraControlLock = false;
 

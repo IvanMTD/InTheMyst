@@ -44,7 +44,7 @@ public class ResourcesAndThings {
 
         for (int x = 0; x <= w; x++) {
             for (int z = 0; z <= h; z++) {
-                if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isGrass() && grid[x][z].getCurrentHeight() == grid[x][z].getPosition().getY()) {
+                if (!grid[x][z].isBlocked() && !grid[x][z].isBevel() && !grid[x][z].isGrass() && !grid[x][z].isRoad() && grid[x][z].getCurrentHeight() == grid[x][z].getPosition().getY()) {
                     if (grid[x][z].isWater()) { // установка водяных растений
                         Vector3f leftPos = new Vector3f(x - 1.0f, 0.0f, z);
                         Vector3f rightPos = new Vector3f(x + 1.0f, 0.0f, z);
@@ -91,7 +91,9 @@ public class ResourcesAndThings {
                             }
                         }
                     } else {
-                        if(13.0f < grid[x][z].getCurrentOriginalHeight() && grid[x][z].getCurrentOriginalHeight() < 43.0f) {
+                        boolean option1 =  13.0f < grid[x][z].getCurrentOriginalHeight() && grid[x][z].getCurrentOriginalHeight() < 20.0f;
+                        boolean option2 =  23.0f < grid[x][z].getCurrentOriginalHeight() && grid[x][z].getCurrentOriginalHeight() < 43.0f;
+                        if(option1 || option2) {
                             if (Math.random() * 100.0f <= 1.0f) {
                                 Object littleThing = new LittleThing((LittleThing) littleThing_main);
                                 littleThing.init(null);

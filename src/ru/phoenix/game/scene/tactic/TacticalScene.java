@@ -1,18 +1,14 @@
 package ru.phoenix.game.scene.tactic;
 
-import ru.phoenix.core.buffer.vbo.MeshConfig;
-import ru.phoenix.core.buffer.vbo.VertexBufferObject;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
-import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
-import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
-import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
 import ru.phoenix.game.content.stage.StudyArea;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.hud.assembled.GraundAim;
@@ -40,12 +36,12 @@ public class TacticalScene implements Scene {
     private List<Character> allies;
     private float currentHeight;
 
-    private VertexBufferObject background;
+    //private VertexBufferObject background;
+    private Skybox skybox;
 
     private Shader shader3D;
     private Shader shaderSprite;
     private Shader curor2D;
-    private Shader background3D;
 
     private boolean active;
     private boolean init;
@@ -81,7 +77,6 @@ public class TacticalScene implements Scene {
         shader3D = new Shader();
         shaderSprite = new Shader();
         curor2D = new Shader();
-        background3D = new Shader();
         index = 0;
         switchControl = false;
         count = 0.0f;
@@ -92,7 +87,7 @@ public class TacticalScene implements Scene {
         graundAim = new GraundAim("./data/content/texture/zona/cursor.png");
         aimDrawConfig = 0;
 
-        background = new MeshConfig();
+        skybox = new Skybox();
     }
 
     public void init(){
@@ -115,10 +110,6 @@ public class TacticalScene implements Scene {
             curor2D.createFragmentShader("FS_cursor.glsl");
             curor2D.createProgram();
 
-            background3D.createVertexShader("VS_background.glsl");
-            background3D.createFragmentShader("FS_background.glsl");
-            background3D.createProgram();
-
             cursorHud.init();
             graundAim.init();
 
@@ -140,7 +131,7 @@ public class TacticalScene implements Scene {
                     0, 1, 2,
                     0, 2, 3
             };
-            background.allocate(pos, null, tex, null, null, null, null, null, indices);
+            skybox.init();
         }
     }
 
@@ -334,12 +325,7 @@ public class TacticalScene implements Scene {
         shader3D.setUniform("currentHeight",currentHeight);
         studyArea.draw(shader3D);
 
-        background3D.useProgram();
-        background3D.setUniformBlock("matrices",0);
-        Projection projection = new Projection();
-        projection.setTranslation(new Vector3f(0.0f,currentHeight,0.0f));
-        background3D.setUniform("model_m", projection.getModelMatrix());
-        background.draw();
+        skybox.draw();
 
         shaderSprite.useProgram();
         shaderSprite.setUniformBlock("matrices", 0);
@@ -350,7 +336,10 @@ public class TacticalScene implements Scene {
         shaderSprite.setUniform("map", 5);
         for(int i=0; i<6; i++){
             if(i < studyArea.getAllies().size()){
-                Vector3f p = new Vector3f(studyArea.getAllies().get(i).getPosition());
+                Vector3f position = new Vector3f(studyArea.getAllies().get(i).getPosition());
+                float distance = studyArea.getAllies().get(i).getCharacteristic().getVision();
+                Vector4f unit = new Vector4f(position.getX(),position.getY(),position.getZ(),distance);
+                /*Vector3f p = new Vector3f(studyArea.getAllies().get(i).getPosition());
                 float vision = studyArea.getAllies().get(i).getCharacteristic().getVision();
                 float tempVision = studyArea.getAllies().get(i).getCharacteristic().getTempVision();
                 Vector4f unit;
@@ -379,7 +368,7 @@ public class TacticalScene implements Scene {
                     float a = (0.1f - v) * -1.0f;
                     float d = 0.1f - a;
                     unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
-                }
+                }*/
                 shaderSprite.setUniform("unit" + i, unit);
             }else{
                 shaderSprite.setUniform("unit" + i, new Vector4f(-1.0f,-1.0f,-1.0f,1.0f));

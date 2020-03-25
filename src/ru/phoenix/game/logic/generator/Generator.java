@@ -69,7 +69,7 @@ public class Generator {
         int x = (int)Math.round(Math.random() * (float)getTotalMapWidth());
         int z = (int)Math.round(Math.random() * (float)getTotalMapHeight());
 
-        if(!grid[x][z].isBlocked() && !grid[x][z].isOccupied() && !grid[x][z].isBevel() && !grid[x][z].isWater()){
+        if(!grid[x][z].isBlocked() && !grid[x][z].isOccupied() && !grid[x][z].isBevel() && !grid[x][z].isWater() && !grid[x][z].isRoad()){
             grid[x][z].setOccupied(occupied);
             return new Vector3f(grid[x][z].getModifiedPosition());
         }else{

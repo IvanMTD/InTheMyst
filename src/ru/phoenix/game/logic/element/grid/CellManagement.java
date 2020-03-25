@@ -27,6 +27,7 @@ abstract class CellManagement {
     private boolean grass;
     private boolean blocked;
     private boolean water;
+    private boolean road;
     private boolean battleGraund;
     private boolean exitBattleGraund;
     // -- вспомогательные --
@@ -57,6 +58,7 @@ abstract class CellManagement {
         setGrass(false);
         setBlocked(false);
         setWater(false);
+        setRoad(false);
         setBattleGraund(false);
         setExitBattleGraund(false);
         // вспомогательные
@@ -87,6 +89,7 @@ abstract class CellManagement {
         setGrass(cell.isGrass());
         setBlocked(cell.isBlocked());
         setWater(cell.isWater());
+        setRoad(cell.isRoad());
         setBattleGraund(cell.isBattleGraund());
         setExitBattleGraund(cell.isExitBattleGraund());
         // вспомогательные
@@ -283,6 +286,14 @@ abstract class CellManagement {
 
     public void setWater(boolean water) {
         this.water = water;
+    }
+
+    public boolean isRoad() {
+        return road;
+    }
+
+    public void setRoad(boolean road) {
+        this.road = road;
     }
 
     public boolean isBattleGraund() {
