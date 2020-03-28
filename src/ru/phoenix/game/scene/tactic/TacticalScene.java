@@ -91,6 +91,7 @@ public class TacticalScene implements Scene {
     }
 
     public void init(){
+        Camera.getInstance().preset(20.0f,46.0f,-30.0f);
         if(init){
             generate(currentHeight);
         }else {

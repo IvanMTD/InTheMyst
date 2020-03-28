@@ -87,7 +87,7 @@ public class Camera {
         corH = (1.0f + ((float)Window.getInstance().getHeight() / (float)Window.getInstance().getWidth())) * 0.9f;
 
         turn = 0.0f;
-        fov = 20.0f;
+        fov = 20.0f; // 20.0f origin
         yaw = 46.0f; // 46.0f origin
         pitch = -30.0f; //-30.0f origin
         offset = 0.0f;
@@ -110,6 +110,53 @@ public class Camera {
         direction.setX((float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))));
         direction.setY((float) Math.sin(Math.toRadians(pitch)));
         direction.setZ((float) (Math.cos(Math.toRadians(pitch)) * Math.sin(Math.toRadians(yaw))));
+
+        pos = pos.add(front.normalize().mul(hypotenuse)).add(direction.normalize().mul(-hypotenuse));
+        front = direction.normalize();
+        //
+
+        setPerspective();
+        setOrtho();
+    }
+
+    public void preset(float fov, float yaw, float pitch){
+        turnCounter = 0.0f;
+        stopTurn = false;
+        turnButtonBlock = false;
+        DoubleBuffer lx = BufferUtils.createDoubleBuffer(1);
+        DoubleBuffer ly = BufferUtils.createDoubleBuffer(1);
+        glfwGetCursorPos(Window.getInstance().getWindow(),lx,ly);
+        lastCursorPos = new Vector2f((float)lx.get(),(float)ly.get());
+        lastCursorPos2 = null;
+        prepare = true;
+
+        corW = ((float)Window.getInstance().getWidth() / (float)Window.getInstance().getHeight()) * 0.9f;
+        corH = (1.0f + ((float)Window.getInstance().getHeight() / (float)Window.getInstance().getWidth())) * 0.9f;
+
+        turn = 0.0f;
+        this.fov = fov; // 20.0f origin
+        this.yaw = yaw; // 46.0f origin
+        this.pitch = pitch; //-30.0f origin
+        offset = 0.0f;
+        cameraControlLock = false;
+
+        perspective = new Projection();
+        ortho = new Projection();
+
+        direction = new Vector3f();
+        hypotenuse = 30.0f;
+        float cathetus = (float) Math.sin(Math.toRadians(Math.abs(this.pitch))) * hypotenuse;
+
+
+        // Установка позиции!
+        pos = new Vector3f(0.0f, cathetus,-cathetus); // позиция камеры
+        front = new Vector3f(0.0f,-cathetus, cathetus).normalize(); // точка в которую смотрит камера
+        up = new Vector3f(0.0f,1.0f,0.0f); // вектор определяющий верх камеры
+
+        //
+        direction.setX((float) (Math.cos(Math.toRadians(this.pitch)) * Math.cos(Math.toRadians(this.yaw))));
+        direction.setY((float) Math.sin(Math.toRadians(this.pitch)));
+        direction.setZ((float) (Math.cos(Math.toRadians(this.pitch)) * Math.sin(Math.toRadians(this.yaw))));
 
         pos = pos.add(front.normalize().mul(hypotenuse)).add(direction.normalize().mul(-hypotenuse));
         front = direction.normalize();
@@ -367,7 +414,7 @@ public class Camera {
         return ortho;
     }
 
-    private void updateViewMatrix() {
+    public void updateViewMatrix() {
         perspective.setView(
                 pos.getX(), pos.getY() ,pos.getZ(),
                 pos.getX() + front.getX(), pos.getY() + front.getY(),pos.getZ() + front.getZ(),

@@ -1,14 +1,17 @@
 package ru.phoenix.game.scene.strategy;
 
 import ru.phoenix.core.config.Constants;
+import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Perlin2D;
+import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisPartisan;
 import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
+import ru.phoenix.game.content.stage.strategy.StrategicScreen;
 import ru.phoenix.game.logic.lighting.Light;
-import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
 
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import java.util.List;
 import static ru.phoenix.core.config.Constants.ALLY;
 
 public class StrategyScene implements Scene {
+    private StrategicScreen strategicScreen;
     // обще игровые переменные
     private List<Character> allies;
     private List<Scene> scenes;
@@ -27,8 +31,12 @@ public class StrategyScene implements Scene {
     // контроль сцены
     private boolean active;
     private boolean init;
+    // скайбокс
+    private Skybox skybox;
 
     public StrategyScene() {
+        strategicScreen = new StrategicScreen();
+        skybox = new Skybox();
         allies = new ArrayList<>();
         scenes = new ArrayList<>();
         active = false;
@@ -36,10 +44,16 @@ public class StrategyScene implements Scene {
     }
 
     public void init(){
+        Camera.getInstance().preset(25.0f,-90.0f,10.0f);
+        Camera.getInstance().setPos(new Vector3f(100.0f,10.0f,200.0f));
+        Camera.getInstance().setFront(new Vector3f(0.0f,0.0f,-1.0f));
+        Camera.getInstance().updateViewMatrix();
         if(!init){
             init = true;
             createAllies();
             createHeights();
+            skybox.init();
+            strategicScreen.init();
         }
     }
 
@@ -129,7 +143,8 @@ public class StrategyScene implements Scene {
 
     @Override
     public void update() {
-        SceneControl.setLastScene(this);
+        strategicScreen.update();
+        /*SceneControl.setLastScene(this);
         for(Scene scene : scenes){
             if(scene.getSceneId() == Constants.SCENE_TACTICAL){
                 float num = getHeight((float)(Math.random() * 50.0f));//getHeight(heights[currentDay]);
@@ -141,7 +156,7 @@ public class StrategyScene implements Scene {
         currentDay++;
         if(currentDay > 100){
             currentDay = 0;
-        }
+        }*/
     }
 
     private float getHeight(float h){
@@ -172,7 +187,8 @@ public class StrategyScene implements Scene {
 
     @Override
     public void draw() {
-
+        strategicScreen.draw();
+        skybox.draw();
     }
 
     @Override
