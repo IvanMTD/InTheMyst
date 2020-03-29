@@ -15,13 +15,13 @@ layout (row_major, std140) uniform matrices{
     mat4 view_m;
 };
 
-uniform sampler2D blendMap;
-
 out VS_OUT{
     vec3 normal;
     vec2 cellTextureCoord;
     vec2 mapTextureCoord;
 } vs_out;
+
+uniform sampler2D blendMap;
 
 void main() {
     vs_out.normal = l_norm;

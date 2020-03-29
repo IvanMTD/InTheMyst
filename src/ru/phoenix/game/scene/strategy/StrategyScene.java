@@ -44,9 +44,9 @@ public class StrategyScene implements Scene {
     }
 
     public void init(){
-        Camera.getInstance().preset(25.0f,-90.0f,10.0f);
+        Camera.getInstance().preset(45.0f,-90.0f,-10.0f);
         Camera.getInstance().setPos(new Vector3f(100.0f,10.0f,200.0f));
-        Camera.getInstance().setFront(new Vector3f(0.0f,0.0f,-1.0f));
+        Camera.getInstance().setFront(new Vector3f(0.0f,0.0f,1.0f));
         Camera.getInstance().updateViewMatrix();
         if(!init){
             init = true;
@@ -143,7 +143,8 @@ public class StrategyScene implements Scene {
 
     @Override
     public void update() {
-        strategicScreen.update();
+        Camera.getInstance().update(0.0f,200.0f,0.0f,200.0f,null);
+        //strategicScreen.update();
         /*SceneControl.setLastScene(this);
         for(Scene scene : scenes){
             if(scene.getSceneId() == Constants.SCENE_TACTICAL){

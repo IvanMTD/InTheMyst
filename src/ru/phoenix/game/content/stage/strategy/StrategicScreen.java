@@ -45,6 +45,7 @@ public class StrategicScreen {
     public void init(){
 
         shader.createVertexShader("VS_strategic.glsl");
+        shader.createGeometryShader("GS_strategic.glsl");
         shader.createFragmentShader("FS_strategic.glsl");
         shader.createProgram();
 
@@ -105,7 +106,7 @@ public class StrategicScreen {
     public void update(){
         float currentTime = (float)glfwGetTime();
         float diff = currentTime - lastTime;
-        if(diff > 0.0166f) {
+        if(diff > 0.0166f) { // 0.0166f
             xOffset += 0.1f;
             blendTexture = createBlendMap(xOffset);
             lastTime = (float)glfwGetTime();
