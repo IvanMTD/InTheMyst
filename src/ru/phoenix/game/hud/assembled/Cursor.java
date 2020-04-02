@@ -26,6 +26,8 @@ public class Cursor {
     private Texture redCursor;
     private Texture handCursor;
 
+    private Shader shader;
+
     private VertexBufferObject vbo;
     private Projection projection;
     private Vector3f position;
@@ -35,12 +37,17 @@ public class Cursor {
         redCursor = new Texture2D();
         handCursor = new Texture2D();
 
+        shader = new Shader();
+
         vbo = new MeshConfig();
         projection = new Projection();
         position = new Vector3f();
     }
 
     public void init(){
+        shader.createVertexShader("VS_cursor.glsl");
+        shader.createFragmentShader("FS_cursor.glsl");
+        shader.createProgram();
         redCursor.setup(null,"./data/content/texture/hud/cursors/main_cursor.png",GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER);
         handCursor.setup(null,"./data/content/texture/hud/cursors/main_cursor_hand.png",GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER);
         float size = 40.0f;
@@ -68,9 +75,11 @@ public class Cursor {
 
     public void update(List<Character> enemies){
         setHandCursor();
-        for(Character enemy : enemies){
-            if(enemy.getId() == Pixel.getPixel().getR()){
-                setRedCursor();
+        if(enemies != null) {
+            for (Character enemy : enemies) {
+                if (enemy.getId() == Pixel.getPixel().getR()) {
+                    setRedCursor();
+                }
             }
         }
         Vector2f cursorPos = new Vector2f(Input.getInstance().getCursorPosition());
@@ -87,7 +96,7 @@ public class Cursor {
         texture = handCursor;
     }
 
-    public void draw(Shader shader){
+    public void draw(){
         setUniforms(shader);
         vbo.draw();
     }

@@ -27,7 +27,7 @@ public class Generator {
     // карта высот
     private static Texture heightMap;
 
-    public static RandomArena getRandomArea(float currentHeight){
+    public static RandomArena getRandomArea(float currentHeight, int w, int h){
 
         // проверяем состояние модулей компонентов - начало
         checkElements();
@@ -37,11 +37,8 @@ public class Generator {
         Mesh mesh;
         Cell[][] grid = null;
 
-        setTotalMapWidth((int)(49.0f + (float)Math.random() * 49.0f));
-        setTotalMapHeight((int)(49.0f + (float)Math.random() * 49.0f));
-
-        /*setTotalMapWidth(99);
-        setTotalMapHeight(99);*/
+        setTotalMapWidth(w);
+        setTotalMapHeight(h);
 
         System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
         grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true);

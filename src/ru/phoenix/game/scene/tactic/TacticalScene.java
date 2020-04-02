@@ -41,7 +41,6 @@ public class TacticalScene implements Scene {
 
     private Shader shader3D;
     private Shader shaderSprite;
-    private Shader curor2D;
 
     private boolean active;
     private boolean init;
@@ -76,7 +75,6 @@ public class TacticalScene implements Scene {
         init = false;
         shader3D = new Shader();
         shaderSprite = new Shader();
-        curor2D = new Shader();
         index = 0;
         switchControl = false;
         count = 0.0f;
@@ -96,20 +94,16 @@ public class TacticalScene implements Scene {
             generate(currentHeight);
         }else {
             init = true;
-            System.out.println("Try set shader3D");
+
             shader3D.createVertexShader("VS_game_object.glsl");
             shader3D.createGeometryShader("GS_game_object.glsl");
             shader3D.createFragmentShader("FS_game_object.glsl");
             shader3D.createProgram();
-            System.out.println("Try set shader2D");
+
             shaderSprite.createVertexShader("VS_sprite.glsl");
             shaderSprite.createGeometryShader("GS_sprite.glsl");
             shaderSprite.createFragmentShader("FS_sprite.glsl");
             shaderSprite.createProgram();
-
-            curor2D.createVertexShader("VS_cursor.glsl");
-            curor2D.createFragmentShader("FS_cursor.glsl");
-            curor2D.createProgram();
 
             cursorHud.init();
             graundAim.init();
@@ -324,6 +318,7 @@ public class TacticalScene implements Scene {
         boolean battle = studyArea.getBattleGround().isActive();
         // рисуем поле и сетку
         shader3D.setUniform("currentHeight",currentHeight);
+        shader3D.setUniform("shift",0.0f);
         studyArea.draw(shader3D);
 
         skybox.draw();
@@ -332,6 +327,7 @@ public class TacticalScene implements Scene {
         shaderSprite.setUniformBlock("matrices", 0);
         shaderSprite.setUniform("w",studyArea.getMapX());
         shaderSprite.setUniform("h",studyArea.getMapZ());
+        shaderSprite.setUniform("shift",0.0f);
         glActiveTexture(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, Default.getMapTextureId());
         shaderSprite.setUniform("map", 5);
@@ -394,7 +390,7 @@ public class TacticalScene implements Scene {
             graundAim.draw(shaderSprite);
         }
 
-        cursorHud.draw(curor2D);
+        cursorHud.draw();
     }
 
     private void drawElement(boolean battle, List<Cell> elements){
@@ -443,7 +439,7 @@ public class TacticalScene implements Scene {
         Default.setMapFrameStart(false);
         aimDrawConfig = 0;
         graundAim.setVisible(false);
-        studyArea = Generator.getRandomArea(currentHeight);
+        studyArea = Generator.getRandomArea(currentHeight,(int)(49.0f + (float)Math.random() * 49.0f),(int)(49.0f + (float)Math.random() * 49.0f));
         // ALLIES - ВРЕМЕННО!
         float id = 0.12f;
         Vector3f position = new Vector3f();
