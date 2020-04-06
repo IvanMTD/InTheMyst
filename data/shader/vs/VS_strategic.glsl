@@ -24,15 +24,16 @@ out VS_OUT{
 } vs_out;
 
 uniform sampler2D heightMap;
+uniform mat4 model_m;
 
 void main() {
     vs_out.normal = l_norm;
     vs_out.cellTextureCoord = l_tex;
     vs_out.mapTextureCoord = vec2(l_tan.x,l_tan.y);
     vec4 map = texture(heightMap,vs_out.mapTextureCoord);
-    vec3 pos = vec3(l_pos.x,(map.y * 30.0f),l_pos.z);
+    vec3 pos = vec3(l_pos.x, map.y * 30.0f, l_pos.z);
     pos = vec3(pos.x,round(pos.y),pos.z);
-    gl_Position = perspective_m * view_m * vec4(pos, 1.0f);
-    vs_out.biom = map.x;
+    gl_Position = perspective_m * view_m * model_m * vec4(pos, 1.0f);
+    vs_out.biom = round(map.x * 45.0f);
     vs_out.percent = map.z;
 }

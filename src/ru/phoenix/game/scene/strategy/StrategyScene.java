@@ -41,8 +41,12 @@ public class StrategyScene implements Scene {
     private Skybox skybox;
 
     private boolean reverse;
+    private float tempBiom = 5.0f;
 
     public StrategyScene() {
+        km = 100;
+        currentKm = 0;
+        m = 0.0f;
         reverse = false;
         strategicScreen = new StrategicScreen();
         skybox = new Skybox();
@@ -64,7 +68,7 @@ public class StrategyScene implements Scene {
             createBioms();
             skybox.init();
             cursor.init();
-            strategicScreen.init(getBiom(bioms[currentKm]));
+            strategicScreen.init(bioms[currentKm]); // getBiom(bioms[currentKm])
         }
     }
 
@@ -97,26 +101,23 @@ public class StrategyScene implements Scene {
     }
 
     private void createBioms(){
-        km = 100;
-        currentKm = 0;
-        m = 0.0f;
         bioms = new float[km];
         long seed = (long)(1 + Math.random() * 10000000000L);
         Perlin2D perlin = new Perlin2D(seed);
-        float accuracy = 20.0f;
-        float dayMap[][] = new float[km][km];
-        for(int x=0; x<km; x++){
-            for(int y=0; y<km; y++){
-                float value = perlin.getNoise(x/accuracy,y/accuracy,8,0.5f);
-                int n = (int)(value * 255 + 128) & 255;
-                float result = ((float)n / 255.0f);
-                dayMap[x][y] = result;
-            }
+        float accuracy = 10.0f;
+        float dayMap[] = new float[km];
+        for(int y=0; y<km; y++){
+            float value = perlin.getNoise(1/accuracy,y/accuracy,8,0.5f);
+            int n = (int)(value * 255 + 128) & 255;
+            float result = ((float)n / 255.0f);
+            dayMap[y] = result;
         }
-        float min = dayMap[km / 2][0];
-        float max = dayMap[km / 2][0];
+
+        float min = 0.5f;
+        float max = 0.5f;
+
         for (int i=0; i<km; i++){
-            float num = dayMap[km / 2][i];
+            float num = dayMap[i];
             if(num < min){
                 min = num;
             }
@@ -128,11 +129,39 @@ public class StrategyScene implements Scene {
 
         float diff = Math.abs(max - min);
 
-        for(int i=0; i<km; i++){
-            float biom = bioms[i] - min;
+        for(int i=0; i < km/2; i++){
+            float biom = bioms[i*2] - min;
             float percent = biom * 100.0f / diff;
             float newBiom = 1.0f * percent / 100.0f;
-            bioms[i] = newBiom * 50.0f;
+            biom = getBiom(newBiom * 50.0f);
+            if(i == 0){
+                    bioms[i] = biom;
+            }else {
+                float previous = bioms[(i * 2) - 2];
+                if (previous > biom) {
+                    bioms[(i * 2) - 1] = previous - 5;
+                    bioms[i * 2] = previous - 10;
+                    if(i == 49){
+                        bioms[(i * 2) + 1] = previous - 10;
+                    }
+                } else if (previous < biom) {
+                    bioms[(i * 2) - 1] = previous + 5;
+                    bioms[i * 2] = previous + 10;
+                    if(i == 49){
+                        bioms[(i * 2) + 1] = previous + 10;
+                    }
+                } else {
+                    bioms[(i * 2) - 1] = biom;
+                    bioms[i * 2] = biom;
+                    if(i == 49){
+                        bioms[(i * 2) + 1] = biom;
+                    }
+                }
+            }
+        }
+
+        for(int i=0; i<100; i++){
+            System.out.println("День " + i + ": " + getInfo(bioms[i]));
         }
     }
 
@@ -158,39 +187,23 @@ public class StrategyScene implements Scene {
         cursor.update(null);
 
         m += 0.1f;
-        if(m > 200.0f){
+        if(m > 300.0f){
             m = 0.0f;
             currentKm++;
+            System.out.println(bioms[currentKm]);
             if(currentKm >= bioms.length){
                 currentKm = 0;
             }
         }
 
-       /* m += 0.1f;
-        if(m > 500.0f){
-            m = 0.0f;
-            if(reverse){
-                currentKm -= 5;
-                if(currentKm <= 5){
-                    reverse = false;
-                }
-            }else{
-                currentKm += 5;
-                if(currentKm >= 45){
-                    reverse = true;
-                }
-            }
-            System.out.println(currentKm);
-        }*/
-
-        float biom = getBiom(bioms[currentKm]); // bioms[currentKm]
+        float biom = bioms[currentKm];
         strategicScreen.update(biom);
 
         if(Input.getInstance().isPressed(GLFW_KEY_SPACE)) {
             SceneControl.setLastScene(this);
             for(Scene scene : scenes){
                 if(scene.getSceneId() == Constants.SCENE_TACTICAL){
-                    scene.preset(biom,allies);
+                    scene.preset(strategicScreen.getCurrentBiom(),allies);
                     scene.start(scenes);
                 }
             }
@@ -201,25 +214,37 @@ public class StrategyScene implements Scene {
     private float getBiom(float b){
         float result = 0.0f;
 
-        if(b <= 5.0f){
+        if(b < 10.0f){
             result = 5.0f;
-        }else if(b <= 10.0f){
-            result = 10.0f;
-        }else if(b <= 15.0f){
+        }else if(b < 20.0f){
             result = 15.0f;
-        }else if(b <= 20.0f){
-            result = 20.0f;
-        }else if(b <= 25.0f){
+        }else if(b < 30.0f){
             result = 25.0f;
-        }else if(b <= 30.0f){
-            result = 30.0f;
-        }else if(b <= 35.0f){
+        }else if(b < 40.0f){
             result = 35.0f;
-        }else if(b <= 40.0f){
-            result = 40.0f;
         }else{
             result = 45.0f;
         }
+
+        /*if(0.0f <= b && b < 7.5f){
+            result = 5.0f;
+        }else if(7.5f <= b && b < 12.5f){
+            result = 10.0f;
+        }else if(12.5f <= b && b < 17.5f){
+            result = 15.0f;
+        }else if(17.5f <= b && b < 22.5f){
+            result = 20.0f;
+        }else if(22.5f <= b && b < 27.5f){
+            result = 25.0f;
+        }else if(27.5f <= b && b < 32.5f){
+            result = 30.0f;
+        }else if(32.5f <= b && b < 37.5f){
+            result = 35.0f;
+        }else if(37.5f <= b && b < 42.5f){
+            result = 40.0f;
+        }else{
+            result = 45.0f;
+        }*/
 
         return result;
     }
@@ -254,5 +279,31 @@ public class StrategyScene implements Scene {
     @Override
     public Shader getShader() {
         return null;
+    }
+
+    private String getInfo(float biom){
+        String title;
+
+        if(biom == 5.0f){
+            title = "Пустыня";
+        }else if(biom == 10.0f){
+            title = "Граница пустыни";
+        }else if(biom == 15.0f){
+            title = "Степь";
+        }else if(biom == 20.0f){
+            title = "Граница степь";
+        }else if(biom == 25.0f){
+            title = "Равнина";
+        }else if(biom == 30.0f){
+            title = "Опушка леса";
+        }else if(biom == 35.0f){
+            title = "Лес";
+        }else if(biom == 40.0f){
+            title = "Предгорье";
+        }else{
+            title = "Горы";
+        }
+
+        return title;
     }
 }

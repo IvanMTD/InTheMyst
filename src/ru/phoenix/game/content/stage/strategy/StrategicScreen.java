@@ -7,6 +7,7 @@ import ru.phoenix.core.loader.model.Vertex;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Perlin2D;
+import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
@@ -16,8 +17,7 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
@@ -26,9 +26,10 @@ public class StrategicScreen {
 
     private Shader shader;
     private Mesh mesh;
+    private Projection projection;
 
-    List<List<Vector3f>> heighMap;
-    List<List<Vector3f>> blendMap;
+    private List<List<Vector3f>> heighMap;
+    private List<List<Vector3f>> blendMap;
     private Texture blendTexture;
     private Texture heightTexture;
 
@@ -55,7 +56,7 @@ public class StrategicScreen {
     private Texture road;
 
     private long seed;
-    private float xOffset;
+    private int xOffset;
     private float accuracy;
 
     private float lastTime;
@@ -66,13 +67,19 @@ public class StrategicScreen {
     private float camPos;
     private Vector3f startPos;
 
+    private float tempHeight;
+    private boolean control;
+
     public StrategicScreen() {
+        projection = new Projection();
+        control = true;
+        tempHeight = 0.0f;
         shader = new Shader();
         blendMap = new ArrayList<>();
         heighMap = new ArrayList<>();
 
         seed = (long)(1 + Math.random() * 10000000000L);
-        xOffset = 0.0f;
+        xOffset = 0;
         lastTime = (float)glfwGetTime();
         accuracy = 20.0f + (float)Math.random() * 30.0f;
 
@@ -162,6 +169,7 @@ public class StrategicScreen {
         mesh = new Mesh(new ArrayList<>(vertices),new ArrayList<>(indices),null);
 
         biomColor = biom;
+        this.biom = biom;
         createBlendMap(biom);
 
         desertLow.setup(null,"./data/content/texture/atlas/graund/desert_low.png",GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
@@ -197,8 +205,9 @@ public class StrategicScreen {
                 camPos += size;
                 if (camPos > 1.0f) {
                     camPos = 0.0f;
-                    Camera.getInstance().setPos(startPos);
-                    Camera.getInstance().updateViewMatrix();
+                    /*Camera.getInstance().setPos(startPos);
+                    Camera.getInstance().updateViewMatrix();*/
+                    projection.getModelMatrix().identity();
 
                     if (this.biom != biom) {
                         if (this.biom < biom) {
@@ -217,8 +226,10 @@ public class StrategicScreen {
                     xOffset++;
                     updateBlendMap(xOffset,this.biom);
                 } else {
-                    Camera.getInstance().setPos(Camera.getInstance().getPos().add(new Vector3f(size, 0.0f, 0.0f)));
-                    Camera.getInstance().updateViewMatrix();
+                    projection.getModelMatrix().identity();
+                    projection.setTranslation(new Vector3f(-camPos,0.0f,0.0f));
+                    /*Camera.getInstance().setPos(Camera.getInstance().getPos().add(new Vector3f(size, 0.0f, 0.0f)));
+                    Camera.getInstance().updateViewMatrix();*/
                 }
                 lastTime = (float) glfwGetTime();
             }
@@ -229,6 +240,7 @@ public class StrategicScreen {
         shader.useProgram();
 
         shader.setUniformBlock("matrices",0);
+        shader.setUniform("model_m",projection.getModelMatrix());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, blendTexture.getTextureID());
@@ -317,7 +329,7 @@ public class StrategicScreen {
                 int n = (int)(value * 255 + 128) & 255;
                 float result = ((float)n / 255.0f);
 
-                int pice = ((arrayBlendMap[0].length - 1) / 3);
+                int pice = ((arrayBlendMap[0].length - 1) / 2);
                 int special = (arrayBlendMap[0].length - 1) - pice;
                 float proportion = 1.0f;
                 if(z > special){
@@ -328,14 +340,14 @@ public class StrategicScreen {
                 result = result * proportion;
 
                 if(z > arrayBlendMap[0].length - (10.0f + Math.random() * 6.0f)){
-                    result += 0.01f;
+                    result = 0.01f;
                     arrayBlendMap[x][z] = new Vector3f(result, 0.0f, 0.0f);
                 }else {
                     arrayBlendMap[x][z] = new Vector3f(result, result, result);
                 }
 
                 Vector2f info = getInfo(biom);
-                arrayHeightMap[x][z] = new Vector3f(biomColor / 45.0f,(result * info.getX()) / 30.0f,info.getY());
+                arrayHeightMap[x][z] = new Vector3f(biomColor / 45.0f,(result * info.getX()) / 20.0f,info.getY());
 
                 line1.add(arrayBlendMap[x][z]);
                 line2.add(arrayHeightMap[x][z]);
@@ -345,15 +357,15 @@ public class StrategicScreen {
         }
 
         Texture texture = new Texture2D();
-        texture.setup(arrayBlendMap,GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        texture.setup(arrayBlendMap,GL_RGB,GL_CLAMP_TO_EDGE);
         blendTexture = texture;
 
         texture = new Texture2D();
-        texture.setup(arrayHeightMap,GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        texture.setup(arrayHeightMap,GL_RGB,GL_CLAMP_TO_EDGE);
         heightTexture = texture;
     }
 
-    private void updateBlendMap(float offset, float biom){
+    private void updateBlendMap(int offset, float biom){
         Perlin2D perlin = new Perlin2D(seed);
         blendMap.remove(0);
         heighMap.remove(0);
@@ -361,11 +373,11 @@ public class StrategicScreen {
         List<Vector3f> line1 = new ArrayList<>();
         List<Vector3f> line2 = new ArrayList<>();
         for(int z=0; z<blendMap.get(0).size(); z++){
-            float value = perlin.getNoise(((float)199 + offset)/(accuracy * 2.0f),z/(accuracy * 2.0f),8,0.5f);
+            float value = perlin.getNoise((199.0f + offset)/(accuracy * 2.0f),z/(accuracy * 2.0f),8,0.5f);
             int n = (int)(value * 255 + 128) & 255;
             float result = ((float)n / 255.0f);
 
-            int pice = ((blendMap.get(0).size() - 1) / 3);
+            int pice = ((blendMap.get(0).size() - 1) / 2);
             int special = (blendMap.get(0).size() - 1) - pice;
             float proportion = 1.0f;
             if(z > special){
@@ -376,14 +388,14 @@ public class StrategicScreen {
             result = result * proportion;
 
             if(z > blendMap.get(0).size() - (10.0f + Math.random() * 6.0f)){
-                result += 0.01f;
+                result = 0.01f;
                 line1.add(new Vector3f(result, 0.0f, 0.0f));
             }else {
                 line1.add(new Vector3f(result, result, result));
             }
 
             Vector2f info = getInfo(biom);
-            line2.add(new Vector3f(biomColor / 45.0f,(result * info.getX()) / 30.0f,info.getY()));
+            line2.add(new Vector3f(biomColor / 45.0f,(result * info.getX()) / 20.0f,info.getY()));
         }
 
         blendMap.add(line1);
@@ -399,47 +411,77 @@ public class StrategicScreen {
         }
 
         Texture texture = new Texture2D();
-        texture.setup(arrayBlendMap,GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        texture.setup(arrayBlendMap,GL_RGB,GL_CLAMP_TO_EDGE);
         blendTexture = texture;
 
         texture = new Texture2D();
-        texture.setup(arrayHeightMap,GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        texture.setup(arrayHeightMap,GL_RGB,GL_CLAMP_TO_EDGE);
         heightTexture = texture;
     }
 
     private Vector2f getInfo(float biom){
-        float h;
-        float percent;
+        Vector2f vector;
 
-        if(biom <= 5.0f){
-            percent = 1.0f;
-            h = 8.0f;
-        }else if(biom <= 10.0f){
-            percent = (biom - 5.0f) / 5.0f;
-            h = 8.0f + (4.0f * percent);
-        }else if(biom <= 15.0f){
-            percent = (biom - 10.0f) / 5.0f;
-            h = 12.0f + (4.0f * percent);
-        }else if(biom <= 20.0f){
-            percent = (biom - 15.0f) / 5.0f;
-            h = 16.0f + (4.0f * percent);
-        }else if(biom <= 25.0f){
-            percent = (biom - 20.0f) / 5.0f;
-            h = 20.0f - (8.0f * percent);
-        }else if(biom <= 30.0f){
-            percent = (biom - 25.0f) / 5.0f;
-            h = 12.0f + (4.0f * percent);
-        }else if(biom <= 35.0f){
-            percent = (biom - 30.0f) / 5.0f;
-            h = 16.0f - (6.0f * percent);
-        }else if(biom <= 40.0f){
-            percent = (biom - 35.0f) / 5.0f;
-            h = 10.0f + (10.0f * percent);
+        if(biom <= 7.5f){
+            vector = getInfo(biom,5.0f,2.0f);
+        }else if(biom <= 12.5f){
+            vector = getInfo(biom,10.0f,3.0f);
+        }else if(biom <= 17.5f){
+            vector = getInfo(biom,15.0f,2.0f);
+        }else if(biom <= 22.5f){
+            vector = getInfo(biom,20.0f,3.0f);
+        }else if(biom <= 27.5f){
+            vector = getInfo(biom,25.0f,4.0f);
+        }else if(biom <= 32.5f){
+            vector = getInfo(biom,30.0f,5.0f);
+        }else if(biom <= 37.5f){
+            vector = getInfo(biom,35.0f,4.0f);
+        }else if(biom <= 42.5f){
+            vector = getInfo(biom,40.0f,10.0f);
         }else{
-            percent = (biom - 40.0f) / 5.0f;
-            h = 20.0f + (10.0f * percent);
+            vector = getInfo(biom,45.0f,20.0f);
         }
 
+        return vector;
+    }
+
+    private Vector2f getInfo(float biom, float correction, float biomHeight){
+
+        float percent;
+        if(biom < correction){
+            percent = 1.0f - (Math.abs(biom - correction) / 5.0f);
+            control = true;
+        }else if(biom > correction){
+            percent = Math.abs(biom - correction) / 5.0f;
+            control = false;
+        }else{
+            if(control){
+                percent = 1.0f;
+            }else{
+                percent = 0.0f;
+            }
+        }
+
+        float h;
+        if(tempHeight < biomHeight){
+            h = tempHeight + 0.005f;
+            if(h >= biomHeight){
+                h = biomHeight;
+            }
+        }else if(tempHeight > biomHeight){
+            h = tempHeight - 0.005f;
+            if(h <= biomHeight){
+                h = biomHeight;
+            }
+        }else{
+            h = biomHeight;
+        }
+        tempHeight = h;
+
         return new Vector2f(h,percent);
+    }
+
+    public float getCurrentBiom(){
+        return Math.round(heighMap.get(heighMap.size() / 2).get(0).getX() * 45.0f);
     }
 }
