@@ -24,7 +24,6 @@ uniform mat4 lightSpaceMatrix;
 uniform vec3 viewPos;
 uniform int w;
 uniform int h;
-uniform float shift;
 
 out VS_OUT {
     vec3 FragPos;
@@ -49,9 +48,8 @@ void main() {
         projection = model_m;
         texCoords = vec2(l_tex.x,1.0f - l_tex.y);
     }
-    vec4 shifted = perspective_m * view_m * projection * vec4(l_pos,1.0f);
-    shifted = vec4(shifted.x - shift,shifted.y,shifted.z,shifted.w);
-    gl_Position = shifted;
+
+    gl_Position = perspective_m * view_m * projection * vec4(l_pos,1.0f);;
     vs_out.localPos = projection * vec4(l_pos, 1.0f);
     vs_out.mapTexCoords = getMapTexCoord();
     vs_out.FragPos = vec3(projection * vec4(l_pos, 1.0f));

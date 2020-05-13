@@ -22,6 +22,7 @@ public interface Object {
     boolean isBattle();
     void setBattle(boolean battle);
 
+    void updateInstanceMatrix(Matrix4f[] matrix);
     float getDistance();
     void setDistance(float distance);
     Vector3f getPosition();
@@ -33,6 +34,7 @@ public interface Object {
     boolean isInstance();
     boolean isShadow();
     boolean isActive();
+    void draw(Shader shader);
     void draw(Shader shader, boolean shadow);
     boolean isBoard();
     void setProjection(Projection projection);

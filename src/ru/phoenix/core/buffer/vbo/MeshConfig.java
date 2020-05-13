@@ -338,6 +338,28 @@ public class MeshConfig implements VertexBufferObject {
     }
 
     @Override
+    public void setNewInstances(Matrix4f[] instances){
+        int v4size = (int) Math.pow(Float.BYTES, 2);
+        glBindVertexArray(vao);
+        // Записываем все позиции в буфер
+        glDeleteBuffers(vbo.get(7));
+        vbo.set(7,glGenBuffers());
+        glBindBuffer(GL_ARRAY_BUFFER, vbo.get(7));
+        if(instances != null) {
+            glBufferData(GL_ARRAY_BUFFER, BufferUtil.createFlippedBuffer(instances), drawInfo);
+        }
+        glVertexAttribPointer(7, 4, GL_FLOAT, false, Float.BYTES * v4size, 0);
+        glVertexAttribPointer(8, 4, GL_FLOAT, false, Float.BYTES * v4size, v4size);
+        glVertexAttribPointer(9, 4, GL_FLOAT, false, Float.BYTES * v4size, 2 * v4size);
+        glVertexAttribPointer(10, 4, GL_FLOAT, false, Float.BYTES * v4size, 3 * v4size);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glVertexAttribDivisor(7, 1);
+        glVertexAttribDivisor(8, 1);
+        glVertexAttribDivisor(9, 1);
+        glVertexAttribDivisor(10, 1);
+    }
+
+    @Override
     public void setNewTex(){
 
         tic += 0.005f;

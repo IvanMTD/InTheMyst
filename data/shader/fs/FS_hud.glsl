@@ -20,6 +20,8 @@ uniform int onTarget;
 uniform sampler2D image;
 uniform int group;
 uniform float id;
+// control
+uniform int discardControl;
 
 vec4 attenuation();
 vec4 targetHighlight();
@@ -31,6 +33,12 @@ void main() {
         fragment_color = targetHighlight();
     }else{
         fragment_color = texture(image, texture_coord);
+    }
+
+    if(discardControl == 1){
+        if(fragment_color.a < 1.0f){
+            discard;
+        }
     }
 
     vec4 rgba = texture(image,texture_coord);

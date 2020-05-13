@@ -48,6 +48,38 @@ public class Bush extends ObjectControl implements Object {
         setTree(true);
     }
 
+    public Bush(int type){
+        super();
+        apply = true;
+        Texture bush = new Texture2D();
+
+        if(type == 0) {
+            bush.setup(null, "./data/content/texture/bush/tree05.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // равнинное
+        }else if(type == 1) {
+            bush.setup(null, "./data/content/texture/bush/tree07.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // елочка
+        }else if(type == 2) {
+            bush.setup(null, "./data/content/texture/bush/tree02.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // равнинное
+        }else if(type == 3) {
+            bush.setup(null, "./data/content/texture/bush/tree03.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // мертвое
+        }else if(type == 4) {
+            bush.setup(null, "./data/content/texture/bush/tree04.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // мертвое
+        }else if(type == 5) {
+            bush.setup(null, "./data/content/texture/bush/tree08.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // кактус
+        }else{
+            apply = false;
+        }
+
+        textures = new ArrayList<>();
+        textures.add(bush);
+        setId(0.0f);
+        setOnTarget(false);
+        setBoard(true);
+        setShadow(true);
+        setAnimated(true);
+        setTree(true);
+        setSimple(true);
+    }
+
     public Bush(Bush object){
         super();
         apply = true;

@@ -36,7 +36,6 @@ uniform vec3 viewDirect;
 uniform float xOffset;
 uniform float yOffset;
 uniform float zOffset;
-uniform float shift;
 // units
 uniform vec4 unit0;
 uniform vec4 unit1;
@@ -61,7 +60,6 @@ out VS_OUT{
 vec2 getMapTexCoord(vec4);
 
 void main() {
-    float gain = 3.5f;
     vec3 cameraRight_worldspace = vec3(view_m[0][0], view_m[1][0], view_m[2][0]);
     vec3 cameraUp_worldspace = vec3(view_m[0][1], view_m[1][1], view_m[2][1]);
     vec3 cameraCenter_worldspace = vec3(view_m[0][2], view_m[1][2], view_m[2][2]);
@@ -104,9 +102,7 @@ void main() {
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = l_instance_m * vec4(result,1.0f);
             vs_out.mapTexCoords = getMapTexCoord(pointPos);
-            vec4 shifted = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
-            shifted = vec4(shifted.x - shift,shifted.y,shifted.z,shifted.w);
-            gl_Position = shifted;
+            gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
 
@@ -128,9 +124,7 @@ void main() {
             vs_out.localPos = l_instance_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = l_instance_m * vec4(l_pos,1.0f);
             vs_out.mapTexCoords = getMapTexCoord(pointPos);
-            vec4 shifted = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
-            shifted = vec4(shifted.x - shift,shifted.y,shifted.z,shifted.w);
-            gl_Position = shifted;
+            gl_Position = perspective_m * view_m * l_instance_m * vec4(result,1.0f);
         }
     }else{
         if(board == 1){
@@ -174,9 +168,7 @@ void main() {
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = model_m * vec4(result,1.0f);
             vs_out.mapTexCoords = getMapTexCoord(pointPos);
-            vec4 shifted = perspective_m * view_m * model_m * vec4(result,1.0f);
-            shifted = vec4(shifted.x - shift,shifted.y,shifted.z,shifted.w);
-            gl_Position = shifted;
+            gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
         }else{
             vec3 result = vec3(l_pos.x + xOffset,l_pos.y + yOffset, l_pos.z + zOffset);
 
@@ -199,9 +191,7 @@ void main() {
             vs_out.localPos = model_m * vec4(0.0f,0.0f,0.0f,1.0f);
             vec4 pointPos = model_m * vec4(l_pos,1.0f);
             vs_out.mapTexCoords = getMapTexCoord(pointPos);
-            vec4 shifted = perspective_m * view_m * model_m * vec4(result,1.0f);
-            shifted = vec4(shifted.x - shift,shifted.y,shifted.z,shifted.w);
-            gl_Position = shifted;
+            gl_Position = perspective_m * view_m * model_m * vec4(result,1.0f);
         }
     }
     vs_out.textureCoord = l_tex;

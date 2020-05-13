@@ -100,6 +100,19 @@ public abstract class StudyAreaControl {
         directLights.add(directLight);
     }
 
+    protected void initLight(Vector3f directLightPosition, Vector3f ambient, Vector3f diffuse, Vector3f specular){
+        Light directLight = new DirectLight(
+                new Vector3f(directLightPosition), // position
+                new Vector3f(ambient), // ambient
+                new Vector3f(diffuse), // diffuse
+                new Vector3f(specular), // specular
+                mapX > mapZ ? mapX : mapZ,
+                mapX,
+                mapZ
+        );
+        directLights.add(directLight);
+    }
+
     public void update(Cell targetElement, Vector3f pixel){
         // ГЛОБАЛЬНЫЕ ОБНОВЛЕНИЯ ЗОНЫ - НАЧАЛО
         // Обновление воды
@@ -324,6 +337,7 @@ public abstract class StudyAreaControl {
 
     public void draw(Shader shader){
         // контролеры
+        shader.setUniform("simple",0);
         shader.setUniform("instance", 0);
         shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
         // доп данные
@@ -344,36 +358,6 @@ public abstract class StudyAreaControl {
                 Vector3f position = new Vector3f(getAllies().get(i).getPosition());
                 float distance = getAllies().get(i).getCharacteristic().getVision();
                 Vector4f unit = new Vector4f(position.getX(),position.getY(),position.getZ(),distance);
-                /*Vector3f p = new Vector3f(getAllies().get(i).getPosition());
-                float vision = getAllies().get(i).getCharacteristic().getVision();
-                float tempVision = getAllies().get(i).getCharacteristic().getTempVision();
-                Vector4f unit;
-                if(tempVision != vision){
-                    if(tempVision < vision){
-                        getAllies().get(i).getCharacteristic().setTempVision(tempVision + 0.01f);
-                        float v = getAllies().get(i).getCharacteristic().getTempVision() / 100.0f;
-                        float a = (0.1f - v) * -1.0f;
-                        float d = 0.1f - a;
-                        unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
-                        if(getAllies().get(i).getCharacteristic().getTempVision() > vision){
-                            getAllies().get(i).getCharacteristic().setTempVision(vision);
-                        }
-                    }else{
-                        getAllies().get(i).getCharacteristic().setTempVision(tempVision - 0.01f);
-                        float v = getAllies().get(i).getCharacteristic().getTempVision() / 100.0f;
-                        float a = (0.1f - v) * -1.0f;
-                        float d = 0.1f - a;
-                        unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
-                        if(getAllies().get(i).getCharacteristic().getTempVision() < vision){
-                            getAllies().get(i).getCharacteristic().setTempVision(vision);
-                        }
-                    }
-                }else {
-                    float v = getAllies().get(i).getCharacteristic().getVision() / 100.0f;
-                    float a = (0.1f - v) * -1.0f;
-                    float d = 0.1f - a;
-                    unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
-                }*/
                 shader.setUniform("unit" + i, unit);
             }else{
                 shader.setUniform("unit" + i, new Vector4f(-1.0f,-1.0f,-1.0f,1.0f));

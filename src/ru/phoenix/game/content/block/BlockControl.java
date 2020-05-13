@@ -1,6 +1,5 @@
 package ru.phoenix.game.content.block;
 
-import ru.phoenix.core.config.Default;
 import ru.phoenix.core.loader.LoadStaticModel;
 import ru.phoenix.core.loader.model.Material;
 import ru.phoenix.core.loader.model.Mesh;
@@ -31,8 +30,11 @@ public abstract class BlockControl {
 
     private boolean isMeshTexture;
 
+    private boolean simple;
+
     // конструкторы
     public BlockControl(){
+        setSimple(false);
         projection = new Projection();
         position = new Vector3f();
         cost = 1;
@@ -81,6 +83,7 @@ public abstract class BlockControl {
             // глобальный юниформ
             shader.setUniformBlock("matrices",0);*/
             // контролеры
+            shader.setUniform("simple",isSimple() ? 1 : 0);
             shader.setUniform("instance",mesh.getVbo().isInstances() ? 1 : 0);
             shader.setUniform("board",0);
             // доп данные
@@ -168,5 +171,19 @@ public abstract class BlockControl {
         for(Mesh mesh : meshes){
             mesh.setupInstance(matrix);
         }
+    }
+
+    public void updateInstanceMatrix(Matrix4f[] matrix){
+        for(Mesh mesh : meshes){
+            mesh.updateInstanceMatrix(matrix);
+        }
+    }
+
+    public boolean isSimple() {
+        return simple;
+    }
+
+    public void setSimple(boolean simple) {
+        this.simple = simple;
     }
 }

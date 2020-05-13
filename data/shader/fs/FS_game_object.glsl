@@ -70,6 +70,7 @@ in flat int useShading;
 in flat int useBorder;
 
 // target highlight
+uniform int simple;
 uniform int instance;
 uniform int w;
 uniform int h;
@@ -82,6 +83,7 @@ uniform DirectLight directLight;
 uniform sampler2D heightMap;
 uniform sampler2D shadowMap;
 uniform sampler2D map;
+uniform int useMap;
 uniform int group;
 uniform float id;
 
@@ -95,42 +97,50 @@ vec3 getDiffuseMap(vec2);
 vec3 getDiffuseMapSide(vec2, float);
 
 void main() {
-    vec4 color = texture(map,fs_in.mapTexCoords);
-    //vec4 color = vec4(1.0f,1.0f,1.0f,1.0f);
+    if(simple == 0){
+        vec4 color = texture(map,fs_in.mapTexCoords);
+        //vec4 color = vec4(1.0f,1.0f,1.0f,1.0f);
 
-    vec3 viewDirection = normalize(fs_in.ViewPos - fs_in.FragPos);
-    vec3 normal = fs_in.Normal;
+        vec3 viewDirection = normalize(fs_in.ViewPos - fs_in.FragPos);
+        vec3 normal = fs_in.Normal;
 
-    if(onTarget == 1){
-        fragment_color = targetHighlight();
-    }else{
-        if(useShading == 0 && useBorder == 0){
-            vec3 result = getDirectLight(directLight, normal, viewDirection,fs_in.TexCoords);
-            //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-            fragment_color = vec4(result, 1.0f);
-            /*if(color.r > 0.0f){
-                fragment_color = mix(skyColor,fragment_color, color.r);
-            }else{
-                fragment_color = skyColor;
-            }*/
+        if(onTarget == 1){
+            fragment_color = targetHighlight();
         }else{
-            if(useBorder == 1){
-                vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
+            if(useShading == 0 && useBorder == 0){
+                vec3 result = getDirectLight(directLight, normal, viewDirection,fs_in.TexCoords);
                 //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-                float rad = radiance * radiance;
-                fragment_color = vec4(result.r * rad, result.g / radiance, result.b / radiance, 1.0f);
-            }
-            if(useShading == 1){
-                vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
-                //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-                fragment_color = vec4(result / 10.0f, 1.0f);
-                /*if(color.r > 0.0f){
-                    fragment_color = mix(skyColor,fragment_color, color.r);
-                }else{
-                    fragment_color = skyColor;
-                }*/
+                fragment_color = vec4(result, 1.0f);
+                if(useMap == 1){
+                    if(color.r > 0.0f){
+                        fragment_color = mix(skyColor,fragment_color, color.r);
+                    }else{
+                        fragment_color = skyColor;
+                    }
+                }
+            }else{
+                if(useBorder == 1){
+                    vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
+                    //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+                    float rad = radiance * radiance;
+                    fragment_color = vec4(result.r * rad, result.g / radiance, result.b / radiance, 1.0f);
+                }
+                if(useShading == 1){
+                    vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
+                    //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
+                    fragment_color = vec4(result / 10.0f, 1.0f);
+                    if(useMap == 1){
+                        if(color.r > 0.0f){
+                            fragment_color = mix(skyColor,fragment_color, color.r);
+                        }else{
+                            fragment_color = skyColor;
+                        }
+                    }
+                }
             }
         }
+    }else{
+        fragment_color = texture(material.diffuseMap,fs_in.TexCoords);
     }
 
     vec4 rgba = texture(material.diffuseMap,fs_in.TexCoords);

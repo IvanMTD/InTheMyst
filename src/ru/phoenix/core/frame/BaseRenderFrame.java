@@ -6,6 +6,7 @@ import ru.phoenix.core.buffer.fbo.MultisampleFrameBuffer;
 import ru.phoenix.core.buffer.fbo.OutputFrameBuffer;
 import ru.phoenix.core.buffer.vbo.NormalizedDeviceCoordinates;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
+import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
@@ -185,6 +186,9 @@ public class BaseRenderFrame implements Framework {
         ndcShader.useProgram();
         ndcShader.setUniform("gamma", Window.getInstance().getGamma());
         ndcShader.setUniform("contrast",Window.getInstance().getContrast());
+        if(scene.getSceneId() == Constants.SCENE_LOGO){
+            ndcShader.setUniform("contrast",0.0f);
+        }
         // main texture
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, render.getTexture());
@@ -192,10 +196,10 @@ public class BaseRenderFrame implements Framework {
 
         glActiveTexture(GL_TEXTURE1);
         if(GameController.getInstance().isTabHold()){
-            glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID()); // отладочный для проверки heimap
+            //glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID()); // отладочный для проверки heimap
             //glBindTexture(GL_TEXTURE_2D, map.getTexture()); // отладочный для проверки war fog
             //glBindTexture(GL_TEXTURE_2D, shadow.getTexture()); // отладочный для проверки карты теней
-            //glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
+            glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
             ndcShader.setUniform("shadow",1);
         }else{
             glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1)); // Основной рендер
@@ -229,6 +233,7 @@ public class BaseRenderFrame implements Framework {
         }
         glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
         ndcShader.setUniform("warFog",2);
+
         ndcVbo.draw();
         count++;
     }

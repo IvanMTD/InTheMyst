@@ -57,4 +57,8 @@ public class ImageFrame {
     public VertexBufferObject getVbo(){
         return vbo;
     }
+
+    public void updateInstanceMatrix(Matrix4f[] matrix){
+        vbo.setNewInstances(matrix);
+    }
 }

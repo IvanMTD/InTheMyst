@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class LogoScene implements Scene {
     private final String MAIN_LOGO_PATH = "./data/logo/cat_logo_683.png";
@@ -31,6 +32,9 @@ public class LogoScene implements Scene {
     private LogoBoard mainLogo;
     private LogoBoard engineLogo;
 
+    private float timer;
+    private float lastTime;
+
     private boolean active;
 
     public LogoScene(){
@@ -38,7 +42,9 @@ public class LogoScene implements Scene {
         shader = new Shader();
         mainLogo = new LogoBoard(true);
         engineLogo = new LogoBoard(false);
-        boards = new ArrayList<LogoBoard>();
+        boards = new ArrayList<>();
+        timer = 0.0f;
+        lastTime = 0.0f;
     }
 
     public void init(){
@@ -86,20 +92,26 @@ public class LogoScene implements Scene {
 
     @Override
     public void update(){
-        if (Time.getSecond() > 10.0f || Input.getInstance().isPressed(GLFW_KEY_SPACE) || Input.getInstance().isPressed(GLFW_KEY_ESCAPE)) {
+        float currentTime = (float)glfwGetTime();
+        float deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+        timer += deltaTime;
+        if (timer > 12.0f || Input.getInstance().isPressed(GLFW_KEY_SPACE) || Input.getInstance().isPressed(GLFW_KEY_ESCAPE)) {
             SceneControl.setLastScene(this);
             for(Scene scene : scenes){
                 if(scene.getSceneId() == Constants.SCENE_MAIN_MENU){
-                    System.out.println("TEST!");
                     scene.start(scenes);
                 }
             }
             over();
+            timer = 0.0f;
+            lastTime = 0.0f;
         }
     }
 
     @Override
     public void draw(){
+        shader.useProgram();
         for(LogoBoard board : boards){
             board.draw(shader);
         }

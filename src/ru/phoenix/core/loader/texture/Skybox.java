@@ -2,8 +2,6 @@ package ru.phoenix.core.loader.texture;
 
 import ru.phoenix.core.buffer.vbo.MeshConfig;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
-import ru.phoenix.core.kernel.Camera;
-import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.shader.Shader;
 

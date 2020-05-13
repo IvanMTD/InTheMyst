@@ -56,6 +56,14 @@ public class Constants {
     public static final int GROUP_A             = 0x20004;
     // CONTROL - END
 
+    // language
+    public static final int RUSSIAN             = 0x40001;
+    public static final int ENGLISH             = 0x40002;
+    // language typing
+    public static final int TYPING_LEFT         = 0x40011;
+    public static final int TYPING_RIGHT        = 0x40012;
+    public static final int TYPING_CENTER       = 0x40013;
+
     // window tittle information and logo
     public static final String ENGINE_VERSION = "1.0.0 alpha";
     public static final String GAME_NAME = "\"IN THE MYST\"";

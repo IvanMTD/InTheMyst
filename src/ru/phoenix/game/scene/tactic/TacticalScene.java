@@ -4,11 +4,13 @@ import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.loader.texture.Skybox;
-import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
+import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
+import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
 import ru.phoenix.game.content.stage.StudyArea;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.hud.assembled.GraundAim;
@@ -36,7 +38,6 @@ public class TacticalScene implements Scene {
     private List<Character> allies;
     private float currentHeight;
 
-    //private VertexBufferObject background;
     private Skybox skybox;
 
     private Shader shader3D;
@@ -73,19 +74,11 @@ public class TacticalScene implements Scene {
     public TacticalScene(){
         active = false;
         init = false;
-        shader3D = new Shader();
-        shaderSprite = new Shader();
         index = 0;
         switchControl = false;
         count = 0.0f;
-        mousePicker = new MousePicker();
         cameraUpdate = false;
-
-        cursorHud = new Cursor();
-        graundAim = new GraundAim("./data/content/texture/zona/cursor.png");
         aimDrawConfig = 0;
-
-        skybox = new Skybox();
     }
 
     public void init(){
@@ -93,6 +86,16 @@ public class TacticalScene implements Scene {
         if(init){
             generate(currentHeight);
         }else {
+
+            shader3D = new Shader();
+            shaderSprite = new Shader();
+
+            cursorHud = new Cursor();
+            graundAim = new GraundAim("./data/content/texture/zona/cursor.png");
+
+            skybox = new Skybox();
+            mousePicker = new MousePicker();
+
             init = true;
 
             shader3D.createVertexShader("VS_game_object.glsl");
@@ -108,24 +111,7 @@ public class TacticalScene implements Scene {
             cursorHud.init();
             graundAim.init();
 
-            //generation(PLAIN_MAP);
             generate(currentHeight);
-            float[] pos = new float[]{
-                    -100.0f, -20.0f, -100.0f,
-                    -100.0f, -20.0f, 300.0f,
-                    300.0f, -20.0f, 300.0f,
-                    300.0f, -20.0f, -100.0f
-            };
-            float[] tex = new float[]{
-                    0.0f, 1.0f,
-                    0.0f, 0.0f,
-                    1.0f, 0.0f,
-                    1.0f, 1.0f
-            };
-            int[] indices = new int[]{
-                    0, 1, 2,
-                    0, 2, 3
-            };
             skybox.init();
         }
     }
@@ -318,7 +304,7 @@ public class TacticalScene implements Scene {
         boolean battle = studyArea.getBattleGround().isActive();
         // рисуем поле и сетку
         shader3D.setUniform("currentHeight",currentHeight);
-        shader3D.setUniform("shift",0.0f);
+        shader3D.setUniform("useMap",1);
         studyArea.draw(shader3D);
 
         skybox.draw();
@@ -327,7 +313,7 @@ public class TacticalScene implements Scene {
         shaderSprite.setUniformBlock("matrices", 0);
         shaderSprite.setUniform("w",studyArea.getMapX());
         shaderSprite.setUniform("h",studyArea.getMapZ());
-        shaderSprite.setUniform("shift",0.0f);
+        shaderSprite.setUniform("useMap",1);
         glActiveTexture(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, Default.getMapTextureId());
         shaderSprite.setUniform("map", 5);
@@ -336,36 +322,6 @@ public class TacticalScene implements Scene {
                 Vector3f position = new Vector3f(studyArea.getAllies().get(i).getPosition());
                 float distance = studyArea.getAllies().get(i).getCharacteristic().getVision();
                 Vector4f unit = new Vector4f(position.getX(),position.getY(),position.getZ(),distance);
-                /*Vector3f p = new Vector3f(studyArea.getAllies().get(i).getPosition());
-                float vision = studyArea.getAllies().get(i).getCharacteristic().getVision();
-                float tempVision = studyArea.getAllies().get(i).getCharacteristic().getTempVision();
-                Vector4f unit;
-                if(tempVision != vision){
-                    if(tempVision < vision){
-                        studyArea.getAllies().get(i).getCharacteristic().setTempVision(tempVision + 0.01f);
-                        float v = studyArea.getAllies().get(i).getCharacteristic().getTempVision() / 100.0f;
-                        float a = (0.1f - v) * -1.0f;
-                        float d = 0.1f - a;
-                        unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
-                        if(studyArea.getAllies().get(i).getCharacteristic().getTempVision() > vision){
-                            studyArea.getAllies().get(i).getCharacteristic().setTempVision(vision);
-                        }
-                    }else{
-                        studyArea.getAllies().get(i).getCharacteristic().setTempVision(tempVision - 0.01f);
-                        float v = studyArea.getAllies().get(i).getCharacteristic().getTempVision() / 100.0f;
-                        float a = (0.1f - v) * -1.0f;
-                        float d = 0.1f - a;
-                        unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
-                        if(studyArea.getAllies().get(i).getCharacteristic().getTempVision() < vision){
-                            studyArea.getAllies().get(i).getCharacteristic().setTempVision(vision);
-                        }
-                    }
-                }else {
-                    float v = studyArea.getAllies().get(i).getCharacteristic().getVision() / 100.0f;
-                    float a = (0.1f - v) * -1.0f;
-                    float d = 0.1f - a;
-                    unit = new Vector4f(p.getX(),p.getY(),p.getZ(),d);
-                }*/
                 shaderSprite.setUniform("unit" + i, unit);
             }else{
                 shaderSprite.setUniform("unit" + i, new Vector4f(-1.0f,-1.0f,-1.0f,1.0f));
@@ -456,7 +412,7 @@ public class TacticalScene implements Scene {
         // ALLIES - ВРЕМЕННО!
 
         // ENEMIES - НАЧАЛО
-        /*int percent = studyArea.getMapX() + studyArea.getMapZ();
+        int percent = studyArea.getMapX() + studyArea.getMapZ();
         int amount = Math.round(2.0f + (float)Math.random()) * percent / 100;
         System.out.println("Число групп противников: " + amount);
         for(int i=0; i<amount; i++) {
@@ -484,7 +440,7 @@ public class TacticalScene implements Scene {
                     studyArea.getEnemies().add(character);
                 }
             }
-        }*/
+        }
         // ENEMIES - КОНЕЦ
 
         first = new ArrayList<>();

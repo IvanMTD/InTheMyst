@@ -1,6 +1,7 @@
 package ru.phoenix.core.loader.sprite;
 
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
+import ru.phoenix.core.math.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,5 +78,11 @@ public class ImageAnimation {
 
     public void setBlock(boolean block) {
         this.block = block;
+    }
+
+    public void updateInstanceMatrix(Matrix4f[] matrix){
+        for(ImageFrame frame : frames){
+            frame.updateInstanceMatrix(matrix);
+        }
     }
 }

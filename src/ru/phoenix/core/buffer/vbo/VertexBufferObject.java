@@ -7,6 +7,7 @@ public interface VertexBufferObject {
     void allocate(float[] positions, float[] normals, float[] textureCoords, float[] tangents, float[] biTangents, int[] boneIds, float[] boneWeights, Matrix4f[] instances, int[] indices);
     void draw();
     void setNewPos(float[] pos);
+    void setNewInstances(Matrix4f[] instances);
     void setNewTex();
     void setNewTex(float[]tex);
     boolean isAnimated();

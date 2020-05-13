@@ -199,7 +199,7 @@ void main() {
         }
     }
 
-    //fragment_color = vec4(fs_in.normal,1.0f);
+    //fragment_color = height;
 
     select_color = vec4(0.0f,0.0f,0.0f,0.0f);
     bright_color = vec4(0.0f,0.0f,0.0f,0.0f);

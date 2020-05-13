@@ -30,9 +30,11 @@ in float visibility;
 
 uniform sampler2D image;
 uniform sampler2D map;
+uniform int useMap;
 uniform int group;
 uniform float id;
 // switch
+uniform int simple;
 uniform int onTarget;
 uniform int discardReverse;
 uniform float discardControl;
@@ -41,7 +43,6 @@ uniform int showAlpha;
 vec4 targetHighlight(vec4 rgba);
 
 void main(){
-    vec4 color = texture(map,fs_in.mapTexCoords);
     //vec4 color = vec4(1.0f,1.0f,1.0f,1.0f);
     // обробатываем текстуру
     vec4 rgba = texture(image,textureCoord);
@@ -94,17 +95,20 @@ void main(){
         }
     }
 
-    /*if(color.r > 0.0f){
-        fragment_color = mix(vec4(skyColor),fragment_color, color.r);
-        *//*if(fs_in.isActive == 1){
-            fragment_color = mix(vec4(rgba.rgb, 0.0f), fragment_color, visibility);
-        }*//*
-    }else{
-        fragment_color = skyColor;
-        if(fs_in.isActive == 1){
-            discard;
+    if(simple == 0 && useMap == 1){
+        vec4 color = texture(map,fs_in.mapTexCoords);
+        if(color.r > 0.0f){
+            fragment_color = mix(vec4(skyColor),fragment_color, color.r);
+            /*if(fs_in.isActive == 1){
+                fragment_color = mix(vec4(rgba.rgb, 0.0f), fragment_color, visibility);
+            }*/
+        }else{
+            fragment_color = skyColor;
+            if(fs_in.isActive == 1){
+                discard;
+            }
         }
-    }*/
+    }
 
     if(fs_in.indicator == 1){
         fragment_color = rgba;

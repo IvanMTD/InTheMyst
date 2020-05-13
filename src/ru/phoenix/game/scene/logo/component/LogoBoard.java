@@ -60,8 +60,8 @@ public class LogoBoard {
         float[] pos = new float[]{
                 -offsetW,  offsetH, 0.0f,
                 -offsetW, -offsetH, 0.0f,
-                offsetW, -offsetH, 0.0f,
-                offsetW,  offsetH, 0.0f
+                 offsetW, -offsetH, 0.0f,
+                 offsetW,  offsetH, 0.0f
         };
 
         float[] tex = new float[]{
@@ -113,13 +113,13 @@ public class LogoBoard {
     }
 
     private void setUniforms(Shader shader){
-        shader.useProgram();
         shader.setUniformBlock("matrices",0);
         shader.setUniform("model_m",projection.getModelMatrix());
         shader.setUniform("projection",0);
         shader.setUniform("tune",tune ? 1 : 0);
         shader.setUniform("onTarget",0);
-        shader.setUniform("id",0.0f);
+        shader.setUniform("id",-1.0f);
+        shader.setUniform("discardControl",0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
         shader.setUniform("image", 0);

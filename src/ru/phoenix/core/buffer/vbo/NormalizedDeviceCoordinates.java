@@ -61,6 +61,11 @@ public class NormalizedDeviceCoordinates implements VertexBufferObject {
     }
 
     @Override
+    public void setNewInstances(Matrix4f[] instances) {
+
+    }
+
+    @Override
     public void setNewTex() {
 
     }

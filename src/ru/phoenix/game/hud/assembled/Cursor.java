@@ -71,11 +71,12 @@ public class Cursor {
         };
 
         vbo.allocate(position,null,texCoord,null,null,null,null,null,indices);
+        setHandCursor();
     }
 
     public void update(List<Character> enemies){
-        setHandCursor();
         if(enemies != null) {
+            setHandCursor();
             for (Character enemy : enemies) {
                 if (enemy.getId() == Pixel.getPixel().getR()) {
                     setRedCursor();

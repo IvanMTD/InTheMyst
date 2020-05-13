@@ -31,6 +31,8 @@ public class Default {
 
     private static boolean mapFrameStart;
 
+    private static int langueage;
+
     public static void init() {
         start = false;
         showAlpha = false;
@@ -45,6 +47,8 @@ public class Default {
 
         mapFrameStart = false;
         mapTextureId = 0;
+
+        langueage = WindowConfig.getInstance().getLangueage();
 
         cursorAngle = 0.0f;
         glEnable(GL_DEPTH_TEST);
@@ -152,5 +156,9 @@ public class Default {
 
     public static void setMapTextureId(int mapTextureId) {
         Default.mapTextureId = mapTextureId;
+    }
+
+    public static int getLangueage() {
+        return langueage;
     }
 }

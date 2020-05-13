@@ -40,17 +40,10 @@ public class StrategyScene implements Scene {
     // скайбокс
     private Skybox skybox;
 
-    private boolean reverse;
-    private float tempBiom = 5.0f;
-
     public StrategyScene() {
         km = 100;
         currentKm = 0;
         m = 0.0f;
-        reverse = false;
-        strategicScreen = new StrategicScreen();
-        skybox = new Skybox();
-        cursor = new Cursor();
         allies = new ArrayList<>();
         scenes = new ArrayList<>();
         active = false;
@@ -63,12 +56,17 @@ public class StrategyScene implements Scene {
         Camera.getInstance().setFront(new Vector3f(0.0f,0.0f,-1.0f));
         Camera.getInstance().updateViewMatrix();
         if(!init){
-            init = true;
+
+            strategicScreen = new StrategicScreen();
+            skybox = new Skybox();
+            cursor = new Cursor();
+
             createAllies();
             createBioms();
             skybox.init();
             cursor.init();
             strategicScreen.init(bioms[currentKm]); // getBiom(bioms[currentKm])
+            init = true;
         }
     }
 
@@ -135,7 +133,7 @@ public class StrategyScene implements Scene {
             float newBiom = 1.0f * percent / 100.0f;
             biom = getBiom(newBiom * 50.0f);
             if(i == 0){
-                    bioms[i] = biom;
+                    bioms[i] = 25.0f;
             }else {
                 float previous = bioms[(i * 2) - 2];
                 if (previous > biom) {
@@ -190,10 +188,10 @@ public class StrategyScene implements Scene {
         if(m > 300.0f){
             m = 0.0f;
             currentKm++;
-            System.out.println(bioms[currentKm]);
             if(currentKm >= bioms.length){
                 currentKm = 0;
             }
+            System.out.println(getInfo(bioms[currentKm]));
         }
 
         float biom = bioms[currentKm];
@@ -225,26 +223,6 @@ public class StrategyScene implements Scene {
         }else{
             result = 45.0f;
         }
-
-        /*if(0.0f <= b && b < 7.5f){
-            result = 5.0f;
-        }else if(7.5f <= b && b < 12.5f){
-            result = 10.0f;
-        }else if(12.5f <= b && b < 17.5f){
-            result = 15.0f;
-        }else if(17.5f <= b && b < 22.5f){
-            result = 20.0f;
-        }else if(22.5f <= b && b < 27.5f){
-            result = 25.0f;
-        }else if(27.5f <= b && b < 32.5f){
-            result = 30.0f;
-        }else if(32.5f <= b && b < 37.5f){
-            result = 35.0f;
-        }else if(37.5f <= b && b < 42.5f){
-            result = 40.0f;
-        }else{
-            result = 45.0f;
-        }*/
 
         return result;
     }

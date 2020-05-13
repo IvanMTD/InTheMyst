@@ -47,6 +47,39 @@ public class Tree extends ObjectControl implements Object {
         setTree(true);
     }
 
+    public Tree(int type){
+        super();
+        apply = true;
+
+        Texture tree = new Texture2D();
+
+        if(type == 0) {
+            tree.setup(null, "./data/content/texture/tree/tree11.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // липа? 0
+        }else if(type == 1) {
+            tree.setup(null, "./data/content/texture/tree/tree12.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // сосна 1
+        }else if(type == 2) {
+            tree.setup(null, "./data/content/texture/tree/tree13.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // ель   2
+        }else if(type == 3) {
+            tree.setup(null, "./data/content/texture/tree/tree14.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // мертвая сосна 3
+        }else if(type == 4) {
+            tree.setup(null, "./data/content/texture/tree/tree15.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // мертвая ель 4
+        }else if(type == 5) {
+            tree.setup(null, "./data/content/texture/tree/tree16.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // кактус 5
+        }else{
+            apply = false;
+        }
+
+        textures = new ArrayList<>();
+        textures.add(tree);
+        setId(0.0f);
+        setOnTarget(false);
+        setBoard(true);
+        setShadow(true);
+        setAnimated(true);
+        setTree(true);
+        setSimple(true);
+    }
+
     public Tree(Tree object){
         super();
         apply = true;

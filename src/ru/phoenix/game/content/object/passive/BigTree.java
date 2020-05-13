@@ -40,6 +40,29 @@ public class BigTree extends ObjectControl implements Object {
         setTree(true);
     }
 
+    public BigTree(int type){
+        super();
+        apply = true;
+        Texture tree = new Texture2D();
+
+        if(type == 0) {
+            tree.setup(null, "./data/content/texture/bigtree/tree01.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // Дуб
+        }else {
+            tree.setup(null, "./data/content/texture/bigtree/tree08.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // Мертвый дуб
+        }
+
+        textures = new ArrayList<>();
+        textures.add(tree);
+        setId(0.0f);
+        setOnTarget(false);
+        setBoard(true);
+        setShadow(true);
+        setAnimated(true);
+        setBigTree(true);
+        setTree(true);
+        setSimple(true);
+    }
+
     public BigTree(BigTree object){
         super();
         apply = true;

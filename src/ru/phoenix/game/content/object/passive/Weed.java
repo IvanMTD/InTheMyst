@@ -43,6 +43,34 @@ public class Weed extends ObjectControl implements Object {
         setAnimated(true);
     }
 
+    public Weed(int type){
+        super();
+        apply = true;
+        Texture weed = new Texture2D();
+
+        if(type == 0) {
+            weed.setup(null, "./data/content/texture/grass/grass01.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // луг
+        }else if(type == 1) {
+            weed.setup(null, "./data/content/texture/grass/grass02.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // луг
+        }else if(type == 2) {
+            weed.setup(null, "./data/content/texture/grass/grass03.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // степной
+        }else if(type == 3) {
+            weed.setup(null, "./data/content/texture/grass/grass04.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // лес
+        }else if(type == 4) {
+            weed.setup(null, "./data/content/texture/grass/grass05.png", GL_SRGB_ALPHA, GL_CLAMP_TO_BORDER); // лес
+        }else{
+            apply = false;
+        }
+
+        textures = new ArrayList<>();
+        textures.add(weed);
+        setId(0.0f);
+        setOnTarget(false);
+        setBoard(true);
+        setAnimated(true);
+        setSimple(true);
+    }
+
     public Weed(Weed object){
         super();
         apply = true;

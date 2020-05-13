@@ -7,6 +7,9 @@ import ru.phoenix.core.math.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
+
 public class Mesh {
     public static final int MAX_WEIGHTS = 4;
 
@@ -41,7 +44,7 @@ public class Mesh {
     }
 
     private void setupMesh(){
-        vbo = new MeshConfig();
+        vbo = new MeshConfig(GL_DYNAMIC_DRAW,GL_TRIANGLES);
         if(animated){
             vbo.allocate(getPositions(), getNormals(), getTexturesCoords(), getTangents(), getBiTangents(), getBoneId(), getWeight(), null, getIndices());
         }else {
@@ -51,12 +54,16 @@ public class Mesh {
     }
 
     public void setupInstance(Matrix4f[] instanceMatrix){
-        vbo = new MeshConfig();
+        vbo = new MeshConfig(GL_DYNAMIC_DRAW,GL_TRIANGLES);
         if(animated){
             vbo.allocate(getPositions(), getNormals(), getTexturesCoords(), getTangents(), getBiTangents(), getBoneId(), getWeight(), instanceMatrix, getIndices());
         }else {
             vbo.allocate(getPositions(), getNormals(), getTexturesCoords(), getTangents(), getBiTangents(), null, null, instanceMatrix, getIndices());
         }
+    }
+
+    public void updateInstanceMatrix(Matrix4f[] matrix){
+        vbo.setNewInstances(matrix);
     }
 
     public void draw(){

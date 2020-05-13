@@ -46,6 +46,7 @@ public abstract class ObjectControl {
     private float yOffset;
     private float zOffset;
     // shader control
+    private boolean simple;
     private boolean instance;
     private boolean animated;
     private boolean onTarget;
@@ -63,6 +64,7 @@ public abstract class ObjectControl {
     private boolean tapStop;
 
     public ObjectControl(){
+        simple = false;
         isIndicatorOn = false;
         tapStop = false;
         selfIndicators = null;
@@ -184,6 +186,14 @@ public abstract class ObjectControl {
 
     protected void setSelfIndicators(SelfIndicators selfIndicators) {
         this.selfIndicators = selfIndicators;
+    }
+
+    public boolean isSimple() {
+        return simple;
+    }
+
+    public void setSimple(boolean simple) {
+        this.simple = simple;
     }
 
     public float getId() {
@@ -314,6 +324,72 @@ public abstract class ObjectControl {
         this.tree = tree;
     }
 
+    public void updateInstanceMatrix(Matrix4f[] matrix){
+        sprite.updateInstanceMatrix(matrix);
+    }
+
+    public void draw(Shader shader){
+
+        if(checkObjectOnScreen() || sprite.getVbo().isInstances()) {
+            // контролеры
+            shader.setUniform("simple", isSimple() ? 1 : 0);
+            shader.setUniform("instance", sprite.getVbo().isInstances() ? 1 : 0);
+            shader.setUniform("animated", 0);
+            shader.setUniform("board", isBoard() ? 1 : 0);
+            shader.setUniform("grid", 0);
+            shader.setUniform("isActive", isActive() ? 1 : 0);
+            shader.setUniform("bigTree", isBigTree() ? 1 : 0);
+            shader.setUniform("tree", isTree() ? 1 : 0);
+            shader.setUniform("showAlpha", Default.isShowAlpha() ? 1 : 0);
+            shader.setUniform("viewDirect", new Vector3f(Camera.getInstance().getFront().normalize()));
+            shader.setUniform("turn", 0);
+            shader.setUniform("discardReverse", 0);
+            shader.setUniform("discardControl", -1.0f);
+            shader.setUniform("indicator", 0);
+            shader.setUniform("onTarget", isOnTarget() ? 1 : 0);
+            shader.setUniform("water", isWater() ? 1 : 0);
+            // доп данные
+            shader.setUniform("model_m", projection.getModelMatrix());
+            shader.setUniform("xOffset", xOffset);
+            shader.setUniform("yOffset", yOffset);
+            shader.setUniform("zOffset", zOffset);
+            shader.setUniform("group", group);
+            shader.setUniform("id", id);
+            // end
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, textures.get(currentTexture).getTextureID());
+            shader.setUniform("image", 0);
+
+            sprite.draw();
+
+            if (animated) {
+                if (isBoard()) {
+                    if (isActive()) {
+                        if (!isJump() && !sprite.isBlock()) {
+                            if (counter > sprite.getCondition()) {
+                                sprite.nextFrame();
+                                counter = 0.0f;
+                            }
+                        }
+                    } else {
+                        if (counter > 10.0f + Math.random() * 10.0f) {
+                            sprite.nextFrame();
+                            counter = 0.0f;
+                        }
+                    }
+                } else {
+                    if (counter > 20.0f) {
+                        sprite.nextFrame();
+                        counter = 0.0f;
+                    }
+                }
+                float tik = (float) glfwGetTime() - lastCount;
+                counter += (tik * CoreEngine.getFps());
+                lastCount = (float) glfwGetTime();
+            }
+        }
+    }
+
     public void draw(Shader shader, boolean shadow){
 
         if(checkObjectOnScreen() || sprite.getVbo().isInstances()) {
@@ -333,6 +409,7 @@ public abstract class ObjectControl {
             // глобальный юниформ
             shader.setUniformBlock("matrices",0);*/
             // контролеры
+            shader.setUniform("simple", isSimple() ? 1 : 0);
             shader.setUniform("instance", sprite.getVbo().isInstances() ? 1 : 0);
             shader.setUniform("animated", 0);
             shader.setUniform("board", isBoard() ? 1 : 0);

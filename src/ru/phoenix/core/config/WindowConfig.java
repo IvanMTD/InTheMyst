@@ -10,6 +10,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import static ru.phoenix.core.config.Constants.ENGLISH;
+import static ru.phoenix.core.config.Constants.RUSSIAN;
+
 public class WindowConfig {
 
     private static WindowConfig instance = null;
@@ -48,6 +51,7 @@ public class WindowConfig {
             defaultConfig.add("contrast");defaultConfig.add(Float.toString(0.0f));
             defaultConfig.add("z_near");defaultConfig.add(Float.toString(0.01f));
             defaultConfig.add("z_far");defaultConfig.add(Float.toString(300.0f));
+            defaultConfig.add("langueage");defaultConfig.add("ENGLISH");
             writeFile(defaultConfig);
         }
     }
@@ -156,6 +160,37 @@ public class WindowConfig {
         for(int i=0; i<param.size(); i++){
             if(param.get(i).equals("z_far")){
                 param.set(i+1,Float.toString(zFar));
+            }
+        }
+        writeFile(param);
+    }
+
+    public int getLangueage(){
+        String languageDescription = getParam("langueage");
+        int result = 0;
+        if(languageDescription == "RUSSIAN"){
+            result = RUSSIAN;
+        }else if(languageDescription == "ENGLISH"){
+            result = ENGLISH;
+        }else{
+            result = ENGLISH;
+        }
+        return result;
+    }
+
+    public void setLangueage(int languageDescription){
+        String langueage;
+        if(languageDescription == RUSSIAN){
+            langueage = "RUSSIAN";
+        }else if(languageDescription == ENGLISH){
+            langueage = "ENGLISH";
+        }else{
+            langueage = "ENGLISH";
+        }
+        List<String>param = getCurrentCopy();
+        for(int i=0; i<param.size(); i++){
+            if(param.get(i).equals("langueage")){
+                param.set(i+1,langueage);
             }
         }
         writeFile(param);
