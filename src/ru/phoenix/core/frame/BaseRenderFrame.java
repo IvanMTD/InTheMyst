@@ -17,7 +17,6 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
-import ru.phoenix.game.logic.generator.Generator;
 import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
 

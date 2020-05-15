@@ -97,6 +97,20 @@ public class MenuScene implements Scene {
     }
 
     @Override
+    public void reInit() {
+        Camera.getInstance().preset(25.0f,-90.0f,-10.0f);
+        Camera.getInstance().setPos(new Vector3f(25.0f,27.0f,59.0f));
+        Camera.getInstance().setFront(new Vector3f(0.0f,0.0f,-1.0f));
+        Camera.getInstance().updateViewMatrix();
+        mainMenu = new MainMenu();
+        settingsMenu = new SettingsMenu();
+        over = false;
+        reverse = false;
+        menuAction = NO_ACTION;
+        settingsAction = NO_ACTION;
+    }
+
+    @Override
     public void over() {
         active = false;
         menuAction = NO_ACTION;
@@ -217,7 +231,7 @@ public class MenuScene implements Scene {
                 lastTime = (float)glfwGetTime();
             }
             float currentTime = (float)glfwGetTime();
-            float deltaTime = currentTime - lastTime;
+            float deltaTime = 0.01f;//currentTime - lastTime;
             lastTime = currentTime;
             timer += deltaTime;
 

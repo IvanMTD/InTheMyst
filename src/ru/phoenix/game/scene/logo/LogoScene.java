@@ -81,6 +81,11 @@ public class LogoScene implements Scene {
     }
 
     @Override
+    public void reInit() {
+
+    }
+
+    @Override
     public void over() {
         active = false;
     }

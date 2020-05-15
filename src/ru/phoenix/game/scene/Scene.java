@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface Scene {
     void start(List<Scene> scenes);
+    void reInit();
     void over();
     void preset(float currentHeight, List<Character> allies);
     void update();

@@ -9,6 +9,7 @@ import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.hud.elements.HeadsUpDisplay;
 import ru.phoenix.game.hud.elements.strucet.Board;
 import ru.phoenix.game.hud.elements.strucet.Button;
+import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.menu.elements.SettingsElement;
 import ru.phoenix.game.scene.menu.storage.MainMenuTextures;
@@ -124,7 +125,7 @@ public class SettingsMenu {
         id2+=0.01f;
         antialiasing = new SettingsElement(position,250.0f,50.0f,"Antialiasing",info,id1,id2);
         int a = WindowConfig.getInstance().getSamples();
-        if(a == 0){
+        if(a == 1){
             antialiasing.setIndex(0);
         }else if(a == 2){
             antialiasing.setIndex(1);
@@ -268,7 +269,7 @@ public class SettingsMenu {
     private void saveSettings(){
         saveWindowMode();
         saveWindowSize();
-        atIndex = antialiasing.getIndex();
+        saveAntialiasing();
         saveGamma();
         saveContrast();
     }
@@ -283,7 +284,65 @@ public class SettingsMenu {
     }
 
     private void saveWindowSize(){
-        sstIndex = screenSize.getIndex();
+        if(sstIndex != screenSize.getIndex()) {
+            sstIndex = screenSize.getIndex();
+            int w = 0;
+            int h = 0;
+            switch (sstIndex) {
+                case 0:
+                    w = 640;
+                    h = 480;
+                    break;
+                case 1:
+                    w = 800;
+                    h = 600;
+                    break;
+                case 2:
+                    w = 1024;
+                    h = 768;
+                    break;
+                case 3:
+                    w = 1280;
+                    h = 720;
+                    break;
+                case 4:
+                    w = 1440;
+                    h = 900;
+                    break;
+                case 5:
+                    w = 1920;
+                    h = 1080;
+                    break;
+            }
+            Window.getInstance().setWindowSize(w, h);
+            SceneControl.setReinit(true);
+        }
+    }
+
+    private void saveAntialiasing(){
+        if(atIndex != antialiasing.getIndex()){
+            atIndex = antialiasing.getIndex();
+            int samples = 0;
+            switch (atIndex){
+                case 0:
+                    samples = 1;
+                    break;
+                case 1:
+                    samples = 2;
+                    break;
+                case 2:
+                    samples = 4;
+                    break;
+                case 3:
+                    samples = 8;
+                    break;
+                case 4:
+                    samples = 16;
+                    break;
+            }
+            WindowConfig.getInstance().setSamples(samples);
+            SceneControl.setReinit(true);
+        }
     }
 
     private void saveGamma(){

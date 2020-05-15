@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static ru.phoenix.core.config.Constants.*;
 
 public class CoreEngine {
     private Render render;
@@ -80,41 +81,49 @@ public class CoreEngine {
         while(isRunning){
             Scene currentScene = SceneControl.getCurrentScene(scenes);
 
-            boolean render = false;
-
-            long startTime = System.nanoTime();
-            long passedTime = startTime - lastTime;
-            lastTime = startTime;
-
-            unprocessedTime += passedTime / (double) Constants.NANOSECOND;
-            frameCounter += passedTime;
-
-            while(unprocessedTime > frameTime) {
-
-                render = true;
-                unprocessedTime -= frameTime;
-
-                if (Window.getInstance().isCloseRequested()) {
-                    stop();
-                }
-
-                update(currentScene);
-
-                if(frameCounter >= Constants.NANOSECOND) {
-                    setFps(frames);
-                    frames = 0;
-                    frameCounter = 0;
-                }
-            }
-
-            if(render) {
-                render(currentScene);
-                frames++;
+            if(SceneControl.isReinit()){
+                render = new Render();
+                render.init();
+                currentScene.reInit();
+                SceneControl.setReinit(false);
             }else {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
+                boolean render = false;
+
+                long startTime = System.nanoTime();
+                long passedTime = startTime - lastTime;
+                lastTime = startTime;
+
+                unprocessedTime += passedTime / (double) Constants.NANOSECOND;
+                frameCounter += passedTime;
+
+                while (unprocessedTime > frameTime) {
+
+                    render = true;
+                    unprocessedTime -= frameTime;
+
+                    if (Window.getInstance().isCloseRequested()) {
+                        stop();
+                    }
+
+                    update(currentScene);
+
+                    if (frameCounter >= Constants.NANOSECOND) {
+                        setFps(frames);
+                        frames = 0;
+                        frameCounter = 0;
+                    }
+                }
+
+                if (render) {
+                    render(currentScene);
+                    frames++;
+                } else {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

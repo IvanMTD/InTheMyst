@@ -124,6 +124,11 @@ public class TacticalScene implements Scene {
     }
 
     @Override
+    public void reInit() {
+
+    }
+
+    @Override
     public void over(){
         active = false;
     }
@@ -301,6 +306,7 @@ public class TacticalScene implements Scene {
 
     @Override
     public void draw(){
+
         boolean battle = studyArea.getBattleGround().isActive();
         // рисуем поле и сетку
         shader3D.setUniform("currentHeight",currentHeight);
