@@ -75,7 +75,7 @@ public class SettingsMenu {
         float y = Window.getInstance().getHeight() / 12.0f;
         float z = -0.09f;
         Vector3f position = new Vector3f(x,y,z);
-        title = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols("Settings",position,1.0f,TYPING_CENTER));
+        title = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols("Settings",position,2.0f,TYPING_CENTER));
         title.setTextColor(new Vector3f(1.0f,1.0f,1.0f));
     }
 
@@ -430,20 +430,21 @@ public class SettingsMenu {
         }
     }
 
-    public void update(float offset){
+    public void update(Vector3f offsetVector){
         for(HeadsUpDisplay hud : huds){
-            hud.setPosition(hud.getPosition().add(new Vector3f(offset,0.0f,0.0f)));
+            hud.setPosition(hud.getPosition().add(offsetVector));
             hud.update(new Vector3f());
         }
-        title.updatePosition(offset);
-        screenMode.update(offset);
-        screenSize.update(offset);
-        antialiasing.update(offset);
-        gamma.update(offset);
-        contrast.update(offset);
+        title.updatePosition(offsetVector);
+        screenMode.update(offsetVector);
+        screenSize.update(offsetVector);
+        antialiasing.update(offsetVector);
+        gamma.update(offsetVector);
+        contrast.update(offsetVector);
     }
 
     public void draw(Shader shader){
+        // draw hud
         for(HeadsUpDisplay hud : huds){
             hud.draw(shader);
         }
@@ -452,6 +453,7 @@ public class SettingsMenu {
         antialiasing.drawHud(shader);
         gamma.drawHud(shader);
         contrast.drawHud(shader);
+        // draw text
         TextDisplay.getInstance().getShader().useProgram();
         TextDisplay.getInstance().getText(Default.getLangueage()).drawText(title.getSymbols(),TextDisplay.getInstance().getShader());
         screenMode.drawText(TextDisplay.getInstance().getShader());

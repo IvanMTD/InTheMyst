@@ -32,9 +32,9 @@ public class SymbolLibrary {
     private void initAlphabet(int language){
         String path;
         if(language == ENGLISH){
-            path = "./data/content/texture/hud/chars/eng-alphabet.png";
+            path = "./data/content/texture/hud/chars/sprFont.png";//"./data/content/texture/hud/chars/eng-alphabet.png";
         }else{
-            path = "./data/content/texture/hud/chars/eng-alphabet.png";
+            path = "./data/content/texture/hud/chars/sprFont.png";//"./data/content/texture/hud/chars/eng-alphabet.png";
         }
         initTexture(path);
         initSymbols(language);
@@ -49,6 +49,21 @@ public class SymbolLibrary {
         char[] chars;
         if(language == ENGLISH){
             chars = new char[]{
+                    '!','"','#','$','%','&','\'','(',
+                    ')','*','+',',','-','.','/','0',
+                    '1','2','3','4','5','6','7','8',
+                    '9',':',';','<','=','>','?','@',
+                    'A','B','C','D','E','F','G','H',
+                    'I','J','K','L','M','N','O','P',
+                    'Q','R','S','T','U','V','W','X',
+                    'Y','Z','[','\\',']','^','_','`',
+                    'a','b','c','d','e','f','g','h',
+                    'i','j','k','l','m','n','o','p',
+                    'q','r','s','t','u','v','w','x',
+                    'y','z','{','|','}','~','῍','¡',
+                    '€','→','↓','©','⏰','¿','$',' '
+            };
+            /*chars = new char[]{
                     'A','B','C','D','E','F','G','H',
                     'I','J','K','L','M','N','O','P',
                     'Q','R','S','T','U','V','W','X',
@@ -57,9 +72,24 @@ public class SymbolLibrary {
                     'o','p','q','r','s','t','u','v',
                     'w','x','y','z','1','2','3','4',
                     '5','6','7','8','9','0','!','?'
-            };
+            };*/
         }else{
             chars = new char[]{
+                    '!','"','#','$','%','&','\'','(',
+                    ')','*','+',',','-','.','/','0',
+                    '1','2','3','4','5','6','7','8',
+                    '9',':',';','<','=','>','?','@',
+                    'A','B','C','D','E','F','G','H',
+                    'I','J','K','L','M','N','O','P',
+                    'Q','R','S','T','U','V','W','X',
+                    'Y','Z','[','\\',']','^','_','`',
+                    'a','b','c','d','e','f','g','h',
+                    'i','j','k','l','m','n','o','p',
+                    'q','r','s','t','u','v','w','x',
+                    'y','z','{','|','}','~','῍','¡',
+                    '€','→','↓','©','⏰','¿','$',' '
+            };
+            /*chars = new char[]{
                     'A','B','C','D','E','F','G','H',
                     'I','J','K','L','M','N','O','P',
                     'Q','R','S','T','U','V','W','X',
@@ -68,30 +98,33 @@ public class SymbolLibrary {
                     'o','p','q','r','s','t','u','v',
                     'w','x','y','z','1','2','3','4',
                     '5','6','7','8','9','0','!','?'
-            };
+            };*/
         }
 
         setSymbols(chars);
     }
 
     private void setSymbols(char[] chars){
-        int totalWidth = alphabetTexture.getWidth();
-        int totalHeight = alphabetTexture.getHeight();
+        float w = 8.0f;
+        float h = 13.0f;
 
-        float fragmentWidth = (float)totalWidth / 8.0f;
-        float fragmentHeight = (float)totalHeight / 8.0f;
+        int totalWidth = alphabetTexture.getWidth() * 2;
+        int totalHeight = alphabetTexture.getHeight() * 2;
+
+        float fragmentWidth = (float)totalWidth / w;
+        float fragmentHeight = (float)totalHeight / h;
 
         float ix = fragmentWidth / 2.0f;
         float iy = fragmentHeight / 2.0f;
-        fragmentSize = fragmentWidth / 2.0f;
+        fragmentSize = fragmentWidth / 1.5f;
 
         float baseX = fragmentWidth * 1.0f / totalWidth;
         float baseY = fragmentHeight * 1.0f / totalHeight;
 
         int index = 0;
 
-        for(int row = 1; row <= 8; row++){
-            for(int column = 1; column <= 8; column++){
+        for(int row = 1; row <= h; row++){
+            for(int column = 1; column <= w; column++){
                 char description = chars[index];
                 float[]pos = new float[]{
                         -ix,  iy,  0.0f,

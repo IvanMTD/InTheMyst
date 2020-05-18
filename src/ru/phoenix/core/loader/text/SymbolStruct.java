@@ -24,9 +24,9 @@ public class SymbolStruct {
         this.symbols = symbols;
     }
 
-    public void updatePosition(float offset){
+    public void updatePosition(Vector3f offsetVector){
         for(Symbol symbol : symbols){
-            symbol.setPosition(symbol.getPosition().add(new Vector3f(offset,0.0f,0.0f)));
+            symbol.setPosition(symbol.getPosition().add(offsetVector));
         }
     }
 

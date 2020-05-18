@@ -14,6 +14,6 @@ void main() {
     if(rgba.a < 1.0f || empty == 1){
         discard;
     }
-    fragment_color = vec4(color,1.0f);
+    fragment_color = rgba;//vec4(color,1.0f);
     select_color = vec4(0.0f,0.0f,0.0f,0.0f);
 }

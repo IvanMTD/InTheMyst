@@ -108,9 +108,9 @@ public class MainMenu {
         }
     }
 
-    public void update(float offset){
+    public void update(Vector3f offsetVector){
         for(HeadsUpDisplay hud : huds){
-            hud.setPosition(hud.getPosition().add(new Vector3f(offset,0.0f,0.0f)));
+            hud.setPosition(hud.getPosition().add(offsetVector));
             hud.update(new Vector3f());
         }
     }

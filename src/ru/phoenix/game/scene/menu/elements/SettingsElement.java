@@ -43,7 +43,7 @@ public class SettingsElement {
     private void settupTitre(Vector3f position, float width, float height, String titre){
         float xOffset = width / 2.0f;
         Vector3f pos = new Vector3f(position.getX() - xOffset, position.getY(),position.getZ());
-        this.titre = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(titre,pos,0.6f,TYPING_LEFT));
+        this.titre = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(titre,pos,0.55f,TYPING_LEFT));
         this.titre.setTextColor(new Vector3f(1.0f,1.0f,1.0f));
     }
 
@@ -60,7 +60,7 @@ public class SettingsElement {
         float xOffset = width / 4.0f;
         Vector3f pos = new Vector3f(position.getX() + xOffset, position.getY(), position.getZ());
         for(int i=0; i<info.size(); i++) {
-            SymbolStruct s = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(info.get(i), pos, 0.58f, TYPING_CENTER));
+            SymbolStruct s = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(info.get(i), pos, 0.55f, TYPING_CENTER));
             s.setTextColor(new Vector3f(1.0f,1.0f,1.0f));
             symbolStructs.add(s);
         }
@@ -86,13 +86,13 @@ public class SettingsElement {
         }
     }
 
-    public void update(float offset){
-        titre.updatePosition(offset);
+    public void update(Vector3f offsetVector){
+        titre.updatePosition(offsetVector);
         for(SymbolStruct symbolStruct : symbolStructs){
-            symbolStruct.updatePosition(offset);
+            symbolStruct.updatePosition(offsetVector);
         }
         for(HeadsUpDisplay hud : huds){
-            hud.setPosition(hud.getPosition().add(new Vector3f(offset,0.0f,0.0f)));
+            hud.setPosition(hud.getPosition().add(offsetVector));
             hud.update(new Vector3f());
         }
     }

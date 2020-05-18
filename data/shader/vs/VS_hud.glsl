@@ -20,6 +20,6 @@ out vec2 texture_coord;
 uniform mat4 model_m;
 
 void main() {
-    gl_Position = ortho_m * model_m * vec4(l_pos, 1.0f);
+    gl_Position = ortho_m * model_m * vec4(l_pos,1.0f);
     texture_coord = l_tex;
 }

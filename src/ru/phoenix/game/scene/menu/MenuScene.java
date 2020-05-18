@@ -13,16 +13,13 @@ import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
 import ru.phoenix.game.scene.menu.elements.Background;
+import ru.phoenix.game.scene.menu.struct.LoadingMenu;
 import ru.phoenix.game.scene.menu.struct.MainMenu;
 import ru.phoenix.game.scene.menu.struct.SettingsMenu;
 
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static ru.phoenix.game.scene.menu.struct.MainMenu.*;
-import static ru.phoenix.game.scene.menu.struct.MainMenu.NEW_GAME_BUTTON;
-import static ru.phoenix.game.scene.menu.struct.SettingsMenu.BACK_BUTTON;
-import static ru.phoenix.game.scene.menu.struct.SettingsMenu.OK_BUTTON;
 
 public class MenuScene implements Scene {
     private Shader shader;
@@ -31,6 +28,7 @@ public class MenuScene implements Scene {
     private Cursor cursor;
     private Background background;
     private MainMenu mainMenu;
+    private LoadingMenu loadingMenu;
     private SettingsMenu settingsMenu;
 
     private boolean active;
@@ -39,13 +37,15 @@ public class MenuScene implements Scene {
     // Переменные метода анимации
     private float tempGamma;
     private float timer;
-    private float lastTime;
     private boolean over;
+    private boolean over2;
     private boolean reverse;
+    private boolean reverse2;
 
     // Переменные контроля меню
     private float menuAction;
     private float settingsAction;
+    private float loadingAction;
 
     public MenuScene() {
         shader = new Shader();
@@ -56,13 +56,15 @@ public class MenuScene implements Scene {
         // переменные метода анимации
         tempGamma = Window.getInstance().getGamma();
         timer = 0.0f;
-        lastTime = 0.0f;
         over = false;
+        over2 = false;
         reverse = false;
+        reverse2 = false;
 
         // переменые контроля меню
-        menuAction = NO_ACTION;
-        settingsAction = NO_ACTION;
+        menuAction = MainMenu.NO_ACTION;
+        settingsAction = SettingsMenu.NO_ACTION;
+        loadingAction = LoadingMenu.NO_ACTION;
     }
 
     public void init(){
@@ -83,6 +85,7 @@ public class MenuScene implements Scene {
             background.init();
 
             mainMenu = new MainMenu();
+            loadingMenu = new LoadingMenu();
             settingsMenu = new SettingsMenu();
 
             init = true;
@@ -102,23 +105,30 @@ public class MenuScene implements Scene {
         Camera.getInstance().setPos(new Vector3f(25.0f,27.0f,59.0f));
         Camera.getInstance().setFront(new Vector3f(0.0f,0.0f,-1.0f));
         Camera.getInstance().updateViewMatrix();
+        timer = 0.0f;
         mainMenu = new MainMenu();
+        loadingMenu = new LoadingMenu();
         settingsMenu = new SettingsMenu();
         over = false;
+        over2 = false;
         reverse = false;
-        menuAction = NO_ACTION;
-        settingsAction = NO_ACTION;
+        reverse2 = false;
+        menuAction = MainMenu.NO_ACTION;
+        settingsAction = SettingsMenu.NO_ACTION;
+        loadingAction = LoadingMenu.NO_ACTION;
     }
 
     @Override
     public void over() {
         active = false;
-        menuAction = NO_ACTION;
-        settingsAction = NO_ACTION;
+        menuAction = MainMenu.NO_ACTION;
+        settingsAction = SettingsMenu.NO_ACTION;
+        loadingAction = LoadingMenu.NO_ACTION;
         timer = 0.0f;
-        lastTime = 0.0f;
         over = false;
+        over2 = false;
         reverse = false;
+        reverse2 = false;
     }
 
     @Override
@@ -136,28 +146,45 @@ public class MenuScene implements Scene {
         background.update();
         cursor.update(null);
         // контролируемое обновление
-        if(menuAction == NO_ACTION){
+        if(menuAction == MainMenu.NO_ACTION){
             mainMenu.update(pixel,leftClick);
             menuAction = mainMenu.getAction();
-        }else if(menuAction == NEW_GAME_BUTTON){
+        }else if(menuAction == MainMenu.NEW_GAME_BUTTON){
             newGameAnimation();
-        }else if(menuAction == LOADING_BUTTON){
-
-        }else if(menuAction == SETTINGS_BUTTON){
+        }else if(menuAction == MainMenu.LOADING_BUTTON){
+            if(loadingAnimation(reverse2)){
+                if(reverse2){
+                    menuAction = MainMenu.NO_ACTION;
+                    settingsAction = SettingsMenu.NO_ACTION;
+                    loadingAction = LoadingMenu.NO_ACTION;
+                    over2 = false;
+                    reverse2 = false;
+                }else {
+                    if (loadingAction == LoadingMenu.NO_ACTION) {
+                        loadingMenu.update(pixel, leftClick);
+                        loadingAction = loadingMenu.getAction();
+                    } else if (loadingAction == LoadingMenu.BACK_BUTTON) {
+                        over2 = false;
+                        reverse2 = true;
+                    }
+                }
+            }
+        }else if(menuAction == MainMenu.SETTINGS_BUTTON){
             if(settingsAnimation(reverse)){
                 if(reverse){
-                    settingsAction = NO_ACTION;
-                    menuAction = NO_ACTION;
+                    loadingAction = LoadingMenu.NO_ACTION;
+                    settingsAction = SettingsMenu.NO_ACTION;
+                    menuAction = MainMenu.NO_ACTION;
                     over = false;
                     reverse = false;
                 }else {
-                    if (settingsAction == NO_ACTION) {
+                    if (settingsAction == SettingsMenu.NO_ACTION) {
                         settingsMenu.update(pixel, leftClick);
                         settingsAction = settingsMenu.getAction();
-                    } else if (settingsAction == OK_BUTTON) {
+                    } else if (settingsAction == SettingsMenu.OK_BUTTON) {
                         over = false;
                         reverse = true;
-                    } else if (settingsAction == BACK_BUTTON) {
+                    } else if (settingsAction == SettingsMenu.BACK_BUTTON) {
                         over = false;
                         reverse = true;
                     }
@@ -173,6 +200,8 @@ public class MenuScene implements Scene {
         // hud
         shader.useProgram();
         mainMenu.draw(shader);
+        loadingMenu.draw(shader);
+        shader.useProgram();
         settingsMenu.draw(shader);
     }
 
@@ -202,38 +231,29 @@ public class MenuScene implements Scene {
     }
 
     private void newGameAnimation(){
-        if(lastTime == 0.0f){
-            lastTime = (float)glfwGetTime();
-        }
-        float currentTime = (float)glfwGetTime();
-        float deltaTime = currentTime - lastTime;
-        lastTime = currentTime;
-        timer += deltaTime;
+        timer += 0.001f;
         Camera.getInstance().setPos(Camera.getInstance().getPos().add(new Vector3f(0.01f,0.0f,0.0f)));
         Camera.getInstance().updateViewMatrix();
-        mainMenu.update(-2.0f);
+        mainMenu.update(new Vector3f(-2.0f,0.0f,0.0f));
+        loadingMenu.update(new Vector3f(-2.0f,0.0f,0.0f));
+        settingsMenu.update(new Vector3f(-2.0f,0.0f,0.0f));
         float g = Window.getInstance().getGamma() - 0.0025f;
         if(g < 0){
             g = 0.0f;
         }
         Window.getInstance().setGamma(g);
-        if(timer > 7.0f){
+        if(timer > 1.0f){
             nextScene();
             timer = 0.0f;
-            lastTime = 0.0f;
             Window.getInstance().setGamma(tempGamma);
         }
     }
 
     private boolean settingsAnimation(boolean reverse){
         if(!over){
-            if(lastTime == 0.0f){
-                lastTime = (float)glfwGetTime();
-            }
-            float currentTime = (float)glfwGetTime();
-            float deltaTime = 0.01f;//currentTime - lastTime;
-            lastTime = currentTime;
-            timer += deltaTime;
+            // подготовка
+            float deltaTime = 0.01f;
+            timer += 0.01f;
 
             float S = Window.getInstance().getWidth();
             float t = 1.0f;
@@ -247,17 +267,52 @@ public class MenuScene implements Scene {
                 xOffset = -xOffset;
                 menuOffset = -menuOffset;
             }
-            Camera.getInstance().setPos(Camera.getInstance().getPos().add(new Vector3f(xOffset,0.0f,0.0f)));
-            Camera.getInstance().updateViewMatrix();
-            mainMenu.update(menuOffset);
-            settingsMenu.update(menuOffset);
+            // результат работы
             if(timer > t){
                 timer = 0.0f;
-                lastTime = 0.0f;
                 over = true;
+            }else{
+                Camera.getInstance().setPos(Camera.getInstance().getPos().add(new Vector3f(xOffset,0.0f,0.0f)));
+                Camera.getInstance().updateViewMatrix();
+                mainMenu.update(new Vector3f(menuOffset,0.0f,0.0f));
+                loadingMenu.update(new Vector3f(menuOffset,0.0f,0.0f));
+                settingsMenu.update(new Vector3f(menuOffset,0.0f,0.0f));
             }
         }
         return over;
+    }
+
+    private boolean loadingAnimation(boolean reverse){
+        if(!over2){
+            // подготовка
+            float deltaTime = 0.01f;
+            timer += deltaTime;
+
+            float S = Window.getInstance().getHeight();
+            float t = 1.0f;
+
+            float timePercent = deltaTime * 100.0f / t;
+            float v = timePercent * S / 100.0f;
+
+            float menuOffset = v;
+            float yOffset = v / 200.0f;
+            if(reverse){
+                yOffset = -yOffset;
+                menuOffset = -menuOffset;
+            }
+            // результат работы
+            if(timer > t){
+                timer = 0.0f;
+                over2 = true;
+            }else{
+                Camera.getInstance().setPos(Camera.getInstance().getPos().add(new Vector3f(0.0f,yOffset,0.0f)));
+                Camera.getInstance().updateViewMatrix();
+                mainMenu.update(new Vector3f(0.0f,menuOffset,0.0f));
+                loadingMenu.update(new Vector3f(0.0f,menuOffset,0.0f));
+                settingsMenu.update(new Vector3f(0.0f,menuOffset,0.0f));
+            }
+        }
+        return over2;
     }
 
     private void nextScene(){
