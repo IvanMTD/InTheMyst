@@ -1,5 +1,6 @@
 package ru.phoenix.game.logic.generator;
 
+import ru.phoenix.core.loader.ImageLoader;
 import ru.phoenix.core.loader.model.Mesh;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
@@ -11,6 +12,7 @@ import ru.phoenix.game.content.stage.random.RandomArena;
 import ru.phoenix.game.logic.element.grid.Cell;
 import ru.phoenix.game.logic.generator.components.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class Generator {
         grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true);
         heightMap = new Texture2D();
         heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        heightMap.saveImage("gameHeightMap.png");
         mesh = ModelCreater.start((int)currentHeight - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
         Reservoir waterReservoir = null;
         waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);
@@ -77,8 +80,11 @@ public class Generator {
 
         System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
         grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true);
+
         heightMap = new Texture2D();
-        heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        heightMap.setup(HeightMap.getHeiMap(), GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
+        heightMap.saveImage("heightMap.png");
+
         mesh = ModelCreater.start((int)currentHeight - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
         Reservoir waterReservoir = null;
         waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);

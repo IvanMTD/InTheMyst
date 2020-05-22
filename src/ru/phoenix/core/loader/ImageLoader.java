@@ -3,6 +3,7 @@ package ru.phoenix.core.loader;
 import ru.phoenix.core.math.Vector3f;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.ByteBuffer;
 
 public class ImageLoader {
     private static ByteBuffer buf;
+    private static Vector3f[] imageLine;
     private static int width;
     private static int height;
 
@@ -42,7 +44,9 @@ public class ImageLoader {
         height = heiMap[0].length - 1;
         buf = ByteBuffer.allocateDirect(height * width * 4);
         buf.limit(height * width * 4);
+        imageLine = new Vector3f[height * width];
 
+        int index = 0;
         for(int y=0; y<height; y++) {
             for(int x=0; x<width; x++) { // 0 - 255
                 float hei = heiMap[x][y];
@@ -51,6 +55,7 @@ public class ImageLoader {
                 buf.put((byte)color);
                 buf.put((byte)color);
                 buf.put((byte)255);
+                imageLine[index++] = new Vector3f(color,color,color);
             }
         }
 
@@ -63,14 +68,20 @@ public class ImageLoader {
         height = blendMap[0].length - 1;
         buf = ByteBuffer.allocateDirect(height * width * 4);
         buf.limit(height * width * 4);
+        imageLine = new Vector3f[height * width];
 
+        int index = 0;
         for(int y=0; y<height; y++) {
             for(int x=0; x<width; x++) {
                 Vector3f color = blendMap[x][y];
                 buf.put((byte)((int)(color.getR() * 255)));
+                int R = (int)(color.getR() * 255);
                 buf.put((byte)((int)(color.getG() * 255)));
+                int G = (int)(color.getG() * 255);
                 buf.put((byte)((int)(color.getB() * 255)));
+                int B = (int)(color.getB() * 255);
                 buf.put((byte)255);
+                imageLine[index++] = new Vector3f(R,G,B);
             }
         }
 
@@ -87,5 +98,9 @@ public class ImageLoader {
 
     public static int getHeight() {
         return height;
+    }
+
+    public static Vector3f[] getImageLine() {
+        return imageLine;
     }
 }

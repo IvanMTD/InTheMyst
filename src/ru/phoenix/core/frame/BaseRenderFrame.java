@@ -17,6 +17,7 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.logic.generator.Generator;
 import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
 
@@ -195,10 +196,10 @@ public class BaseRenderFrame implements Framework {
 
         glActiveTexture(GL_TEXTURE1);
         if(GameController.getInstance().isTabHold()){
-            //glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID()); // отладочный для проверки heimap
+            glBindTexture(GL_TEXTURE_2D, Generator.getHeightMap().getTextureID()); // отладочный для проверки heimap
             //glBindTexture(GL_TEXTURE_2D, map.getTexture()); // отладочный для проверки war fog
             //glBindTexture(GL_TEXTURE_2D, shadow.getTexture()); // отладочный для проверки карты теней
-            glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
+            //glBindTexture(GL_TEXTURE_2D, render.getTexture(1)); // отладочный для проверки выборочного фреймбуфера
             ndcShader.setUniform("shadow",1);
         }else{
             glBindTexture(GL_TEXTURE_2D, GausFrame.getInstance().getTexture(1)); // Основной рендер
