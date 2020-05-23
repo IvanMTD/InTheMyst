@@ -139,32 +139,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
-                           /* if (currentArea == PLAIN_AREA) {
-                                if (upPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                }
-                            }*/
-
                             v0.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v1.setTexCoords(new Vector2f(1.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 1.0f));
@@ -193,31 +167,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
 
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (downPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(0.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
                             v0.setTexCoords(new Vector2f(0.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 0.0f));
@@ -298,32 +247,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (upPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                }
-                            }*/
-
                             v0.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v1.setTexCoords(new Vector2f(1.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 1.0f));
@@ -351,32 +274,6 @@ public class ModelCreater {
                             v0.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v1.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
-
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (downPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(0.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
 
                             v0.setTexCoords(new Vector2f(0.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -460,32 +357,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (leftPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(0.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
-
                             v0.setTexCoords(new Vector2f(0.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 0.0f));
@@ -513,32 +384,6 @@ public class ModelCreater {
                             v0.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v1.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
-
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (rightPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
 
                             v0.setTexCoords(new Vector2f(1.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -620,32 +465,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (leftPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(0.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
-
                             v0.setTexCoords(new Vector2f(0.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 0.0f));
@@ -673,32 +492,6 @@ public class ModelCreater {
                             v0.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v1.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
-
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (rightPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
 
                             v0.setTexCoords(new Vector2f(1.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -782,32 +575,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (upPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                }
-                            }*/
-
                             v0.setTexCoords(new Vector2f(1.0f, 0.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 1.0f));
@@ -835,32 +602,6 @@ public class ModelCreater {
                             v0.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v1.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
-
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (downPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
 
                             v0.setTexCoords(new Vector2f(1.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -942,32 +683,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, 1.0f));
 
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (upPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                }
-                            }*/
-
                             v0.setTexCoords(new Vector2f(1.0f, 0.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 1.0f));
@@ -995,32 +710,6 @@ public class ModelCreater {
                             v0.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v1.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
                             v2.setNormal(new Vector3f(0.0f, 0.0f, -1.0f));
-
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (downPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                } else if(position.getY() + 0.5f < 1.0f){
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
 
                             v0.setTexCoords(new Vector2f(1.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -1104,32 +793,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (leftPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                }else if (position.getY() + 0.5f < 1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
-
                             v0.setTexCoords(new Vector2f(1.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 0.0f));
@@ -1157,32 +820,6 @@ public class ModelCreater {
                             v0.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v1.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
-
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (rightPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(0.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                }else if (position.getY() + 0.5f < 1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
 
                             v0.setTexCoords(new Vector2f(0.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -1264,32 +901,6 @@ public class ModelCreater {
                             v1.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(-1.0f, 0.0f, 0.0f));
 
-                           /* if (currentArea == PLAIN_AREA) {
-                                if (leftPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                }else if (position.getY() + 0.5f < 1.0f) {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(3.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
-
                             v0.setTexCoords(new Vector2f(1.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
                             v2.setTexCoords(new Vector2f(1.0f, 0.0f));
@@ -1317,32 +928,6 @@ public class ModelCreater {
                             v0.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v1.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
                             v2.setNormal(new Vector3f(1.0f, 0.0f, 0.0f));
-
-                            /*if (currentArea == PLAIN_AREA) {
-                                if (rightPos.getY() < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 0.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 0.0f));
-                                } else {
-                                    v0.setTexCoords(new Vector2f(0.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(0.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(1.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            } else if (currentArea == MOUNTAIN_AREA) {
-                                if (position.getY() + 0.5f < -1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 0.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 0.0f + 0.005f));
-                                }else if (position.getY() + 0.5f < 1.0f) {
-                                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 2.0f / 4.0f - 0.005f));
-                                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + 0.005f, 1.0f / 4.0f + 0.005f));
-                                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - 0.005f, 1.0f / 4.0f + 0.005f));
-                                }else {
-                                    v0.setTexCoords(new Vector2f(2.0f / 4.0f, 2.0f / 4.0f));
-                                    v1.setTexCoords(new Vector2f(2.0f / 4.0f, 1.0f / 4.0f));
-                                    v2.setTexCoords(new Vector2f(3.0f / 4.0f, 1.0f / 4.0f));
-                                }
-                            }*/
 
                             v0.setTexCoords(new Vector2f(0.0f, 1.0f));
                             v1.setTexCoords(new Vector2f(0.0f, 0.0f));
@@ -1968,32 +1553,6 @@ public class ModelCreater {
     }
 
     private static void setUpperPlaneTexCoord(int currentArea, float currentHeight, Vertex v0, Vertex v1, Vertex v2, Vertex v3){
-        /*if (currentArea == PLAIN_AREA) {
-            if (currentHeight < 0) {
-                v0.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(0.0f + textureOffset, 0.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-            } else {
-                v0.setTexCoords(new Vector2f(0.0f + textureOffset, 3.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(0.0f + textureOffset, 2.0f / 4.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 2.0f / 4.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 3.0f / 4.0f - textureOffset));
-            }
-        } else if (currentArea == MOUNTAIN_AREA) {
-            if (currentHeight < -1.0f) {
-                v0.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 0.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-            } else {
-                v0.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 3.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 2.0f / 4.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 2.0f / 4.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 3.0f / 4.0f - textureOffset));
-            }
-        }*/
-
         v0.setTexCoords(new Vector2f(0.0f, 1.0f));
         v1.setTexCoords(new Vector2f(0.0f, 0.0f));
         v2.setTexCoords(new Vector2f(1.0f, 0.0f));
@@ -2001,36 +1560,6 @@ public class ModelCreater {
     }
 
     private static void setUpperBevelPlaneTexCoord(int currentArea, float currentHeight, Vertex v0, Vertex v1, Vertex v2, Vertex v3){
-        /*if (currentArea == PLAIN_AREA) {
-            if (currentHeight < -1.0f) {
-                v0.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(0.0f + textureOffset, 0.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-            } else if (currentHeight < 0.0f) {
-                v0.setTexCoords(new Vector2f(0.0f + textureOffset, 2.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 1.0f / 4.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 2.0f / 4.0f - textureOffset));
-            } else {
-                v0.setTexCoords(new Vector2f(0.0f + textureOffset, 3.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(0.0f + textureOffset, 2.0f / 4.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 2.0f / 4.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 3.0f / 4.0f - textureOffset));
-            }
-        } else if (currentArea == MOUNTAIN_AREA) {
-            if (currentHeight + 1.0f < -1.0f) {
-                v0.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 0.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-            } else {
-                v0.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 3.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 2.0f / 4.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 2.0f / 4.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 3.0f / 4.0f - textureOffset));
-            }
-        }*/
         v0.setTexCoords(new Vector2f(0.0f, 1.0f));
         v1.setTexCoords(new Vector2f(0.0f, 0.0f));
         v2.setTexCoords(new Vector2f(1.0f, 0.0f));
@@ -2038,57 +1567,6 @@ public class ModelCreater {
     }
 
     private static void setSidePlaneTexCoord(int currentArea, float y, float currentHeight, Vertex v0, Vertex v1, Vertex v2, Vertex v3){
-        /*if (currentArea == PLAIN_AREA) {
-            if (y == currentHeight) {
-                if (y < 0.0f) {
-                    v0.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                    v1.setTexCoords(new Vector2f(0.0f + textureOffset, 0.0f + textureOffset));
-                    v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                    v3.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-                } else {
-                    v0.setTexCoords(new Vector2f(0.0f + textureOffset, 2.0f / 4.0f - textureOffset));
-                    v1.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f + textureOffset));
-                    v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 1.0f / 4.0f + textureOffset));
-                    v3.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 2.0f / 4.0f - textureOffset));
-                }
-            } else {
-                v0.setTexCoords(new Vector2f(0.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                v1.setTexCoords(new Vector2f(0.0f + textureOffset, 0.0f + textureOffset));
-                v2.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                v3.setTexCoords(new Vector2f(1.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-            }
-        } else if (currentArea == MOUNTAIN_AREA) {
-            if (y == currentHeight) {
-                if (y < - 1.0f) {
-                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 0.0f + textureOffset));
-                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                    v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-                } else if( y < 1.0f){
-                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 2.0f / 4.0f - textureOffset));
-                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 1.0f / 4.0f + textureOffset));
-                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 1.0f / 4.0f + textureOffset));
-                    v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 2.0f / 4.0f - textureOffset));
-                }else {
-                    v0.setTexCoords(new Vector2f(2.0f / 4.0f + textureOffset, 2.0f / 4.0f - textureOffset));
-                    v1.setTexCoords(new Vector2f(2.0f / 4.0f + textureOffset, 1.0f / 4.0f + textureOffset));
-                    v2.setTexCoords(new Vector2f(3.0f / 4.0f - textureOffset, 1.0f / 4.0f + textureOffset));
-                    v3.setTexCoords(new Vector2f(3.0f / 4.0f - textureOffset, 2.0f / 4.0f - textureOffset));
-                }
-            } else {
-                if (y < 1.0f) {
-                    v0.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                    v1.setTexCoords(new Vector2f(1.0f / 4.0f + textureOffset, 0.0f + textureOffset));
-                    v2.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                    v3.setTexCoords(new Vector2f(2.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-                } else {
-                    v0.setTexCoords(new Vector2f(2.0f / 4.0f + textureOffset, 1.0f / 4.0f - textureOffset));
-                    v1.setTexCoords(new Vector2f(2.0f / 4.0f + textureOffset, 0.0f + textureOffset));
-                    v2.setTexCoords(new Vector2f(3.0f / 4.0f - textureOffset, 0.0f + textureOffset));
-                    v3.setTexCoords(new Vector2f(3.0f / 4.0f - textureOffset, 1.0f / 4.0f - textureOffset));
-                }
-            }
-        }*/
         v0.setTexCoords(new Vector2f(0.0f, 1.0f));
         v1.setTexCoords(new Vector2f(0.0f, 0.0f));
         v2.setTexCoords(new Vector2f(1.0f, 0.0f));

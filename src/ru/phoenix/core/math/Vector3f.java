@@ -1,6 +1,11 @@
 package ru.phoenix.core.math;
 
-public class Vector3f {
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
+public class Vector3f implements Externalizable {
     private float x;
     private float y;
     private float z;
@@ -169,5 +174,19 @@ public class Vector3f {
     @Override
     public String toString(){
         return this.getX() + " " + this.getY() + " " + this.getZ();
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(getX());
+        out.writeObject(getY());
+        out.writeObject(getZ());
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        setX((float)in.readObject());
+        setY((float)in.readObject());
+        setZ((float)in.readObject());
     }
 }

@@ -1,6 +1,14 @@
 package ru.phoenix.core.math;
 
-public class Vector2f {
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
+public class Vector2f implements Externalizable {
+
+    private static final long serialVersionUID = 1L;
+
     private float x;
     private float y;
 
@@ -105,5 +113,17 @@ public class Vector2f {
     // инфо отладка
     public static void vectorInfo(Vector2f v){
         System.out.println("Vector info: x: " + v.getX() + ", y: " + v.getY() + "\n");
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(getX());
+        out.writeObject(getY());
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        setX((float)in.readObject());
+        setY((float)in.readObject());
     }
 }

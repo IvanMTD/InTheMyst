@@ -3,16 +3,18 @@ package ru.phoenix.game.logic.generator.components;
 import ru.phoenix.core.debug.HowLong;
 import ru.phoenix.core.math.Perlin2D;
 import ru.phoenix.core.math.Vector3f;
+import ru.phoenix.game.datafile.StructData;
 import ru.phoenix.game.logic.element.grid.Cell;
+import ru.phoenix.game.datafile.SaveData;
 
 public class HeightMap {
-
     private static Vector3f[][] heiMap;
 
-    public static Cell[][] get(long seed, int width, int height, float currentHeight, boolean aligment){
+    public static Cell[][] get(long seed, int width, int height, float currentHeight, boolean aligment, SaveData saveData){
         heiMap = new Vector3f[(width + 1) * 16][(height + 1) * 16];
         HowLong.setup("карты вершин");
         Cell[][] heightMap = new Cell[width + 1][height + 1];
+        StructData[][] structData = new StructData[width + 1][height + 1];
         Perlin2D perlin = new Perlin2D(seed);
         float accuracy = 20.0f + (float)Math.random() * 30.0f;
         int coin = (int)Math.round(Math.random() * 10.0f);
@@ -117,6 +119,8 @@ public class HeightMap {
                     cell.setPosition(new Vector3f(x, cell.getCurrentHeight(), z));
                 }
 
+                structData[x][z] = new StructData(cell.getCurrentHeight(),cell.getCurrentOriginalHeight(),cell.getPosition(),cell.isRoad());
+
                 heightMap[x][z] = cell;
             }
         }
@@ -164,7 +168,23 @@ public class HeightMap {
             }
         }
 
+        saveData.setStructData(structData);
+
         HowLong.getInformation();
+        return heightMap;
+    }
+
+    public static Cell[][] get(SaveData saveData){
+        Cell[][] heightMap = new Cell[saveData.getSizeX()][saveData.getSizeZ()];
+        for(int x = 0; x<heightMap.length; x++){
+            for(int z=0; z<heightMap[0].length; z++){
+                heightMap[x][z] = new Cell();
+                heightMap[x][z].setCurrentHeight(saveData.getStructData()[x][z].getCurrentHeight());
+                heightMap[x][z].setCurrentOriginalHeight(saveData.getStructData()[x][z].getCurrentOriginalHeight());
+                heightMap[x][z].setPosition(new Vector3f(saveData.getStructData()[x][z].getPosition()));
+                heightMap[x][z].setRoad(saveData.getStructData()[x][z].isRoad());
+            }
+        }
         return heightMap;
     }
 

@@ -5,13 +5,19 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.stage.mainmenu.BackgroundArea;
 
+import java.io.IOException;
+
 public class Background {
     private Skybox skybox;
     private BackgroundArea backgroundArea;
 
     public Background(){
         skybox = new Skybox();
-        backgroundArea = new BackgroundArea();
+        try {
+            backgroundArea = new BackgroundArea();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void init(){

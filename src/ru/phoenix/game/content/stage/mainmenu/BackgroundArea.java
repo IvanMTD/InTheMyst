@@ -2,7 +2,10 @@ package ru.phoenix.game.content.stage.mainmenu;
 
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.stage.StudyArea;
+import ru.phoenix.game.datafile.SaveData;
 import ru.phoenix.game.logic.generator.Generator;
+
+import java.io.*;
 
 public class BackgroundArea {
     private Shader shader3D;
@@ -10,8 +13,24 @@ public class BackgroundArea {
 
     private StudyArea studyArea;
 
-    public BackgroundArea(){
-        studyArea = Generator.getPreparedArea(25.0f,50,50);
+    public BackgroundArea() throws IOException, ClassNotFoundException {
+        SaveData saveData = new SaveData();
+        File fileDirect = new File("./data/save/data");
+        File saveFile = new File(fileDirect,"backgroundArea.ser");
+        if(saveFile.exists()){
+            FileInputStream fileInputStream = new FileInputStream("./data/save/data/backgroundArea.ser");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            saveData = (SaveData)objectInputStream.readObject();
+            objectInputStream.close();
+            studyArea = Generator.loadPrepareArena(saveData);
+        }else {
+            FileOutputStream fileOutputStream = new FileOutputStream("./data/save/data/backgroundArea.ser");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            studyArea = Generator.getPreparedArea(25.0f, 50, 50,saveData);
+            objectOutputStream.writeObject(saveData);
+            objectOutputStream.close();
+        }
+        //studyArea = Generator.getPreparedArea(25.0f, 50, 50,new SaveData());
     }
 
     public void init(){

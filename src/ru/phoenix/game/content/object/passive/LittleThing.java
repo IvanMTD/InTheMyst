@@ -6,6 +6,7 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
+import ru.phoenix.game.datafile.SaveElement;
 import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
@@ -19,6 +20,9 @@ public class LittleThing extends ObjectControl implements Object {
     private List<Texture> textures;
 
     private boolean apply;
+
+    private float objectWidth;
+    private float objectHeight;
 
     public LittleThing(){
         super();
@@ -52,8 +56,22 @@ public class LittleThing extends ObjectControl implements Object {
         int texHei = textures.get(currentTexture).getHeight();
         int row = 5;
         int column = 5;
-        float objectWidth = (float)(0.5f + Math.random() * 0.3f);
-        float objectHeight = (texHei / column) * objectWidth / (texWid / row);
+        objectWidth = (float)(0.5f + Math.random() * 0.3f);
+        objectHeight = (texHei / column) * objectWidth / (texWid / row);
+        if(matrix != null){
+            setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),matrix);
+        }else{
+            setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),null);
+        }
+    }
+
+    @Override
+    public void init(Matrix4f[] matrix, SaveElement saveElement){
+        int currentTexture = 0;
+        int row = 5;
+        int column = 5;
+        objectWidth = saveElement.getObjectWidth();
+        objectHeight = saveElement.getObjectHeight();
         if(matrix != null){
             setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),matrix);
         }else{
@@ -104,5 +122,30 @@ public class LittleThing extends ObjectControl implements Object {
     @Override
     public void setBattle(boolean battle) {
 
+    }
+
+    @Override
+    public int getTextureNum() {
+        return 0;
+    }
+
+    @Override
+    public float getObjectWidth() {
+        return objectWidth;
+    }
+
+    @Override
+    public void setObjectWidth(float objectWidth) {
+        this.objectWidth = objectWidth;
+    }
+
+    @Override
+    public float getObjectHeight() {
+        return objectHeight;
+    }
+
+    @Override
+    public void setObjectHeight(float objectHeight) {
+        this.objectHeight = objectHeight;
     }
 }

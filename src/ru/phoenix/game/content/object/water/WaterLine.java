@@ -7,6 +7,7 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
+import ru.phoenix.game.datafile.SaveElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
@@ -80,6 +81,11 @@ public class WaterLine extends ObjectControl implements Object {
     }
 
     @Override
+    public void init(Matrix4f[] matrix, SaveElement saveElement) {
+
+    }
+
+    @Override
     public void update(Cell[][] grid, Vector3f pixel, Cell finishCell){
         switch (offsetInfo) {
             case CENTER_BOARD:
@@ -137,6 +143,31 @@ public class WaterLine extends ObjectControl implements Object {
 
     @Override
     public void setBattle(boolean battle) {
+
+    }
+
+    @Override
+    public int getTextureNum() {
+        return 0;
+    }
+
+    @Override
+    public float getObjectWidth() {
+        return 0;
+    }
+
+    @Override
+    public void setObjectWidth(float objectWidth) {
+
+    }
+
+    @Override
+    public float getObjectHeight() {
+        return 0;
+    }
+
+    @Override
+    public void setObjectHeight(float objectHeight) {
 
     }
 }

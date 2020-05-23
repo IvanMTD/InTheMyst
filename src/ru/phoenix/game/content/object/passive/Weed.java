@@ -6,6 +6,7 @@ import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
+import ru.phoenix.game.datafile.SaveElement;
 import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
@@ -22,6 +23,10 @@ public class Weed extends ObjectControl implements Object {
     private List<Texture> textures;
 
     private boolean apply;
+    private int textureNum;
+
+    private float objectWidth;
+    private float objectHeight;
 
     public Weed(){
         super();
@@ -144,12 +149,28 @@ public class Weed extends ObjectControl implements Object {
     @Override
     public void init(Matrix4f[] matrix){
         int currentTexture = (int)Math.floor(Math.random() * (textures.size() - 0.1f));
+        textureNum = currentTexture;
         int texWid = textures.get(currentTexture).getWidth();
         int texHei = textures.get(currentTexture).getHeight();
         int row = 4;
         int column = 1;
-        float objectWidth = 1.0f;
-        float objectHeight = (texHei / column) * objectWidth / (texWid / row);
+        objectWidth = 1.0f;
+        objectHeight = (texHei / column) * objectWidth / (texWid / row);
+        if(matrix != null){
+            setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),matrix);
+        }else{
+            setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),null);
+        }
+    }
+
+    @Override
+    public void init(Matrix4f[] matrix, SaveElement saveElement){
+        int currentTexture = saveElement.getTextureNum();
+        textureNum = currentTexture;
+        int row = 4;
+        int column = 1;
+        objectWidth = saveElement.getObjectWidth();
+        objectHeight = saveElement.getObjectHeight();
         if(matrix != null){
             setup(textures,row,column,objectWidth,objectHeight,currentTexture,new Vector3f(),matrix);
         }else{
@@ -200,5 +221,30 @@ public class Weed extends ObjectControl implements Object {
     @Override
     public void setBattle(boolean battle) {
 
+    }
+
+    @Override
+    public int getTextureNum() {
+        return textureNum;
+    }
+
+    @Override
+    public float getObjectWidth() {
+        return objectWidth;
+    }
+
+    @Override
+    public void setObjectWidth(float objectWidth) {
+        this.objectWidth = objectWidth;
+    }
+
+    @Override
+    public float getObjectHeight() {
+        return objectHeight;
+    }
+
+    @Override
+    public void setObjectHeight(float objectHeight) {
+        this.objectHeight = objectHeight;
     }
 }
