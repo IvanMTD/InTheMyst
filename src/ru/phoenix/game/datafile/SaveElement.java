@@ -1,5 +1,6 @@
 package ru.phoenix.game.datafile;
 
+import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
 
@@ -23,6 +24,9 @@ public class SaveElement implements Externalizable {
     private float objectWidth;
     private float objectHeight;
 
+    private int gmSize;
+    private Matrix4f[] grassMatrix;
+
     public SaveElement(){
         arraySize = 0;
         blockedPos = new ArrayList<>();
@@ -32,6 +36,8 @@ public class SaveElement implements Externalizable {
         currentHeight = 0.0f;
         objectWidth = 0.0f;
         objectHeight = 0.0f;
+        gmSize = 0;
+        grassMatrix = new Matrix4f[0];
     }
 
     public SaveElement(List<Vector2f> blockedPos, Vector3f elementPos, int type, int textureNum, float currentHeight, float objectWidth, float objectHeight) {
@@ -43,6 +49,11 @@ public class SaveElement implements Externalizable {
         this.currentHeight = currentHeight;
         this.objectWidth = objectWidth;
         this.objectHeight = objectHeight;
+    }
+
+    public SaveElement(Matrix4f[] matrix){
+        gmSize = matrix.length;
+        grassMatrix = matrix;
     }
 
     public List<Vector2f> getBlockedPos() {
@@ -102,6 +113,23 @@ public class SaveElement implements Externalizable {
         this.objectHeight = objectHeight;
     }
 
+    public int getGmSize() {
+        return gmSize;
+    }
+
+    public void setGmSize(int gmSize) {
+        this.gmSize = gmSize;
+    }
+
+    public Matrix4f[] getGrassMatrix() {
+        return grassMatrix;
+    }
+
+    public void setGrassMatrix(Matrix4f[] grassMatrix) {
+        gmSize = grassMatrix.length;
+        this.grassMatrix = grassMatrix;
+    }
+
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(arraySize);
@@ -114,6 +142,10 @@ public class SaveElement implements Externalizable {
         out.writeObject(currentHeight);
         out.writeObject(objectWidth);
         out.writeObject(objectHeight);
+        out.writeObject(gmSize);
+        for(int i=0; i<gmSize; i++){
+            grassMatrix[i].writeExternal(out);
+        }
     }
 
     @Override
@@ -131,5 +163,11 @@ public class SaveElement implements Externalizable {
         currentHeight = (float)in.readObject();
         objectWidth = (float)in.readObject();
         objectHeight = (float)in.readObject();
+        gmSize = (int)in.readObject();
+        grassMatrix = new Matrix4f[gmSize];
+        for(int i=0; i<gmSize; i++){
+            grassMatrix[i] = new Matrix4f();
+            grassMatrix[i].readExternal(in);
+        }
     }
 }

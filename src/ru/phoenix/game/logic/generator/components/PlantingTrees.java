@@ -39,7 +39,7 @@ public class PlantingTrees {
             }
         }
 
-        saveData.setElements(saveElements);
+        saveData.setTreeElements(saveElements);
 
         return trees;
     }
@@ -52,7 +52,7 @@ public class PlantingTrees {
 
         initTrees();
 
-        List<SaveElement> elements = new ArrayList<>(saveData.getElements());
+        List<SaveElement> elements = new ArrayList<>(saveData.getTreeElements());
 
         for(SaveElement element : elements){
             switch (element.getType()){

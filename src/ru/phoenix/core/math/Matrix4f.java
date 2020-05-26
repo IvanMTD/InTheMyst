@@ -1,8 +1,15 @@
 package ru.phoenix.core.math;
 
-public class Matrix4f {
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
-    public static final int SIZE = 64;
+public class Matrix4f implements Externalizable {
+
+    private static final long serialVersionUID = 1L;
+
+    public transient static final int SIZE = 64;
 
     private float[][] m;
 
@@ -354,5 +361,23 @@ public class Matrix4f {
         System.out.println(matrix.get(1,0) + " " + matrix.get(1,1) + " " + matrix.get(1,2) + " " + matrix.get(1,3));
         System.out.println(matrix.get(2,0) + " " + matrix.get(2,1) + " " + matrix.get(2,2) + " " + matrix.get(2,3));
         System.out.println(matrix.get(3,0) + " " + matrix.get(3,1) + " " + matrix.get(3,2) + " " + matrix.get(3,3) + "\n");
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        for(int i=0; i<4; i++){
+            for(int j=0; j<4; j++){
+                out.writeObject(m[i][j]);
+            }
+        }
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        for(int i=0; i<4; i++){
+            for(int j=0; j<4; j++){
+                m[i][j] = (float)in.readObject();
+            }
+        }
     }
 }

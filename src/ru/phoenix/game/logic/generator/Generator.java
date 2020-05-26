@@ -50,8 +50,8 @@ public class Generator {
         waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);
         waterReservoir.init(grid,currentHeight);
         List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),new SaveData());
-        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
-        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
+        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight, new SaveData());
+        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,new SaveData());
         List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
         GraundModel model = new GraundModel(mesh, graundTexture);
         List<Object> sprites = new ArrayList<>();
@@ -80,7 +80,7 @@ public class Generator {
 
         heightMap = new Texture2D();
         heightMap.setup(HeightMap.getHeiMap(), GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
-        heightMap.saveImage("heightMap.png");
+        heightMap.saveImage("menuHeightMap.png");
 
         mesh = ModelCreater.start((int)currentHeight - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
         Reservoir waterReservoir = null;
@@ -88,8 +88,8 @@ public class Generator {
         waterReservoir.init(grid,currentHeight);
 
         List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),saveData);
-        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
-        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
+        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,saveData);
+        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,saveData);
         List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
         GraundModel model = new GraundModel(mesh, graundTexture);
         List<Object> sprites = new ArrayList<>();
@@ -112,7 +112,7 @@ public class Generator {
         grid = HeightMap.get(saveData);
 
         heightMap = new Texture2D();
-        heightMap.setup(null,"./data/save/image/heightMap.png", GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
+        heightMap.setup(null,"./data/save/image/menuHeightMap.png", GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
 
         mesh = ModelCreater.start((int)saveData.getBiom() - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
         Reservoir waterReservoir = null;
@@ -120,8 +120,8 @@ public class Generator {
         waterReservoir.init(grid,saveData.getBiom());
 
         List<Object> trees = PlantingTrees.start(grid,saveData);
-        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),saveData.getBiom());
-        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),saveData.getBiom());
+        List<Object> grasses = PlantGrass.start(grid,saveData);
+        List<Block> blocks = GameElement.setup(grid,saveData);
         List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),saveData.getBiom());
         GraundModel model = new GraundModel(mesh, graundTexture);
         List<Object> sprites = new ArrayList<>();

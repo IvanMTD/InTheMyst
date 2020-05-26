@@ -15,16 +15,19 @@ public class SaveData implements Externalizable{
     private int sizeX;
     private int sizeZ;
     private StructData[][] structData;
-    private int eSize;
-    private List<SaveElement> elements;
+    private int teSize;
+    private List<SaveElement> treeElements;
+    private int peSize;
+    private List<SaveElement> plantElements;
 
     public SaveData(){
         biom = 0.0f;
         sizeX = 0;
         sizeZ = 0;
         structData = new StructData[sizeX][sizeZ];
-        eSize = 0;
-        elements = new ArrayList<>();
+        teSize = 0;
+        treeElements = new ArrayList<>();
+        plantElements = new ArrayList<>();
     }
 
     public float getBiom() {
@@ -61,21 +64,38 @@ public class SaveData implements Externalizable{
         this.structData = structData;
     }
 
-    public int geteSize() {
-        return eSize;
+    public int getTeSize() {
+        return teSize;
     }
 
-    public void seteSize(int eSize) {
-        this.eSize = eSize;
+    public void setTeSize(int teSize) {
+        this.teSize = teSize;
     }
 
-    public List<SaveElement> getElements() {
-        return elements;
+    public List<SaveElement> getTreeElements() {
+        return treeElements;
     }
 
-    public void setElements(List<SaveElement> elements) {
-        eSize = elements.size();
-        this.elements = elements;
+    public void setTreeElements(List<SaveElement> elements) {
+        teSize = elements.size();
+        this.treeElements = elements;
+    }
+
+    public int getPeSize() {
+        return peSize;
+    }
+
+    public void setPeSize(int peSize) {
+        this.peSize = peSize;
+    }
+
+    public List<SaveElement> getPlantElements() {
+        return plantElements;
+    }
+
+    public void setPlantElements(List<SaveElement> plantElements) {
+        peSize = plantElements.size();
+        this.plantElements = plantElements;
     }
 
     @Override
@@ -88,9 +108,14 @@ public class SaveData implements Externalizable{
                 getStructData()[x][z].writeExternal(out);
             }
         }
-        eSize = elements.size();
-        out.writeObject(eSize);
-        for(SaveElement saveElement : elements){
+        teSize = treeElements.size();
+        out.writeObject(teSize);
+        for(SaveElement saveElement : treeElements){
+            saveElement.writeExternal(out);
+        }
+        peSize = plantElements.size();
+        out.writeObject(peSize);
+        for(SaveElement saveElement : plantElements){
             saveElement.writeExternal(out);
         }
     }
@@ -107,12 +132,19 @@ public class SaveData implements Externalizable{
                 getStructData()[x][z].readExternal(in);
             }
         }
-        seteSize((int)in.readObject());
-        elements = new ArrayList<>();
-        for(int i=0; i<geteSize(); i++){
+        setTeSize((int)in.readObject());
+        treeElements = new ArrayList<>();
+        for(int i=0; i<getTeSize(); i++){
             SaveElement saveElement = new SaveElement();
             saveElement.readExternal(in);
-            elements.add(saveElement);
+            treeElements.add(saveElement);
+        }
+        setPeSize((int)in.readObject());
+        plantElements = new ArrayList<>();
+        for(int i=0; i<getPeSize(); i++){
+            SaveElement saveElement = new SaveElement();
+            saveElement.readExternal(in);
+            plantElements.add(saveElement);
         }
     }
 }

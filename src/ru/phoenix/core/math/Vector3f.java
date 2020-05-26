@@ -6,6 +6,9 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 public class Vector3f implements Externalizable {
+
+    private static final long serialVersionUID = 1L;
+
     private float x;
     private float y;
     private float z;

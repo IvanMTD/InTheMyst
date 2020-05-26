@@ -2,9 +2,11 @@ package ru.phoenix.game.logic.generator.components;
 
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Projection;
+import ru.phoenix.core.math.Vector2f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.block.type.stone.*;
+import ru.phoenix.game.datafile.SaveData;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public class GameElement {
 
     private static List<Block> gameElements = new ArrayList<>();
 
-    public static List<Block> setup(Cell[][] grid, int w, int h, float currentHeight){
+    public static List<Block> setup(Cell[][] grid, int w, int h, float currentHeight, SaveData saveData){
         gameElements.clear();
         initRocks();
 
@@ -636,6 +638,13 @@ public class GameElement {
             bigStoneSnow.setInstanceMatrix(getInstanceMatrix(bigStoneSnowInstanceList));
             gameElements.add(bigStoneSnow);
         }
+
+        return gameElements;
+    }
+
+    public static List<Block> setup(Cell[][] grid, SaveData saveData){
+        gameElements.clear();
+        initRocks();
 
         return gameElements;
     }
