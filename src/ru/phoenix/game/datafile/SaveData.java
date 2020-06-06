@@ -1,5 +1,7 @@
 package ru.phoenix.game.datafile;
 
+import ru.phoenix.core.math.Vector3f;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -19,6 +21,10 @@ public class SaveData implements Externalizable{
     private List<SaveElement> treeElements;
     private int peSize;
     private List<SaveElement> plantElements;
+    private int seSize;
+    private List<SaveElement> stoneElement;
+    private int vSize;
+    private List<Vector3f> vList;
 
     public SaveData(){
         biom = 0.0f;
@@ -27,7 +33,12 @@ public class SaveData implements Externalizable{
         structData = new StructData[sizeX][sizeZ];
         teSize = 0;
         treeElements = new ArrayList<>();
+        peSize = 0;
         plantElements = new ArrayList<>();
+        seSize = 0;
+        stoneElement = new ArrayList<>();
+        vSize = 0;
+        vList = new ArrayList<>();
     }
 
     public float getBiom() {
@@ -98,6 +109,40 @@ public class SaveData implements Externalizable{
         this.plantElements = plantElements;
     }
 
+    public int getSeSize() {
+        return seSize;
+    }
+
+    public void setSeSize(int seSize) {
+        this.seSize = seSize;
+    }
+
+    public List<SaveElement> getStoneElement() {
+        return stoneElement;
+    }
+
+    public void setStoneElement(List<SaveElement> stoneElement) {
+        seSize = stoneElement.size();
+        this.stoneElement = stoneElement;
+    }
+
+    public int getvSize() {
+        return vSize;
+    }
+
+    public void setvSize(int vSize) {
+        this.vSize = vSize;
+    }
+
+    public List<Vector3f> getvList() {
+        return vList;
+    }
+
+    public void setvList(List<Vector3f> vList) {
+        vSize = vList.size();
+        this.vList = vList;
+    }
+
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(getBiom());
@@ -117,6 +162,16 @@ public class SaveData implements Externalizable{
         out.writeObject(peSize);
         for(SaveElement saveElement : plantElements){
             saveElement.writeExternal(out);
+        }
+        seSize = stoneElement.size();
+        out.writeObject(seSize);
+        for(SaveElement saveElement : stoneElement){
+            saveElement.writeExternal(out);
+        }
+        vSize = vList.size();
+        out.writeObject(vSize);
+        for(Vector3f vector : vList){
+            vector.writeExternal(out);
         }
     }
 
@@ -145,6 +200,20 @@ public class SaveData implements Externalizable{
             SaveElement saveElement = new SaveElement();
             saveElement.readExternal(in);
             plantElements.add(saveElement);
+        }
+        setSeSize((int)in.readObject());
+        stoneElement = new ArrayList<>();
+        for(int i=0; i<getSeSize(); i++){
+            SaveElement saveElement = new SaveElement();
+            saveElement.readExternal(in);
+            stoneElement.add(saveElement);
+        }
+        setvSize((int)in.readObject());
+        vList = new ArrayList<>();
+        for(int i=0; i<getvSize(); i++){
+            Vector3f vector = new Vector3f();
+            vector.readExternal(in);
+            vList.add(vector);
         }
     }
 }

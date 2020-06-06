@@ -7,9 +7,11 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.block.type.stone.*;
 import ru.phoenix.game.datafile.SaveData;
+import ru.phoenix.game.datafile.SaveElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ru.phoenix.core.config.Constants.MOUNTAIN_AREA;
@@ -33,15 +35,17 @@ public class GameElement {
         gameElements.clear();
         initRocks();
 
-        Block smallStone = new SmallStone((SmallStone)stone_small_main);
-        Block smallStoneDirt = new SmallStoneDirt((SmallStoneDirt)stone_small_dirt_main);
-        Block smallStoneSnow = new SmallStoneSnow((SmallStoneSnow)stone_small_snow_main);
-        Block mediumStone = new MediumStone((MediumStone)stone_medium_main);
-        Block mediumStoneDirt = new MediumStoneDirt((MediumStoneDirt)stone_medium_dirt_main);
-        Block mediumStoneSnow = new MediumStoneSnow((MediumStoneSnow)stone_medium_snow_main);
-        Block bigStone = new BigStone((BigStone)stone_big_main);
-        Block bigStoneDirt = new BigStoneDirt((BigStoneDirt)stone_big_dirt_main);
-        Block bigStoneSnow = new BigStoneSnow((BigStoneSnow)stone_big_snow_main);
+        List<Vector3f> gridInfo = new ArrayList<>();
+
+        Block smallStone = new SmallStone((SmallStone)stone_small_main); SaveElement ss = new SaveElement();
+        Block smallStoneDirt = new SmallStoneDirt((SmallStoneDirt)stone_small_dirt_main); SaveElement sds = new SaveElement();
+        Block smallStoneSnow = new SmallStoneSnow((SmallStoneSnow)stone_small_snow_main); SaveElement sss = new SaveElement();
+        Block mediumStone = new MediumStone((MediumStone)stone_medium_main); SaveElement ms = new SaveElement();
+        Block mediumStoneDirt = new MediumStoneDirt((MediumStoneDirt)stone_medium_dirt_main); SaveElement mds = new SaveElement();
+        Block mediumStoneSnow = new MediumStoneSnow((MediumStoneSnow)stone_medium_snow_main); SaveElement mss = new SaveElement();
+        Block bigStone = new BigStone((BigStone)stone_big_main); SaveElement bs = new SaveElement();
+        Block bigStoneDirt = new BigStoneDirt((BigStoneDirt)stone_big_dirt_main); SaveElement bds = new SaveElement();
+        Block bigStoneSnow = new BigStoneSnow((BigStoneSnow)stone_big_snow_main); SaveElement bss = new SaveElement();
 
         List<Matrix4f>smallStoneInstanceList = new ArrayList<>();
         List<Matrix4f>smallStoneDirtInstanceList = new ArrayList<>();
@@ -82,14 +86,17 @@ public class GameElement {
                                 case 0:
                                     smallStoneDirtInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 1:
                                     mediumStoneDirtInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 2:
                                     bigStoneDirtInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                             }
                         }
@@ -127,14 +134,17 @@ public class GameElement {
                                     case 0:
                                         smallStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 1:
                                         mediumStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 2:
                                         bigStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                 }
                             }
@@ -164,14 +174,17 @@ public class GameElement {
                                     case 0:
                                         smallStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 1:
                                         mediumStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 2:
                                         bigStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                 }
                             }
@@ -210,14 +223,17 @@ public class GameElement {
                                     case 0:
                                         smallStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 1:
                                         mediumStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 2:
                                         bigStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                 }
                             }
@@ -247,14 +263,17 @@ public class GameElement {
                                     case 0:
                                         smallStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 1:
                                         mediumStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 2:
                                         bigStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                 }
                             }
@@ -291,14 +310,17 @@ public class GameElement {
                                 case 0:
                                     smallStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 1:
                                     mediumStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 2:
                                     bigStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                             }
                         }
@@ -336,14 +358,17 @@ public class GameElement {
                                     case 0:
                                         smallStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 1:
                                         mediumStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 2:
                                         bigStoneDirtInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                 }
                             }
@@ -373,14 +398,17 @@ public class GameElement {
                                     case 0:
                                         smallStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 1:
                                         mediumStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 2:
                                         bigStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                 }
                             }
@@ -417,14 +445,17 @@ public class GameElement {
                                 case 0:
                                     smallStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 1:
                                     mediumStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 2:
                                     bigStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                             }
                         }
@@ -460,14 +491,17 @@ public class GameElement {
                                 case 0:
                                     smallStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 1:
                                     mediumStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 2:
                                     bigStoneInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                             }
                         }
@@ -505,14 +539,17 @@ public class GameElement {
                                     case 0:
                                         smallStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 1:
                                         mediumStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 2:
                                         bigStoneInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                 }
                             }
@@ -542,14 +579,17 @@ public class GameElement {
                                     case 0:
                                         smallStoneSnowInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 1:
                                         mediumStoneSnowInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                     case 2:
                                         bigStoneSnowInstanceList.add(projection.getModelMatrix());
                                         grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                        gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                         break;
                                 }
                             }
@@ -586,14 +626,17 @@ public class GameElement {
                                 case 0:
                                     smallStoneSnowInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 0.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 1:
                                     mediumStoneSnowInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.0f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                                 case 2:
                                     bigStoneSnowInstanceList.add(projection.getModelMatrix());
                                     grid[x][z].setCurrentHeight(grid[x][z].getCurrentHeight() + 1.5f);
+                                    gridInfo.add(new Vector3f(x,z,grid[x][z].getCurrentHeight()));
                                     break;
                             }
                         }
@@ -604,40 +647,52 @@ public class GameElement {
 
         if(smallStoneInstanceList.size() != 0) {
             smallStone.setInstanceMatrix(getInstanceMatrix(smallStoneInstanceList));
+            ss.setStoneMatrix(getInstanceMatrix(smallStoneInstanceList));
             gameElements.add(smallStone);
         }
         if(smallStoneDirtInstanceList.size() != 0) {
             smallStoneDirt.setInstanceMatrix(getInstanceMatrix(smallStoneDirtInstanceList));
+            sds.setStoneMatrix(getInstanceMatrix(smallStoneDirtInstanceList));
             gameElements.add(smallStoneDirt);
         }
         if(smallStoneSnowInstanceList.size() != 0) {
             smallStoneSnow.setInstanceMatrix(getInstanceMatrix(smallStoneSnowInstanceList));
+            sss.setStoneMatrix(getInstanceMatrix(smallStoneSnowInstanceList));
             gameElements.add(smallStoneSnow);
         }
         if(mediumStoneInstanceList.size() != 0) {
             mediumStone.setInstanceMatrix(getInstanceMatrix(mediumStoneInstanceList));
+            ms.setStoneMatrix(getInstanceMatrix(mediumStoneInstanceList));
             gameElements.add(mediumStone);
         }
         if(mediumStoneDirtInstanceList.size() != 0) {
             mediumStoneDirt.setInstanceMatrix(getInstanceMatrix(mediumStoneDirtInstanceList));
+            mds.setStoneMatrix(getInstanceMatrix(mediumStoneDirtInstanceList));
             gameElements.add(mediumStoneDirt);
         }
         if(mediumStoneSnowInstanceList.size() != 0) {
             mediumStoneSnow.setInstanceMatrix(getInstanceMatrix(mediumStoneSnowInstanceList));
+            mss.setStoneMatrix(getInstanceMatrix(mediumStoneSnowInstanceList));
             gameElements.add(mediumStoneSnow);
         }
         if(bigStoneInstanceList.size() != 0) {
             bigStone.setInstanceMatrix(getInstanceMatrix(bigStoneInstanceList));
+            bs.setStoneMatrix(getInstanceMatrix(bigStoneInstanceList));
             gameElements.add(bigStone);
         }
         if(bigStoneDirtInstanceList.size() != 0) {
             bigStoneDirt.setInstanceMatrix(getInstanceMatrix(bigStoneDirtInstanceList));
+            bds.setStoneMatrix(getInstanceMatrix(bigStoneDirtInstanceList));
             gameElements.add(bigStoneDirt);
         }
         if(bigStoneSnowInstanceList.size() != 0) {
             bigStoneSnow.setInstanceMatrix(getInstanceMatrix(bigStoneSnowInstanceList));
+            bss.setStoneMatrix(getInstanceMatrix(bigStoneSnowInstanceList));
             gameElements.add(bigStoneSnow);
         }
+
+        saveData.setStoneElement(Arrays.asList(ss,sds,sss,ms,mds,mss,bs,bds,bss));
+        saveData.setvList(gridInfo);
 
         return gameElements;
     }
@@ -645,6 +700,36 @@ public class GameElement {
     public static List<Block> setup(Cell[][] grid, SaveData saveData){
         gameElements.clear();
         initRocks();
+
+        for(Vector3f info : saveData.getvList()){
+            int x = (int)info.getX();
+            int z = (int)info.getY();
+            float currentHeight = info.getZ();
+            grid[x][z].setCurrentHeight(currentHeight);
+        }
+
+        Block smallStone = new SmallStone((SmallStone)stone_small_main);
+        smallStone.setInstanceMatrix(saveData.getStoneElement().get(0).getStoneMatrix());
+        Block smallStoneDirt = new SmallStoneDirt((SmallStoneDirt)stone_small_dirt_main);
+        smallStoneDirt.setInstanceMatrix(saveData.getStoneElement().get(1).getStoneMatrix());
+        Block smallStoneSnow = new SmallStoneSnow((SmallStoneSnow)stone_small_snow_main);
+        smallStoneSnow.setInstanceMatrix(saveData.getStoneElement().get(2).getStoneMatrix());
+        Block mediumStone = new MediumStone((MediumStone)stone_medium_main);
+        mediumStone.setInstanceMatrix(saveData.getStoneElement().get(3).getStoneMatrix());
+        Block mediumStoneDirt = new MediumStoneDirt((MediumStoneDirt)stone_medium_dirt_main);
+        mediumStoneDirt.setInstanceMatrix(saveData.getStoneElement().get(4).getStoneMatrix());
+        Block mediumStoneSnow = new MediumStoneSnow((MediumStoneSnow)stone_medium_snow_main);
+        mediumStoneSnow.setInstanceMatrix(saveData.getStoneElement().get(5).getStoneMatrix());
+        Block bigStone = new BigStone((BigStone)stone_big_main);
+        bigStone.setInstanceMatrix(saveData.getStoneElement().get(6).getStoneMatrix());
+        Block bigStoneDirt = new BigStoneDirt((BigStoneDirt)stone_big_dirt_main);
+        bigStoneDirt.setInstanceMatrix(saveData.getStoneElement().get(7).getStoneMatrix());
+        Block bigStoneSnow = new BigStoneSnow((BigStoneSnow)stone_big_snow_main);
+        bigStoneSnow.setInstanceMatrix(saveData.getStoneElement().get(8).getStoneMatrix());
+
+        gameElements.addAll(Arrays.asList(
+                smallStone,smallStoneDirt,smallStoneSnow,mediumStone,mediumStoneDirt,mediumStoneSnow,bigStone,bigStoneDirt,bigStoneSnow
+        ));
 
         return gameElements;
     }

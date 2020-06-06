@@ -26,6 +26,8 @@ public class SaveElement implements Externalizable {
 
     private int gmSize;
     private Matrix4f[] grassMatrix;
+    private int smSize;
+    private Matrix4f[] stoneMatrix;
 
     public SaveElement(){
         arraySize = 0;
@@ -38,6 +40,7 @@ public class SaveElement implements Externalizable {
         objectHeight = 0.0f;
         gmSize = 0;
         grassMatrix = new Matrix4f[0];
+        stoneMatrix = new Matrix4f[0];
     }
 
     public SaveElement(List<Vector2f> blockedPos, Vector3f elementPos, int type, int textureNum, float currentHeight, float objectWidth, float objectHeight) {
@@ -130,6 +133,23 @@ public class SaveElement implements Externalizable {
         this.grassMatrix = grassMatrix;
     }
 
+    public int getSmSize() {
+        return smSize;
+    }
+
+    public void setSmSize(int smSize) {
+        this.smSize = smSize;
+    }
+
+    public Matrix4f[] getStoneMatrix() {
+        return stoneMatrix;
+    }
+
+    public void setStoneMatrix(Matrix4f[] stoneMatrix) {
+        setSmSize(stoneMatrix.length);
+        this.stoneMatrix = stoneMatrix;
+    }
+
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(arraySize);
@@ -145,6 +165,10 @@ public class SaveElement implements Externalizable {
         out.writeObject(gmSize);
         for(int i=0; i<gmSize; i++){
             grassMatrix[i].writeExternal(out);
+        }
+        out.writeObject(smSize);
+        for(int i=0; i<smSize; i++){
+            stoneMatrix[i].writeExternal(out);
         }
     }
 
@@ -168,6 +192,12 @@ public class SaveElement implements Externalizable {
         for(int i=0; i<gmSize; i++){
             grassMatrix[i] = new Matrix4f();
             grassMatrix[i].readExternal(in);
+        }
+        smSize = (int)in.readObject();
+        stoneMatrix = new Matrix4f[smSize];
+        for(int i=0; i<smSize; i++){
+            stoneMatrix[i] = new Matrix4f();
+            stoneMatrix[i].readExternal(in);
         }
     }
 }

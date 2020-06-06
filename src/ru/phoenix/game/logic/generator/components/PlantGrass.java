@@ -1148,8 +1148,6 @@ public class PlantGrass {
 
         initGrass();
 
-        System.out.println(saveData.getPlantElements().size());
-
         for(SaveElement element : saveData.getPlantElements()){
             Object weed = new Weed((Weed)grass_main,element.getType());
             weed.init(element.getGrassMatrix());

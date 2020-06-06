@@ -7,7 +7,6 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.ObjectControl;
 import ru.phoenix.game.datafile.SaveElement;
-import ru.phoenix.game.logic.element.GridElement;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ public class LittleThing extends ObjectControl implements Object {
     private List<Texture> textures;
 
     private boolean apply;
+    private int textureNum;
 
     private float objectWidth;
     private float objectHeight;

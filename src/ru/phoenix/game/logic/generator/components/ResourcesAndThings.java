@@ -5,6 +5,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.content.object.passive.LittleThing;
 import ru.phoenix.game.content.object.water.WaterFlower;
+import ru.phoenix.game.datafile.SaveData;
 import ru.phoenix.game.logic.element.grid.Cell;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class ResourcesAndThings {
 
     private static List<Object> sprites = new ArrayList<>();
 
-    public static List<Object> scatter(Cell[][]grid,int w, int h, float currentHeight){
+    public static List<Object> scatter(Cell[][]grid, int w, int h, float currentHeight, SaveData saveData){
         sprites.clear();
         initSprites();
 
@@ -105,6 +106,15 @@ public class ResourcesAndThings {
                 }
             }
         }
+
+        return sprites;
+    }
+
+    public static List<Object> scatter(Cell[][]grid, SaveData saveData){
+        sprites.clear();
+        initSprites();
+
+
 
         return sprites;
     }
