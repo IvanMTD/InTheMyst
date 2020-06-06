@@ -44,7 +44,7 @@ public class SettingsElement {
         float xOffset = width / 2.0f;
         Vector3f pos = new Vector3f(position.getX() - xOffset, position.getY(),position.getZ());
         this.titre = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(titre,pos,0.55f,TYPING_LEFT));
-        this.titre.setTextColor(new Vector3f(1.0f,1.0f,1.0f));
+        this.titre.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
     }
 
     private void settupButtons(Vector3f position, float width, float height,float minusId, float plusId){
@@ -61,7 +61,7 @@ public class SettingsElement {
         Vector3f pos = new Vector3f(position.getX() + xOffset, position.getY(), position.getZ());
         for(int i=0; i<info.size(); i++) {
             SymbolStruct s = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(info.get(i), pos, 0.55f, TYPING_CENTER));
-            s.setTextColor(new Vector3f(1.0f,1.0f,1.0f));
+            s.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
             symbolStructs.add(s);
         }
     }
@@ -105,14 +105,14 @@ public class SettingsElement {
         return index;
     }
 
-    public void drawText(Shader shader){
-        TextDisplay.getInstance().getText(Default.getLangueage()).drawText(titre.getSymbols(),shader);
-        TextDisplay.getInstance().getText(Default.getLangueage()).drawText(symbolStructs.get(index).getSymbols(),shader);
-    }
-
     public void drawHud(Shader shader){
         for(HeadsUpDisplay hud : huds){
             hud.draw(shader);
         }
+    }
+
+    public void drawText(Shader shader){
+        TextDisplay.getInstance().getText(Default.getLangueage()).drawText(titre.getSymbols(),shader);
+        TextDisplay.getInstance().getText(Default.getLangueage()).drawText(symbolStructs.get(index).getSymbols(),shader);
     }
 }

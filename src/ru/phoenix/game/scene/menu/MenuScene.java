@@ -19,8 +19,6 @@ import ru.phoenix.game.scene.menu.struct.SettingsMenu;
 
 import java.util.List;
 
-import static ru.phoenix.game.scene.menu.struct.MainMenu.*;
-
 public class MenuScene implements Scene {
     private Shader shader;
     private List<Scene> scenes;
@@ -86,7 +84,9 @@ public class MenuScene implements Scene {
 
             mainMenu = new MainMenu();
             loadingMenu = new LoadingMenu();
+            loadingMenu.update(new Vector3f());
             settingsMenu = new SettingsMenu();
+            settingsMenu.update(new Vector3f());
 
             init = true;
         }
@@ -108,7 +108,9 @@ public class MenuScene implements Scene {
         timer = 0.0f;
         mainMenu = new MainMenu();
         loadingMenu = new LoadingMenu();
+        loadingMenu.update(new Vector3f());
         settingsMenu = new SettingsMenu();
+        settingsMenu.update(new Vector3f());
         over = false;
         over2 = false;
         reverse = false;
@@ -166,6 +168,12 @@ public class MenuScene implements Scene {
                     } else if (loadingAction == LoadingMenu.BACK_BUTTON) {
                         over2 = false;
                         reverse2 = true;
+                    } else if(loadingAction == LoadingMenu.LOAD_BUTTON){
+                        over2 = false;
+                        reverse2 = true;
+                    } else if(loadingAction == LoadingMenu.DELL_BUTTON){
+                        over2 = false;
+                        reverse2 = true;
                     }
                 }
             }
@@ -200,6 +208,7 @@ public class MenuScene implements Scene {
         // hud
         shader.useProgram();
         mainMenu.draw(shader);
+        shader.useProgram();
         loadingMenu.draw(shader);
         shader.useProgram();
         settingsMenu.draw(shader);

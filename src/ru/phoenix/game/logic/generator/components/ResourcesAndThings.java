@@ -20,7 +20,7 @@ public class ResourcesAndThings {
 
     private static List<Object> sprites = new ArrayList<>();
 
-    public static List<Object> scatter(Cell[][]grid, int w, int h, float currentHeight, SaveData saveData){
+    public static List<Object> scatter(Cell[][]grid, int w, int h, float currentHeight){
         sprites.clear();
         initSprites();
 
@@ -106,15 +106,6 @@ public class ResourcesAndThings {
                 }
             }
         }
-
-        return sprites;
-    }
-
-    public static List<Object> scatter(Cell[][]grid, SaveData saveData){
-        sprites.clear();
-        initSprites();
-
-
 
         return sprites;
     }

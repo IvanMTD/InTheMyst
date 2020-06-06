@@ -49,6 +49,9 @@ public abstract class StudyAreaControl {
     private int mapX;
     private int mapZ;
 
+    private boolean wait;
+    private int counter;
+
     public StudyAreaControl(){
         blocks = new ArrayList<>();
         directLights = new ArrayList<>();
@@ -60,6 +63,8 @@ public abstract class StudyAreaControl {
         prepareBattlefield = true;
         invert = false;
         mapCamera = new Matrix4f();
+        wait = false;
+        counter = 0;
     }
 
     protected void setup(Cell[][] grid, GraundModel graundModel, Reservoir waterReservoir, List<Block> blocks, List<Object>sprites, int mapX, int mapZ){
@@ -127,7 +132,7 @@ public abstract class StudyAreaControl {
 
         if(battleGround.isActive()){
             if(prepareBattlefield){
-                Default.setRadiance(1.0f);
+                Default.setRadiance(0.0f);
                 invert = false;
                 int minX = Math.round(battleGround.getLocalPoint().getX() - battleGround.getRadius()); if(minX < 0) minX = 0; battleGround.setMinW(minX);
                 int maxX = Math.round(battleGround.getLocalPoint().getX() + battleGround.getRadius()); if(maxX > getMapX()) maxX = getMapX(); battleGround.setMaxW(maxX);
@@ -189,17 +194,27 @@ public abstract class StudyAreaControl {
                 prepareBattlefield = false;
                 Default.setWait(false);
             }else{
-                if(invert){
-                    Default.setRadiance(Default.getRadiance() - 0.03f);
-                    if(Default.getRadiance() < 1.0f){
-                        Default.setRadiance(1.0f);
-                        invert = false;
+                float offset = 0.005f;
+                if(!wait) {
+                    if (invert) {
+                        Default.setRadiance(Default.getRadiance() - offset);
+                        if (Default.getRadiance() < 0.0f) {
+                            Default.setRadiance(0.0f);
+                            invert = false;
+                            wait = true;
+                        }
+                    } else {
+                        Default.setRadiance(Default.getRadiance() + offset);
+                        if (Default.getRadiance() > 1.0f) {
+                            Default.setRadiance(1.0f);
+                            invert = true;
+                        }
                     }
                 }else{
-                    Default.setRadiance(Default.getRadiance() + 0.03f);
-                    if(Default.getRadiance() > 10.0f){
-                        Default.setRadiance(10.0f);
-                        invert = true;
+                    counter++;
+                    if(counter > 100){
+                        counter = 0;
+                        wait = false;
                     }
                 }
 

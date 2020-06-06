@@ -76,7 +76,7 @@ public class SettingsMenu {
         float z = -0.09f;
         Vector3f position = new Vector3f(x,y,z);
         title = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols("Settings",position,2.0f,TYPING_CENTER));
-        title.setTextColor(new Vector3f(1.0f,1.0f,1.0f));
+        title.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
     }
 
     private void setupButtons(){

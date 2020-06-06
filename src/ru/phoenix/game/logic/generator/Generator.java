@@ -52,7 +52,7 @@ public class Generator {
         List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),new SaveData());
         List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight, new SaveData());
         List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,new SaveData());
-        List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight, new SaveData());
+        List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
         GraundModel model = new GraundModel(mesh, graundTexture);
         List<Object> sprites = new ArrayList<>();
         sprites.addAll(trees);
@@ -90,7 +90,7 @@ public class Generator {
         List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),saveData);
         List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,saveData);
         List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,saveData);
-        List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,saveData);
+        List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight);
         GraundModel model = new GraundModel(mesh, graundTexture);
         List<Object> sprites = new ArrayList<>();
         sprites.addAll(trees);
@@ -122,7 +122,7 @@ public class Generator {
         List<Object> trees = PlantingTrees.start(grid,saveData);
         List<Object> grasses = PlantGrass.start(grid,saveData);
         List<Block> blocks = GameElement.setup(grid,saveData);
-        List<Object> things = ResourcesAndThings.scatter(grid,saveData);
+        List<Object> things = ResourcesAndThings.scatter(grid,getTotalMapWidth(),getTotalMapHeight(),saveData.getBiom());
         GraundModel model = new GraundModel(mesh, graundTexture);
         List<Object> sprites = new ArrayList<>();
         sprites.addAll(trees);

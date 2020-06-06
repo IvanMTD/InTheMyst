@@ -588,7 +588,7 @@ public class StrategicScreen {
 
                 result = result * proportion;
 
-                float cap = arrayBlendMap[0].length - (10.0f + (float)Math.random() * 6.0f);
+                float cap = arrayBlendMap[0].length - (10.0f + (float)Math.random() * 2.0f);
 
                 if(z > cap){
                     result = 0.01f;
@@ -809,7 +809,7 @@ public class StrategicScreen {
 
         int pice = ((blendMap.get(0).size() - 1) / 2);
         int special = (blendMap.get(0).size() - 1) - pice;
-        int cap = (int)(blendMap.get(0).size() - (10.0f + Math.random() * 6.0f));
+        int cap = (int)(blendMap.get(0).size() - (10.0f + Math.random() * 2.0f));
 
         List<Vector3f> line1 = new ArrayList<>();
         List<Vector3f> line2 = new ArrayList<>();
@@ -826,7 +826,7 @@ public class StrategicScreen {
 
             result = result * proportion;
 
-            if(z > blendMap.get(0).size() - (10.0f + Math.random() * 6.0f)){
+            if(z > blendMap.get(0).size() - (10.0f + Math.random() * 2.0f)){
                 result = 0.01f;
                 line1.add(new Vector3f(result, 0.0f, 0.0f));
             }else {

@@ -121,9 +121,14 @@ void main() {
             }else{
                 if(useBorder == 1){
                     vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);
-                    //float alpha = texture(material.diffuseMap,fs_in.TexCoords).a;
-                    float rad = radiance * radiance;
-                    fragment_color = vec4(result.r * rad, result.g / radiance, result.b / radiance, 1.0f);
+                    if(useMap == 1){
+                        if(color.r > 0.0f){
+                            result = mix(skyColor,vec4(result,1.0f), color.r).rgb;
+                        }else{
+                            result = skyColor.rgb;
+                        }
+                    }
+                    fragment_color = mix(vec4(result,1.0f),vec4(10.0f,0.0f,0.0f,1.0f),radiance);
                 }
                 if(useShading == 1){
                     vec3 result = getDirectLight(directLight, normal, viewDirection, fs_in.TexCoords);

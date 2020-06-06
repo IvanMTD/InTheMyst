@@ -23,13 +23,10 @@ import ru.phoenix.game.scene.Scene;
 
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_1;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengles.GLES30.GL_DRAW_FRAMEBUFFER;
 
 public class BaseRenderFrame implements Framework {
     private FrameBufferObject multisample;

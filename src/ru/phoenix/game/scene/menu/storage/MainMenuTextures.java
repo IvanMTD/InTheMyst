@@ -10,6 +10,7 @@ public class MainMenuTextures {
     private static MainMenuTextures instance;
 
     private Texture background;
+    private Texture loadingBackground;
     private Texture title;
     private Texture stick;
 
@@ -18,11 +19,14 @@ public class MainMenuTextures {
     private Texture buttonSettings;
     private Texture okButton;
     private Texture backButton;
+    private Texture dellButton;
+    private Texture loadButton;
     private Texture minus;
     private Texture plus;
 
     private MainMenuTextures() {
         background = getTexture("./data/content/texture/hud/mainmenu/background/mmb_hud.png");
+        loadingBackground = getTexture("./data/content/texture/hud/mainmenu/elements/rust.png");
         title = getTexture("./data/content/texture/hud/mainmenu/background/title.png");
         stick = getTexture("./data/content/texture/hud/mainmenu/background/Stick.png");
 
@@ -32,6 +36,8 @@ public class MainMenuTextures {
 
         okButton = getTexture("./data/content/texture/hud/mainmenu/elements/ok_button.png");
         backButton = getTexture("./data/content/texture/hud/mainmenu/elements/back_button.png");
+        dellButton = getTexture("./data/content/texture/hud/mainmenu/elements/dell_button.png");
+        loadButton = getTexture("./data/content/texture/hud/mainmenu/elements/load_button.png");
 
         minus = getTexture("./data/content/texture/hud/mainmenu/elements/minus.png");
         plus = getTexture("./data/content/texture/hud/mainmenu/elements/plus.png");
@@ -45,6 +51,10 @@ public class MainMenuTextures {
 
     public Texture getBackground() {
         return background;
+    }
+
+    public Texture getLoadingBackground() {
+        return loadingBackground;
     }
 
     public Texture getTitle() {
@@ -73,6 +83,14 @@ public class MainMenuTextures {
 
     public Texture getBackButton() {
         return backButton;
+    }
+
+    public Texture getDellButton() {
+        return dellButton;
+    }
+
+    public Texture getLoadButton() {
+        return loadButton;
     }
 
     public Texture getMinus() {
