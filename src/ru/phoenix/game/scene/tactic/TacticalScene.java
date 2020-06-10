@@ -53,7 +53,6 @@ public class TacticalScene implements Scene {
     private boolean switchControl;
     private float count;
 
-    private Vector3f pixel;
     private Cursor cursorHud;
     private GraundAim graundAim;
     private int aimDrawConfig;
@@ -142,7 +141,7 @@ public class TacticalScene implements Scene {
     @Override
     public void update(){
         GameController.getInstance().update();
-        pixel = Pixel.getPixel();
+        Vector3f pixel = Pixel.getPixel();
         cursorHud.update(studyArea.getEnemies());
 
         if(GameController.getInstance().isfClick()){
@@ -247,7 +246,7 @@ public class TacticalScene implements Scene {
             SceneControl.setLastScene(this);
             for(Scene scene : scenes){
                 if(scene.getSceneId() == Constants.SCENE_STRATEGIC){
-                    //scene.preset(0,allies);
+                    scene.preset(0,allies);
                     scene.start(scenes);
                 }
             }

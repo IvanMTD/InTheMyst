@@ -7,6 +7,7 @@ public class Constants {
     public static final int SCENE_STRATEGIC     = 0x12000;
     public static final int SCENE_TACTICAL      = 0x13000;
     public static final int SCENE_LOADING       = 0x14000;
+    public static final int SCENE_CUT           = 0x15000;
 
     // SCENE_BATTLE - BEGIN 0x13000;
     // area info

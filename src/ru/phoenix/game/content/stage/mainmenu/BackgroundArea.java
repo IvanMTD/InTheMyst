@@ -30,7 +30,6 @@ public class BackgroundArea {
             objectOutputStream.writeObject(saveData);
             objectOutputStream.close();
         }
-        //studyArea = Generator.getPreparedArea(25.0f, 50, 50,new SaveData());
     }
 
     public void init(){

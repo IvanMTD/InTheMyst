@@ -6,6 +6,7 @@ import ru.phoenix.core.buffer.ubo.UniformBufferObject;
 import ru.phoenix.core.config.*;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
+import ru.phoenix.game.scene.cut.CutScene;
 import ru.phoenix.game.scene.logo.LogoScene;
 import ru.phoenix.game.scene.menu.MenuScene;
 import ru.phoenix.game.scene.strategy.StrategyScene;
@@ -17,16 +18,16 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static ru.phoenix.core.config.Constants.*;
 
 public class CoreEngine {
     private Render render;
     private UniformBufferObject uboProjection;
 
-    private LogoScene logoScene;
-    private MenuScene menuScene;
-    private StrategyScene strategyScene;
-    private TacticalScene tacticalScene;
+    private Scene logoScene;
+    private Scene menuScene;
+    private Scene cutScene;
+    private Scene strategyScene;
+    private Scene tacticalScene;
 
     private List<Scene> scenes;
 
@@ -48,6 +49,7 @@ public class CoreEngine {
 
         logoScene = new LogoScene();
         menuScene = new MenuScene();
+        cutScene = new CutScene(CutScene.FIRST_SCENE);
         strategyScene = new StrategyScene();
         tacticalScene = new TacticalScene();
 
@@ -58,7 +60,7 @@ public class CoreEngine {
         Default.init();
         render.init();
         uboProjection.allocate(0);
-        scenes = Arrays.asList(logoScene,menuScene,strategyScene,tacticalScene);
+        scenes = Arrays.asList(logoScene,menuScene,cutScene,strategyScene,tacticalScene);
         logoScene.start(scenes);
     }
 
