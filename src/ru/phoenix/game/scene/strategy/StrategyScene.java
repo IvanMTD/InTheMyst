@@ -264,6 +264,11 @@ public class StrategyScene implements Scene {
         return null;
     }
 
+    @Override
+    public void setCurrentInnerScene(int currentInnerScene) {
+
+    }
+
     private String getInfo(float biom){
         String title;
 

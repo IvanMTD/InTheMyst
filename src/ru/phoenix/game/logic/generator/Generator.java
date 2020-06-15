@@ -58,7 +58,40 @@ public class Generator {
         sprites.addAll(trees);
         sprites.addAll(grasses);
         sprites.addAll(things);
-        return new RandomArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight());
+        return new RandomArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight(),currentHeight);
+        // определяем алгоритм генерации - конец
+    }
+
+    public static RandomArena getCutArea(float currentHeight, int w, int h, float radius){
+
+        // проверяем состояние модулей компонентов - начало
+        checkElements();
+        // проверяем состояние модулей компонентов - конец
+
+        // определяем алгоритм генерации - начало
+        Mesh mesh;
+        Cell[][] grid = null;
+
+        setTotalMapWidth(w);
+        setTotalMapHeight(h);
+
+        System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
+        grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true, radius, new SaveData());
+        heightMap = new Texture2D();
+        heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
+        heightMap.saveImage("gameHeightMap.png");
+        mesh = ModelCreater.start((int)currentHeight - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
+        Reservoir waterReservoir = null;
+        waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);
+        waterReservoir.init(grid,currentHeight);
+        List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),radius,new SaveData());
+        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight, new SaveData());
+        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,radius,new SaveData());
+        GraundModel model = new GraundModel(mesh, graundTexture);
+        List<Object> sprites = new ArrayList<>();
+        sprites.addAll(trees);
+        sprites.addAll(grasses);
+        return new RandomArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight(),currentHeight);
         // определяем алгоритм генерации - конец
     }
 
@@ -96,7 +129,7 @@ public class Generator {
         sprites.addAll(trees);
         sprites.addAll(grasses);
         sprites.addAll(things);
-        return new PreparedArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight());
+        return new PreparedArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight(),currentHeight);
         // определяем алгоритм генерации - конец
     }
 
@@ -128,7 +161,7 @@ public class Generator {
         sprites.addAll(trees);
         sprites.addAll(grasses);
         sprites.addAll(things);
-        return new PreparedArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight());
+        return new PreparedArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight(),saveData.getBiom());
     }
 
     // методы получения свободного поля - начало

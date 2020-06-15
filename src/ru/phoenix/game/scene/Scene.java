@@ -18,4 +18,5 @@ public interface Scene {
     boolean isActive();
     List<Light> getLights();
     Shader getShader();
+    void setCurrentInnerScene(int currentInnerScene);
 }

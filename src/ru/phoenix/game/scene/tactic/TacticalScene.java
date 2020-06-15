@@ -95,8 +95,6 @@ public class TacticalScene implements Scene {
             skybox = new Skybox();
             mousePicker = new MousePicker();
 
-            init = true;
-
             shader3D.createVertexShader("VS_game_object.glsl");
             shader3D.createGeometryShader("GS_game_object.glsl");
             shader3D.createFragmentShader("FS_game_object.glsl");
@@ -112,6 +110,8 @@ public class TacticalScene implements Scene {
 
             generate(currentHeight);
             skybox.init();
+
+            init = true;
         }
     }
 
@@ -394,6 +394,11 @@ public class TacticalScene implements Scene {
     @Override
     public Shader getShader() {
         return shader3D;
+    }
+
+    @Override
+    public void setCurrentInnerScene(int currentInnerScene) {
+
     }
 
     private void generate(float currentHeight){

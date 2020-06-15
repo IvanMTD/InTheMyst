@@ -49,7 +49,7 @@ public class CoreEngine {
 
         logoScene = new LogoScene();
         menuScene = new MenuScene();
-        cutScene = new CutScene(CutScene.FIRST_SCENE);
+        cutScene = new CutScene();
         strategyScene = new StrategyScene();
         tacticalScene = new TacticalScene();
 

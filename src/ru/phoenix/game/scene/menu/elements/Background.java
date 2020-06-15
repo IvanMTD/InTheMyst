@@ -38,6 +38,10 @@ public class Background {
         backgroundArea.draw(shader);
     }
 
+    public void draw(Shader shader, boolean isShadow){
+        backgroundArea.draw(shader,isShadow);
+    }
+
     public BackgroundArea getBackgroundArea() {
         return backgroundArea;
     }

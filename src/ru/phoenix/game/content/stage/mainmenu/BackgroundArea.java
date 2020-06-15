@@ -65,6 +65,16 @@ public class BackgroundArea {
         studyArea.drawShadowSprites(shader);
     }
 
+    public void draw(Shader shader, boolean isShadow){
+        if(isShadow) {
+            studyArea.draw(shader);
+            studyArea.drawShadowSprites(shader);
+            studyArea.drawShadowPersons(shader, true);
+        }else{
+            studyArea.draw(shader);
+        }
+    }
+
     public Shader getShader3D() {
         return shader3D;
     }

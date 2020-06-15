@@ -11,9 +11,10 @@ import ru.phoenix.game.logic.generator.components.Reservoir;
 import java.util.List;
 
 public class RandomArena extends StudyAreaControl implements StudyArea {
-    public RandomArena(Cell[][] grid, GraundModel model, Reservoir waterReservoir, List<Block> blocks, List<Object> sprites, int mapX, int mapZ){
+    public RandomArena(Cell[][] grid, GraundModel model, Reservoir waterReservoir, List<Block> blocks, List<Object> sprites, int mapX, int mapZ, float biom){
         super();
         setup(grid, model, waterReservoir, blocks, sprites, mapX, mapZ);
+        setBiom(biom);
         initLight();
     }
 }

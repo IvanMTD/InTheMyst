@@ -59,7 +59,7 @@ public class Render {
 
         if (!stopRender) {
             // рисуем карту теней и карту тумана войны
-            if(scene.getSceneId() == Constants.SCENE_TACTICAL || scene.getSceneId() == Constants.SCENE_MAIN_MENU) {
+            if(scene.getSceneId() == Constants.SCENE_TACTICAL || scene.getSceneId() == Constants.SCENE_MAIN_MENU || scene.getSceneId() == Constants.SCENE_CUT) {
                 if(scene.getSceneId() == Constants.SCENE_TACTICAL) {
                     if (index == 0) {
                         shadowRenderFrame.draw(scene);

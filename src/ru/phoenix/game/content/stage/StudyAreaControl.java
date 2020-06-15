@@ -48,6 +48,7 @@ public abstract class StudyAreaControl {
     private Matrix4f mapCamera;
     private int mapX;
     private int mapZ;
+    private float biom;
 
     private boolean wait;
     private int counter;
@@ -91,7 +92,7 @@ public abstract class StudyAreaControl {
     protected void initLight(){
         float hyp = (float)Math.sqrt(mapX * mapX + mapZ * mapZ);
         float x = (float)mapX / 2.0f + ((float)Math.sin(Math.toRadians(-45.0f)) * (float)mapX / 2.0f);
-        float y = hyp;
+        float y = getBiom() + hyp;
         float z = (float)mapZ / 2.0f + ((float)Math.cos(Math.toRadians(-45.0f)) * (float)mapZ / 2.0f);
         Light directLight = new DirectLight(
                 new Vector3f(x,y,z), // position
@@ -479,5 +480,13 @@ public abstract class StudyAreaControl {
 
     public BattleGround getBattleGround() {
         return battleGround;
+    }
+
+    protected float getBiom() {
+        return biom;
+    }
+
+    protected void setBiom(float biom) {
+        this.biom = biom;
     }
 }

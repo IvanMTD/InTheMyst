@@ -146,4 +146,9 @@ public class LogoScene implements Scene {
     public Shader getShader() {
         return shader;
     }
+
+    @Override
+    public void setCurrentInnerScene(int currentInnerScene) {
+
+    }
 }

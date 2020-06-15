@@ -26,6 +26,29 @@ public class PlantingTrees {
     private static int width;
     private static int height;
 
+    public static List<Object> start(Cell[][] grid, int w, int h, float radius, SaveData saveData){
+        trees.clear();
+        saveElements.clear();
+        width = w;
+        height = h;
+        initTrees();
+
+        Vector3f center = new Vector3f(w/2.0f,0.0f,h/2.0f);
+
+        for(int x = 1; x <= width - 1; x++){
+            for(int z = 1; z <= height - 1; z++) {
+                Vector3f currentPos = new Vector3f(x,0.0f,z);
+                if(Math.abs(center.sub(currentPos).length()) > radius) {
+                    setupTrees(grid, x, z);
+                }
+            }
+        }
+
+        saveData.setTreeElements(saveElements);
+
+        return trees;
+    }
+
     public static List<Object> start(Cell[][] grid, int w, int h, SaveData saveData){
         trees.clear();
         saveElements.clear();

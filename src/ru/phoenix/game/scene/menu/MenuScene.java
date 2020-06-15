@@ -216,7 +216,7 @@ public class MenuScene implements Scene {
 
     @Override
     public void draw(Shader shader, boolean isShadow) {
-
+        background.draw(shader,isShadow);
     }
 
     @Override
@@ -237,6 +237,11 @@ public class MenuScene implements Scene {
     @Override
     public Shader getShader() {
         return background.getBackgroundArea().getShader3D();
+    }
+
+    @Override
+    public void setCurrentInnerScene(int currentInnerScene) {
+
     }
 
     private void newGameAnimation(){
@@ -327,7 +332,7 @@ public class MenuScene implements Scene {
     private void nextScene(){
         SceneControl.setLastScene(this);
         for (Scene scene : scenes) {
-            if (scene.getSceneId() == Constants.SCENE_STRATEGIC) {
+            if (scene.getSceneId() == Constants.SCENE_CUT) { // SCENE_STRATEGIC
                 scene.start(scenes);
             }
         }
