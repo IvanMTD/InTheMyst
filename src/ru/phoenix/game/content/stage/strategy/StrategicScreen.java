@@ -1186,4 +1186,8 @@ public class StrategicScreen {
             }
         }
     }
+
+    public Shader getSpriteShader(){
+        return spriteShader;
+    }
 }

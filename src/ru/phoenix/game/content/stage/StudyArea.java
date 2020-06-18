@@ -15,6 +15,7 @@ public interface StudyArea {
     void draw(Shader shader);
     void drawSprites(Shader shader);
     void drawPersons(Shader shader);
+    void drawPersonsText(Shader shader);
     void drawWater(Shader shader);
     void drawShadowSprites(Shader shader);
     void drawShadowPersons(Shader shader, boolean shadow);

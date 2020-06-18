@@ -2,7 +2,9 @@ package ru.phoenix.game.scene.tactic;
 
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
@@ -70,6 +72,11 @@ public class TacticalScene implements Scene {
     private Vector3f lastCameraFront;
     private boolean cameraUpdate;
 
+    private boolean start;
+    private boolean finish;
+    private float currentGamma;
+    private int start_counter;
+
     public TacticalScene(){
         active = false;
         init = false;
@@ -82,6 +89,10 @@ public class TacticalScene implements Scene {
 
     public void init(){
         Camera.getInstance().preset(20.0f,46.0f,-30.0f);
+        start = true;
+        finish = false;
+        currentGamma = WindowConfig.getInstance().getGamma();
+        start_counter = 0;
         if(init){
             generate(currentHeight);
         }else {
@@ -144,119 +155,137 @@ public class TacticalScene implements Scene {
         Vector3f pixel = Pixel.getPixel();
         cursorHud.update(studyArea.getEnemies());
 
-        if(GameController.getInstance().isfClick()){
-            Default.setShowAlpha(!Default.isShowAlpha());
-        }
-
-        // Обновляем информацию в сетке
-        for(int x=0; x<=studyArea.getMapX(); x++) {
-            for (int z = 0; z<=studyArea.getMapZ(); z++) {
-                if(!studyArea.getBattleGround().isActive()) {
-                    studyArea.getGrid()[x][z].setOccupied(false);
+        if(finish){
+            Window.getInstance().setGamma(Window.getInstance().getGamma() - 0.002f);
+            if(Window.getInstance().getGamma() <= 0.0f) {
+                Window.getInstance().setGamma(0.0f);
+                cameraUpdate = false;
+                SceneControl.setLastScene(this);
+                for (Scene scene : scenes) {
+                    if (scene.getSceneId() == Constants.SCENE_STRATEGIC) {
+                        scene.preset(currentHeight, allies);
+                        scene.start(scenes);
+                    }
                 }
-                if (studyArea.getGrid()[x][z].isVisible()) {
-                    studyArea.getGrid()[x][z].update(pixel);
-                }
-            }
-        }
-
-        if(!studyArea.getBattleGround().isActive()) {
-            checkOccupied(studyArea.getAllies());
-            checkOccupied(studyArea.getEnemies());
-        }
-
-        Cell targetElement = null;
-
-        if(GameController.getInstance().isLeftClick()) {
-            mousePicker.update(studyArea.getGrid());
-            Vector3f endPos = mousePicker.getCurrentTerrainPoint();
-            if(endPos.getX() < 0) endPos.setX(0);
-            if(endPos.getX() > studyArea.getMapX()) endPos.setX(studyArea.getMapX());
-            if(endPos.getZ() < 0) endPos.setZ(0);
-            if(endPos.getZ() > studyArea.getMapZ()) endPos.setZ(studyArea.getMapZ());
-            targetElement = studyArea.getGrid()[Math.round(endPos.getX())][Math.round(endPos.getZ())];
-            if(targetElement.isBlocked() || targetElement.isOccupied()){
-                targetElement = null;
-            }else{
-                if(pixel.getX() == 0.0f && pixel.getY() == 0.0f && pixel.getZ() == 0.0f) {
-                    graundAim.update(targetElement.getModifiedPosition(), targetElement.isBevel(), targetElement.getBevelAngle());
-                    graundAim.setVisible(true);
-                    aimDrawConfig = getAimDrawConfig();
+                over();
+                index++;
+                if (index > 1) {
+                    index = 0;
                 }
             }
-        }
-
-        if(lastElement != null && targetElement != null){
-            if(lastElement.getId() == targetElement.getId()){
-                targetElement = null;
+        }else {
+            if (GameController.getInstance().isfClick()) {
+                Default.setShowAlpha(!Default.isShowAlpha());
             }
-        }
 
-        if(targetElement != null) {
-            lastElement = targetElement;
-        }
-
-        if(studyArea.isWater()) {
-            // обнавляем движение волн
-            if (switchControl) {
-                count += 0.0005f;
-                Default.setOffset(count);
-                if (count >= 0.05f) {
-                    switchControl = !switchControl;
-                }
-            } else {
-                count -= 0.0005f;
-                Default.setOffset(count);
-                if (count <= -0.05f) {
-                    switchControl = !switchControl;
+            // Обновляем информацию в сетке
+            for (int x = 0; x <= studyArea.getMapX(); x++) {
+                for (int z = 0; z <= studyArea.getMapZ(); z++) {
+                    if (!studyArea.getBattleGround().isActive()) {
+                        studyArea.getGrid()[x][z].setOccupied(false);
+                    }
+                    if (studyArea.getGrid()[x][z].isVisible()) {
+                        studyArea.getGrid()[x][z].update(pixel);
+                    }
                 }
             }
-        }
-        // обновляем все объекты сцены
-        studyArea.update(targetElement, pixel);
-        // обновляем камеру
-        if(studyArea.getBattleGround().isActive()){ // ЕСЛИ БОЕВОЙ РЕЖИМ АКТИВИРОВАН!
-            graundAim.setVisible(false);
-            aimDrawConfig = 0;
-            if(cameraUpdate){
-                Camera.getInstance().update(studyArea.getBattleGround().getMinW(), studyArea.getBattleGround().getMaxW(),
-                        studyArea.getBattleGround().getMinH(), studyArea.getBattleGround().getMaxH(), studyArea.getGrid());
-                if(Math.abs(lastCameraPos.sub(Camera.getInstance().getPos()).length()) > 2.0f) {
-                    Camera.getInstance().setPos(lastCameraPos);
-                }
-            }else{
-                if(Camera.getInstance().cameraMove(studyArea.getBattleGround().getLocalPoint())) {
-                    cameraUpdate = true;
-                }else{
-                    Camera.getInstance().update(0.0f, studyArea.getMapX(), 0.0f, studyArea.getMapZ(), studyArea.getGrid());
-                }
+
+            if (!studyArea.getBattleGround().isActive()) {
+                checkOccupied(studyArea.getAllies());
+                checkOccupied(studyArea.getEnemies());
             }
-        }else { // ОБЫЧНЫЙ РЕЖИМ
-            cameraUpdate = false;
-            Camera.getInstance().update(0.0f, studyArea.getMapX(), 0.0f, studyArea.getMapZ(), studyArea.getGrid());
-        }
 
-        lastCameraPos = new Vector3f(Camera.getInstance().getPos());
-        lastCameraFront = new Vector3f(Camera.getInstance().getFront());
+            Cell targetElement = null;
 
-        // TЕСТОВЫЙ ТРИГЕР - НАЧАЛО
-
-        if(GameController.getInstance().isSpaceClick()){
-            cameraUpdate = false;
-            SceneControl.setLastScene(this);
-            for(Scene scene : scenes){
-                if(scene.getSceneId() == Constants.SCENE_STRATEGIC){
-                    scene.preset(0,allies);
-                    scene.start(scenes);
+            if (GameController.getInstance().isLeftClick()) {
+                mousePicker.update(studyArea.getGrid());
+                Vector3f endPos = mousePicker.getCurrentTerrainPoint();
+                if (endPos.getX() < 0) endPos.setX(0);
+                if (endPos.getX() > studyArea.getMapX()) endPos.setX(studyArea.getMapX());
+                if (endPos.getZ() < 0) endPos.setZ(0);
+                if (endPos.getZ() > studyArea.getMapZ()) endPos.setZ(studyArea.getMapZ());
+                targetElement = studyArea.getGrid()[Math.round(endPos.getX())][Math.round(endPos.getZ())];
+                if (targetElement.isBlocked() || targetElement.isOccupied()) {
+                    targetElement = null;
+                } else {
+                    if (pixel.getX() == 0.0f && pixel.getY() == 0.0f && pixel.getZ() == 0.0f) {
+                        graundAim.update(targetElement.getModifiedPosition(), targetElement.isBevel(), targetElement.getBevelAngle());
+                        graundAim.setVisible(true);
+                        aimDrawConfig = getAimDrawConfig();
+                    }
                 }
             }
-            over();
-            index++;
-            if(index > 1){
-                index = 0;
+
+            if (lastElement != null && targetElement != null) {
+                if (lastElement.getId() == targetElement.getId()) {
+                    targetElement = null;
+                }
+            }
+
+            if (targetElement != null) {
+                lastElement = targetElement;
+            }
+
+            if (studyArea.isWater()) {
+                // обнавляем движение волн
+                if (switchControl) {
+                    count += 0.0005f;
+                    Default.setOffset(count);
+                    if (count >= 0.05f) {
+                        switchControl = !switchControl;
+                    }
+                } else {
+                    count -= 0.0005f;
+                    Default.setOffset(count);
+                    if (count <= -0.05f) {
+                        switchControl = !switchControl;
+                    }
+                }
+            }
+            // обновляем все объекты сцены
+            studyArea.update(targetElement, pixel);
+            // обновляем камеру
+            if (studyArea.getBattleGround().isActive()) { // ЕСЛИ БОЕВОЙ РЕЖИМ АКТИВИРОВАН!
+                graundAim.setVisible(false);
+                aimDrawConfig = 0;
+                if (cameraUpdate) {
+                    Camera.getInstance().update(studyArea.getBattleGround().getMinW(), studyArea.getBattleGround().getMaxW(),
+                            studyArea.getBattleGround().getMinH(), studyArea.getBattleGround().getMaxH(), studyArea.getGrid());
+                    if (Math.abs(lastCameraPos.sub(Camera.getInstance().getPos()).length()) > 2.0f) {
+                        Camera.getInstance().setPos(lastCameraPos);
+                    }
+                } else {
+                    if (Camera.getInstance().cameraMove(studyArea.getBattleGround().getLocalPoint(), 0.1f)) {
+                        cameraUpdate = true;
+                    } else {
+                        Camera.getInstance().update(0.0f, studyArea.getMapX(), 0.0f, studyArea.getMapZ(), studyArea.getGrid());
+                    }
+                }
+            } else { // ОБЫЧНЫЙ РЕЖИМ
+                cameraUpdate = false;
+                Camera.getInstance().update(0.0f, studyArea.getMapX(), 0.0f, studyArea.getMapZ(), studyArea.getGrid());
+            }
+
+            lastCameraPos = new Vector3f(Camera.getInstance().getPos());
+            lastCameraFront = new Vector3f(Camera.getInstance().getFront());
+
+            if(start){
+                start_counter++;
+                if(start_counter > 500) {
+                    Window.getInstance().setGamma(Window.getInstance().getGamma() + 0.002f);
+                    if (Window.getInstance().getGamma() >= currentGamma) {
+                        Window.getInstance().setGamma(currentGamma);
+                        start = false;
+                    }
+                }
+            }else {
+                // TЕСТОВЫЙ ТРИГЕР - НАЧАЛО
+                if (GameController.getInstance().isSpaceClick()) {
+                    finish = true;
+                }
+                // ТЕСТОВЫЙ ТРИГЕР - КОНЕЦ
             }
         }
-        // ТЕСТОВЫЙ ТРИГЕР - КОНЕЦ
     }
 
     private void checkOccupied(List<Character> characters){
@@ -407,21 +436,20 @@ public class TacticalScene implements Scene {
         graundAim.setVisible(false);
         studyArea = Generator.getRandomArea(currentHeight,(int)(49.0f + (float)Math.random() * 49.0f),(int)(49.0f + (float)Math.random() * 49.0f));
         // ALLIES - ВРЕМЕННО!
-        float id = 0.12f;
-        Vector3f position = new Vector3f();
+        Vector3f position;
         Vector3f lagerPoint = studyArea.getGrid()[studyArea.getGrid().length / 2][studyArea.getGrid()[0].length - 2].getModifiedPosition();
         Vector3f cameraLook = new Vector3f(lagerPoint);
         for(Character character : allies){
+            character.preset();
             position = Generator.getRandomPos(studyArea.getGrid(), lagerPoint, 5.0f, true);
-            character.setId(id);
             character.setLagerPoint(lagerPoint);
             character.setPosition(position);
-            id += 0.01f;
             studyArea.getAllies().add(character);
         }
         // ALLIES - ВРЕМЕННО!
 
         // ENEMIES - НАЧАЛО
+        float id = 0.2f;
         int percent = studyArea.getMapX() + studyArea.getMapZ();
         int amount = Math.round(2.0f + (float)Math.random()) * percent / 100;
         System.out.println("Число групп противников: " + amount);

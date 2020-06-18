@@ -18,8 +18,11 @@ public interface Character {
     void preset();
     void resetSettings();
     void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemy, List<Character> ally, BattleGround battleGround);
+    void setTargetPoint(Cell targetPoint);
     void update();
+    void update(int useAnimation);
     void draw(Shader shader, boolean shadow);
+    void drawText(Shader shader);
     // методы гетеры и сетеры - начало
     // текстуры
     Texture getBaseStanceTextrue();
@@ -55,6 +58,9 @@ public interface Character {
     void setBaseAttackAnimation(ImageAnimation baseAttackAnimation);
     ImageAnimation getBackstabAttackAnimation();
     void setBackstabAttackAnimation(ImageAnimation backstabAttackAnimation);
+    // text
+    void setText(String text);
+    void clearText();
 
     // draw class
     void updateAnimation(Texture texture, ImageAnimation animation);
@@ -72,6 +78,8 @@ public interface Character {
     // контрль положения персонажа
     Vector3f getPosition();
     void setPosition(Vector3f position);
+    Vector3f getTempPos();
+    void setTempPos(Vector3f tempPos);
     int getLook();
     void setLook(int look);
     Vector3f getLagerPoint();

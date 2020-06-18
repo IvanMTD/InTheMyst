@@ -413,6 +413,16 @@ public abstract class StudyAreaControl {
         }
     }
 
+    public void drawPersonsText(Shader shader){
+        for(Character ally : allies){
+            ally.drawText(shader);
+        }
+
+        for(Character enemy : enemies){
+            enemy.drawText(shader);
+        }
+    }
+
     public void drawWater(Shader shader){
         if(waterReservoir != null) {
             shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);

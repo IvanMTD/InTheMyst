@@ -1,6 +1,6 @@
 package ru.phoenix.game.content.characters.humans;
 
-import ru.phoenix.core.config.Constants;
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.loader.texture.Texture;
@@ -10,6 +10,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.logic.generator.Generator;
+import ru.phoenix.game.property.TextDisplay;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
@@ -95,6 +96,12 @@ public abstract class HumanDraw extends HumanControl {
         }
         if(!shadow && (isTarget() || isShowIndicators())) {
             getSelfIndicators().draw(shader);
+        }
+    }
+
+    public void drawText(Shader shader){
+        if(getText() != null){
+            TextDisplay.getInstance().getText(Default.getLangueage()).drawText(getText().getSymbols(),shader);
         }
     }
 

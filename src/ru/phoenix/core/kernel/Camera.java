@@ -319,13 +319,12 @@ public class Camera {
         }
     }
 
-    public boolean cameraMove(Vector3f targetPosition){
+    public boolean cameraMove(Vector3f targetPosition, float moveOffset){
         boolean over = false;
         Vector3f currenPos = new Vector3f(getPos().add(getFront().mul(getHypotenuse())));
         if(prepare){
             moveDirection = new Vector3f(targetPosition.sub(currenPos)).normalize();
             moveDistance = Math.abs(new Vector3f(targetPosition.sub(currenPos)).length());
-            moveOffset = 0.1f;
             totalMove = 0.0f;
             prepare = false;
             setCameraControlLock(true);

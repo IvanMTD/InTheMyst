@@ -1,16 +1,15 @@
 package ru.phoenix.game.scene.strategy;
 
 import ru.phoenix.core.config.Constants;
+import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
+import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Perlin2D;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
-import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
-import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisPartisan;
-import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
 import ru.phoenix.game.content.stage.strategy.StrategicScreen;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.logic.lighting.Light;
@@ -21,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
-import static ru.phoenix.core.config.Constants.ALLY;
+import static ru.phoenix.core.config.Constants.SCENE_TACTICAL;
+import static ru.phoenix.core.config.Constants.WEST;
 
 public class StrategyScene implements Scene {
     private StrategicScreen strategicScreen;
@@ -37,8 +37,13 @@ public class StrategyScene implements Scene {
     // контроль сцены
     private boolean active;
     private boolean init;
+    private boolean start;
+    private boolean finish;
+    private float currentGamma;
     // скайбокс
     private Skybox skybox;
+
+    private float person_counter;
 
     public StrategyScene() {
         km = 100;
@@ -48,6 +53,7 @@ public class StrategyScene implements Scene {
         scenes = new ArrayList<>();
         active = false;
         init = false;
+        currentGamma = WindowConfig.getInstance().getGamma();
     }
 
     public void init(){
@@ -55,13 +61,17 @@ public class StrategyScene implements Scene {
         Camera.getInstance().setPos(new Vector3f(100.0f,3.0f,213.0f));
         Camera.getInstance().setFront(new Vector3f(0.0f,0.0f,-1.0f));
         Camera.getInstance().updateViewMatrix();
-        if(!init){
+        start = true;
+        finish = false;
 
+        setPersonOnScreen();
+
+        if(!init){
+            person_counter = 0.0f;
             strategicScreen = new StrategicScreen();
             skybox = new Skybox();
             cursor = new Cursor();
 
-            createAllies();
             createBioms();
             skybox.init();
             cursor.init();
@@ -70,32 +80,16 @@ public class StrategyScene implements Scene {
         }
     }
 
-    private void createAllies(){
-        Character mainCharacter = new Gehard();
-        mainCharacter.setRecognition(ALLY);
-        mainCharacter.preset();
-        mainCharacter.setDefaultCharacteristic();
-        allies.add(mainCharacter);
-
-        //TEST
-        int random = 1 + (int)Math.round(Math.random() * 4.0f);
-        for(int i=0; i<random; i++){
-            int chance = (int)Math.round(Math.random() * 10.0f);
-            if(chance < 5){
-                Character character = new CommunisPartisan();
-                character.setRecognition(ALLY);
-                character.preset();
-                character.setDefaultCharacteristic();
-                allies.add(character);
-            }else{
-                Character character = new CommunisArcher();
-                character.setRecognition(ALLY);
-                character.preset();
-                character.setDefaultCharacteristic();
-                allies.add(character);
-            }
+    private void setPersonOnScreen(){
+        float offset = 0.0f;
+        for(Character ally : allies){
+            Vector3f position = new Vector3f(105.0f - offset,0.0f,195.0f + (-1.0f + (float)Math.random() * 2.0f));
+            ally.preset();
+            ally.setPosition(position);
+            ally.setTempPos(position);
+            ally.setLook(WEST);
+            offset ++;
         }
-        //TEST
     }
 
     private void createBioms(){
@@ -188,29 +182,53 @@ public class StrategyScene implements Scene {
     @Override
     public void update() {
         cursor.update(null);
-
-        m += 0.1f;
-        if(m > 300.0f){
-            m = 0.0f;
-            currentKm++;
-            if(currentKm >= bioms.length){
-                currentKm = 0;
+        if(start){
+            Window.getInstance().setGamma(Window.getInstance().getGamma() + 0.003f);
+            for(Character ally : allies){
+                ally.update(0);
+                ally.update();
             }
-            System.out.println(getInfo(bioms[currentKm]));
-        }
-
-        float biom = bioms[currentKm];
-        strategicScreen.update(biom);
-
-        if(Input.getInstance().isPressed(GLFW_KEY_SPACE)) {
-            SceneControl.setLastScene(this);
-            for(Scene scene : scenes){
-                if(scene.getSceneId() == Constants.SCENE_TACTICAL){
-                    scene.preset(strategicScreen.getCurrentBiom(),allies);
-                    scene.start(scenes);
+            if(Window.getInstance().getGamma() > currentGamma){
+                Window.getInstance().setGamma(currentGamma);
+                start = false;
+            }
+        }else if(finish){
+            Window.getInstance().setGamma(Window.getInstance().getGamma() - 0.002f);
+            for(Character ally : allies){
+                ally.update(0);
+                ally.update();
+            }
+            if(Window.getInstance().getGamma() <= 0.0f) {
+                Window.getInstance().setGamma(0.0f);
+                nextScene();
+            }
+        }else {
+            m += 0.1f;
+            if (m > 300.0f) {
+                m = 0.0f;
+                currentKm++;
+                if (currentKm >= bioms.length) {
+                    currentKm = 0;
                 }
+                System.out.println(getInfo(bioms[currentKm]));
             }
-            over();
+            float biom = bioms[currentKm];
+            strategicScreen.update(biom);
+            person_counter += 0.02f;
+            for(Character ally : allies){
+                ally.setPosition(ally.getPosition().add(new Vector3f(0.02f,0.0f,0.0f)));
+                if(person_counter > 1.0f){
+                    ally.setPosition(ally.getTempPos());
+                }
+                ally.update(1);
+                ally.update();
+            }
+            if(person_counter > 1.0f){
+                person_counter = 0.0f;
+            }
+            if (Input.getInstance().isPressed(GLFW_KEY_SPACE)) {
+                finish = true;
+            }
         }
     }
 
@@ -236,6 +254,12 @@ public class StrategyScene implements Scene {
     public void draw() {
         strategicScreen.draw();
         skybox.draw();
+
+        strategicScreen.getSpriteShader().useProgram();
+        for(Character ally : allies){
+            ally.draw(strategicScreen.getSpriteShader(),false);
+        }
+
         cursor.draw();
     }
 
@@ -294,4 +318,16 @@ public class StrategyScene implements Scene {
 
         return title;
     }
+
+    private void nextScene(){
+        SceneControl.setLastScene(this);
+        for (Scene scene : scenes) {
+            if (scene.getSceneId() == SCENE_TACTICAL) {
+                scene.preset(strategicScreen.getCurrentBiom(), allies);
+                scene.start(scenes);
+            }
+        }
+        over();
+    }
+
 }

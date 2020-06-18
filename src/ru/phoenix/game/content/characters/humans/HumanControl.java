@@ -1,7 +1,9 @@
 package ru.phoenix.game.content.characters.humans;
 
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Window;
+import ru.phoenix.core.loader.text.SymbolStruct;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.characters.Character;
@@ -10,7 +12,7 @@ import ru.phoenix.game.property.Characteristic;
 import ru.phoenix.game.hud.assembled.SelfIndicators;
 import ru.phoenix.game.logic.element.grid.Cell;
 import ru.phoenix.game.logic.movement.MotionAnimation;
-import ru.phoenix.game.logic.movement.PathfindingAlgorithm;
+import ru.phoenix.game.property.TextDisplay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public abstract class HumanControl {
     // управление положением персонажа
     private PathSearchAlgorithm pathSearchAlgorithm;
     private Vector3f position;
+    private Vector3f tempPos;
     private int look;
     private Vector3f lagerPoint;
     private boolean turn;
@@ -46,6 +49,8 @@ public abstract class HumanControl {
     private boolean jump;
     private boolean takeDamadge;
     private boolean dead;
+    // текст
+    private SymbolStruct text;
 
     // конструкторы класса - начало
     HumanControl(){
@@ -184,6 +189,14 @@ public abstract class HumanControl {
         this.position = position;
     }
 
+    public Vector3f getTempPos() {
+        return tempPos;
+    }
+
+    public void setTempPos(Vector3f tempPos) {
+        this.tempPos = tempPos;
+    }
+
     public int getLook() {
         return look;
     }
@@ -318,6 +331,29 @@ public abstract class HumanControl {
         this.dead = dead;
     }
     // методы сетеры и гетеры - конец
+
+    // text
+    public void setText(String text){
+        Vector3f position = new Vector3f(getPosition().getX(), getPosition().getY() + 2.1f, getPosition().getZ());
+        Matrix4f perspective = new Matrix4f(Camera.getInstance().getPerspective().getProjection());
+        Matrix4f view = new Matrix4f(Camera.getInstance().getPerspective().getViewMatrix());
+        Matrix4f world = new Matrix4f(perspective.mul(view));
+        Vector3f ndcPosition = new Vector3f(world.mulOnVector(position));
+        ndcPosition = new Vector3f(ndcPosition.getX() / ndcPosition.getZ(), ndcPosition.getY() / ndcPosition.getZ(), 0.0f);
+        float X = (ndcPosition.getX() + 1.0f) * Window.getInstance().getWidth() / 2.0f;
+        float Y = Window.getInstance().getHeight() - ((ndcPosition.getY() + 1.0f) * Window.getInstance().getHeight() / 2.0f);
+        ndcPosition = new Vector3f(X,Y,-0.1f);
+        this.text = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(text,ndcPosition,1.0f,TYPING_CENTER));
+        this.text.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
+    }
+
+    public void clearText(){
+        text = null;
+    }
+
+    protected SymbolStruct getText(){
+        return text;
+    }
 
     // вспомогательные
     public int getPriority(Cell[][] grid, Character character, int behavior){

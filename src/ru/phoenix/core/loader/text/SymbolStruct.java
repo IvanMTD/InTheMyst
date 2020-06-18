@@ -30,6 +30,12 @@ public class SymbolStruct {
         }
     }
 
+    public void setUpdatePosition(Vector3f newPosition){
+        for(Symbol symbol : symbols){
+            symbol.setPosition(newPosition);
+        }
+    }
+
     public void setTextColor(Vector3f color){
         for(Symbol symbol : symbols){
             symbol.setColor(color);

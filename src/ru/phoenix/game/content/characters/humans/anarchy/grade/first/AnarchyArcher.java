@@ -125,6 +125,8 @@ public class AnarchyArcher extends HumanDraw implements Character {
     private int index;
     private float lastY;
 
+    private int walk_counter;
+
     // конструкторы класса
     // начало
     public AnarchyArcher(){
@@ -189,6 +191,8 @@ public class AnarchyArcher extends HumanDraw implements Character {
         simpleArrowTexture = new Texture2D();
         simpleArrowTexture.setup(null,simpleArrow.getPath(),GL_SRGB_ALPHA,GL_CLAMP_TO_BORDER);
         simpleArrowAnimation = initAnimation(simpleArrowTexture,simpleArrow,widthSize);
+
+        walk_counter = 0;
     }
 
     private void init(Character character){
@@ -577,6 +581,12 @@ public class AnarchyArcher extends HumanDraw implements Character {
     }
 
     @Override
+    public void setTargetPoint(Cell targetPoint) {
+        setSelected(true);
+        this.targetPoint = targetPoint;
+    }
+
+    @Override
     public void update() {
         getProjection().getModelMatrix().identity();
         getProjection().setTranslation(getPosition());
@@ -595,6 +605,24 @@ public class AnarchyArcher extends HumanDraw implements Character {
                 damageFrame = 1;
                 setTakeDamadge(false);
             }
+        }
+    }
+
+    @Override
+    public void update(int useAnimation) {
+        blink();
+        switch (useAnimation){
+            case 0:
+                updateAnimation(baseStanceTextrue,baseStanceAnimation);
+                break;
+            case 1:
+                updateAnimation(walkTexture,walkAnimation);
+                walk_counter++;
+                if(walk_counter > 20) {
+                    walkAnimation.nextFrame();
+                    walk_counter = 0;
+                }
+                break;
         }
     }
 

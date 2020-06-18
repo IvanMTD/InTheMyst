@@ -33,7 +33,6 @@ public class MenuScene implements Scene {
     private boolean init;
 
     // Переменные метода анимации
-    private float tempGamma;
     private float timer;
     private boolean over;
     private boolean over2;
@@ -52,7 +51,6 @@ public class MenuScene implements Scene {
         init = false;
 
         // переменные метода анимации
-        tempGamma = Window.getInstance().getGamma();
         timer = 0.0f;
         over = false;
         over2 = false;
@@ -259,7 +257,6 @@ public class MenuScene implements Scene {
         if(timer > 1.0f){
             nextScene();
             timer = 0.0f;
-            Window.getInstance().setGamma(tempGamma);
         }
     }
 
@@ -332,7 +329,7 @@ public class MenuScene implements Scene {
     private void nextScene(){
         SceneControl.setLastScene(this);
         for (Scene scene : scenes) {
-            if (scene.getSceneId() == Constants.SCENE_CUT) { // SCENE_STRATEGIC
+            if (scene.getSceneId() == Constants.SCENE_CUT) {
                 scene.start(scenes);
             }
         }
