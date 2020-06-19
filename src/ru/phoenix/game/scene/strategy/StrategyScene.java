@@ -3,7 +3,6 @@ package ru.phoenix.game.scene.strategy;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Camera;
-import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Perlin2D;
@@ -14,12 +13,12 @@ import ru.phoenix.game.content.stage.strategy.StrategicScreen;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.loop.SceneControl;
+import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.Scene;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static ru.phoenix.core.config.Constants.SCENE_TACTICAL;
 import static ru.phoenix.core.config.Constants.WEST;
 
@@ -38,12 +37,16 @@ public class StrategyScene implements Scene {
     private boolean active;
     private boolean init;
     private boolean start;
-    private boolean finish;
+    private boolean event;
     private float currentGamma;
     // скайбокс
     private Skybox skybox;
 
     private float person_counter;
+    private int dialog_counter;
+    private int random_person;
+
+    private List<Float> eventList;
 
     public StrategyScene() {
         km = 100;
@@ -54,6 +57,9 @@ public class StrategyScene implements Scene {
         active = false;
         init = false;
         currentGamma = WindowConfig.getInstance().getGamma();
+        eventList = new ArrayList<>();
+        dialog_counter = 0;
+        person_counter = 0.0f;
     }
 
     public void init(){
@@ -62,12 +68,18 @@ public class StrategyScene implements Scene {
         Camera.getInstance().setFront(new Vector3f(0.0f,0.0f,-1.0f));
         Camera.getInstance().updateViewMatrix();
         start = true;
-        finish = false;
+        event = false;
 
         setPersonOnScreen();
 
         if(!init){
-            person_counter = 0.0f;
+            eventList.clear();
+            int amount = Math.round((float)Math.random() * 10.0f);
+            for(float metr = 0.0f; metr < 300.0f; metr += (300.0f / amount)){
+                float point = metr + (-15.0f + (float)Math.random() * 30.0f);
+                eventList.add(point);
+            }
+
             strategicScreen = new StrategicScreen();
             skybox = new Skybox();
             cursor = new Cursor();
@@ -81,10 +93,13 @@ public class StrategyScene implements Scene {
     }
 
     private void setPersonOnScreen(){
+        float xOffset = allies.size() / 2.0f;
         float offset = 0.0f;
         for(Character ally : allies){
-            Vector3f position = new Vector3f(105.0f - offset,0.0f,195.0f + (-1.0f + (float)Math.random() * 2.0f));
+            Vector3f position = new Vector3f(100.0f + xOffset - offset,0.0f,197.0f + (-2.0f + (float)Math.random() * 4.0f));
             ally.preset();
+            ally.setTarget(false);
+            ally.setSelected(false);
             ally.setPosition(position);
             ally.setTempPos(position);
             ally.setLook(WEST);
@@ -177,6 +192,12 @@ public class StrategyScene implements Scene {
     @Override
     public void preset(float currentHeight, List<Character> allies) {
         this.allies = allies;
+        for(int i=0; i<this.allies.size(); i++){
+            if(this.allies.get(i).isDead()){
+                this.allies.remove(i);
+                i--;
+            }
+        }
     }
 
     @Override
@@ -192,15 +213,21 @@ public class StrategyScene implements Scene {
                 Window.getInstance().setGamma(currentGamma);
                 start = false;
             }
-        }else if(finish){
-            Window.getInstance().setGamma(Window.getInstance().getGamma() - 0.002f);
-            for(Character ally : allies){
+        }else if(event){
+            dialog_counter++;
+            allies.get(random_person).setText("I see something!");
+            for (Character ally : allies) {
                 ally.update(0);
                 ally.update();
             }
-            if(Window.getInstance().getGamma() <= 0.0f) {
-                Window.getInstance().setGamma(0.0f);
-                nextScene();
+            if(dialog_counter > 300) {
+                allies.get(random_person).clearText();
+                Window.getInstance().setGamma(Window.getInstance().getGamma() - 0.002f);
+                if (Window.getInstance().getGamma() <= 0.0f) {
+                    Window.getInstance().setGamma(0.0f);
+                    nextScene();
+                    dialog_counter = 0;
+                }
             }
         }else {
             m += 0.1f;
@@ -211,12 +238,18 @@ public class StrategyScene implements Scene {
                     currentKm = 0;
                 }
                 System.out.println(getInfo(bioms[currentKm]));
+                eventList.clear();
+                int amount = Math.round((float)Math.random() * 10.0f);
+                for(float metr = 0.0f; metr < 300.0f; metr += (300.0f / amount)){
+                    float point = metr + (-15.0f + (float)Math.random() * 30.0f);
+                    eventList.add(point);
+                }
             }
             float biom = bioms[currentKm];
             strategicScreen.update(biom);
             person_counter += 0.02f;
             for(Character ally : allies){
-                ally.setPosition(ally.getPosition().add(new Vector3f(0.02f,0.0f,0.0f)));
+                ally.setPosition(new Vector3f(ally.getPosition().add(new Vector3f(0.02f,0.0f,0.0f))));
                 if(person_counter > 1.0f){
                     ally.setPosition(ally.getTempPos());
                 }
@@ -226,10 +259,26 @@ public class StrategyScene implements Scene {
             if(person_counter > 1.0f){
                 person_counter = 0.0f;
             }
-            if (Input.getInstance().isPressed(GLFW_KEY_SPACE)) {
-                finish = true;
+
+            if (checkEvent()) {
+                if(Math.random() * 100.0f < 50.0f) {
+                    random_person = Math.round((float)Math.random() * (allies.size() - 1));
+                    event = true;
+                }
             }
         }
+    }
+
+    private boolean checkEvent(){
+        boolean check = false;
+        for(float point : eventList){
+            if((point - 0.1f) < m && m < (point + 0.1)){
+                eventList.remove(point);
+                check = true;
+                break;
+            }
+        }
+        return check;
     }
 
     private float getBiom(float b){
@@ -258,6 +307,11 @@ public class StrategyScene implements Scene {
         strategicScreen.getSpriteShader().useProgram();
         for(Character ally : allies){
             ally.draw(strategicScreen.getSpriteShader(),false);
+        }
+
+        TextDisplay.getInstance().getShader().useProgram();
+        for(Character ally : allies){
+            ally.drawText(TextDisplay.getInstance().getShader());
         }
 
         cursor.draw();
