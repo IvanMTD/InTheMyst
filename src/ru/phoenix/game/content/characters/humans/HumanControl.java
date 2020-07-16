@@ -20,6 +20,8 @@ import java.util.List;
 import static ru.phoenix.core.config.Constants.*;
 
 public abstract class HumanControl {
+    // type
+    private int type;
     // характеристики
     private Characteristic characteristic;
     // управление анимацией персонажа
@@ -53,7 +55,8 @@ public abstract class HumanControl {
     private SymbolStruct text;
 
     // конструкторы класса - начало
-    HumanControl(){
+    HumanControl(int type){
+        this.type = type;
         // характеристики
         characteristic = new Characteristic();
         // управление анимацией персонажа
@@ -83,6 +86,7 @@ public abstract class HumanControl {
     }
 
     HumanControl(Character character){
+        this.type = character.getType();
         // характеристики
         setCharacteristic(character.getCharacteristic());
         // управление анимацией персонажа
@@ -390,5 +394,13 @@ public abstract class HumanControl {
                 break;
         }
         return result;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

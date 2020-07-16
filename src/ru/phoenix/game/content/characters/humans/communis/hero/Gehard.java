@@ -118,7 +118,7 @@ public class Gehard extends HumanDraw implements Character {
     // конструкторы класса
     // начало
     public Gehard(){
-        super();
+        super(C_GEHARD);
         init();
     }
 

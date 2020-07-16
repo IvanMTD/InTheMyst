@@ -120,7 +120,7 @@ public class AnarchyThief extends HumanDraw implements Character {
     // конструкторы класса
     // начало
     public AnarchyThief(){
-        super();
+        super(A_1T_THIEF);
         init();
     }
 

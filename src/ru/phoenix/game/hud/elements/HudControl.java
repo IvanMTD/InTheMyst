@@ -37,11 +37,11 @@ public abstract class HudControl {
     }
 
     // Простые переменные
-    protected float getSize() {
+    public float getSize() {
         return size;
     }
 
-    protected void setSize(float size) {
+    public void setSize(float size) {
         this.size = size;
     }
 

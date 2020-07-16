@@ -9,10 +9,14 @@ import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.math.Vector4f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.block.Block;
+import ru.phoenix.game.content.block.type.model.CampFire;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyArcher;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyBandit;
 import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThief;
+import ru.phoenix.game.content.object.Object;
+import ru.phoenix.game.content.object.fire.SimpleFire;
 import ru.phoenix.game.content.stage.StudyArea;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.hud.assembled.GraundAim;
@@ -76,6 +80,9 @@ public class TacticalScene implements Scene {
     private boolean finish;
     private float currentGamma;
     private int start_counter;
+
+    private int x;
+    private int z;
 
     public TacticalScene(){
         active = false;
@@ -279,11 +286,16 @@ public class TacticalScene implements Scene {
                     }
                 }
             }else {
-                // TЕСТОВЫЙ ТРИГЕР - НАЧАЛО
-                if (GameController.getInstance().isSpaceClick()) {
+                int size = studyArea.getEnemies().size();
+                int count = 0;
+                for(Character enemy : studyArea.getEnemies()){
+                    if(enemy.isDead()){
+                        count++;
+                    }
+                }
+                if (count == size) {
                     finish = true;
                 }
-                // ТЕСТОВЫЙ ТРИГЕР - КОНЕЦ
             }
         }
     }
@@ -450,11 +462,28 @@ public class TacticalScene implements Scene {
 
         // ENEMIES - НАЧАЛО
         float id = 0.2f;
+        float campId = 0.1f;
         int percent = studyArea.getMapX() + studyArea.getMapZ();
         int amount = Math.round(2.0f + (float)Math.random()) * percent / 100;
         System.out.println("Число групп противников: " + amount);
         for(int i=0; i<amount; i++) {
             lagerPoint = Generator.getRandomPos(studyArea.getGrid(),true);
+
+            Block campFire = new CampFire(campId);
+            campId+=0.05f;
+            x = (int)lagerPoint.getX();
+            z = (int)lagerPoint.getZ();
+            Vector3f point = findFirePlace(x,z);
+            studyArea.getGrid()[(int)point.getX()][(int)point.getZ()].setBlocked(true);
+            campFire.setPosition(point);
+            campFire.setMeshSize(1.5f);
+            campFire.updateProjection();
+            studyArea.getBlocks().add(campFire);
+            Object fire = new SimpleFire();
+            fire.init(null);
+            fire.setPosition(new Vector3f(point.add(new Vector3f(0.0f,0.2f,0.0f))));
+            studyArea.getSprites().add(fire);
+
             int count = Math.round(3.0f + (float)Math.random() * 3.0f);
             for (int j = 0; j < count; j++) {
                 int coin = (int) Math.round(Math.random() * 2.0f);
@@ -506,6 +535,16 @@ public class TacticalScene implements Scene {
         Camera.getInstance().setPos(cameraLook.add(reverse.mul(Camera.getInstance().getHypotenuse())));
 
         // КОНЕЦ ГЕНЕРАЦИИ
+    }
+
+    private Vector3f findFirePlace(int x, int z){
+        if(studyArea.getGrid()[x][z].isGrass() || studyArea.getGrid()[x][z].isBlocked() ||studyArea.getGrid()[x][z].isWater() || studyArea.getGrid()[x][z].isRoad() || studyArea.getGrid()[x][z].isBevel()){
+            int newX = Math.round((float)(this.x-3) + ((float)Math.random() * 6.0f));
+            int newZ = Math.round((float)(this.z-3) + ((float)Math.random() * 6.0f));
+            return findFirePlace(newX,newZ);
+        }else{
+            return new Vector3f(studyArea.getGrid()[x][z].getModifiedPosition());
+        }
     }
 
     private int getAimDrawConfig(){

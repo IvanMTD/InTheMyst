@@ -8,11 +8,16 @@ import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.block.Block;
+import ru.phoenix.game.content.block.type.model.CampFire;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisPartisan;
 import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
+import ru.phoenix.game.content.object.Object;
+import ru.phoenix.game.content.object.fire.SimpleFire;
 import ru.phoenix.game.content.stage.StudyArea;
+import ru.phoenix.game.datafile.SaveData;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.game.logic.generator.Generator;
@@ -21,17 +26,22 @@ import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.Scene;
+import ru.phoenix.game.scene.cut.detail.CampInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.phoenix.core.config.Constants.ALLY;
-import static ru.phoenix.core.config.Constants.SCENE_CUT;
-import static ru.phoenix.core.config.Constants.SCENE_STRATEGIC;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+import static ru.phoenix.core.config.Constants.*;
 
 public class CutScene implements Scene {
 
     public static final int FIRST_INNER_SCENE = 0x15111;
+    public static final int CAMP_SCENE        = 0x15112;
+
+    // блок сохранения игры
+    private SaveData saveData;
+    private Vector3f campFirePoint;
 
     private int currentInnerScene;
     private int nextScene;
@@ -39,6 +49,11 @@ public class CutScene implements Scene {
     private int w;
     private int h;
     private int r;
+    private int x;
+    private int z;
+
+    private float lastTime;
+    private float time;
 
     private boolean switchControl;
     private float count;
@@ -74,7 +89,12 @@ public class CutScene implements Scene {
     private Character swordman;
     private Character archer;
 
+    private CampInterface campInterface;
+
     public CutScene(){
+
+        time = 0.0f;
+
         w = 20;
         h = 20;
         r = 9;
@@ -88,8 +108,6 @@ public class CutScene implements Scene {
         scenes = new ArrayList<>();
         allies = new ArrayList<>();
 
-        tempGamma = WindowConfig.getInstance().getGamma();
-
         // stage controlls
         stage_index = 0;
         stage_first_start = true;
@@ -100,8 +118,14 @@ public class CutScene implements Scene {
     public void init(){
         Camera.getInstance().preset(20.0f,46.0f,-30.0f);
         if(init){
+            tempGamma = WindowConfig.getInstance().getGamma();
             generate();
+            studyArea.getAllies().addAll(allies);
         }else{
+            campInterface = new CampInterface();
+
+            tempGamma = WindowConfig.getInstance().getGamma();
+
             currentInnerScene = FIRST_INNER_SCENE;
             shader3D = new Shader();
             shader3D.createVertexShader("VS_game_object.glsl");
@@ -162,8 +186,35 @@ public class CutScene implements Scene {
     }
 
     private void generate(){
+        saveData = new SaveData();
         Default.setMapFrameStart(false);
-        studyArea = Generator.getCutArea(currentHeight,w,h,r);
+        studyArea = Generator.getCutArea(currentHeight,w,h,r,saveData);
+        if(currentInnerScene == CAMP_SCENE){
+            Block campFire = new CampFire(0.1f);
+            x = w / 2;
+            z = h / 2;
+            Vector3f point = findFirePlace(x,z);
+            campFirePoint = new Vector3f(point);
+            studyArea.getGrid()[(int)point.getX()][(int)point.getZ()].setBlocked(true);
+            campFire.setPosition(point);
+            campFire.setMeshSize(1.5f);
+            campFire.updateProjection();
+            studyArea.getBlocks().add(campFire);
+            Object fire = new SimpleFire();
+            fire.init(null);
+            fire.setPosition(new Vector3f(point.add(new Vector3f(0.0f,0.2f,0.0f))));
+            studyArea.getSprites().add(fire);
+        }
+    }
+
+    private Vector3f findFirePlace(int x, int z){
+        if(studyArea.getGrid()[x][z].isGrass()){
+            int newX = Math.round((float)(this.x-3) + ((float)Math.random() * 6.0f));
+            int newZ = Math.round((float)(this.z-3) + ((float)Math.random() * 6.0f));
+            return findFirePlace(newX,newZ);
+        }else{
+            return new Vector3f(studyArea.getGrid()[x][z].getModifiedPosition());
+        }
     }
 
 
@@ -188,12 +239,6 @@ public class CutScene implements Scene {
     public void preset(float currentHeight, List<Character> allies) {
         this.currentHeight = currentHeight;
         this.allies = allies;
-        for(int i=0; i<allies.size(); i++){
-            if(allies.get(i).isDead()){
-                allies.remove(i);
-                i--;
-            }
-        }
     }
 
     @Override
@@ -312,6 +357,75 @@ public class CutScene implements Scene {
                     break;
             }
             Camera.getInstance().setCameraControlLock(false);
+        }else if(currentInnerScene == CAMP_SCENE){
+            switch (stage_index){
+                case 0:
+                    lastTime = (float)glfwGetTime();
+                    time = 0.0f;
+                    if(stage_first_start){
+                        Vector3f campPoint = new Vector3f(studyArea.getGrid()[w/2][h/2].getModifiedPosition());
+                        for(Character ally : allies){
+                            ally.preset();
+                            ally.setLagerPoint(campPoint);
+                            ally.setPosition(Generator.getRandomPos(studyArea.getGrid(),campPoint,5.0f,true));
+                            ally.setRecognition(ENEMY);
+                        }
+
+                        Vector3f cameraLook = new Vector3f(campPoint);
+                        Vector3f reverse = new Vector3f(Camera.getInstance().getFront()).mul(-1.0f);
+                        Camera.getInstance().setPos(cameraLook.add(reverse.mul(Camera.getInstance().getHypotenuse())));
+                        Camera.getInstance().updateViewMatrix();
+                        Camera.getInstance().update(0.0f,w,0.0f,h,studyArea.getGrid());
+                        stage_first_start = false;
+                    }else{
+                        Window.getInstance().setGamma(Window.getInstance().getGamma() + 0.002f);
+                        if(Window.getInstance().getGamma() > tempGamma) {
+                            Window.getInstance().setGamma(tempGamma);
+                            stage_first_start = true;
+                            stage_index++;
+                        }
+                    }
+                    break;
+                case 1:
+                    Camera.getInstance().update(0.0f,w,0.0f,h,studyArea.getGrid());
+                    campInterface.update(pixel,GameController.getInstance().isLeftClick());
+                    float currentTime = (float)glfwGetTime();
+                    float delta = currentTime - lastTime;
+                    lastTime = currentTime;
+                    time += delta;
+                    if(time > 1.0f){
+                        for(Character ally : allies){
+                            ally.getCharacteristic().setHealthCharge(10);
+                            ally.getCharacteristic().setMannaCharge(10);
+                            ally.getCharacteristic().updateIndicators();
+                            ally.getCharacteristic().setHealthCharge(0);
+                            ally.getCharacteristic().setMannaCharge(0);
+                        }
+                        time = 0.0f;
+                    }
+                    if(campInterface.getCurrentButton() == campInterface.NEXT_SCENE){
+                        stage_index++;
+                    }
+                    break;
+                case 2:
+                    campInterface.update(new Vector3f(),false);
+                    Window.getInstance().setGamma(Window.getInstance().getGamma() - 0.003f);
+                    Camera.getInstance().cameraMove(camera_point,0.015f);
+                    if(Window.getInstance().getGamma() < 0.0f){
+                        Window.getInstance().setGamma(0.0f);
+                        nextScene = SCENE_TACTICAL;
+                        stage_index++;
+                    }
+                    break;
+                case 3:
+                    for(Character ally : allies){
+                        ally.preset();
+                        ally.setRecognition(ALLY);
+                    }
+                    stage_index = 0;
+                    nextScene();
+                    break;
+            }
         }else{
             Camera.getInstance().update(0.0f,w,0.0f,h,studyArea.getGrid());
         }
@@ -334,6 +448,10 @@ public class CutScene implements Scene {
         studyArea.drawPersons(shaderSprite);
         studyArea.drawSprites(shaderSprite);
         studyArea.drawWater(shaderSprite);
+
+        if(currentInnerScene == CAMP_SCENE){
+            campInterface.draw();
+        }
 
         TextDisplay.getInstance().getShader().useProgram();
         studyArea.drawPersonsText(TextDisplay.getInstance().getShader());

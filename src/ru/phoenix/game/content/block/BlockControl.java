@@ -19,6 +19,10 @@ import static ru.phoenix.core.config.Constants.GROUP_A;
 
 public abstract class BlockControl {
     // описание
+
+    private float id;
+    private int group;
+
     private List<Mesh> meshes;
     private Projection projection;
     private Vector3f position;
@@ -27,17 +31,23 @@ public abstract class BlockControl {
 
     private int type;
     private int cost;
+    private float meshSize;
 
     private boolean isMeshTexture;
 
     private boolean simple;
+    private boolean target;
 
     // конструкторы
     public BlockControl(){
         setSimple(false);
         projection = new Projection();
         position = new Vector3f();
+        meshSize = 1.0f;
         cost = 1;
+        target = false;
+        id = -1.0f;
+        group = GROUP_A;
     }
 
     // методы
@@ -74,6 +84,7 @@ public abstract class BlockControl {
     public void updateProjection(){
         projection.getModelMatrix().identity();
         projection.setTranslation(position);
+        projection.setScaling(getMeshSize());
     }
 
     public void draw(Shader shader){
@@ -89,9 +100,9 @@ public abstract class BlockControl {
             // доп данные
             shader.setUniform("model_m",projection.getModelMatrix());
             shader.setUniform("shininess",64.0f);
-            shader.setUniform("group",GROUP_A);
-            shader.setUniform("id",0.0f);
-            shader.setUniform("onTarget", 0);
+            shader.setUniform("group",getGroup());
+            shader.setUniform("id",getId());
+            shader.setUniform("onTarget", isTarget() ? 1 : 0);
             // end
             shader.setUniform("instance",mesh.getVbo().isInstances() ? 1 : 0);
             // доп данные
@@ -185,5 +196,37 @@ public abstract class BlockControl {
 
     public void setSimple(boolean simple) {
         this.simple = simple;
+    }
+
+    public boolean isTarget() {
+        return target;
+    }
+
+    public void setTarget(boolean target) {
+        this.target = target;
+    }
+
+    public float getId() {
+        return id;
+    }
+
+    public void setId(float id) {
+        this.id = id;
+    }
+
+    public int getGroup() {
+        return group;
+    }
+
+    public void setGroup(int group) {
+        this.group = group;
+    }
+
+    public float getMeshSize() {
+        return meshSize;
+    }
+
+    public void setMeshSize(float meshSize) {
+        this.meshSize = meshSize;
     }
 }

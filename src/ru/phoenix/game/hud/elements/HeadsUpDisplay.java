@@ -12,4 +12,6 @@ public interface HeadsUpDisplay {
     void setPosition(Vector3f position);
     float getId();
     boolean isTarget();
+    float getSize();
+    void setSize(float size);
 }

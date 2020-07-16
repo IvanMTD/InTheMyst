@@ -62,8 +62,8 @@ public class Generator {
         // определяем алгоритм генерации - конец
     }
 
-    public static RandomArena getCutArea(float currentHeight, int w, int h, float radius){
-
+    public static RandomArena getCutArea(float currentHeight, int w, int h, float radius, SaveData saveData){
+        saveData.setBiom(currentHeight);
         // проверяем состояние модулей компонентов - начало
         checkElements();
         // проверяем состояние модулей компонентов - конец
@@ -76,23 +76,52 @@ public class Generator {
         setTotalMapHeight(h);
 
         System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
-        grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true, radius, new SaveData());
+        grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true, radius, saveData);
         heightMap = new Texture2D();
         heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
-        heightMap.saveImage("gameHeightMap.png");
+        heightMap.saveImage("cutSceneMap.png");
         mesh = ModelCreater.start((int)currentHeight - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
         Reservoir waterReservoir = null;
         waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);
         waterReservoir.init(grid,currentHeight);
-        List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),radius,new SaveData());
-        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight, new SaveData());
-        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,radius,new SaveData());
+        List<Object> trees = PlantingTrees.start(grid,getTotalMapWidth(),getTotalMapHeight(),radius,saveData);
+        List<Object> grasses = PlantGrass.start(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight, saveData);
+        List<Block> blocks = GameElement.setup(grid,getTotalMapWidth(),getTotalMapHeight(),currentHeight,radius,saveData);
         GraundModel model = new GraundModel(mesh, graundTexture);
         List<Object> sprites = new ArrayList<>();
         sprites.addAll(trees);
         sprites.addAll(grasses);
         return new RandomArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight(),currentHeight);
         // определяем алгоритм генерации - конец
+    }
+
+    public static RandomArena loadCutArea(SaveData saveData, int slot){
+        checkElements();
+
+        Mesh mesh;
+        Cell[][] grid = null;
+
+        setTotalMapWidth(saveData.getSizeX() - 1);
+        setTotalMapHeight(saveData.getSizeZ() - 1);
+
+        grid = HeightMap.get(saveData);
+
+        heightMap = new Texture2D();
+        heightMap.setup(null,"./data/save/image/cutSceneMap" + slot + ".png", GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
+
+        mesh = ModelCreater.start((int)saveData.getBiom() - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
+        Reservoir waterReservoir = null;
+        waterReservoir = new Reservoir("./data/content/texture/water/waterSet.png", 10, 1);
+        waterReservoir.init(grid,saveData.getBiom());
+
+        List<Object> trees = PlantingTrees.start(grid,saveData);
+        List<Object> grasses = PlantGrass.start(grid,saveData);
+        List<Block> blocks = GameElement.setup(grid,saveData);
+        GraundModel model = new GraundModel(mesh, graundTexture);
+        List<Object> sprites = new ArrayList<>();
+        sprites.addAll(trees);
+        sprites.addAll(grasses);
+        return new RandomArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight(),saveData.getBiom());
     }
 
     public static PreparedArena getPreparedArea(float currentHeight, int w, int h, SaveData saveData){
@@ -229,6 +258,10 @@ public class Generator {
 
     public static Texture getHeightMap() {
         return heightMap;
+    }
+
+    public static void saveHeightMap(int slot){
+        heightMap.saveImage("cutSceneMap" + slot + ".png");
     }
     // методы гетеры и сетеры - конец
 }

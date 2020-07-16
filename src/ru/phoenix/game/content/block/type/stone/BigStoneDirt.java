@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.block.type.stone;
 
+import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.block.BlockControl;
 
@@ -19,5 +20,10 @@ public class BigStoneDirt extends BlockControl implements Block {
         super();
         setMeshs(block.getMeshes());
         setType(block.getType());
+    }
+
+    @Override
+    public void update(Vector3f pixel, boolean leftClick) {
+
     }
 }

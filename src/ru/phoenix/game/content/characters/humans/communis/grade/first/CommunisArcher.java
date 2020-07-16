@@ -128,7 +128,7 @@ public class CommunisArcher extends HumanDraw implements Character {
     // конструкторы класса
     // начало
     public CommunisArcher(){
-        super();
+        super(C_1T_ARCHER);
         init();
     }
 

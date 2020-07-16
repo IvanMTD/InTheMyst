@@ -104,7 +104,7 @@ public class LogoScene implements Scene {
         if (timer > 12.0f || Input.getInstance().isPressed(GLFW_KEY_SPACE) || Input.getInstance().isPressed(GLFW_KEY_ESCAPE)) {
             SceneControl.setLastScene(this);
             for(Scene scene : scenes){
-                if(scene.getSceneId() == Constants.SCENE_MAIN_MENU){
+                if(scene.getSceneId() == Constants.SCENE_MAIN_MENU){ // SCENE_MAIN_MENU
                     scene.start(scenes);
                 }
             }

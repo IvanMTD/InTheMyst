@@ -115,7 +115,7 @@ public class AnarchyBandit extends HumanDraw implements Character {
     // конструкторы класса
     // начало
     public AnarchyBandit(){
-        super();
+        super(A_1T_BANDIT);
         init();
     }
 

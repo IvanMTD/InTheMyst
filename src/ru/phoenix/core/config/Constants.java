@@ -37,6 +37,15 @@ public class Constants {
     public static final int SOUTH               = 0x13403;
     public static final int EAST                = 0x13404;
 
+    // Char type
+    public static final int C_GEHARD          = 0x51111;
+    public static final int C_1T_ARCHER       = 0x51112;
+    public static final int C_1T_PARTISAN     = 0x51113;
+
+    public static final int A_1T_ARCHER       = 0x51121;
+    public static final int A_1T_THIEF        = 0x51122;
+    public static final int A_1T_BANDIT       = 0x51123;
+
     // AI model
     public static final int MELEE_COMBAT        = 0x13501;
     public static final int RANGE_COMBAT        = 0x13502;

@@ -15,14 +15,19 @@ import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.Scene;
+import ru.phoenix.game.scene.cut.CutScene;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.phoenix.core.config.Constants.SCENE_TACTICAL;
+import static ru.phoenix.core.config.Constants.SCENE_CUT;
 import static ru.phoenix.core.config.Constants.WEST;
 
 public class StrategyScene implements Scene {
+
+    private int currentScene;
+    private int currentEvent;
+
     private StrategicScreen strategicScreen;
     // обще игровые переменные
     private List<Character> allies;
@@ -74,7 +79,7 @@ public class StrategyScene implements Scene {
 
         if(!init){
             eventList.clear();
-            int amount = Math.round((float)Math.random() * 10.0f);
+            int amount = Math.round((float)Math.random() * 3.0f);
             for(float metr = 0.0f; metr < 300.0f; metr += (300.0f / amount)){
                 float point = metr + (-15.0f + (float)Math.random() * 30.0f);
                 eventList.add(point);
@@ -216,6 +221,8 @@ public class StrategyScene implements Scene {
         }else if(event){
             dialog_counter++;
             allies.get(random_person).setText("I see something!");
+            currentEvent = CutScene.CAMP_SCENE;
+            currentScene = SCENE_CUT;
             for (Character ally : allies) {
                 ally.update(0);
                 ally.update();
@@ -376,8 +383,9 @@ public class StrategyScene implements Scene {
     private void nextScene(){
         SceneControl.setLastScene(this);
         for (Scene scene : scenes) {
-            if (scene.getSceneId() == SCENE_TACTICAL) {
+            if (scene.getSceneId() == currentScene) {
                 scene.preset(strategicScreen.getCurrentBiom(), allies);
+                scene.setCurrentInnerScene(currentEvent);
                 scene.start(scenes);
             }
         }

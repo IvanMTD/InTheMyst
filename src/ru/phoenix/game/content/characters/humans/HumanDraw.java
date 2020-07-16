@@ -30,8 +30,8 @@ public abstract class HumanDraw extends HumanControl {
     private boolean stop;
 
     // конструкторы - начало
-    protected HumanDraw(){
-        super();
+    protected HumanDraw(int type){
+        super(type);
         animation = new ImageAnimation();
         texture = new Texture2D();
         projection = new Projection();

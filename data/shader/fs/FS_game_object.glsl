@@ -171,7 +171,11 @@ void main() {
 }
 
 vec4 targetHighlight(){
-    vec4 img = texture(material.diffuseMap, fs_in.TexCoords);
+    vec2 tc = fs_in.TexCoords;
+    if(group == G){
+        tc = vec2(fs_in.TexCoords.x, 1.0f - fs_in.TexCoords.y);
+    }
+    vec4 img = texture(material.diffuseMap, tc);
     vec4 result = vec4(vec3(img.rgb * 2.0f), img.a);
     return result;
 }
@@ -179,7 +183,7 @@ vec4 targetHighlight(){
 vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection, vec2 tex){
     vec3 diffuseMap;
 
-    if(instance == 0){
+    if(instance == 0 && group != G){
         if(normal.y > 0.0f){
             diffuseMap = getDiffuseMap(tex);
         }else{
@@ -225,6 +229,9 @@ vec3 getDirectLight(DirectLight light, vec3 normal, vec3 viewDirection, vec2 tex
             }*/
         }
     }else{
+        if(group == G){
+            tex = vec2(tex.x,1.0f - tex.y);
+        }
         diffuseMap = vec3(texture(material.diffuseMap, tex));
     }
     //vec3 lightDir = normalize(light.position - fs_in.TangentFragPos);

@@ -2,6 +2,7 @@ package ru.phoenix.game.content.stage;
 
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.block.Block;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.object.Object;
 import ru.phoenix.game.logic.battle.BattleGround;
@@ -28,4 +29,6 @@ public interface StudyArea {
     List<Light> getDirectLight();
     boolean isWater();
     BattleGround getBattleGround();
+    List<Block> getBlocks();
+    void setBlocks(List<Block> blocks);
 }

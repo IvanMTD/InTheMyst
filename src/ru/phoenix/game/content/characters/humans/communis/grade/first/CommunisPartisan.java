@@ -115,7 +115,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
     // конструкторы класса
     // начало
     public CommunisPartisan(){
-        super();
+        super(C_1T_PARTISAN);
         init();
     }
 

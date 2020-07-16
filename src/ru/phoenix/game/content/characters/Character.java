@@ -117,4 +117,6 @@ public interface Character {
     void setDead(boolean dead);
     // вспомогательные
     int getPriority(Cell[][]grid, Character character, int behavior);
+    int getType();
+    void setType(int type);
 }

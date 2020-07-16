@@ -1,8 +1,13 @@
 package ru.phoenix.game.property;
 
-public class Characteristic {
-    private final int MAX_LEVEL     = 99;
-    private final int NEXT_LEVEL    = 100;
+import java.io.*;
+
+public class Characteristic implements Externalizable {
+
+    private static final long serialVersionUID = 1L;
+
+    private transient final int MAX_LEVEL     = 99;
+    private transient final int NEXT_LEVEL    = 100;
 
     // Опыт и уровень
     private int experience;
@@ -319,5 +324,76 @@ public class Characteristic {
 
     public float getMovementSpeed() {
         return speed * 0.006f;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        // Опыт и уровень
+        out.writeObject(experience);
+        out.writeObject(level);
+        // Здоровье
+        out.writeObject(totalHealth);
+        out.writeObject(health);
+        out.writeObject(healthCharge);
+        // Манна
+        out.writeObject(totalManna);
+        out.writeObject(manna);
+        out.writeObject(mannaCharge);
+        // Стамина
+        out.writeObject(totalStamina); // Максимальная стамина
+        out.writeObject(stamina); // Текущий уровень стамины
+        out.writeObject(staminaCharge); // Востановление стамины
+        // Инициатива
+        out.writeObject(initiative); // Текущий уровень инициативы
+        out.writeObject(initiativeCharge); // Скорость накопления инициативы
+        // Очки действия
+        out.writeObject(totalActionPoint);
+        out.writeObject(curentActionPoint);
+        // Характеристики
+        out.writeObject(physicalPower);
+        out.writeObject(magicPower);
+        // Пораметры перемещения
+        out.writeObject(move);
+        out.writeObject(jump);
+        out.writeObject(speed);
+        // Параметры обзора
+        out.writeObject(finalVision);
+        out.writeObject(vision);
+        out.writeObject(tempVision);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        setExperience((int)in.readObject());
+        setLevel((int)in.readObject());
+        // Здоровье
+        setTotalHealth((int)in.readObject());
+        setHealth((int)in.readObject());
+        setHealthCharge((int)in.readObject());
+        // Манна
+        setTotalManna((int)in.readObject());
+        setManna((int)in.readObject());
+        setMannaCharge((int)in.readObject());
+        // Стамина
+        setTotalStamina((int)in.readObject());
+        setStamina((int)in.readObject());
+        setStaminaCharge((int)in.readObject());
+        // Инициатива
+        setInitiative((int)in.readObject());
+        setInitiativeCharge((int)in.readObject());
+        // Очки действия
+        setTotalActionPoint((int)in.readObject());
+        setCurentActionPoint((int)in.readObject());
+        // Характеристики
+        setPhysicalPower((int)in.readObject());
+        setMagicPower((int)in.readObject());
+        // Пораметры перемещения
+        setMove((int)in.readObject());
+        setJump((int)in.readObject());
+        setSpeed((int)in.readObject());
+        // Параметры обзора
+        setFinalVision((int)in.readObject());
+        setVision((int)in.readObject());
+        setTempVision((float)in.readObject());
     }
 }

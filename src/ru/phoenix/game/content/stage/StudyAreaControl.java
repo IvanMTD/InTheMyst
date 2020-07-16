@@ -348,6 +348,10 @@ public abstract class StudyAreaControl {
                 enemy.interaction(grid, targetElement, pixel, allies, enemies, battleGround);
                 enemy.update();
             }
+
+            for(Block block : blocks){
+                block.update(pixel,GameController.getInstance().isLeftClick());
+            }
         }
     }
 
@@ -498,5 +502,13 @@ public abstract class StudyAreaControl {
 
     protected void setBiom(float biom) {
         this.biom = biom;
+    }
+
+    public List<Block> getBlocks() {
+        return blocks;
+    }
+
+    public void setBlocks(List<Block> blocks) {
+        this.blocks = blocks;
     }
 }
