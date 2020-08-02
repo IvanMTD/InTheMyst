@@ -453,7 +453,7 @@ public class CutScene implements Scene {
                     break;
                 case 1:
                     Camera.getInstance().update(0.0f,w,0.0f,h,studyArea.getGrid());
-                    campInterface.update(pixel,GameController.getInstance().isLeftClick());
+                    campInterface.update(pixel,GameController.getInstance().isLeftClick(),saveData,allies);
                     float currentTime = (float)glfwGetTime();
                     float delta = currentTime - lastTime;
                     lastTime = currentTime;
@@ -471,50 +471,6 @@ public class CutScene implements Scene {
 
                     if(Default.isCampFireOn()){
                         campInterface.setSavePadHide(false);
-                        /*int d = Time.getDay();
-                        int h = Time.getHour();
-                        int m = Time.getMinut();
-                        float s = Time.getSecond();
-                        TimeElement time = new TimeElement(d,h,m,s);
-                        Default.getCurrentData().setTime(time);
-                        Default.getCurrentData().setCampLocation(saveData);
-                        List<PersonStruct>personStructList = new ArrayList<>();
-                        for(Character character : allies){
-                            PersonStruct personStruct = new PersonStruct();
-                            personStruct.setType(character.getType());
-                            personStruct.setCharacteristic(character.getCharacteristic());
-                            personStructList.add(personStruct);
-                        }
-                        Default.getCurrentData().setPersonStructs(personStructList);
-                        Texture texture = Generator.getHeightMap();
-                        texture.saveImage("cutSceneMap1.png");
-
-                        File fileDirect = new File("./data/save/data");
-                        File saveFile = new File(fileDirect,"saveGame1.ser");
-                        if(saveFile.exists()){
-                            if(saveFile.delete()){
-                                FileOutputStream fileOutputStream = null;
-                                try {
-                                    fileOutputStream = new FileOutputStream("./data/save/data/saveGame1.ser");
-                                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                                    objectOutputStream.writeObject(Default.getCurrentData());
-                                    objectOutputStream.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }else{
-                            FileOutputStream fileOutputStream = null;
-                            try {
-                                fileOutputStream = new FileOutputStream("./data/save/data/saveGame1.ser");
-                                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                                objectOutputStream.writeObject(Default.getCurrentData());
-                                objectOutputStream.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }*/
-
                         Default.setCampFireOn(false);
                     }
 
@@ -523,7 +479,7 @@ public class CutScene implements Scene {
                     }
                     break;
                 case 2:
-                    campInterface.update(new Vector3f(),false);
+                    campInterface.update(new Vector3f(),false,saveData,allies);
                     Window.getInstance().setGamma(Window.getInstance().getGamma() - 0.003f);
                     //Camera.getInstance().cameraMove(camera_point,0.015f);
                     if(Window.getInstance().getGamma() < 0.0f){

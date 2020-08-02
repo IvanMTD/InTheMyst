@@ -51,7 +51,7 @@ public class LoadingElement {
             int h = saveGame.getTime().getHour();
             int m = saveGame.getTime().getMinut();
             int s = (int)saveGame.getTime().getSecond();
-            String info = d + "D " + h + "H " + m + "M " + s + "S";
+            String info = "Day " + d + " " + h + ":" + m;
             information = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(info, new Vector3f(position).add(new Vector3f(0.0f,0.0f,0.01f)), 1.0f, TYPING_CENTER));
             information.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
         }

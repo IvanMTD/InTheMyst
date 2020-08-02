@@ -3,6 +3,8 @@ package ru.phoenix.game.scene.cut.detail;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.datafile.SaveData;
 import ru.phoenix.game.hud.elements.HeadsUpDisplay;
 import ru.phoenix.game.hud.elements.strucet.Button;
 
@@ -53,7 +55,7 @@ public class CampInterface {
         huds.add(mapButton);
     }
 
-    public void update(Vector3f pixel, boolean leftClick){
+    public void update(Vector3f pixel, boolean leftClick, SaveData saveData, List<Character> allies){
         currentButton = NO_BUTTON;
         for(HeadsUpDisplay hud : huds){
             hud.update(pixel);
@@ -64,7 +66,7 @@ public class CampInterface {
                 }
             }
         }
-        savePad.update(pixel);
+        savePad.update(pixel,saveData,allies);
     }
 
     public void draw(){
@@ -76,7 +78,7 @@ public class CampInterface {
     }
 
     public void drawText(Shader shader){
-
+        savePad.drawText(shader);
     }
 
     public void setSavePadHide(boolean hide){
