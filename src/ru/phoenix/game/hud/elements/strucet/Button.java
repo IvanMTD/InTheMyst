@@ -34,6 +34,12 @@ public class Button extends LayoutDisplay implements HeadsUpDisplay{
     }
 
     @Override
+    public void selected(float size){
+        setTarget(false);
+        setSize(size);
+    }
+
+    @Override
     public void update(Vector3f pixel){
         updateProjection();
         float id = pixel.getX();

@@ -14,6 +14,7 @@ public class MainMenuTextures {
     private Texture title;
     private Texture stick;
 
+    private Texture buttonPowerOff;
     private Texture buttonNewGame;
     private Texture buttonLoading;
     private Texture buttonSettings;
@@ -30,6 +31,7 @@ public class MainMenuTextures {
         title = getTexture("./data/content/texture/hud/mainmenu/background/title.png");
         stick = getTexture("./data/content/texture/hud/mainmenu/background/Stick.png");
 
+        buttonPowerOff = getTexture("./data/content/texture/hud/mainmenu/elements/powerOff.png");
         buttonNewGame = getTexture("./data/content/texture/hud/mainmenu/elements/NewGame.png");
         buttonLoading = getTexture("./data/content/texture/hud/mainmenu/elements/Loading.png");
         buttonSettings = getTexture("./data/content/texture/hud/mainmenu/elements/Settings.png");
@@ -63,6 +65,10 @@ public class MainMenuTextures {
 
     public Texture getStick() {
         return stick;
+    }
+
+    public Texture getButtonPowerOff() {
+        return buttonPowerOff;
     }
 
     public Texture getButtonNewGame() {

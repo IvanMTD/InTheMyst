@@ -5,6 +5,8 @@ import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.datafile.PersonStruct;
+import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.property.Characteristic;
 import ru.phoenix.game.hud.assembled.SelfIndicators;
@@ -15,6 +17,7 @@ import java.util.List;
 public interface Character {
     // main class
     void setDefaultCharacteristic();
+    void setCharacteristic(PersonStruct personStruct);
     void preset();
     void resetSettings();
     void interaction(Cell[][]grid, Cell targetElement, Vector3f pixel, List<Character> enemy, List<Character> ally, BattleGround battleGround);

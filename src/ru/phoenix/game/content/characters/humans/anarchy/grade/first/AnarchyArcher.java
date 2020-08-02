@@ -11,6 +11,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.HumanDraw;
+import ru.phoenix.game.datafile.PersonStruct;
 import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.logic.battle.SimpleAI;
 import ru.phoenix.game.logic.element.Pixel;
@@ -251,6 +252,11 @@ public class AnarchyArcher extends HumanDraw implements Character {
         // Обзор
         getCharacteristic().setFinalVision(12);
         getCharacteristic().setVision(12);
+    }
+
+    @Override
+    public void setCharacteristic(PersonStruct personStruct){
+        setCharacteristic(personStruct.getCharacteristic());
     }
 
     @Override

@@ -11,6 +11,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.HumanDraw;
+import ru.phoenix.game.datafile.PersonStruct;
 import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.logic.battle.SimpleAI;
 import ru.phoenix.game.logic.element.Pixel;
@@ -210,6 +211,11 @@ public class CommunisArcher extends HumanDraw implements Character {
         setBattleStancePrepareAnimation(character.getBattleStancePrepareAnimation());
         setBattleStanceAnimation(character.getBattleStanceAnimation());
         setBaseAttackAnimation(character.getBaseAttackAnimation());
+    }
+
+    @Override
+    public void setCharacteristic(PersonStruct personStruct){
+        setCharacteristic(personStruct.getCharacteristic());
     }
 
     private ImageAnimation initAnimation(Texture texture, TextureConfig textureConfig, float widthSize){

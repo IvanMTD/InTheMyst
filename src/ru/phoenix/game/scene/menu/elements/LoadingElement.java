@@ -4,12 +4,13 @@ import ru.phoenix.core.config.Default;
 import ru.phoenix.core.loader.text.SymbolStruct;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.hud.elements.HeadsUpDisplay;
 import ru.phoenix.game.hud.elements.strucet.Button;
 import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.menu.storage.MainMenuTextures;
 
-import java.io.File;
+import java.io.*;
 
 import static ru.phoenix.core.config.Constants.TYPING_CENTER;
 
@@ -21,20 +22,40 @@ public class LoadingElement {
 
     private boolean selected;
 
-    public LoadingElement(Vector3f position, float width, float height, int num, float id){
+    private SaveGame saveGame;
+
+    public LoadingElement(Vector3f position, float width, float height, int num, float id) throws IOException, ClassNotFoundException {
+
+        saveGame = new SaveGame();
+        File fileDirect = new File("./data/save/data");
+        File saveFile = new File(fileDirect,"saveGame" + num + ".ser");
+        boolean empty = !saveFile.exists();
+        if(saveFile.exists()){
+            FileInputStream fileInputStream = null;
+            fileInputStream = new FileInputStream("./data/save/data/saveGame" + num + ".ser");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            saveGame = (SaveGame) objectInputStream.readObject();
+            objectInputStream.close();
+        }else{
+            saveGame = null;
+        }
+
         this.num = num;
         this.id = id;
-        File fileDirect = new File("./data/save/data");
-        File saveFile = new File(fileDirect,"SaveData" + num + ".ser");
-        boolean empty = !saveFile.exists();
         background = new Button(MainMenuTextures.getInstance().getLoadingBackground(),width,height,position,true,id);
         if(empty){
             information = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols("Empty", new Vector3f(position).add(new Vector3f(0.0f,0.0f,0.01f)), 1.0f, TYPING_CENTER));
             information.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
         }else{
-            information = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols("NoEmpty", new Vector3f(position).add(new Vector3f(0.0f,0.0f,0.01f)), 1.0f, TYPING_CENTER));
+            int d = saveGame.getTime().getDay();
+            int h = saveGame.getTime().getHour();
+            int m = saveGame.getTime().getMinut();
+            int s = (int)saveGame.getTime().getSecond();
+            String info = d + "D " + h + "H " + m + "M " + s + "S";
+            information = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols(info, new Vector3f(position).add(new Vector3f(0.0f,0.0f,0.01f)), 1.0f, TYPING_CENTER));
             information.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
         }
+        information.setPosition(new Vector3f(position).add(new Vector3f(0.0f,0.0f,0.01f)));
     }
 
     public void update(Vector3f pixel, boolean leftClick){
@@ -50,6 +71,7 @@ public class LoadingElement {
 
     public void update(Vector3f offsetVector){
         information.updatePosition(offsetVector);
+        information.setPosition(new Vector3f(information.getPosition()).add(offsetVector));
         background.setPosition(background.getPosition().add(offsetVector));
         background.update(new Vector3f());
     }
@@ -76,5 +98,16 @@ public class LoadingElement {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public SaveGame getSaveGame() {
+        return saveGame;
+    }
+
+    public void updateInformation(){
+        Vector3f pos = new Vector3f(information.getPosition());
+        information = new SymbolStruct(TextDisplay.getInstance().getText(Default.getLangueage()).getSymbols("Empty", pos, 1.0f, TYPING_CENTER));
+        information.setPosition(pos);
+        information.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
     }
 }

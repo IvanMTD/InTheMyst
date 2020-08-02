@@ -298,6 +298,10 @@ public class TacticalScene implements Scene {
                 }
             }
         }
+
+        if(GameController.getInstance().isSpaceClick()){
+            finish = true;
+        }
     }
 
     private void checkOccupied(List<Character> characters){

@@ -7,10 +7,14 @@ import ru.phoenix.game.content.characters.humans.anarchy.grade.first.AnarchyThie
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisArcher;
 import ru.phoenix.game.content.characters.humans.communis.grade.first.CommunisPartisan;
 import ru.phoenix.game.content.characters.humans.communis.hero.Gehard;
+import ru.phoenix.game.datafile.SaveGame;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class Default {
+
+    private static SaveGame currentData;
+    private static int slot;
 
     // communis
     private static Character gehard;
@@ -33,7 +37,11 @@ public class Default {
 
     private static int langueage;
 
+    // game element trigers
+    private static boolean campFireOn;
+
     public static void init() {
+        slot = 0;
         start = false;
         showAlpha = false;
         // communis
@@ -50,6 +58,9 @@ public class Default {
 
         langueage = WindowConfig.getInstance().getLangueage();
 
+        // game element trigers
+        campFireOn = false;
+
         cursorAngle = 0.0f;
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_STENCIL_TEST);
@@ -64,6 +75,22 @@ public class Default {
         glClearColor(0.0f,0.0f,0.0f,1.0f);
         glClearDepth(1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    }
+
+    public static SaveGame getCurrentData() {
+        return currentData;
+    }
+
+    public static void setCurrentData(SaveGame currentData) {
+        Default.currentData = currentData;
+    }
+
+    public static int getSlot() {
+        return slot;
+    }
+
+    public static void setSlot(int slot) {
+        Default.slot = slot;
     }
 
     public static float getRadiance() {
@@ -160,5 +187,14 @@ public class Default {
 
     public static int getLangueage() {
         return langueage;
+    }
+
+    // game element trigers
+    public static boolean isCampFireOn() {
+        return campFireOn;
+    }
+
+    public static void setCampFireOn(boolean campFireOn) {
+        Default.campFireOn = campFireOn;
     }
 }

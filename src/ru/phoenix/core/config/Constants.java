@@ -75,7 +75,7 @@ public class Constants {
     public static final int TYPING_CENTER       = 0x40013;
 
     // window tittle information and logo
-    public static final String ENGINE_VERSION = "1.0.0 alpha";
+    public static final String ENGINE_VERSION = "1.0.1 alpha";
     public static final String GAME_NAME = "\"IN THE MYST\"";
     public static final String LOGO_PATH = "./data/logo/phoenix_logo_32.png";
     // System control

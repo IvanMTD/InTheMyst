@@ -14,6 +14,8 @@ public class CampInterface {
     public final float NO_BUTTON = -1.0f;
     public final float NEXT_SCENE = 0.5f;
 
+    private SavePad savePad;
+
     private float currentButton;
 
     private Shader shader;
@@ -35,6 +37,11 @@ public class CampInterface {
 
     private void setupHuds(){
         huds = new ArrayList<>();
+        savePad = new SavePad();
+        setupButtons();
+    }
+
+    private void setupButtons(){
         float originW = CutSceneTexture.getInstance().getMapButton().getWidth();
         float originH = CutSceneTexture.getInstance().getMapButton().getHeight();
         float w = Window.getInstance().getWidth() / 5.0f;
@@ -57,6 +64,7 @@ public class CampInterface {
                 }
             }
         }
+        savePad.update(pixel);
     }
 
     public void draw(){
@@ -64,6 +72,15 @@ public class CampInterface {
         for(HeadsUpDisplay hud : huds){
             hud.draw(shader);
         }
+        savePad.draw(shader);
+    }
+
+    public void drawText(Shader shader){
+
+    }
+
+    public void setSavePadHide(boolean hide){
+        savePad.setHide(hide);
     }
 
     public float getCurrentButton() {

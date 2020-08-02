@@ -1,11 +1,13 @@
 package ru.phoenix.game.scene.menu;
 
 import ru.phoenix.core.config.Constants;
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.game.logic.lighting.Light;
@@ -17,7 +19,10 @@ import ru.phoenix.game.scene.menu.struct.LoadingMenu;
 import ru.phoenix.game.scene.menu.struct.MainMenu;
 import ru.phoenix.game.scene.menu.struct.SettingsMenu;
 
+import java.io.File;
 import java.util.List;
+
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 
 public class MenuScene implements Scene {
     private Shader shader;
@@ -88,6 +93,7 @@ public class MenuScene implements Scene {
 
             init = true;
         }
+        mainMenu.setPowerOffButtonHide(false);
     }
 
     @Override
@@ -167,11 +173,13 @@ public class MenuScene implements Scene {
                         over2 = false;
                         reverse2 = true;
                     } else if(loadingAction == LoadingMenu.LOAD_BUTTON){
-                        over2 = false;
-                        reverse2 = true;
+                        if(loadingMenu.initLoad()) {
+                            menuAction = MainMenu.NEW_GAME_BUTTON;
+                        }
+                        loadingAction = LoadingMenu.NO_ACTION;
                     } else if(loadingAction == LoadingMenu.DELL_BUTTON){
-                        over2 = false;
-                        reverse2 = true;
+                        loadingMenu.deleteSaveData();
+                        loadingAction = LoadingMenu.NO_ACTION;
                     }
                 }
             }
@@ -195,6 +203,12 @@ public class MenuScene implements Scene {
                         reverse = true;
                     }
                 }
+            }
+        }else if(menuAction == MainMenu.POWER_OFF_BUTTON){
+            mainMenu.update(new Vector3f(),false);
+            Window.getInstance().setGamma(Window.getInstance().getGamma() - 0.01f);
+            if(Window.getInstance().getGamma() <= 0.0f){
+                glfwSetWindowShouldClose(Window.getInstance().getWindow(), true);
             }
         }
     }
@@ -243,6 +257,7 @@ public class MenuScene implements Scene {
     }
 
     private void newGameAnimation(){
+        mainMenu.setPowerOffButtonHide(true);
         timer += 0.001f;
         Camera.getInstance().setPos(Camera.getInstance().getPos().add(new Vector3f(0.01f,0.0f,0.0f)));
         Camera.getInstance().updateViewMatrix();

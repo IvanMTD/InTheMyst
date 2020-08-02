@@ -16,6 +16,7 @@ public class MainMenu {
     public static final float NEW_GAME_BUTTON   = 0.11f;
     public static final float LOADING_BUTTON    = 0.12f;
     public static final float SETTINGS_BUTTON   = 0.13f;
+    public static final float POWER_OFF_BUTTON  = 0.14f;
     public static final float NO_ACTION         = -1.0f;
     private float action;
 
@@ -29,6 +30,7 @@ public class MainMenu {
     private HeadsUpDisplay newGame;
     private HeadsUpDisplay loading;
     private HeadsUpDisplay settings;
+    private HeadsUpDisplay powerOff;
 
     public MainMenu() {
         action = NO_ACTION;
@@ -41,7 +43,7 @@ public class MainMenu {
         setupTitle();
         setupStick();
         setupButtons();
-        huds.addAll(Arrays.asList(background,title,stick,newGame,loading,settings));
+        huds.addAll(Arrays.asList(background,title,stick,newGame,loading,settings,powerOff));
     }
 
     private void setupBackground(){
@@ -91,6 +93,14 @@ public class MainMenu {
         newGame = new Button(MainMenuTextures.getInstance().getButtonNewGame(),width,height,position,true,NEW_GAME_BUTTON);
         loading = new Button(MainMenuTextures.getInstance().getButtonLoading(),width,height,position,true,LOADING_BUTTON);
         settings = new Button(MainMenuTextures.getInstance().getButtonSettings(),width,height,position,true,SETTINGS_BUTTON);
+
+        width = 64.0f;
+        height = 64.0f;
+        x = Window.getInstance().getWidth() - width;
+        y = Window.getInstance().getHeight() - height;
+        z = -0.08f;
+        position = new Vector3f(x,y,z);
+        powerOff = new Button(MainMenuTextures.getInstance().getButtonPowerOff(),width,height,position,true,POWER_OFF_BUTTON);
     }
 
     public float getAction() {
@@ -119,5 +129,9 @@ public class MainMenu {
         for(HeadsUpDisplay hud : huds){
             hud.draw(shader);
         }
+    }
+
+    public void setPowerOffButtonHide(boolean hide){
+        powerOff.setHide(hide);
     }
 }

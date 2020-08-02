@@ -1,6 +1,7 @@
 package ru.phoenix.game.scene.strategy;
 
 import ru.phoenix.core.config.Constants;
+import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Window;
@@ -10,6 +11,7 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.stage.strategy.StrategicScreen;
+import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.loop.SceneControl;
@@ -55,7 +57,6 @@ public class StrategyScene implements Scene {
 
     public StrategyScene() {
         km = 100;
-        currentKm = 0;
         m = 0.0f;
         allies = new ArrayList<>();
         scenes = new ArrayList<>();
@@ -78,21 +79,23 @@ public class StrategyScene implements Scene {
         setPersonOnScreen();
 
         if(!init){
-            eventList.clear();
-            int amount = Math.round((float)Math.random() * 3.0f);
-            for(float metr = 0.0f; metr < 300.0f; metr += (300.0f / amount)){
-                float point = metr + (-15.0f + (float)Math.random() * 30.0f);
-                eventList.add(point);
+            createBioms();
+            if(Default.getCurrentData() != null){
+                currentKm = Default.getCurrentData().getCurrentKm();
+                strategicScreen = new StrategicScreen();
+                strategicScreen.init(Default.getCurrentData().getCurrentBiom()); // getBiom(bioms[currentKm])
+            }else {
+                currentKm = 0;
+                strategicScreen = new StrategicScreen();
+                strategicScreen.init(bioms[currentKm]); // getBiom(bioms[currentKm])
             }
 
-            strategicScreen = new StrategicScreen();
+            updateEventList();
+
             skybox = new Skybox();
             cursor = new Cursor();
-
-            createBioms();
             skybox.init();
             cursor.init();
-            strategicScreen.init(bioms[currentKm]); // getBiom(bioms[currentKm])
             init = true;
         }
     }
@@ -113,68 +116,73 @@ public class StrategyScene implements Scene {
     }
 
     private void createBioms(){
-        bioms = new float[km];
-        long seed = (long)(1 + Math.random() * 10000000000L);
-        Perlin2D perlin = new Perlin2D(seed);
-        float accuracy = 10.0f;
-        float dayMap[] = new float[km];
-        for(int y=0; y<km; y++){
-            float value = perlin.getNoise(1/accuracy,y/accuracy,8,0.5f);
-            int n = (int)(value * 255 + 128) & 255;
-            float result = ((float)n / 255.0f);
-            dayMap[y] = result;
-        }
-
-        float min = 0.5f;
-        float max = 0.5f;
-
-        for (int i=0; i<km; i++){
-            float num = dayMap[i];
-            if(num < min){
-                min = num;
+        if(Default.getCurrentData() != null){
+            bioms = Default.getCurrentData().getBioms();
+        }else {
+            bioms = new float[km];
+            long seed = (long) (1 + Math.random() * 10000000000L);
+            Perlin2D perlin = new Perlin2D(seed);
+            float accuracy = 10.0f;
+            float dayMap[] = new float[km];
+            for (int y = 0; y < km; y++) {
+                float value = perlin.getNoise(1 / accuracy, y / accuracy, 8, 0.5f);
+                int n = (int) (value * 255 + 128) & 255;
+                float result = ((float) n / 255.0f);
+                dayMap[y] = result;
             }
-            if(num > max){
-                max = num;
+
+            float min = 0.5f;
+            float max = 0.5f;
+
+            for (int i = 0; i < km; i++) {
+                float num = dayMap[i];
+                if (num < min) {
+                    min = num;
+                }
+                if (num > max) {
+                    max = num;
+                }
+                bioms[i] = num;
             }
-            bioms[i] = num;
-        }
 
-        float diff = Math.abs(max - min);
+            float diff = Math.abs(max - min);
 
-        for(int i=0; i < km/2; i++){
-            float biom = bioms[i*2] - min;
-            float percent = biom * 100.0f / diff;
-            float newBiom = 1.0f * percent / 100.0f;
-            biom = getBiom(newBiom * 50.0f);
-            if(i == 0){
+            for (int i = 0; i < km / 2; i++) {
+                float biom = bioms[i * 2] - min;
+                float percent = biom * 100.0f / diff;
+                float newBiom = 1.0f * percent / 100.0f;
+                biom = getBiom(newBiom * 50.0f);
+                if (i == 0) {
                     bioms[i] = 25.0f;
-            }else {
-                float previous = bioms[(i * 2) - 2];
-                if (previous > biom) {
-                    bioms[(i * 2) - 1] = previous - 5;
-                    bioms[i * 2] = previous - 10;
-                    if(i == 49){
-                        bioms[(i * 2) + 1] = previous - 10;
-                    }
-                } else if (previous < biom) {
-                    bioms[(i * 2) - 1] = previous + 5;
-                    bioms[i * 2] = previous + 10;
-                    if(i == 49){
-                        bioms[(i * 2) + 1] = previous + 10;
-                    }
                 } else {
-                    bioms[(i * 2) - 1] = biom;
-                    bioms[i * 2] = biom;
-                    if(i == 49){
-                        bioms[(i * 2) + 1] = biom;
+                    float previous = bioms[(i * 2) - 2];
+                    if (previous > biom) {
+                        bioms[(i * 2) - 1] = previous - 5;
+                        bioms[i * 2] = previous - 10;
+                        if (i == 49) {
+                            bioms[(i * 2) + 1] = previous - 10;
+                        }
+                    } else if (previous < biom) {
+                        bioms[(i * 2) - 1] = previous + 5;
+                        bioms[i * 2] = previous + 10;
+                        if (i == 49) {
+                            bioms[(i * 2) + 1] = previous + 10;
+                        }
+                    } else {
+                        bioms[(i * 2) - 1] = biom;
+                        bioms[i * 2] = biom;
+                        if (i == 49) {
+                            bioms[(i * 2) + 1] = biom;
+                        }
                     }
                 }
             }
         }
 
-        for(int i=0; i<100; i++){
+        for (int i = 0; i < 100; i++) {
             System.out.println("День " + i + ": " + getInfo(bioms[i]));
         }
+        System.out.println(getInfo(bioms[currentKm]));
     }
 
     @Override
@@ -245,12 +253,8 @@ public class StrategyScene implements Scene {
                     currentKm = 0;
                 }
                 System.out.println(getInfo(bioms[currentKm]));
-                eventList.clear();
-                int amount = Math.round((float)Math.random() * 10.0f);
-                for(float metr = 0.0f; metr < 300.0f; metr += (300.0f / amount)){
-                    float point = metr + (-15.0f + (float)Math.random() * 30.0f);
-                    eventList.add(point);
-                }
+
+                updateEventList();
             }
             float biom = bioms[currentKm];
             strategicScreen.update(biom);
@@ -273,6 +277,16 @@ public class StrategyScene implements Scene {
                     event = true;
                 }
             }
+        }
+    }
+
+    private void updateEventList(){
+        eventList.clear();
+        int amount = (int)Math.round(1.0f + Math.random() * 2.0f);
+
+        for(int m = 300/amount; m < 300; m += 300/amount){
+            float point = m + (-15.0f + (float)Math.random() * 30.0f);
+            eventList.add(point);
         }
     }
 
@@ -381,6 +395,11 @@ public class StrategyScene implements Scene {
     }
 
     private void nextScene(){
+        SaveGame currentData = new SaveGame();
+        currentData.setCurrentBiom(strategicScreen.getCurrentBiom());
+        currentData.setCurrentKm(currentKm);
+        currentData.setBioms(bioms);
+        Default.setCurrentData(currentData);
         SceneControl.setLastScene(this);
         for (Scene scene : scenes) {
             if (scene.getSceneId() == currentScene) {

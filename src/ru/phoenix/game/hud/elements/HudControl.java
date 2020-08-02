@@ -15,6 +15,8 @@ public abstract class HudControl {
     // булиановские переменные
     private boolean discard;
     private boolean target;
+    private boolean fakeTarget;
+    private boolean hide;
 
     HudControl(){
         position = new Vector3f();
@@ -25,6 +27,8 @@ public abstract class HudControl {
 
         discard = false;
         target = false;
+        fakeTarget = false;
+        hide = false;
     }
 
     // Сложные переменные
@@ -76,5 +80,21 @@ public abstract class HudControl {
 
     protected void setTarget(boolean target) {
         this.target = target;
+    }
+
+    protected boolean isFakeTarget() {
+        return fakeTarget;
+    }
+
+    protected void setFakeTarget(boolean fakeTarget) {
+        this.fakeTarget = fakeTarget;
+    }
+
+    public boolean isHide() {
+        return hide;
+    }
+
+    public void setHide(boolean hide) {
+        this.hide = hide;
     }
 }

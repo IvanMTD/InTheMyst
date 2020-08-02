@@ -2,9 +2,8 @@ package ru.phoenix.core.config;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
-public class Time {
+public class Time{
     private static float lastTime = 0;
-    public static float deltaTime;
 
     private static int day = 0;
     private static int hour = 0;
@@ -13,7 +12,7 @@ public class Time {
 
     public static void update(){
         float currentTime = (float)glfwGetTime();
-        deltaTime = currentTime - lastTime;
+        float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
         second += deltaTime;
 
@@ -33,15 +32,43 @@ public class Time {
         }
     }
 
+    public static void setDay(int day) {
+        Time.day = day;
+    }
+
+    public static void setHour(int hour) {
+        Time.hour = hour;
+    }
+
+    public static void setMinut(int minut) {
+        Time.minut = minut;
+    }
+
+    public static void setSecond(float second) {
+        Time.second = second;
+    }
+
+    public static int getDay() {
+        return day;
+    }
+
+    public static int getHour() {
+        return hour;
+    }
+
+    public static int getMinut() {
+        return minut;
+    }
+
+    public static int getSecond() {
+        return (int)second;
+    }
+
     public static String getCurrentTime(){
         String d = day > 9 ? Integer.toString(day) : "0" + day;
         String h = hour > 9 ? Integer.toString(hour) : "0" + hour;
         String m = minut > 9 ? Integer.toString(minut) : "0" + minut;
         String s = (int)second > 9 ? Integer.toString((int)second) : "0" + (int)second;
         return " day: " + d + " time: " + h + ":" + m + ":" + s;
-    }
-
-    public static int getSecond(){
-        return (int)second;
     }
 }

@@ -44,6 +44,7 @@ public class Camera {
     private float turnCounter;
     private boolean stopTurn;
     private boolean turnButtonBlock;
+    private boolean mouseMoveLock;
 
     // УПРОВЛЕНИЕ ДВИЖЕНИЕМ КАМЕРЫ
     private boolean prepare;
@@ -76,6 +77,7 @@ public class Camera {
         turnCounter = 0.0f;
         stopTurn = false;
         turnButtonBlock = false;
+        mouseMoveLock = false;
         DoubleBuffer lx = BufferUtils.createDoubleBuffer(1);
         DoubleBuffer ly = BufferUtils.createDoubleBuffer(1);
         glfwGetCursorPos(Window.getInstance().getWindow(),lx,ly);
@@ -185,7 +187,7 @@ public class Camera {
             if (Input.getInstance().isPressed(GLFW_KEY_D)) {
                 setPos(pos.add(new Vector3f(front.cross(up)).normalize().mul(movementSpeedX)));
             }
-            if(GameController.getInstance().isLeftHold()){
+            if(GameController.getInstance().isLeftHold() && !isMouseMoveLock()){
                 if(lastCursorPos2 != null){
                     float corectionX = (hypotenuse / Window.getInstance().getWidth()) / corW;
                     float corectionY = (hypotenuse / Window.getInstance().getHeight()) / corH;
@@ -451,6 +453,14 @@ public class Camera {
 
     public boolean isCameraControlLock() {
         return cameraControlLock;
+    }
+
+    public boolean isMouseMoveLock() {
+        return mouseMoveLock;
+    }
+
+    public void setMouseMoveLock(boolean mouseMoveLock) {
+        this.mouseMoveLock = mouseMoveLock;
     }
 
     public void setCameraControlLock(boolean cameraControlLock) {

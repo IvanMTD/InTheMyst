@@ -1,6 +1,7 @@
 package ru.phoenix.game.scene.menu.struct;
 
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.config.Time;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.text.SymbolStruct;
 import ru.phoenix.core.math.Vector3f;
@@ -12,6 +13,8 @@ import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.menu.elements.LoadingElement;
 import ru.phoenix.game.scene.menu.storage.MainMenuTextures;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +63,11 @@ public class LoadingMenu {
     private void initHudElements(){
         setupBackground();
         setupTitle();
-        setupLoadingBox();
+        try {
+            setupLoadingBox();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         setupButtons();
     }
 
@@ -84,7 +91,7 @@ public class LoadingMenu {
         title.setTextColor(new Vector3f(0.0f,0.0f,1.0f));
     }
 
-    private void setupLoadingBox(){
+    private void setupLoadingBox() throws IOException, ClassNotFoundException {
         float x = Window.getInstance().getWidth() / 2.0f;
         float y = -(Window.getInstance().getHeight() - Window.getInstance().getHeight() / 2.0f);
         float z = -0.09f;
@@ -178,6 +185,43 @@ public class LoadingMenu {
         TextDisplay.getInstance().getText(Default.getLangueage()).drawText(title.getSymbols(),TextDisplay.getInstance().getShader());
         for(LoadingElement box : boxes){
             box.drawText(TextDisplay.getInstance().getShader());
+        }
+    }
+
+    public boolean initLoad(){
+        boolean load = false;
+
+        for(LoadingElement box : boxes){
+            if(box.isSelected()){
+                if(box.getSaveGame() != null) {
+                    Default.setCurrentData(box.getSaveGame());
+                    Default.setSlot(box.getSaveNum());
+                    Time.setDay(box.getSaveGame().getTime().getDay());
+                    Time.setHour(box.getSaveGame().getTime().getHour());
+                    Time.setMinut(box.getSaveGame().getTime().getMinut());
+                    Time.setSecond(box.getSaveGame().getTime().getSecond());
+                    load = true;
+                }else {
+                    box.setSelected(false);
+                }
+            }
+        }
+
+        return load;
+    }
+
+    public void deleteSaveData(){
+        for(LoadingElement box : boxes){
+            if(box.isSelected()){
+                File fileDirect = new File("./data/save/data");
+                File saveData = new File(fileDirect,"saveGame" + box.getSaveNum() + ".ser");
+                if(saveData.exists()){
+                    if(saveData.delete()){
+                        box.updateInformation();
+                    }
+                }
+                box.setSelected(false);
+            }
         }
     }
 }

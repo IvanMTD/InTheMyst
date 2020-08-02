@@ -48,15 +48,17 @@ public abstract class LayoutDisplay extends HudControl {
     }
 
     protected void draw(Shader shader){
-        setUniforms(shader);
-        vbo.draw();
+        if(!isHide()) {
+            setUniforms(shader);
+            vbo.draw();
+        }
     }
 
     private void setUniforms(Shader shader){
         shader.setUniform("model_m",projection.getModelMatrix());
         shader.setUniform("tune",0);
         shader.setUniform("gamma", Window.getInstance().getGamma());
-        shader.setUniform("onTarget",isTarget() ? 1 : 0);
+        shader.setUniform("onTarget",isFakeTarget() ? 0 : isTarget() ? 1 : 0);
         shader.setUniform("group", getGroup());
         shader.setUniform("id",getId());
         shader.setUniform("discardControl", isDiscard() ? 1 : 0);

@@ -336,13 +336,16 @@ public class HeightMap {
 
     public static Cell[][] get(SaveData saveData){
         Cell[][] heightMap = new Cell[saveData.getSizeX()][saveData.getSizeZ()];
+        float cellId = 0.0f;
         for(int x = 0; x<heightMap.length; x++){
             for(int z=0; z<heightMap[0].length; z++){
+                cellId += 0.001f; // max 40.0f
                 heightMap[x][z] = new Cell();
                 heightMap[x][z].setCurrentHeight(saveData.getStructData()[x][z].getCurrentHeight());
                 heightMap[x][z].setCurrentOriginalHeight(saveData.getStructData()[x][z].getCurrentOriginalHeight());
                 heightMap[x][z].setPosition(new Vector3f(saveData.getStructData()[x][z].getPosition()));
                 heightMap[x][z].setRoad(saveData.getStructData()[x][z].isRoad());
+                heightMap[x][z].setId(cellId);
             }
         }
         return heightMap;

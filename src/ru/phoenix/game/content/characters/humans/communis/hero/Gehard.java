@@ -11,6 +11,8 @@ import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.characters.humans.HumanDraw;
+import ru.phoenix.game.datafile.PersonStruct;
+import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.logic.battle.SimpleAI;
 import ru.phoenix.game.logic.element.Pixel;
@@ -233,6 +235,11 @@ public class Gehard extends HumanDraw implements Character {
         // Обзор
         getCharacteristic().setFinalVision(10);
         getCharacteristic().setVision(10);
+    }
+
+    @Override
+    public void setCharacteristic(PersonStruct personStruct){
+        setCharacteristic(personStruct.getCharacteristic());
     }
     // методы инициализации - конец
 
