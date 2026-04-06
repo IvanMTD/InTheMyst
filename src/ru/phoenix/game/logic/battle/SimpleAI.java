@@ -1,5 +1,6 @@
 package ru.phoenix.game.logic.battle;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.logic.element.grid.Cell;
@@ -135,7 +136,7 @@ public class SimpleAI {
                         }
                     }
                 } else {
-                    System.out.println("Враг не обнаружен!");
+                    Logger.info("Враг не обнаружен!");
                     List<Cell> exit = new ArrayList<>();
                     Vector3f selfPos = new Vector3f(self.getPosition());
                     selfPos.setY(0.0f);

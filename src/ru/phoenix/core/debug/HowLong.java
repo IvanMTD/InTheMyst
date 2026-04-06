@@ -1,4 +1,5 @@
 package ru.phoenix.core.debug;
+import ru.phoenix.core.debug.Logger;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
@@ -13,6 +14,6 @@ public class HowLong {
     }
 
     public static void getInformation(){
-        System.out.println("Обработка " + information + " заняло " + (glfwGetTime() - timer) + " секунд");
+        Logger.info("Обработка " + information + " заняло " + (glfwGetTime() - timer) + " секунд");
     }
 }

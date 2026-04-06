@@ -1,4 +1,5 @@
 package ru.phoenix.core.math;
+import ru.phoenix.core.debug.Logger;
 
 public class Vector4f {
     private float x;
@@ -156,6 +157,6 @@ public class Vector4f {
     }
 
     public static void vectorInfo(Vector4f v){
-        System.out.println("Vector info: x: " + v.getX() + ", y: " + v.getY() + ", z: " + v.getZ() + ", w: " + v.getW() + "\n");
+        Logger.info("Vector info: x: " + v.getX() + ", y: " + v.getY() + ", z: " + v.getZ() + ", w: " + v.getW() + "\n");
     }
 }

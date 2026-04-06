@@ -1,4 +1,5 @@
 package ru.phoenix.core.config;
+import ru.phoenix.core.debug.Logger;
 
 import java.io.File;
 import java.io.FileReader;
@@ -24,15 +25,15 @@ public class WindowConfig {
         config = new File (direct,"window_config.txt");
         if(config.exists()){
             String data = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date(config.lastModified()));
-            System.out.println(data);
+            Logger.info(data);
         }else{
-            System.out.println("File does not exist! Trying to create.");
+            Logger.info("File does not exist! Trying to create.");
             try {
                 if(config.createNewFile()){
-                    System.out.println("File created! " + config.getName());
+                    Logger.info("File created! " + config.getName());
                     setConfigDefault();
                 }else{
-                    System.out.println("Error! The window configuration file is not created!");
+                    Logger.info("Error! The window configuration file is not created!");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

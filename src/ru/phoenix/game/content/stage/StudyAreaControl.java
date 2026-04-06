@@ -399,10 +399,12 @@ public abstract class StudyAreaControl {
     }
 
     public void drawSprites(Shader shader){
+        // OPTIMIZATION: Set common uniforms once before the loop instead of per-object
+        shader.setUniform("battlefield", battleGround.isActive() ? 1 : 0);
+        shader.setUniform("localPoint", battleGround.getLocalPoint());
+        shader.setUniform("radius", battleGround.getRadius());
+        
         for(Object object : sprites){
-            shader.setUniform("battlefield", battleGround.isActive() ? 1 : 0);
-            shader.setUniform("localPoint", battleGround.getLocalPoint());
-            shader.setUniform("radius", battleGround.getRadius());
             object.draw(shader, false);
         }
     }
@@ -445,17 +447,16 @@ public abstract class StudyAreaControl {
     }
 
     public void drawShadowPersons(Shader shader, boolean shadow){
+        // OPTIMIZATION: Set common uniforms once before the loop instead of per-character
+        shader.setUniform("battlefield", battleGround.isActive() ? 1 : 0);
+        shader.setUniform("localPoint", battleGround.getLocalPoint());
+        shader.setUniform("radius", battleGround.getRadius());
+        
         for(Character ally : allies){
-            shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
-            shader.setUniform("localPoint",battleGround.getLocalPoint());
-            shader.setUniform("radius",battleGround.getRadius());
             ally.draw(shader,shadow);
         }
 
         for(Character enemy : enemies){
-            shader.setUniform("battlefield",battleGround.isActive() ? 1 : 0);
-            shader.setUniform("localPoint",battleGround.getLocalPoint());
-            shader.setUniform("radius",battleGround.getRadius());
             enemy.draw(shader,shadow);
         }
     }

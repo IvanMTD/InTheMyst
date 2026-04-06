@@ -1,4 +1,5 @@
 package ru.phoenix.core.math;
+import ru.phoenix.core.debug.Logger;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -47,9 +48,30 @@ public class Matrix4f implements Externalizable {
             }
         }
 
-        m = new Matrix4f(result).getMatrix();
+        m = result.getMatrix();
 
         return this;
+    }
+
+    public Matrix4f mulLocal(Matrix4f matrix){
+        float[][] temp = new float[4][4];
+        for (int i=0; i<4; i++) {
+            for (int j=0; j<4; j++) {
+                temp[i][j] = m[i][0] * matrix.get(0, j) + m[i][1] * matrix.get(1, j) + m[i][2] * matrix.get(2, j) + m[i][3] * matrix.get(3, j);
+            }
+        }
+        m = temp;
+        return this;
+    }
+
+    public Matrix4f mulNew(Matrix4f matrix){
+        Matrix4f result = new Matrix4f();
+        for (int i=0; i<4; i++) {
+            for (int j=0; j<4; j++) {
+                result.set(i, j, m[i][0] * matrix.get(0, j) + m[i][1] * matrix.get(1, j) + m[i][2] * matrix.get(2, j) + m[i][3] * matrix.get(3, j));
+            }
+        }
+        return result;
     }
 
     public Matrix4f setScaling(float x, float y, float z){
@@ -226,6 +248,19 @@ public class Matrix4f implements Externalizable {
         return result;
     }
 
+    public Matrix4f transposeLocal()
+    {
+        float temp;
+        for(int i=0; i<4; i++){
+            for(int j=i+1; j<4; j++){
+                temp = get(i, j);
+                set(i, j, get(j, i));
+                set(j, i, temp);
+            }
+        }
+        return this;
+    }
+
     public Matrix4f invert()
     {
         float s0 = get(0, 0) * get(1, 1) - get(1, 0) * get(0, 1);
@@ -271,6 +306,57 @@ public class Matrix4f implements Externalizable {
         invM.set(3, 3, (get(2, 0) * s3 - get(2, 1) * s1 + get(2, 2) * s0) * invdet);
 
         return invM;
+    }
+
+    public Matrix4f invertLocal()
+    {
+        float s0 = get(0, 0) * get(1, 1) - get(1, 0) * get(0, 1);
+        float s1 = get(0, 0) * get(1, 2) - get(1, 0) * get(0, 2);
+        float s2 = get(0, 0) * get(1, 3) - get(1, 0) * get(0, 3);
+        float s3 = get(0, 1) * get(1, 2) - get(1, 1) * get(0, 2);
+        float s4 = get(0, 1) * get(1, 3) - get(1, 1) * get(0, 3);
+        float s5 = get(0, 2) * get(1, 3) - get(1, 2) * get(0, 3);
+
+        float c5 = get(2, 2) * get(3, 3) - get(3, 2) * get(2, 3);
+        float c4 = get(2, 1) * get(3, 3) - get(3, 1) * get(2, 3);
+        float c3 = get(2, 1) * get(3, 2) - get(3, 1) * get(2, 2);
+        float c2 = get(2, 0) * get(3, 3) - get(3, 0) * get(2, 3);
+        float c1 = get(2, 0) * get(3, 2) - get(3, 0) * get(2, 2);
+        float c0 = get(2, 0) * get(3, 1) - get(3, 0) * get(2, 1);
+
+
+        float div = (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
+        if (div == 0) {
+            System.err.println("not invertible");
+            return this;
+        }
+
+        float invdet = 1.0f / div;
+
+        float[][] inv = new float[4][4];
+
+        inv[0][0] = (get(1, 1) * c5 - get(1, 2) * c4 + get(1, 3) * c3) * invdet;
+        inv[0][1] = (-get(0, 1) * c5 + get(0, 2) * c4 - get(0, 3) * c3) * invdet;
+        inv[0][2] = (get(3, 1) * s5 - get(3, 2) * s4 + get(3, 3) * s3) * invdet;
+        inv[0][3] = (-get(2, 1) * s5 + get(2, 2) * s4 - get(2, 3) * s3) * invdet;
+
+        inv[1][0] = (-get(1, 0) * c5 + get(1, 2) * c2 - get(1, 3) * c1) * invdet;
+        inv[1][1] = (get(0, 0) * c5 - get(0, 2) * c2 + get(0, 3) * c1) * invdet;
+        inv[1][2] = (-get(3, 0) * s5 + get(3, 2) * s2 - get(3, 3) * s1) * invdet;
+        inv[1][3] = (get(2, 0) * s5 - get(2, 2) * s2 + get(2, 3) * s1) * invdet;
+
+        inv[2][0] = (get(1, 0) * c4 - get(1, 1) * c2 + get(1, 3) * c0) * invdet;
+        inv[2][1] = (-get(0, 0) * c4 + get(0, 1) * c2 - get(0, 3) * c0) * invdet;
+        inv[2][2] = (get(3, 0) * s4 - get(3, 1) * s2 + get(3, 3) * s0) * invdet;
+        inv[2][3] = (-get(2, 0) * s4 + get(2, 1) * s2 - get(2, 3) * s0) * invdet;
+
+        inv[3][0] = (-get(1, 0) * c3 + get(1, 1) * c1 - get(1, 2) * c0) * invdet;
+        inv[3][1] = (get(0, 0) * c3 - get(0, 1) * c1 + get(0, 2) * c0) * invdet;
+        inv[3][2] = (-get(3, 0) * s3 + get(3, 1) * s1 - get(3, 2) * s0) * invdet;
+        inv[3][3] = (get(2, 0) * s3 - get(2, 1) * s1 + get(2, 2) * s0) * invdet;
+
+        m = inv;
+        return this;
     }
 
     public Matrix4f setPerspective(float fovY, float aspect, float zNear, float zFar) {
@@ -357,10 +443,10 @@ public class Matrix4f implements Externalizable {
     }
 
     public static void matrixInfo(Matrix4f matrix){
-        System.out.println(matrix.get(0,0) + " " + matrix.get(0,1) + " " + matrix.get(0,2) + " " + matrix.get(0,3));
-        System.out.println(matrix.get(1,0) + " " + matrix.get(1,1) + " " + matrix.get(1,2) + " " + matrix.get(1,3));
-        System.out.println(matrix.get(2,0) + " " + matrix.get(2,1) + " " + matrix.get(2,2) + " " + matrix.get(2,3));
-        System.out.println(matrix.get(3,0) + " " + matrix.get(3,1) + " " + matrix.get(3,2) + " " + matrix.get(3,3) + "\n");
+        Logger.info(matrix.get(0,0) + " " + matrix.get(0,1) + " " + matrix.get(0,2) + " " + matrix.get(0,3));
+        Logger.info(matrix.get(1,0) + " " + matrix.get(1,1) + " " + matrix.get(1,2) + " " + matrix.get(1,3));
+        Logger.info(matrix.get(2,0) + " " + matrix.get(2,1) + " " + matrix.get(2,2) + " " + matrix.get(2,3));
+        Logger.info(matrix.get(3,0) + " " + matrix.get(3,1) + " " + matrix.get(3,2) + " " + matrix.get(3,3) + "\n");
     }
 
     @Override

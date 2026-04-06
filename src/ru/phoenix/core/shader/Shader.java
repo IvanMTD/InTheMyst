@@ -7,7 +7,9 @@ import ru.phoenix.core.util.BufferUtil;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL31.glGetUniformBlockIndex;
@@ -16,6 +18,7 @@ import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 public class Shader {
     private int program;
+    private Map<String, Integer> uniformLocationCache;
 
     public Shader(){
         program = glCreateProgram();
@@ -23,6 +26,7 @@ public class Shader {
             System.err.println("Shader creation failed");
             System.exit(1);
         }
+        uniformLocationCache = new HashMap<>();
     }
 
     public void createVertexShader(String shaderFileName) {
@@ -40,6 +44,8 @@ public class Shader {
     public void createProgram(){
         glLinkProgram(program);
         check(program,true);
+        // Clear cache after linking in case of re-linking
+        uniformLocationCache.clear();
     }
 
     private void addProgram(String text, int type){
@@ -74,24 +80,28 @@ public class Shader {
         glUniformBlockBinding(program, uniformBlockIndex, index);
     }
 
+    private int getUniformLocation(String uniformName) {
+        return uniformLocationCache.computeIfAbsent(uniformName, name -> glGetUniformLocation(program, name));
+    }
+
     public void setUniform(String uniformName, int value){
-        glUniform1i(glGetUniformLocation(program,uniformName),value);
+        glUniform1i(getUniformLocation(uniformName), value);
     }
 
     public void setUniform(String uniformName, float value){
-        glUniform1f(glGetUniformLocation(program,uniformName),value);
+        glUniform1f(getUniformLocation(uniformName), value);
     }
 
     public void setUniform(String uniformName, Vector3f vector){
-        glUniform3f(glGetUniformLocation(program,uniformName),vector.getX(),vector.getY(),vector.getZ());
+        glUniform3f(getUniformLocation(uniformName), vector.getX(), vector.getY(), vector.getZ());
     }
 
     public void setUniform(String uniformName, Vector4f vector){
-        glUniform4f(glGetUniformLocation(program,uniformName),vector.getX(),vector.getY(),vector.getZ(),vector.getW());
+        glUniform4f(getUniformLocation(uniformName), vector.getX(), vector.getY(), vector.getZ(), vector.getW());
     }
 
     public void setUniform(String uniformName, Matrix4f matrix){
-        glUniformMatrix4fv(glGetUniformLocation(program,uniformName), true, BufferUtil.createFlippedBuffer(matrix));
+        glUniformMatrix4fv(getUniformLocation(uniformName), true, BufferUtil.createFlippedBuffer(matrix));
     }
 
     public void setUniform(String uniformName, Matrix4f[] matrix){

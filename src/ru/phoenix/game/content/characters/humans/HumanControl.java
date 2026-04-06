@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.characters.humans;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Window;
@@ -133,7 +134,7 @@ public abstract class HumanControl {
                 lookPoint = new Vector3f(getPosition()).add(new Vector3f(-1.0f,0.0f,0.0f));
                 break;
             default:
-                System.out.println("Соотношение не найденно, поворот отменен!");
+                Logger.info("Соотношение не найденно, поворот отменен!");
                 break;
         }
 

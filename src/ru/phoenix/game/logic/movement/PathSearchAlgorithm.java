@@ -1,5 +1,6 @@
 package ru.phoenix.game.logic.movement;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.logic.battle.BattleGround;
 import ru.phoenix.game.logic.element.grid.Cell;
@@ -167,7 +168,7 @@ public class PathSearchAlgorithm extends Thread {
                 wayPoints.add(cell);
             }
         }else{
-            System.out.println("Путь не найден!");
+            Logger.info("Путь не найден!");
             wayPoints.clear();
         }
     }
@@ -200,7 +201,7 @@ public class PathSearchAlgorithm extends Thread {
                 }
             }
         }else{
-            System.out.println("Путь не найден!");
+            Logger.info("Путь не найден!");
             wayPoints.clear();
         }
     }

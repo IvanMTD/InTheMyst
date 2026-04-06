@@ -29,6 +29,8 @@ import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static org.lwjgl.opengl.GL30.*;
 
 public class BaseRenderFrame implements Framework {
+    private static BaseRenderFrame instance;
+    
     private FrameBufferObject multisample;
     private FrameBufferObject render;
     private FrameBufferObject shadow;
@@ -49,6 +51,7 @@ public class BaseRenderFrame implements Framework {
     private Texture w6;
 
     public BaseRenderFrame(){
+        instance = this;
         multisample = new MultisampleFrameBuffer(1);
         render = new OutputFrameBuffer(1);
         ndcVbo = new NormalizedDeviceCoordinates();
@@ -66,6 +69,7 @@ public class BaseRenderFrame implements Framework {
     }
 
     public BaseRenderFrame(int num_of_fbo_texture){
+        instance = this;
         multisample = new MultisampleFrameBuffer(num_of_fbo_texture);
         render = new OutputFrameBuffer(num_of_fbo_texture);
         ndcVbo = new NormalizedDeviceCoordinates();
@@ -80,6 +84,10 @@ public class BaseRenderFrame implements Framework {
         w4 = new Texture2D();
         w5 = new Texture2D();
         w6 = new Texture2D();
+    }
+
+    public static BaseRenderFrame getInstance() {
+        return instance;
     }
 
     @Override
@@ -164,20 +172,9 @@ public class BaseRenderFrame implements Framework {
         }
         glBindFramebuffer(GL_FRAMEBUFFER,0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, render.getFrameBuffer());
-        glReadBuffer(GL_COLOR_ATTACHMENT1);
-
-        int[] viewport = new int[4];
-        glGetIntegerv(GL_VIEWPORT,viewport);
-        FloatBuffer data = BufferUtils.createFloatBuffer(4);
-        glReadPixels(
-                (int) Input.getInstance().getCursorPosition().getX(),
-                viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
-                1,1,GL_RGBA,GL_FLOAT,data
-        );
-
-        Vector3f pixel = new Vector3f(data.get(0),data.get(1),data.get(2));
-        Pixel.setPixel(pixel);
+        // OPTIMIZATION: glReadPixels removed from render loop - now called only on mouse click
+        // Pixel picking is now handled by MousePicker (raycasting) for performance
+        // See TacticalScene.update() for mouse click handling with glReadPixels
 
         GausFrame.getInstance().useFrame(render);
 
@@ -250,5 +247,9 @@ public class BaseRenderFrame implements Framework {
     @Override
     public FrameBufferObject getFbo() {
         return null;
+    }
+
+    public int getRenderFrameBuffer() {
+        return render.getFrameBuffer();
     }
 }

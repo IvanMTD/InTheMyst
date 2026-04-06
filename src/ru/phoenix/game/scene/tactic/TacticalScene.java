@@ -1,9 +1,12 @@
 package ru.phoenix.game.scene.tactic;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.WindowConfig;
+import ru.phoenix.core.frame.BaseRenderFrame;
 import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Vector3f;
@@ -29,6 +32,9 @@ import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
 
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +42,8 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 import static ru.phoenix.core.config.Constants.*;
 
 public class TacticalScene implements Scene {
@@ -205,6 +213,24 @@ public class TacticalScene implements Scene {
             Cell targetElement = null;
 
             if (GameController.getInstance().isLeftClick()) {
+                // OPTIMIZATION: glReadPixels called only on mouse click, not every frame
+                glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
+                glReadBuffer(GL_COLOR_ATTACHMENT1);
+                
+                int[] viewport = new int[4];
+                glGetIntegerv(GL_VIEWPORT, viewport);
+                FloatBuffer data = BufferUtils.createFloatBuffer(4);
+                glReadPixels(
+                        (int) Input.getInstance().getCursorPosition().getX(),
+                        viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
+                        1, 1, GL_RGBA, GL_FLOAT, data
+                );
+                
+                Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
+                Pixel.setPixel(pixelData);
+                
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                
                 mousePicker.update(studyArea.getGrid());
                 Vector3f endPos = mousePicker.getCurrentTerrainPoint();
                 if (endPos.getX() < 0) endPos.setX(0);
@@ -469,7 +495,7 @@ public class TacticalScene implements Scene {
         float campId = 0.1f;
         int percent = studyArea.getMapX() + studyArea.getMapZ();
         int amount = Math.round(2.0f + (float)Math.random()) * percent / 100;
-        System.out.println("Число групп противников: " + amount);
+        Logger.info("Число групп противников: " + amount);
         for(int i=0; i<amount; i++) {
             lagerPoint = Generator.getRandomPos(studyArea.getGrid(),true);
 

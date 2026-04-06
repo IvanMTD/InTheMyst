@@ -1,12 +1,12 @@
 package ru.phoenix.core.frame;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.buffer.fbo.FrameBufferObject;
 import ru.phoenix.core.buffer.vbo.NormalizedDeviceCoordinates;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.shader.Shader;
 
-import static jdk.nashorn.internal.runtime.JSType.toInteger;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -52,7 +52,7 @@ public class GausFrame {
                     GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture[i], 0
             );
             if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-                System.out.println("Framebuffer not complete!");
+                Logger.info("Framebuffer not complete!");
             }
         }
         glBindFramebuffer(GL_FRAMEBUFFER,0);
@@ -89,11 +89,13 @@ public class GausFrame {
         int amount = 10;
 
         for (int i = 0; i < amount; i++){
-            glBindFramebuffer(GL_FRAMEBUFFER, this.fbo[toInteger(horizontal)]);
+            int hIndex = horizontal ? 1 : 0;
+            glBindFramebuffer(GL_FRAMEBUFFER, this.fbo[hIndex]);
             shader.useProgram();
-            shader.setUniform("horizontal", toInteger(horizontal));
+            shader.setUniform("horizontal", hIndex);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, first_iteration ? fbo.getTexture(2) : texture[toInteger(!horizontal)]);
+            int texIndex = (!horizontal) ? 1 : 0;
+            glBindTexture(GL_TEXTURE_2D, first_iteration ? fbo.getTexture(2) : texture[texIndex]);
             shader.setUniform("image",0);
             ndcVbo.draw();
             horizontal = !horizontal;

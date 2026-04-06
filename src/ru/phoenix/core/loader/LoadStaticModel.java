@@ -1,4 +1,5 @@
 package ru.phoenix.core.loader;
+import ru.phoenix.core.debug.Logger;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -25,7 +26,7 @@ public class LoadStaticModel {
 
     public static ArrayList<Mesh> LoadModel(String path, boolean noTexture){
         setNoTexture(noTexture);
-        System.out.println("\n" + path);
+        Logger.info("\n" + path);
         directory = path.substring(0,path.lastIndexOf("/")) + "/";
         AIScene aiScene = aiImportFile(path,aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_LimitBoneWeights | aiProcess_JoinIdenticalVertices | aiProcess_FixInfacingNormals);
         checkScene(aiScene);
@@ -80,7 +81,7 @@ public class LoadStaticModel {
                 ambientMap.setType("ambientMap");
                 ambientMap.setPath(directory + textPath);
                 ambientMap.setId(ambient.getTextureID());
-                System.out.println(textPath + " | " + ambientMap.getType());
+                Logger.info(textPath + " | " + ambientMap.getType());
             }else{
                 ambientMap.setType(null);
             }
@@ -93,7 +94,7 @@ public class LoadStaticModel {
                 diffuseMap.setType("diffuseMap");
                 diffuseMap.setPath(directory + textPath);
                 diffuseMap.setId(diffuse.getTextureID());
-                System.out.println(textPath + " | " + diffuseMap.getType());
+                Logger.info(textPath + " | " + diffuseMap.getType());
             }
 
             aiGetMaterialTexture(aiMaterial, aiTextureType_SPECULAR, 0, path, (IntBuffer) null, null, null, null, null, null);
@@ -104,7 +105,7 @@ public class LoadStaticModel {
                 specularMap.setType("specularMap");
                 specularMap.setPath(directory + textPath);
                 specularMap.setId(specular.getTextureID());
-                System.out.println(textPath + " | " + specularMap.getType());
+                Logger.info(textPath + " | " + specularMap.getType());
             }else{
                 specularMap.setType(null);
             }
@@ -116,7 +117,7 @@ public class LoadStaticModel {
                 displaceMap.setType("displaceMap");
                 displaceMap.setPath(directory + textPath);
                 displaceMap.setId(displace.getTextureID());
-                System.out.println(textPath + " | " + displaceMap.getType());
+                Logger.info(textPath + " | " + displaceMap.getType());
             } else {
                 displaceMap.setType(null);
             }
@@ -128,7 +129,7 @@ public class LoadStaticModel {
                 normalMap.setType("normalMap");
                 normalMap.setPath(directory + textPath);
                 normalMap.setId(normal.getTextureID());
-                System.out.println(textPath + " | " + normalMap.getType());
+                Logger.info(textPath + " | " + normalMap.getType());
             } else {
                 normalMap.setType(null);
             }
@@ -248,13 +249,13 @@ public class LoadStaticModel {
             System.err.println("Error loading model");
             System.exit(1);
         }else {
-            System.out.println("Loading is ok.");
-            System.out.println("Textures: " + aiScene.mNumTextures());
-            System.out.println("Materials: " + aiScene.mNumMaterials());
-            System.out.println("Meshes: " + aiScene.mNumMeshes());
-            System.out.println("Cameras: " + aiScene.mNumCameras());
-            System.out.println("Animations: " + aiScene.mNumAnimations());
-            System.out.println("Lights: " + aiScene.mNumLights());
+            Logger.info("Loading is ok.");
+            Logger.info("Textures: " + aiScene.mNumTextures());
+            Logger.info("Materials: " + aiScene.mNumMaterials());
+            Logger.info("Meshes: " + aiScene.mNumMeshes());
+            Logger.info("Cameras: " + aiScene.mNumCameras());
+            Logger.info("Animations: " + aiScene.mNumAnimations());
+            Logger.info("Lights: " + aiScene.mNumLights());
         }
     }
 

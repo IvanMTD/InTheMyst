@@ -1,0 +1,95 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+// Версия Java
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Репозитории
+repositories {
+    mavenCentral()
+}
+
+// Версии зависимостей
+ext {
+    lwjglVersion = "3.3.3"
+    jomlVersion = "1.10.0"
+}
+
+// Определение платформы для нативных библиотек
+def osName = System.getProperty("os.name").toLowerCase()
+def osArch = System.getProperty("os.arch").toLowerCase()
+def lwjglNatives = ""
+
+if (osName.contains("win")) {
+    lwjglNatives = "natives-windows"
+} else if (osName.contains("mac")) {
+    lwjglNatives = osArch.contains("aarch64") || osArch.contains("arm64") ? "natives-macos-arm64" : "natives-macos"
+} else {
+    lwjglNatives = "natives-linux"
+}
+
+dependencies {
+    // LWJGL Core
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-stb"
+    implementation "org.lwjgl:lwjgl-assimp"
+    
+    // Нативные библиотеки для текущей ОС
+    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+
+    // JOML (Math library)
+    implementation "org.joml:joml:$jomlVersion"
+}
+
+// Настройка приложения
+application {
+    // Главный класс игры
+    mainClass = 'ru.phoenix.core.kernel.Game' 
+}
+
+// Задача запуска
+tasks.named('run') {
+    workingDir = file('.')
+    // Аргументы JVM для увеличения стека, если нужно
+    jvmArgs = ['-Xms512m', '-Xmx2g', '-Dfile.encoding=UTF-8']
+}
+
+// Задача сборки JAR
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'ru.phoenix.core.kernel.Game'
+        )
+    }
+    // Включение зависимостей в один jar (опционально, требует shadowJar для полноценной работы)
+    // Для простоты пока собираем только классы проекта
+}
+
+// Копирование ресурсов
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['src/res', 'src/shaders']
+        }
+    }
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}

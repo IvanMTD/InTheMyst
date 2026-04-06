@@ -1,4 +1,5 @@
 package ru.phoenix.core.math;
+import ru.phoenix.core.debug.Logger;
 
 public class Quaternion {
     // Переменные класса
@@ -203,6 +204,6 @@ public class Quaternion {
     }
     // Информация о кватернионе для отладки
     public static void getQuaternionInfo(Quaternion q){
-        System.out.println("Quaternion info: " + q.getX() + " " + q.getY() + " " + q.getZ() + " " + q.getW() + "\n");
+        Logger.info("Quaternion info: " + q.getX() + " " + q.getY() + " " + q.getZ() + " " + q.getW() + "\n");
     }
 }
