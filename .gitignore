@@ -9,10 +9,14 @@
 *.out
 
 # Dependencies
-lib/
-libs/
-dependency/
-dependencies/
+node_modules/
+venv/
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+target/
+.gradle/
 
 # Logs and temp files
 *.log
@@ -28,31 +32,11 @@ dependencies/
 .vscode/
 .idea/
 
-# Build systems
-build/
-target/
-dist/
-out/
-bin/
-obj/
-*.jar
-*.war
-*.ear
-
-# Cache directories
-.cache/
-.gradle/
-.mypy_cache/
-.pytest_cache/
-__pycache__/
-*.pyc
-
-# OS generated files
+# System files
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# Testing
+# Coverage
 coverage/
 htmlcov/
 .coverage
