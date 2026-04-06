@@ -41,12 +41,14 @@ dependencies {
     implementation "org.lwjgl:lwjgl-glfw"
     implementation "org.lwjgl:lwjgl-opengl"
     implementation "org.lwjgl:lwjgl-stb"
+    implementation "org.lwjgl:lwjgl-assimp"
     
     // Нативные библиотеки для текущей ОС
     runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
 
     // JOML (Math library)
     implementation "org.joml:joml:$jomlVersion"
@@ -54,22 +56,22 @@ dependencies {
 
 // Настройка приложения
 application {
-    // Замените на ваш главный класс, если он отличается
-    mainClass = 'ru.phoenix.core.CoreEngine' 
+    // Главный класс игры
+    mainClass = 'ru.phoenix.core.kernel.Game' 
 }
 
 // Задача запуска
 tasks.named('run') {
     workingDir = file('.')
     // Аргументы JVM для увеличения стека, если нужно
-    jvmArgs = ['-Xms512m', '-Xmx2g']
+    jvmArgs = ['-Xms512m', '-Xmx2g', '-Dfile.encoding=UTF-8']
 }
 
 // Задача сборки JAR
 jar {
     manifest {
         attributes(
-            'Main-Class': 'ru.phoenix.core.CoreEngine'
+            'Main-Class': 'ru.phoenix.core.kernel.Game'
         )
     }
     // Включение зависимостей в один jar (опционально, требует shadowJar для полноценной работы)
@@ -77,11 +79,17 @@ jar {
 }
 
 // Копирование ресурсов
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['src/res', 'src/shaders']
+        }
+    }
+}
+
 processResources {
-    from('src/res') {
-        into 'res'
-    }
-    from('src/shaders') {
-        into 'shaders'
-    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }

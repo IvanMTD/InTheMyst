@@ -27,17 +27,27 @@
 
 ## 🚀 Быстрый старт
 
-### Через Gradle (рекомендуется)
+### Через Gradle Wrapper (рекомендуется)
+
+При первом запуске Gradle автоматически скачает все зависимости (LWJGL, JOML) и нативные библиотеки.
 
 ```bash
 # Запуск игры
-./gradlew run
+./gradlew run          # Linux/Mac
+gradlew.bat run        # Windows
 
 # Сборка проекта
 ./gradlew build
 
 # Очистка
 ./gradlew clean
+```
+
+### В IntelliJ IDEA
+
+1. Откройте проект в IDEA (`File → Open → выберите папку проекта`)
+2. Дождитесь импорта Gradle зависимостей
+3. Запустите через кнопку Run или задачу Gradle `run`
 ```
 
 ### Вручную
