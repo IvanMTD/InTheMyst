@@ -3,9 +3,11 @@ package ru.phoenix.game.scene.menu;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import org.lwjgl.BufferUtils;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.hud.assembled.Cursor;
@@ -20,9 +22,13 @@ import ru.phoenix.game.scene.menu.struct.MainMenu;
 import ru.phoenix.game.scene.menu.struct.SettingsMenu;
 
 import java.io.File;
+import java.nio.FloatBuffer;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
+import ru.phoenix.core.frame.BaseRenderFrame;
 
 public class MenuScene implements Scene {
     private Shader shader;
@@ -146,8 +152,36 @@ public class MenuScene implements Scene {
     public void update() {
         // обработка данных
         GameController.getInstance().update();
+        
+        // Читаем пиксель из буфера при клике для меню
+        if (GameController.getInstance().isLeftClick()) {
+            glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
+            glReadBuffer(GL_COLOR_ATTACHMENT1);
+
+            int[] viewport = new int[4];
+            glGetIntegerv(GL_VIEWPORT, viewport);
+            FloatBuffer data = BufferUtils.createFloatBuffer(4);
+            glReadPixels(
+                    (int) Input.getInstance().getCursorPosition().getX(),
+                    viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
+                    1, 1, GL_RGBA, GL_FLOAT, data
+            );
+
+            Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
+            Pixel.setPixel(pixelData);
+            
+            System.out.println("[MenuScene] Mouse click detected!");
+            System.out.println("[MenuScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
+            System.out.println("[MenuScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+        
         Vector3f pixel = Pixel.getPixel();
         boolean leftClick = GameController.getInstance().isLeftClick();
+        
+        System.out.println("[MenuScene] Current pixel: " + pixel.getX() + ", " + pixel.getY() + ", " + pixel.getZ() + ", leftClick: " + leftClick);
+        
         // постоянно обновляемые
         background.update();
         cursor.update(null);
@@ -155,6 +189,9 @@ public class MenuScene implements Scene {
         if(menuAction == MainMenu.NO_ACTION){
             mainMenu.update(pixel,leftClick);
             menuAction = mainMenu.getAction();
+            if (leftClick) {
+                System.out.println("[MenuScene] Menu action: " + menuAction);
+            }
         }else if(menuAction == MainMenu.NEW_GAME_BUTTON){
             newGameAnimation();
         }else if(menuAction == MainMenu.LOADING_BUTTON){

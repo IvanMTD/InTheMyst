@@ -52,8 +52,8 @@ public class BaseRenderFrame implements Framework {
 
     public BaseRenderFrame(){
         instance = this;
-        multisample = new MultisampleFrameBuffer(1);
-        render = new OutputFrameBuffer(1);
+        multisample = new MultisampleFrameBuffer(2);
+        render = new OutputFrameBuffer(2);
         ndcVbo = new NormalizedDeviceCoordinates();
         ndcShader = new Shader();
 
