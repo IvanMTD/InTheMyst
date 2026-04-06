@@ -32,12 +32,19 @@ import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.Scene;
 import ru.phoenix.game.scene.cut.detail.CampInterface;
 
+import org.lwjgl.BufferUtils;
+import java.nio.FloatBuffer;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 import static ru.phoenix.core.config.Constants.*;
+import ru.phoenix.core.frame.BaseRenderFrame;
+import ru.phoenix.core.kernel.Input;
 
 public class CutScene implements Scene {
 
@@ -308,8 +315,34 @@ public class CutScene implements Scene {
 
     @Override
     public void update() {
-        Vector3f pixel = Pixel.getPixel();
         GameController.getInstance().update();
+        
+        // Читаем пиксель из буфера КАЖДЫЙ КАДР (для наведения и клика)
+        glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
+        glReadBuffer(GL_COLOR_ATTACHMENT1);
+
+        int[] viewport = new int[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        FloatBuffer data = BufferUtils.createFloatBuffer(4);
+        glReadPixels(
+                (int) Input.getInstance().getCursorPosition().getX(),
+                viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
+                1, 1, GL_RGBA, GL_FLOAT, data
+        );
+
+        Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
+        Pixel.setPixel(pixelData);
+        
+        System.out.println("[CutScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
+        System.out.println("[CutScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
+        Vector3f pixel = Pixel.getPixel();
+        boolean leftClick = GameController.getInstance().isLeftClick();
+        
+        System.out.println("[CutScene] Current pixel: " + pixel.getX() + ", " + pixel.getY() + ", " + pixel.getZ() + ", leftClick: " + leftClick);
+        
         cursor.update(null);
 
         if(studyArea.isWater()) {
