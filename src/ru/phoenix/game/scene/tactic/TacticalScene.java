@@ -215,7 +215,10 @@ public class TacticalScene implements Scene {
                 Default.setShowAlpha(!Default.isShowAlpha());
             }
 
-            // Обновляем информацию в сетке
+            // Сначала обновляем логику сцены (персонажи устанавливают видимость клеток)
+            studyArea.update(targetElement, pixel);
+            
+            // Затем обновляем видимость клеток на основе установленных значений
             for (int x = 0; x <= studyArea.getMapX(); x++) {
                 for (int z = 0; z <= studyArea.getMapZ(); z++) {
                     if (!studyArea.getBattleGround().isActive()) {
