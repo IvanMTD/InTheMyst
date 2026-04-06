@@ -1,58 +1,53 @@
-# Compiled and build artifacts
 *.class
+target/
+.gradle/
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.env
+.env.local
+*.env.*
+coverage/
+htmlcov/
+.coverage
+.mypy_cache/
+.pytest_cache/
+__pycache__/
+node_modules/
+venv/
+.venv/
+dist/
+build/
+*.pyc
 *.o
-*.obj
 *.exe
 *.dll
 *.so
 *.a
 *.out
-
-# Dependencies
-lib/
-libs/
-dependency/
-dependencies/
-
-# Build directories
-build/
-target/
-out/
-dist/
-bin/
-obj/
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# Logs
-*.log
-
-# System files
-.DS_Store
-Thumbs.db
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# Gradle
-.gradle/
-build/
-
-# MyPy
-.mypy_cache/
-.pytest_cache/
-
-# Virtual environments
-venv/
-.venv/
-env/
-.env
-.env.local
-.env.*
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
