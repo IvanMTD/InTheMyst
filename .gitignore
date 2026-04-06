@@ -1,1 +1,58 @@
-Nothing needs to be added to .gitignore since only a text file (qwen.txt) was added, which appears to be a source/config file rather than a build artifact, dependency, or temporary file.
+# Compiled and build artifacts
+*.class
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Dependencies
+lib/
+libs/
+dependency/
+dependencies/
+
+# Build directories
+build/
+target/
+out/
+dist/
+bin/
+obj/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Gradle
+.gradle/
+build/
+
+# MyPy
+.mypy_cache/
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+.env.local
+.env.*
