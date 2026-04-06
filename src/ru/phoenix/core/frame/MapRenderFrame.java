@@ -20,8 +20,8 @@ public class MapRenderFrame implements Framework {
     private Shader shader;
 
     public MapRenderFrame(){
-        multisample = new MultisampleFrameBuffer(1);
-        render = new OutputFrameBuffer(1);
+        multisample = new MultisampleFrameBuffer(2);
+        render = new OutputFrameBuffer(2);
         shader = new Shader();
     }
 
@@ -58,11 +58,8 @@ public class MapRenderFrame implements Framework {
         }
         glBindFramebuffer(GL_FRAMEBUFFER,0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, render.getFrameBuffer());
-        glReadBuffer(GL_COLOR_ATTACHMENT1);
-        glBindFramebuffer(GL_FRAMEBUFFER,0);
         Default.setMapFrameStart(true);
-        Default.setMapTextureId(render.getTexture());
+        Default.setMapTextureId(render.getTexture(1));
     }
 
     @Override
