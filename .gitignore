@@ -1,0 +1,1 @@
+Nothing needs to be added to .gitignore since only a text file (qwen.txt) was added, which appears to be a source/config file rather than a build artifact, dependency, or temporary file.
