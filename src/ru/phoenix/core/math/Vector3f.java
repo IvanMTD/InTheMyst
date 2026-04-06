@@ -40,12 +40,26 @@ public class Vector3f implements Externalizable {
         return new Vector3f(x,y,z);
     }
 
+    public Vector3f addLocal(float value){
+        this.x += value;
+        this.y += value;
+        this.z += value;
+        return this;
+    }
+
     public Vector3f sub(float value){
         float x,y,z;
         x = getX() - value;
         y = getY() - value;
         z = getZ() - value;
         return new Vector3f(x,y,z);
+    }
+
+    public Vector3f subLocal(float value){
+        this.x -= value;
+        this.y -= value;
+        this.z -= value;
+        return this;
     }
 
     public Vector3f mul(float value){
@@ -56,12 +70,26 @@ public class Vector3f implements Externalizable {
         return new Vector3f(x,y,z);
     }
 
+    public Vector3f mulLocal(float value){
+        this.x *= value;
+        this.y *= value;
+        this.z *= value;
+        return this;
+    }
+
     public Vector3f div(float value){
         float x,y,z;
         x = getX() / value;
         y = getY() / value;
         z = getZ() / value;
         return new Vector3f(x,y,z);
+    }
+
+    public Vector3f divLocal(float value){
+        this.x /= value;
+        this.y /= value;
+        this.z /= value;
+        return this;
     }
 
     /* Вектор на вектор
@@ -75,6 +103,13 @@ public class Vector3f implements Externalizable {
         return new Vector3f(x,y,z);
     }
 
+    public Vector3f addLocal(Vector3f vector){
+        this.x += vector.getX();
+        this.y += vector.getY();
+        this.z += vector.getZ();
+        return this;
+    }
+
     public Vector3f sub(Vector3f vector){
         float x,y,z;
         x = getX() - vector.getX();
@@ -83,12 +118,29 @@ public class Vector3f implements Externalizable {
         return new Vector3f(x,y,z);
     }
 
+    public Vector3f subLocal(Vector3f vector){
+        this.x -= vector.getX();
+        this.y -= vector.getY();
+        this.z -= vector.getZ();
+        return this;
+    }
+
     public Vector3f cross(Vector3f vector){
         float x,y,z;
         x = getY() * vector.getZ() - getZ() * vector.getY();
         y = getZ() * vector.getX() - getX() * vector.getZ();
         z = getX() * vector.getY() - getY() * vector.getX();
         return new Vector3f(x,y,z);
+    }
+
+    public Vector3f crossLocal(Vector3f vector){
+        float newX = getY() * vector.getZ() - getZ() * vector.getY();
+        float newY = getZ() * vector.getX() - getX() * vector.getZ();
+        float newZ = getX() * vector.getY() - getY() * vector.getX();
+        this.x = newX;
+        this.y = newY;
+        this.z = newZ;
+        return this;
     }
 
     public float dot(Vector3f vector){
@@ -105,6 +157,17 @@ public class Vector3f implements Externalizable {
     }
 
     public Vector3f normalize() {
+        float length = length();
+        if(length != 0.0f) {
+            this.x /= length;
+            this.y /= length;
+            this.z /= length;
+            return this;
+        }
+        return this;
+    }
+
+    public Vector3f normalizeNew() {
         float length = length();
         if(length != 0.0f) {
             float x, y, z;
