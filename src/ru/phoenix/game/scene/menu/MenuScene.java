@@ -153,29 +153,26 @@ public class MenuScene implements Scene {
         // обработка данных
         GameController.getInstance().update();
         
-        // Читаем пиксель из буфера при клике для меню
-        if (GameController.getInstance().isLeftClick()) {
-            glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
-            glReadBuffer(GL_COLOR_ATTACHMENT1);
+        // Читаем пиксель из буфера КАЖДЫЙ КАДР (для наведения и клика)
+        glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
+        glReadBuffer(GL_COLOR_ATTACHMENT1);
 
-            int[] viewport = new int[4];
-            glGetIntegerv(GL_VIEWPORT, viewport);
-            FloatBuffer data = BufferUtils.createFloatBuffer(4);
-            glReadPixels(
-                    (int) Input.getInstance().getCursorPosition().getX(),
-                    viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
-                    1, 1, GL_RGBA, GL_FLOAT, data
-            );
+        int[] viewport = new int[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        FloatBuffer data = BufferUtils.createFloatBuffer(4);
+        glReadPixels(
+                (int) Input.getInstance().getCursorPosition().getX(),
+                viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
+                1, 1, GL_RGBA, GL_FLOAT, data
+        );
 
-            Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
-            Pixel.setPixel(pixelData);
-            
-            System.out.println("[MenuScene] Mouse click detected!");
-            System.out.println("[MenuScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
-            System.out.println("[MenuScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
+        Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
+        Pixel.setPixel(pixelData);
+        
+        System.out.println("[MenuScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
+        System.out.println("[MenuScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
 
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         Vector3f pixel = Pixel.getPixel();
         boolean leftClick = GameController.getInstance().isLeftClick();

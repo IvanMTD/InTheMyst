@@ -5,26 +5,33 @@ import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Camera;
+import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.texture.Skybox;
 import ru.phoenix.core.math.Perlin2D;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import org.lwjgl.BufferUtils;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.content.stage.strategy.StrategicScreen;
 import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.hud.assembled.Cursor;
+import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.game.logic.lighting.Light;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.Scene;
 import ru.phoenix.game.scene.cut.CutScene;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 import static ru.phoenix.core.config.Constants.SCENE_CUT;
 import static ru.phoenix.core.config.Constants.WEST;
+import ru.phoenix.core.frame.BaseRenderFrame;
 
 public class StrategyScene implements Scene {
 
@@ -216,6 +223,27 @@ public class StrategyScene implements Scene {
 
     @Override
     public void update() {
+        // Читаем пиксель из буфера КАЖДЫЙ КАДР (для наведения и клика)
+        glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
+        glReadBuffer(GL_COLOR_ATTACHMENT1);
+
+        int[] viewport = new int[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        FloatBuffer data = BufferUtils.createFloatBuffer(4);
+        glReadPixels(
+                (int) Input.getInstance().getCursorPosition().getX(),
+                viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
+                1, 1, GL_RGBA, GL_FLOAT, data
+        );
+
+        Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
+        Pixel.setPixel(pixelData);
+        
+        System.out.println("[StrategyScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
+        System.out.println("[StrategyScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
         cursor.update(null);
         if(start){
             Window.getInstance().setGamma(Window.getInstance().getGamma() + 0.003f);

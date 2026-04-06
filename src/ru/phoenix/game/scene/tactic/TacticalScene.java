@@ -167,6 +167,28 @@ public class TacticalScene implements Scene {
     @Override
     public void update(){
         GameController.getInstance().update();
+        
+        // Читаем пиксель из буфера КАЖДЫЙ КАДР (для наведения и клика)
+        glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
+        glReadBuffer(GL_COLOR_ATTACHMENT1);
+        
+        int[] viewport = new int[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        FloatBuffer data = BufferUtils.createFloatBuffer(4);
+        glReadPixels(
+                (int) Input.getInstance().getCursorPosition().getX(),
+                viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
+                1, 1, GL_RGBA, GL_FLOAT, data
+        );
+        
+        Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
+        Pixel.setPixel(pixelData);
+        
+        System.out.println("[TacticalScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
+        System.out.println("[TacticalScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
         Vector3f pixel = Pixel.getPixel();
         cursorHud.update(studyArea.getEnemies());
 
@@ -213,24 +235,6 @@ public class TacticalScene implements Scene {
             Cell targetElement = null;
 
             if (GameController.getInstance().isLeftClick()) {
-                // OPTIMIZATION: glReadPixels called only on mouse click, not every frame
-                glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
-                glReadBuffer(GL_COLOR_ATTACHMENT1);
-                
-                int[] viewport = new int[4];
-                glGetIntegerv(GL_VIEWPORT, viewport);
-                FloatBuffer data = BufferUtils.createFloatBuffer(4);
-                glReadPixels(
-                        (int) Input.getInstance().getCursorPosition().getX(),
-                        viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
-                        1, 1, GL_RGBA, GL_FLOAT, data
-                );
-                
-                Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
-                Pixel.setPixel(pixelData);
-                
-                glBindFramebuffer(GL_FRAMEBUFFER, 0);
-                
                 mousePicker.update(studyArea.getGrid());
                 Vector3f endPos = mousePicker.getCurrentTerrainPoint();
                 if (endPos.getX() < 0) endPos.setX(0);
