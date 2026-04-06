@@ -23,6 +23,12 @@ public class Input {
     private float counter;
     private int action;
 
+    // Поля для хранения callback'ов, чтобы GC их не удалил
+    private GLFWKeyCallback keyCallback;
+    private GLFWMouseButtonCallback mouseButtonCallback;
+    private GLFWCursorPosCallback cursorPosCallback;
+    private GLFWScrollCallback scrollCallback;
+
     public static Input getInstance(){
         if(instance == null){
             instance = new Input();
@@ -32,49 +38,6 @@ public class Input {
 
     private Input(){
         init();
-        glfwSetInputMode(Window.getInstance().getWindow(),GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-        GLFWKeyCallback keyCallback;
-        glfwSetKeyCallback(Window.getInstance().getWindow(), new GLFWKeyCallback() {
-            @Override
-            public void invoke(long window, int key, int scancode, int action, int mods) {
-                if(key >= 0) {
-                    if (action == GLFW_PRESS) {
-                        keys[key] = true;
-                    } else if (action == GLFW_RELEASE) {
-                        keys[key] = false;
-                    }
-                }
-            }
-        });
-
-        GLFWMouseButtonCallback mouseButtonCallback;
-        glfwSetMouseButtonCallback(Window.getInstance().getWindow(), new GLFWMouseButtonCallback() {
-            @Override
-            public void invoke(long window, int button, int action, int mods) {
-                if (action == GLFW_PRESS) {
-                    buttons[button] = true;
-                } else if (action == GLFW_RELEASE) {
-                    buttons[button] = false;
-                }
-            }
-        });
-
-        GLFWCursorPosCallback cursorPosCallback;
-        glfwSetCursorPosCallback(Window.getInstance().getWindow(), new GLFWCursorPosCallback() {
-            @Override
-            public void invoke(long window, double xpos, double ypos) {
-                cursorPosition.setX((float) xpos);
-                cursorPosition.setY((float) ypos);
-                setCursorMove(true);
-            }
-        });
-
-        glfwSetScrollCallback(Window.getInstance().getWindow(), new GLFWScrollCallback() {
-            @Override
-            public void invoke(long window, double xoffset, double yoffset) {
-                setScrollOffset((float) yoffset);
-            }
-        });
     }
 
     private void init(){
@@ -85,7 +48,54 @@ public class Input {
         scrollOffset = 0.0f;
         keys = new boolean[1024];
         buttons = new boolean[10];
-        glfwSetInputMode(Window.getInstance().getWindow(),GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        
+        // Устанавливаем нормальный курсор при инициализации
+        glfwSetInputMode(Window.getInstance().getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        
+        // Создаем и сохраняем ссылки на callback'и, чтобы GC их не удалил
+        keyCallback = new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if(key >= 0) {
+                    if (action == GLFW_PRESS) {
+                        keys[key] = true;
+                    } else if (action == GLFW_RELEASE) {
+                        keys[key] = false;
+                    }
+                }
+            }
+        };
+        glfwSetKeyCallback(Window.getInstance().getWindow(), keyCallback);
+
+        mouseButtonCallback = new GLFWMouseButtonCallback() {
+            @Override
+            public void invoke(long window, int button, int action, int mods) {
+                if (action == GLFW_PRESS) {
+                    buttons[button] = true;
+                } else if (action == GLFW_RELEASE) {
+                    buttons[button] = false;
+                }
+            }
+        };
+        glfwSetMouseButtonCallback(Window.getInstance().getWindow(), mouseButtonCallback);
+
+        cursorPosCallback = new GLFWCursorPosCallback() {
+            @Override
+            public void invoke(long window, double xpos, double ypos) {
+                cursorPosition.setX((float) xpos);
+                cursorPosition.setY((float) ypos);
+                setCursorMove(true);
+            }
+        };
+        glfwSetCursorPosCallback(Window.getInstance().getWindow(), cursorPosCallback);
+
+        scrollCallback = new GLFWScrollCallback() {
+            @Override
+            public void invoke(long window, double xoffset, double yoffset) {
+                setScrollOffset((float) yoffset);
+            }
+        };
+        glfwSetScrollCallback(Window.getInstance().getWindow(), scrollCallback);
     }
 
     public void update(){
