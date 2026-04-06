@@ -29,6 +29,8 @@ import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static org.lwjgl.opengl.GL30.*;
 
 public class BaseRenderFrame implements Framework {
+    private static BaseRenderFrame instance;
+    
     private FrameBufferObject multisample;
     private FrameBufferObject render;
     private FrameBufferObject shadow;
@@ -49,6 +51,7 @@ public class BaseRenderFrame implements Framework {
     private Texture w6;
 
     public BaseRenderFrame(){
+        instance = this;
         multisample = new MultisampleFrameBuffer(1);
         render = new OutputFrameBuffer(1);
         ndcVbo = new NormalizedDeviceCoordinates();
@@ -66,6 +69,7 @@ public class BaseRenderFrame implements Framework {
     }
 
     public BaseRenderFrame(int num_of_fbo_texture){
+        instance = this;
         multisample = new MultisampleFrameBuffer(num_of_fbo_texture);
         render = new OutputFrameBuffer(num_of_fbo_texture);
         ndcVbo = new NormalizedDeviceCoordinates();
@@ -80,6 +84,10 @@ public class BaseRenderFrame implements Framework {
         w4 = new Texture2D();
         w5 = new Texture2D();
         w6 = new Texture2D();
+    }
+
+    public static BaseRenderFrame getInstance() {
+        return instance;
     }
 
     @Override
@@ -239,5 +247,9 @@ public class BaseRenderFrame implements Framework {
     @Override
     public FrameBufferObject getFbo() {
         return null;
+    }
+
+    public int getRenderFrameBuffer() {
+        return render.getFrameBuffer();
     }
 }

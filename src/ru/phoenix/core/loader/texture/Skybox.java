@@ -7,10 +7,9 @@ import ru.phoenix.core.shader.Shader;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
-import static org.lwjgl.opengles.GLES20.GL_TEXTURE0;
 
 public class Skybox {
     private Shader shader;
