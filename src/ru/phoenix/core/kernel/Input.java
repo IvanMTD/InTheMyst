@@ -71,8 +71,10 @@ public class Input {
             @Override
             public void invoke(long window, int button, int action, int mods) {
                 if (action == GLFW_PRESS) {
+                    click = true;
                     buttons[button] = true;
                 } else if (action == GLFW_RELEASE) {
+                    click = false;
                     buttons[button] = false;
                 }
             }
