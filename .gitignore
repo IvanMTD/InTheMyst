@@ -1,1 +1,68 @@
-(src/ru/phoenix/core/kernel/Input.java)
+```
+# Compiled and binary files
+*.class
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Dependencies
+lib/
+libs/
+dependencies/
+packages/
+
+# Build artifacts
+target/
+build/
+dist/
+out/
+bin/
+obj/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Python specific (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# Gradle
+.gradle/
+
+# Maven
+.mvn/
+
+# Node.js (if applicable)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System files
+.DS_Store
+Thumbs.db
+```

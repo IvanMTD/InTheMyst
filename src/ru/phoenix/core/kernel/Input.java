@@ -49,8 +49,8 @@ public class Input {
         keys = new boolean[1024];
         buttons = new boolean[10];
         
-        // Устанавливаем нормальный курсор при инициализации
-        glfwSetInputMode(Window.getInstance().getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        // Скрываем системный курсор для использования кастомного курсора
+        glfwSetInputMode(Window.getInstance().getWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         
         // Создаем и сохраняем ссылки на callback'и, чтобы GC их не удалил
         keyCallback = new GLFWKeyCallback() {
