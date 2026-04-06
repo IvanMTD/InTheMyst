@@ -215,26 +215,6 @@ public class TacticalScene implements Scene {
                 Default.setShowAlpha(!Default.isShowAlpha());
             }
 
-            // Сначала обновляем логику сцены (персонажи устанавливают видимость клеток)
-            studyArea.update(targetElement, pixel);
-            
-            // Затем обновляем видимость клеток на основе установленных значений
-            for (int x = 0; x <= studyArea.getMapX(); x++) {
-                for (int z = 0; z <= studyArea.getMapZ(); z++) {
-                    if (!studyArea.getBattleGround().isActive()) {
-                        studyArea.getGrid()[x][z].setOccupied(false);
-                    }
-                    if (studyArea.getGrid()[x][z].isVisible()) {
-                        studyArea.getGrid()[x][z].update(pixel);
-                    }
-                }
-            }
-
-            if (!studyArea.getBattleGround().isActive()) {
-                checkOccupied(studyArea.getAllies());
-                checkOccupied(studyArea.getEnemies());
-            }
-
             Cell targetElement = null;
 
             if (GameController.getInstance().isLeftClick()) {
@@ -264,6 +244,26 @@ public class TacticalScene implements Scene {
 
             if (targetElement != null) {
                 lastElement = targetElement;
+            }
+
+            // Сначала обновляем логику сцены (персонажи устанавливают видимость клеток)
+            studyArea.update(targetElement, pixel);
+            
+            // Затем обновляем видимость клеток на основе установленных значений
+            for (int x = 0; x <= studyArea.getMapX(); x++) {
+                for (int z = 0; z <= studyArea.getMapZ(); z++) {
+                    if (!studyArea.getBattleGround().isActive()) {
+                        studyArea.getGrid()[x][z].setOccupied(false);
+                    }
+                    if (studyArea.getGrid()[x][z].isVisible()) {
+                        studyArea.getGrid()[x][z].update(pixel);
+                    }
+                }
+            }
+
+            if (!studyArea.getBattleGround().isActive()) {
+                checkOccupied(studyArea.getAllies());
+                checkOccupied(studyArea.getEnemies());
             }
 
             if (studyArea.isWater()) {
