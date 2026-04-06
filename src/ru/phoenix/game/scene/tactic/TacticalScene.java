@@ -1,5 +1,6 @@
 package ru.phoenix.game.scene.tactic;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.WindowConfig;
@@ -494,7 +495,7 @@ public class TacticalScene implements Scene {
         float campId = 0.1f;
         int percent = studyArea.getMapX() + studyArea.getMapZ();
         int amount = Math.round(2.0f + (float)Math.random()) * percent / 100;
-        System.out.println("Число групп противников: " + amount);
+        Logger.info("Число групп противников: " + amount);
         for(int i=0; i<amount; i++) {
             lagerPoint = Generator.getRandomPos(studyArea.getGrid(),true);
 

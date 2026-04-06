@@ -1,5 +1,6 @@
 package ru.phoenix.core.buffer.fbo;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Window;
 
@@ -66,7 +67,7 @@ public class MultisampleFrameBuffer implements FrameBufferObject {
 
     private void check(){
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            System.out.println("Framebuffer not complete!");
+            Logger.info("Framebuffer not complete!");
         }
     }
 

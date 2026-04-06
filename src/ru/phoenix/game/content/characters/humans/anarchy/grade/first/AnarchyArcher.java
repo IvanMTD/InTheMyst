@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.characters.humans.anarchy.grade.first;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
 import ru.phoenix.core.loader.ImageAnimLoader;
@@ -580,7 +581,7 @@ public class AnarchyArcher extends HumanDraw implements Character {
                     }
                     break;
                 case NEUTRAL:
-                    System.out.println("NOT WORK YET");
+                    Logger.info("NOT WORK YET");
                     break;
             }
         }
@@ -703,7 +704,7 @@ public class AnarchyArcher extends HumanDraw implements Character {
                                         }
                                     }
                                 }else{
-                                    System.out.println("WayPoints is empty!!");
+                                    Logger.info("WayPoints is empty!!");
                                 }
                             }
                         }else {
@@ -882,7 +883,7 @@ public class AnarchyArcher extends HumanDraw implements Character {
                                     }
                                 }
                             }else{
-                                System.out.println("нет врага переменна пустая ... ");
+                                Logger.info("нет врага переменна пустая ... ");
                             }
                         }
                         break;
@@ -1020,7 +1021,7 @@ public class AnarchyArcher extends HumanDraw implements Character {
                                         }
                                     }
                                 }else{
-                                    System.out.println("WayPoints is empty!!");
+                                    Logger.info("WayPoints is empty!!");
                                     for(int x=0; x<grid.length; x++){
                                         for(int z=0; z<grid[0].length; z++){
                                             grid[x][z].setGrayZona();
@@ -1190,7 +1191,7 @@ public class AnarchyArcher extends HumanDraw implements Character {
                                     }
                                 }
                             }else{
-                                System.out.println("нет врага переменна пустая ... ");
+                                Logger.info("нет врага переменна пустая ... ");
                             }
                         }
                         break;
@@ -1238,7 +1239,7 @@ public class AnarchyArcher extends HumanDraw implements Character {
                             float z = (1-t) * p0.getZ() + t * p2.getZ();
                             Vector3f time = new Vector3f(x,y,z);
                             Cell cell = grid[Math.round(x)][Math.round(z)];
-                            //System.out.println(cell.getCurrentHeight() + " | " + time.toString());
+                            //Logger.info(cell.getCurrentHeight() + " | " + time.toString());
                             if(!cell.isBlocked() && cell.getCurrentHeight() <= time.getY() + 1.0f) {
                                 timeShift.add(time);
                             }else{
@@ -1246,8 +1247,8 @@ public class AnarchyArcher extends HumanDraw implements Character {
                                 break;
                             }
                         }
-                        //System.out.println("main pos: " + getPosition().toString());
-                        //System.out.println("enemy pos: " + character.getPosition().toString());
+                        //Logger.info("main pos: " + getPosition().toString());
+                        //Logger.info("enemy pos: " + character.getPosition().toString());
                         if(timeShift.size() != 0){
                             enemySavedCharacter = character;
                             break;
@@ -1296,7 +1297,7 @@ public class AnarchyArcher extends HumanDraw implements Character {
                         float z = (1-t) * p0.getZ() + t * p2.getZ();
                         Vector3f time = new Vector3f(x,y,z);
                         Cell cell = grid[Math.round(x)][Math.round(z)];
-                        //System.out.println(cell.getCurrentHeight() + " | " + time.toString());
+                        //Logger.info(cell.getCurrentHeight() + " | " + time.toString());
                         if(!cell.isBlocked() && cell.getCurrentHeight() <= time.getY() + 1.0f) {
                             timeShift.add(time);
                         }else{
@@ -1304,8 +1305,8 @@ public class AnarchyArcher extends HumanDraw implements Character {
                             break;
                         }
                     }
-                    //System.out.println("main pos: " + getPosition().toString());
-                    //System.out.println("enemy pos: " + character.getPosition().toString());
+                    //Logger.info("main pos: " + getPosition().toString());
+                    //Logger.info("enemy pos: " + character.getPosition().toString());
                     if(timeShift.size() != 0){
                         enemySavedCharacter = enemy;
                     }
@@ -1498,7 +1499,7 @@ public class AnarchyArcher extends HumanDraw implements Character {
         }
 
         if(getWayPoints().isEmpty()){
-            System.out.println("Error");
+            Logger.info("Error");
             if(moveClick){
                 remap = true;
                 moveClick = false;

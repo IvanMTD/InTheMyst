@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import ru.phoenix.core.buffer.ubo.ProjectionUniforms;
 import ru.phoenix.core.buffer.ubo.UniformBufferObject;
 import ru.phoenix.core.config.*;
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
 import ru.phoenix.game.scene.cut.CutScene;
@@ -40,6 +41,7 @@ public class CoreEngine {
         // init glfw and window
         GLFWErrorCallback.createPrint(System.err).set();
         if(!glfwInit()){
+            Logger.error("Unable to initialize GLFW");
             throw new IllegalStateException("Unable to initialize GLFW");
         }
         Window.getInstance().create(wc.getWidth(), wc.getHeight(), wc.isFullScreen());
@@ -54,6 +56,7 @@ public class CoreEngine {
         tacticalScene = new TacticalScene();
 
         scenes = new ArrayList<>();
+        Logger.info("Engine initialized, scenes created");
     }
 
     public void init(){
@@ -62,6 +65,7 @@ public class CoreEngine {
         uboProjection.allocate(0);
         scenes = Arrays.asList(logoScene,menuScene,cutScene,strategyScene,tacticalScene);
         logoScene.start(scenes);
+        Logger.info("Engine init complete, starting logo scene");
     }
 
     public void start(){
@@ -73,6 +77,7 @@ public class CoreEngine {
 
     private void run(){
         this.isRunning = true;
+        Logger.info("Game loop started");
 
         int frames = 0;
         long frameCounter = 0;
@@ -84,6 +89,7 @@ public class CoreEngine {
             Scene currentScene = SceneControl.getCurrentScene(scenes);
 
             if(SceneControl.isReinit()){
+                Logger.warn("Reinitializing engine and scene...");
                 render = new Render();
                 render.init();
                 currentScene.reInit();
@@ -105,6 +111,7 @@ public class CoreEngine {
                     unprocessedTime -= frameTime;
 
                     if (Window.getInstance().isCloseRequested()) {
+                        Logger.info("Window close requested, stopping...");
                         stop();
                     }
 
@@ -121,15 +128,15 @@ public class CoreEngine {
                     render(currentScene);
                     frames++;
                 } else {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    // Убрали Thread.sleep для более плавного цикла
+                    // Если CPU загрузка слишком высокая, можно добавить короткую паузу
+                    // Thread.yield() вместо sleep для лучшей отзывчивости
+                    Thread.yield();
                 }
             }
         }
 
+        Logger.info("Game loop finished, cleaning up...");
         cleanUp();
     }
 
@@ -155,8 +162,10 @@ public class CoreEngine {
     }
 
     private void cleanUp() {
+        Logger.info("Cleaning up engine resources...");
         Window.getInstance().dispose();
         glfwTerminate();
+        Logger.shutdown();
     }
 
     public static int getFps() {

@@ -1,5 +1,6 @@
 package ru.phoenix.core.buffer.fbo;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.kernel.Window;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -68,7 +69,7 @@ public class GBuffer implements FrameBufferObject {
 
     private void check(){
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            System.out.println("Framebuffer not complete!");
+            Logger.info("Framebuffer not complete!");
         }
     }
 

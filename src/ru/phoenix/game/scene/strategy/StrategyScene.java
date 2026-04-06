@@ -1,5 +1,6 @@
 package ru.phoenix.game.scene.strategy;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.WindowConfig;
@@ -180,9 +181,9 @@ public class StrategyScene implements Scene {
         }
 
         for (int i = 0; i < 100; i++) {
-            System.out.println("День " + i + ": " + getInfo(bioms[i]));
+            Logger.info("День " + i + ": " + getInfo(bioms[i]));
         }
-        System.out.println(getInfo(bioms[currentKm]));
+        Logger.info(getInfo(bioms[currentKm]));
     }
 
     @Override
@@ -252,7 +253,7 @@ public class StrategyScene implements Scene {
                 if (currentKm >= bioms.length) {
                     currentKm = 0;
                 }
-                System.out.println(getInfo(bioms[currentKm]));
+                Logger.info(getInfo(bioms[currentKm]));
 
                 updateEventList();
             }

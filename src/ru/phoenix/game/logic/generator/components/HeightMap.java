@@ -1,5 +1,6 @@
 package ru.phoenix.game.logic.generator.components;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.debug.HowLong;
 import ru.phoenix.core.math.Perlin2D;
 import ru.phoenix.core.math.Vector3f;
@@ -45,7 +46,7 @@ public class HeightMap {
         }
 
         float diff = Math.abs(max - min);
-        System.out.println("min: " + min + " | " + " max: " + max + " | diff: " + diff);
+        Logger.info("min: " + min + " | " + " max: " + max + " | diff: " + diff);
 
         for(int x=0; x<heightMap.length; x++){
             for(int z=0; z<heightMap[0].length; z++){
@@ -212,7 +213,7 @@ public class HeightMap {
         }
 
         float diff = Math.abs(max - min);
-        System.out.println("min: " + min + " | " + " max: " + max + " | diff: " + diff);
+        Logger.info("min: " + min + " | " + " max: " + max + " | diff: " + diff);
 
         for(int x=0; x<heightMap.length; x++){
             for(int z=0; z<heightMap[0].length; z++){

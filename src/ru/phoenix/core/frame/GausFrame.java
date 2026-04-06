@@ -1,5 +1,6 @@
 package ru.phoenix.core.frame;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.buffer.fbo.FrameBufferObject;
 import ru.phoenix.core.buffer.vbo.NormalizedDeviceCoordinates;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
@@ -52,7 +53,7 @@ public class GausFrame {
                     GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture[i], 0
             );
             if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-                System.out.println("Framebuffer not complete!");
+                Logger.info("Framebuffer not complete!");
             }
         }
         glBindFramebuffer(GL_FRAMEBUFFER,0);

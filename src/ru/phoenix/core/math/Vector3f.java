@@ -1,5 +1,7 @@
 package ru.phoenix.core.math;
 
+import ru.phoenix.core.debug.Logger;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -234,7 +236,7 @@ public class Vector3f implements Externalizable {
     }
 
     public static void vectorInfo(Vector3f v){
-        System.out.println("Vector info: x: " + v.getX() + ", y: " + v.getY() + ", z: " + v.getZ() + "\n");
+        Logger.debug("Vector info: x: " + v.getX() + ", y: " + v.getY() + ", z: " + v.getZ());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ru.phoenix.game.logic.generator;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.loader.model.Mesh;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
@@ -40,7 +41,7 @@ public class Generator {
         setTotalMapWidth(w);
         setTotalMapHeight(h);
 
-        System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
+        Logger.info("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
         grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true, new SaveData());
         heightMap = new Texture2D();
         heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
@@ -75,7 +76,7 @@ public class Generator {
         setTotalMapWidth(w);
         setTotalMapHeight(h);
 
-        System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
+        Logger.info("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
         grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true, radius, saveData);
         heightMap = new Texture2D();
         heightMap.setup(HeightMap.getHeiMap(),GL_SRGB_ALPHA,GL_CLAMP_TO_EDGE);
@@ -137,7 +138,7 @@ public class Generator {
         setTotalMapWidth(w);
         setTotalMapHeight(h);
 
-        System.out.println("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
+        Logger.info("Создана карта размером " + (getTotalMapWidth() + 1) + "x" + (getTotalMapHeight() + 1));
         grid = HeightMap.get((long)(1 + Math.random() * 10000000000L),getTotalMapWidth(),getTotalMapHeight(),currentHeight, true,saveData);
 
         heightMap = new Texture2D();

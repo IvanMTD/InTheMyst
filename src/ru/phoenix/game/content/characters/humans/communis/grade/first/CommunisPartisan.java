@@ -1,5 +1,6 @@
 package ru.phoenix.game.content.characters.humans.communis.grade.first;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
 import ru.phoenix.core.loader.ImageAnimLoader;
@@ -554,7 +555,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                     }
                     break;
                 case NEUTRAL:
-                    System.out.println("NOT WORK YET");
+                    Logger.info("NOT WORK YET");
                     break;
             }
         }
@@ -677,7 +678,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                         }
                                     }
                                 }else{
-                                    System.out.println("WayPoints is empty!!");
+                                    Logger.info("WayPoints is empty!!");
                                 }
                             }
                         }else {
@@ -823,7 +824,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                     }
                                 }
                             }else{
-                                System.out.println("нет врага переменна пустая ... ");
+                                Logger.info("нет врага переменна пустая ... ");
                             }
                         }
                         break;
@@ -961,7 +962,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                         }
                                     }
                                 }else{
-                                    System.out.println("WayPoints is empty!!");
+                                    Logger.info("WayPoints is empty!!");
                                     for(int x=0; x<grid.length; x++){
                                         for(int z=0; z<grid[0].length; z++){
                                             grid[x][z].setGrayZona();
@@ -1099,7 +1100,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                     }
                                 }
                             }else{
-                                System.out.println("нет врага переменная пустая ... ");
+                                Logger.info("нет врага переменная пустая ... ");
                             }
                         }
                         break;
@@ -1352,7 +1353,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
         }
 
         if(getWayPoints().isEmpty()){
-            System.out.println("Error");
+            Logger.info("Error");
             if(moveClick){
                 remap = true;
                 moveClick = false;

@@ -1,5 +1,6 @@
 package ru.phoenix.game.logic.movement;
 
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.loader.sprite.ImageAnimation;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.characters.Character;
@@ -96,8 +97,8 @@ public class MotionAnimation {
             if (index < wayPoints.size()) {
                 wayPoints.get(index).setOccupied(true);
             } else {
-                System.out.println("Current index is " + index);
-                System.out.println("Current size is " + wayPoints.size() + "\n");
+                Logger.info("Current index is " + index);
+                Logger.info("Current size is " + wayPoints.size() + "\n");
                 motion = 0;
                 action = false;
             }
