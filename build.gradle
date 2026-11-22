@@ -118,3 +118,46 @@ tasks.named('test') {
         events 'passed', 'skipped', 'failed'
     }
 }
+
+// Исполняемый jar со всеми зависимостями (для поставки)
+tasks.register('fatJar', Jar) {
+    group = 'build'
+    description = 'Jar со всеми зависимостями и манифестом'
+    archiveBaseName = 'InTheMyst'
+    archiveClassifier = 'all'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes 'Main-Class': 'ru.phoenix.core.kernel.Game'
+    }
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/*.SF'
+        exclude 'META-INF/*.DSA'
+        exclude 'META-INF/*.RSA'
+        exclude 'META-INF/versions/9/module-info.class'
+    }
+}
+
+// Портативная сборка: jar + data + скрипты запуска (без сейвов и БД)
+tasks.register('portableDist', Zip) {
+    group = 'distribution'
+    description = 'Портативный архив для запуска на Windows/Linux'
+    dependsOn fatJar
+    archiveFileName = 'InTheMyst.zip'
+    destinationDirectory = layout.buildDirectory.dir('dist')
+    from tasks.named('fatJar')
+    from 'start.bat'
+    from 'start.sh'
+    from 'README.md'
+    from 'LICENSE'
+    from('data') {
+        into 'data'
+        exclude 'save/**'
+        exclude 'db/**'
+        exclude 'files/**'
+    }
+}

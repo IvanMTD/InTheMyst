@@ -31,7 +31,7 @@
 ## Требования
 
 - **JDK 17** или новее (`JAVA_HOME` настроен).
-- **Видеокарта с OpenGL 4.3** и актуальный драйвер. На macOS максимум OpenGL 4.1 — игра там не запустится (см. раздел проблем).
+- **Видеокарта с OpenGL 4.3** и актуальный драйвер. На macOS максимум OpenGL 4.1 — поддержка macOS пока не реализована (запланирована, см. раздел проблем).
 - **2 ГБ RAM** минимум (в `build.gradle` для `run` задано `-Xms512m -Xmx2g`).
 - Windows / Linux. Нативные библиотеки LWJGL подставляются автоматически по ОС в `build.gradle`.
 
@@ -92,12 +92,23 @@ Linux / macOS:
 Полезные задачи:
 
 ```bat
-gradlew.bat compileJava    :: только компиляция
-gradlew.bat clean          :: очистка build/
-gradlew.bat jar            :: только jar (без зависимостей)
+gradlew.bat compileJava       :: только компиляция
+gradlew.bat clean             :: очистка build/
+gradlew.bat jar               :: тонкий jar (без зависимостей)
+gradlew.bat fatJar            :: исполняемый jar со всеми зависимостями
+gradlew.bat portableDist      :: портативный zip для поставки
 ```
 
-Результат: `build/libs/InTheMyst.jar`. **Важно:** это «тонкий» jar — в него не входят зависимости LWJGL/JOML и каталог `data/`, поэтому `java -jar` с ним не работает. Для запуска используйте `gradlew run` или IDE (см. ниже и раздел проблем).
+- `build/libs/InTheMyst-all.jar` — исполняемый jar (зависимости внутри), но без `data/`: запускать из корня проекта.
+- `build/dist/InTheMyst.zip` — готовая портативная сборка: `InTheMyst-all.jar`, `data/`, `start.bat`, `start.sh`, README и LICENSE. Сейвы и БД в архив не входят и создаются при первом запуске.
+
+### Запуск из архива
+
+1. Распакуйте `InTheMyst.zip` в любую папку (лучше без пробелов и кириллицы в пути).
+2. Нужен JDK 17+ в `PATH`.
+3. Запустите `start.bat` (Windows) или `start.sh` (Linux). Скрипт сам переходит в папку игры, поэтому `data/` и `game.log` находятся рядом с jar.
+
+`java -jar InTheMyst-all.jar` вручную тоже работает, но только если текущая директория — папка игры.
 
 ## Тесты
 
@@ -164,9 +175,9 @@ gradlew.bat run
 
 ### Критичные
 
-1. **Собранный jar не запускается.** `jar`-задача в `build.gradle` не включает зависимости (нет Shadow/`shadowJar`), а `sourceSets.main.resources` указывает на `src/res` и `src/shaders` — игровые данные из `data/` туда не входят. `java -jar build/libs/InTheMyst.jar` упадёт с `NoClassDefFoundError`. Релизного самодостаточного артефакта сейчас нет.
-2. **Ресурсы ищутся по относительному пути от текущей директории.** `ImageLoader.load` использует `new File(path)`, `Shader` — `new FileReader("./data/shader/...")`, H2-база создаётся в `data/db` от `user.dir`. Запуск из ярлыка, из другой папки или установленной копии ломается; `data/` не попадает в дистрибутив. Нужен classpath-доступ (`getResourceAsStream`) или копирование `data/` в поставку.
-3. **macOS не поддерживается фактически.** `Window` запрашивает OpenGL **4.3** core, а macOS даёт максимум 4.1 — `glfwCreateWindow` вернёт `NULL`, игра упадёт с `RuntimeException("The window was not created!")`. При этом `build.gradle` собирает `natives-macos`, а старый README обещал macOS.
+1. **Собранный jar (исправлено).** `gradlew portableDist` собирает `InTheMyst-all.jar` со всеми зависимостями и `data/` в архиве; запуск проверен из отдельной папки. Тонкий `build/libs/InTheMyst.jar` по-прежнему несамодостаточен — используйте `-all.jar`.
+2. **Ресурсы ищутся относительно текущей директории (частично исправлено).** `ImageLoader` использует `new File(path)`, `Shader` — `new FileReader("./data/shader/...")`, H2-база создаётся в `data/db` от `user.dir`. Портативная сборка запускается через `start.bat`/`start.sh`, которые выставляют рабочую директорию, поэтому из архива всё работает. Прямой `java -jar` из другой папки по-прежнему ломается — для полной независимости нужен classpath-доступ к ассетам.
+3. **macOS пока не поддерживается.** `Window` запрашивает OpenGL **4.3** core, а macOS даёт максимум 4.1 — `glfwCreateWindow` вернёт `NULL`. Поддержка запланирована: нужно снизить требования до 4.1/3.3 core и проверить шейдеры. Пока релиз — Windows/Linux.
 
 ### Высокие
 
