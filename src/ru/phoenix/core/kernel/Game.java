@@ -15,7 +15,9 @@ public class Game {
 
         // локальная БД должна быть готова до создания сцен (они читают слоты сохранений)
         Database.getInstance().init();
-        LegacySaveImporter.importLegacySaves(Saves.repository());
+        if (Boolean.getBoolean("myst.importLegacy")) {
+            LegacySaveImporter.importLegacySaves(Saves.repository());
+        }
 
         CoreEngine coreEngine = new CoreEngine();
         coreEngine.createWindow(WindowConfig.getInstance());

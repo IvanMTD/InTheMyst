@@ -90,6 +90,10 @@ public class CoreEngine {
 
         while(isRunning){
             Scene currentScene = SceneControl.getCurrentScene(scenes);
+            if (currentScene == null) {
+                Logger.error("No active scene, stopping game loop");
+                break;
+            }
 
             if(SceneControl.isReinit()){
                 Logger.warn("Reinitializing engine and scene...");

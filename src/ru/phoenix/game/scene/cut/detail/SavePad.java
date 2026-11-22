@@ -12,6 +12,7 @@ import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.datafile.PersonStruct;
 import ru.phoenix.game.datafile.SaveData;
 import ru.phoenix.game.datafile.SaveException;
+import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.datafile.Saves;
 import ru.phoenix.game.datafile.TimeElement;
 import ru.phoenix.game.hud.elements.HeadsUpDisplay;
@@ -152,40 +153,50 @@ public class SavePad {
                             }
 
                             if(boxNumber != 0) {
-                                // записываем время
-                                int d = Time.getDay();
-                                int h = Time.getHour();
-                                int m = Time.getMinut();
-                                float s = Time.getSecond();
-                                TimeElement time = new TimeElement(d, h, m, s);
-                                Default.getCurrentData().setTime(time);
-                                // Записываем лагерь и персонажей
-                                Default.getCurrentData().setCampLocation(saveData);
-                                List<PersonStruct> personStructList = new ArrayList<>();
-                                for (Character character : allies) {
-                                    PersonStruct personStruct = new PersonStruct();
-                                    personStruct.setType(character.getType());
-                                    personStruct.setCharacteristic(character.getCharacteristic());
-                                    personStructList.add(personStruct);
-                                }
-                                Default.getCurrentData().setPersonStructs(personStructList);
-                                // сохраняем состояние мира и карту высот в БД
-                                byte[] heightmap = null;
-                                try {
-                                    Texture texture = Generator.getHeightMap();
-                                    heightmap = texture == null ? null : texture.toPng();
-                                } catch (IllegalStateException e) {
-                                    Logger.error("Failed to export heightmap for slot " + boxNumber + ": " + e.getMessage());
-                                }
-                                try {
-                                    Saves.repository().save(boxNumber, Default.getCurrentData(), heightmap);
-                                } catch (SaveException e) {
-                                    Logger.error("Failed to save slot " + boxNumber, e);
-                                }
+                                SaveGame currentData = Default.getCurrentData();
+                                if (currentData == null) {
+                                    Logger.error("Can't save slot " + boxNumber + ": current game data is missing");
+                                } else {
+                                    // записываем время
+                                    int d = Time.getDay();
+                                    int h = Time.getHour();
+                                    int m = Time.getMinut();
+                                    float s = Time.getSecond();
+                                    currentData.setTime(new TimeElement(d, h, m, s));
+                                    // Записываем лагерь и персонажей
+                                    currentData.setCampLocation(saveData);
+                                    List<PersonStruct> personStructList = new ArrayList<>();
+                                    for (Character character : allies) {
+                                        PersonStruct personStruct = new PersonStruct();
+                                        personStruct.setType(character.getType());
+                                        personStruct.setCharacteristic(character.getCharacteristic());
+                                        personStructList.add(personStruct);
+                                    }
+                                    currentData.setPersonStructs(personStructList);
 
-                                for(SaveBox saveBox : saveBoxes){
-                                    if(saveBox.getBoxNumber() == boxNumber){
-                                        saveBox.updateInformation("Day " + d + " " + h + ":" + m);
+                                    // сохраняем состояние мира и карту высот в БД
+                                    byte[] heightmap = null;
+                                    try {
+                                        Texture texture = Generator.getHeightMap();
+                                        heightmap = texture == null ? null : texture.toPng();
+                                    } catch (IllegalStateException e) {
+                                        Logger.error("Failed to export heightmap for slot " + boxNumber + ": " + e.getMessage());
+                                    }
+
+                                    boolean saved = false;
+                                    try {
+                                        Saves.repository().save(boxNumber, currentData, heightmap);
+                                        saved = true;
+                                    } catch (SaveException e) {
+                                        Logger.error("Failed to save slot " + boxNumber, e);
+                                    }
+
+                                    if (saved) {
+                                        for(SaveBox saveBox : saveBoxes){
+                                            if(saveBox.getBoxNumber() == boxNumber){
+                                                saveBox.updateInformation("Day " + d + " " + h + ":" + m);
+                                            }
+                                        }
                                     }
                                 }
                             }

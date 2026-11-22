@@ -1,249 +1,202 @@
 package ru.phoenix.core.config;
+
 import ru.phoenix.core.debug.Logger;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static ru.phoenix.core.config.Constants.ENGLISH;
 import static ru.phoenix.core.config.Constants.RUSSIAN;
 
+/**
+ * Настройки окна и графики из data/config/window/window_config.txt.
+ * Значения кэшируются в памяти, отсутствующие параметры берутся из дефолтов,
+ * запись атомарная (temp-файл + move), чтобы не оставить битый конфиг при сбое.
+ */
 public class WindowConfig {
 
-    private static WindowConfig instance = null;
+    private static final String FILE_NAME = "window_config.txt";
+    private static final String LANGUAGE_KEY = "langueage"; // историческое имя ключа
 
-    private File config;
+    private static final Map<String, String> DEFAULTS = new LinkedHashMap<>();
 
-    public WindowConfig(){
-        File direct = new File("./data/config/window");
-        config = new File (direct,"window_config.txt");
-        if(config.exists()){
-            String data = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date(config.lastModified()));
-            Logger.info(data);
-        }else{
-            Logger.info("File does not exist! Trying to create.");
-            try {
-                if(config.createNewFile()){
-                    Logger.info("File created! " + config.getName());
-                    setConfigDefault();
-                }else{
-                    Logger.info("Error! The window configuration file is not created!");
+    static {
+        DEFAULTS.put("full_screen", "false");
+        DEFAULTS.put("window_width", "1280");
+        DEFAULTS.put("window_height", "720");
+        DEFAULTS.put("samples", "4");
+        DEFAULTS.put("gamma", "2.2");
+        DEFAULTS.put("contrast", "0.0");
+        DEFAULTS.put("z_near", "0.01");
+        DEFAULTS.put("z_far", "300.0");
+        DEFAULTS.put(LANGUAGE_KEY, "ENGLISH");
+    }
+
+    private static WindowConfig instance;
+
+    private final Path file;
+    private final Map<String, String> values = new LinkedHashMap<>(DEFAULTS);
+
+    public WindowConfig() {
+        this(Paths.get("data", "config", "window"));
+    }
+
+    WindowConfig(Path directory) {
+        this.file = directory.resolve(FILE_NAME);
+        load();
+    }
+
+    private void load() {
+        if (!Files.exists(file)) {
+            save();
+            return;
+        }
+        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.trim().split("\\s+", 2);
+                if (parts.length == 2 && !parts[0].isEmpty()) {
+                    values.put(parts[0], parts[1].trim());
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            Logger.error("Failed to read window config, using defaults: " + e.getMessage());
         }
     }
 
-    private void setConfigDefault(){
-        if(config.length() == 0){
-            List<String> defaultConfig = new ArrayList<>();
-            defaultConfig.add("full_screen");defaultConfig.add(Boolean.toString(false));
-            defaultConfig.add("window_width");defaultConfig.add(Integer.toString(1280));
-            defaultConfig.add("window_height");defaultConfig.add(Integer.toString(720));
-            defaultConfig.add("samples");defaultConfig.add(Integer.toString(4));
-            defaultConfig.add("gamma");defaultConfig.add(Float.toString(2.2f));
-            defaultConfig.add("contrast");defaultConfig.add(Float.toString(0.0f));
-            defaultConfig.add("z_near");defaultConfig.add(Float.toString(0.01f));
-            defaultConfig.add("z_far");defaultConfig.add(Float.toString(300.0f));
-            defaultConfig.add("langueage");defaultConfig.add("ENGLISH");
-            writeFile(defaultConfig);
-        }
-    }
-
-    public void setFullScreen(boolean fullScreen){
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("full_screen")){
-                param.set(i+1,Boolean.toString(fullScreen));
+    private void save() {
+        try {
+            Path directory = file.getParent();
+            if (directory != null) {
+                Files.createDirectories(directory);
             }
-        }
-        writeFile(param);
-    }
-
-    public boolean isFullScreen(){
-        String param = getParam("full_screen");
-        return param.equals("true");
-    }
-
-    public void setWidth(int width){
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("window_width")){
-                param.set(i+1,Integer.toString(width));
+            Path temp = file.resolveSibling(file.getFileName() + ".tmp");
+            try (BufferedWriter writer = Files.newBufferedWriter(temp, StandardCharsets.UTF_8)) {
+                for (String key : DEFAULTS.keySet()) {
+                    writer.write(key + " " + values.getOrDefault(key, DEFAULTS.get(key)));
+                    writer.newLine();
+                }
             }
-        }
-        writeFile(param);
-    }
-
-    public int getWidth(){
-        return Integer.parseInt(getParam("window_width"));
-    }
-
-    public void setHeight(int height){
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("window_height")){
-                param.set(i+1,Integer.toString(height));
-            }
-        }
-        writeFile(param);
-    }
-
-    public int getHeight(){
-        return Integer.parseInt(getParam("window_height"));
-    }
-
-    public void setSamples(int samples){
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("samples")){
-                param.set(i+1,Integer.toString(samples));
-            }
-        }
-        writeFile(param);
-    }
-
-    public int getSamples(){
-        return Integer.parseInt(getParam("samples"));
-    }
-
-    public void setGamma(float gamma){
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("gamma")){
-                param.set(i+1,Float.toString(gamma));
-            }
-        }
-        writeFile(param);
-    }
-
-    public float getGamma(){
-        return Float.parseFloat(getParam("gamma"));
-    }
-
-    public void setContrast(float contrast){
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("contrast")){
-                param.set(i+1,Float.toString(contrast));
-            }
-        }
-        writeFile(param);
-    }
-
-    public float getContrast(){
-        return Float.parseFloat(getParam("contrast"));
-    }
-
-    public void setNear(float zNear){
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("z_near")){
-                param.set(i+1,Float.toString(zNear));
-            }
-        }
-        writeFile(param);
-    }
-
-    public float getNear(){
-        return Float.parseFloat(getParam("z_near"));
-    }
-
-    public void setFar(float zFar){
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("z_far")){
-                param.set(i+1,Float.toString(zFar));
-            }
-        }
-        writeFile(param);
-    }
-
-    public int getLangueage(){
-        String languageDescription = getParam("langueage");
-        int result = 0;
-        if(languageDescription == "RUSSIAN"){
-            result = RUSSIAN;
-        }else if(languageDescription == "ENGLISH"){
-            result = ENGLISH;
-        }else{
-            result = ENGLISH;
-        }
-        return result;
-    }
-
-    public void setLangueage(int languageDescription){
-        String langueage;
-        if(languageDescription == RUSSIAN){
-            langueage = "RUSSIAN";
-        }else if(languageDescription == ENGLISH){
-            langueage = "ENGLISH";
-        }else{
-            langueage = "ENGLISH";
-        }
-        List<String>param = getCurrentCopy();
-        for(int i=0; i<param.size(); i++){
-            if(param.get(i).equals("langueage")){
-                param.set(i+1,langueage);
-            }
-        }
-        writeFile(param);
-    }
-
-    public float getFar(){
-        return Float.parseFloat(getParam("z_far"));
-    }
-
-    private void writeFile(List<String>param){
-        try (FileWriter fw = new FileWriter(config.getAbsoluteFile())) {
-            for(int i=0; i<param.size(); i+=2){
-                fw.write(param.get(i) + " " + param.get(i + 1) + "\n");
+            try {
+                Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
             Logger.error("Failed to write window config: " + e.getMessage());
         }
     }
 
-    private List<String> getCurrentCopy(){
-
-        List<String> temp = new ArrayList<>();
-
-        try (Scanner sc = new Scanner(config.getAbsoluteFile())) {
-            while (sc.hasNext()){
-                temp.add(sc.next());
-            }
-        } catch (IOException e) {
-            Logger.error("Failed to read window config: " + e.getMessage());
-        }
-
-        return temp;
+    public void setFullScreen(boolean fullScreen) {
+        put("full_screen", Boolean.toString(fullScreen));
     }
 
-    private String getParam(String name){
-        String param = null;
-        try (Scanner sc = new Scanner(config.getAbsoluteFile())) {
-            while (sc.hasNext()) {
-                String temp = sc.next();
-                if (temp.equals(name)) {
-                    param = sc.next();
-                }
-            }
-        } catch (IOException e){
-            Logger.error("Failed to read parameter '" + name + "': " + e.getMessage());
-        }
-
-        return param;
+    public boolean isFullScreen() {
+        return Boolean.parseBoolean(get("full_screen"));
     }
 
-    public static WindowConfig getInstance(){
-        if(instance == null){
+    public void setWidth(int width) {
+        put("window_width", Integer.toString(width));
+    }
+
+    public int getWidth() {
+        return getInt("window_width");
+    }
+
+    public void setHeight(int height) {
+        put("window_height", Integer.toString(height));
+    }
+
+    public int getHeight() {
+        return getInt("window_height");
+    }
+
+    public void setSamples(int samples) {
+        put("samples", Integer.toString(samples));
+    }
+
+    public int getSamples() {
+        return getInt("samples");
+    }
+
+    public void setGamma(float gamma) {
+        put("gamma", Float.toString(gamma));
+    }
+
+    public float getGamma() {
+        return getFloat("gamma");
+    }
+
+    public void setContrast(float contrast) {
+        put("contrast", Float.toString(contrast));
+    }
+
+    public float getContrast() {
+        return getFloat("contrast");
+    }
+
+    public void setNear(float zNear) {
+        put("z_near", Float.toString(zNear));
+    }
+
+    public float getNear() {
+        return getFloat("z_near");
+    }
+
+    public void setFar(float zFar) {
+        put("z_far", Float.toString(zFar));
+    }
+
+    public float getFar() {
+        return getFloat("z_far");
+    }
+
+    public int getLangueage() {
+        return "RUSSIAN".equalsIgnoreCase(get(LANGUAGE_KEY)) ? RUSSIAN : ENGLISH;
+    }
+
+    public void setLangueage(int languageDescription) {
+        put(LANGUAGE_KEY, languageDescription == RUSSIAN ? "RUSSIAN" : "ENGLISH");
+    }
+
+    private String get(String key) {
+        return values.getOrDefault(key, DEFAULTS.get(key));
+    }
+
+    private int getInt(String key) {
+        try {
+            return Integer.parseInt(get(key).trim());
+        } catch (NumberFormatException e) {
+            Logger.error("Invalid integer for '" + key + "', default is used");
+            return Integer.parseInt(DEFAULTS.get(key));
+        }
+    }
+
+    private float getFloat(String key) {
+        try {
+            return Float.parseFloat(get(key).trim());
+        } catch (NumberFormatException e) {
+            Logger.error("Invalid number for '" + key + "', default is used");
+            return Float.parseFloat(DEFAULTS.get(key));
+        }
+    }
+
+    private void put(String key, String value) {
+        values.put(key, value);
+        save();
+    }
+
+    public static WindowConfig getInstance() {
+        if (instance == null) {
             instance = new WindowConfig();
         }
         return instance;
