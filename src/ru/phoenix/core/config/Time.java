@@ -4,6 +4,8 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class Time{
     private static float lastTime = 0;
+    private static float deltaTime = 0;
+    private static boolean firstUpdate = true;
 
     private static int day = 0;
     private static int hour = 0;
@@ -12,7 +14,20 @@ public class Time{
 
     public static void update(){
         float currentTime = (float)glfwGetTime();
-        float deltaTime = currentTime - lastTime;
+        
+        // Пропускаем первый кадр — deltaTime будет огромным из-за времени загрузки
+        if (firstUpdate) {
+            lastTime = currentTime;
+            deltaTime = 0;
+            firstUpdate = false;
+            return;
+        }
+        
+        deltaTime = currentTime - lastTime;
+        // Ограничиваем deltaTime чтобы избежать скачков при лагах
+        if (deltaTime > 0.1f) {
+            deltaTime = 0.1f;
+        }
         lastTime = currentTime;
         second += deltaTime;
 
@@ -62,6 +77,11 @@ public class Time{
 
     public static int getSecond() {
         return (int)second;
+    }
+
+    /** Возвращает время в секундах, прошедшее с последнего кадра */
+    public static float getDeltaTime() {
+        return deltaTime;
     }
 
     public static String getCurrentTime(){

@@ -414,7 +414,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                     }
                                     prepareDirection = false;
                                 }
-                                counter++;
+                                counter += Time.getDeltaTime() * 200.0f;
                                 if (counter > 20) {
                                     currentFrame++;
                                     counter = 0;
@@ -499,7 +499,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                     }
                                     prepareDirection = false;
                                 }
-                                counter++;
+                                counter += Time.getDeltaTime() * 200.0f;
                                 if (counter > 20) {
                                     currentFrame++;
                                     counter = 0;
@@ -598,7 +598,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                 break;
             case 1:
                 updateAnimation(walkTexture,walkAnimation);
-                walk_counter++;
+                walk_counter += Time.getDeltaTime() * 200.0f;
                 if(walk_counter > 20) {
                     walkAnimation.nextFrame();
                     walk_counter = 0;
@@ -792,7 +792,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                     // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
                                     firstBaseAttack = false;
                                 }else {
-                                    counter++;
+                                    counter += Time.getDeltaTime() * 200.0f;
                                     if (counter > 20) {
                                         currentFrame++;
                                         counter = 0;
@@ -976,7 +976,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                 }
                             }
                         }else{
-                            counter++;
+                            counter += Time.getDeltaTime() * 200.0f;
                             if(counter > 200) {
                                 boolean action = actionControl(grid,SimpleAI.getTargetCharacter());
                                 if(!action) {
@@ -1063,7 +1063,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
                                     // ОБРОБОТКА ПОВОРОТА - КОНЕЦ
                                     firstBaseAttack = false;
                                 }else {
-                                    counter++;
+                                    counter += Time.getDeltaTime() * 200.0f;
                                     if (counter > 20) {
                                         currentFrame++;
                                         counter = 0;
@@ -1325,7 +1325,7 @@ public class CommunisPartisan extends HumanDraw implements Character {
             setJump(false);
             updateAnimation(goUpDownTexture,goUpDownAnimation);
         }else if(motion == 4){
-            counter++;
+            counter += Time.getDeltaTime() * 200.0f;
             if(counter > counterMax) {
                 Vector3f currentPos = new Vector3f(getPosition());
                 currentPos.setY(0.0f);

@@ -172,9 +172,21 @@ public class BaseRenderFrame implements Framework {
         }
         glBindFramebuffer(GL_FRAMEBUFFER,0);
 
-        // OPTIMIZATION: glReadPixels removed from render loop - now called only on mouse click
-        // Pixel picking is now handled by MousePicker (raycasting) for performance
-        // See TacticalScene.update() for mouse click handling with glReadPixels
+        // Читаем пиксель из буфера для выбора объектов
+        glBindFramebuffer(GL_FRAMEBUFFER, render.getFrameBuffer());
+        glReadBuffer(GL_COLOR_ATTACHMENT1); // attachment 1 = select_color (ID объектов)
+        int[] viewport = new int[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        FloatBuffer data = BufferUtils.createFloatBuffer(4);
+        glReadPixels(
+                (int) Input.getInstance().getCursorPosition().getX(),
+                viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
+                1, 1, GL_RGBA, GL_FLOAT, data
+        );
+
+        Vector3f pixel = new Vector3f(data.get(0), data.get(1), data.get(2));
+        Pixel.setPixel(pixel);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         GausFrame.getInstance().useFrame(render);
 

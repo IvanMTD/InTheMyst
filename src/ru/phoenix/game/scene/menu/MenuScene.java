@@ -2,6 +2,7 @@ package ru.phoenix.game.scene.menu;
 
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
@@ -149,7 +150,7 @@ public class MenuScene implements Scene {
     }
 
     @Override
-    public void update() {
+    public void update(float deltaTime) {
         // обработка данных
         GameController.getInstance().update();
         
@@ -168,16 +169,16 @@ public class MenuScene implements Scene {
 
         Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
         Pixel.setPixel(pixelData);
-        
-        System.out.println("[MenuScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
-        System.out.println("[MenuScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
+
+        Logger.debug("[MenuScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
+        Logger.debug("[MenuScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
+
         Vector3f pixel = Pixel.getPixel();
         boolean leftClick = GameController.getInstance().isLeftClick();
-        
-        System.out.println("[MenuScene] Current pixel: " + pixel.getX() + ", " + pixel.getY() + ", " + pixel.getZ() + ", leftClick: " + leftClick);
+
+        Logger.debug("[MenuScene] Current pixel: " + pixel.getX() + ", " + pixel.getY() + ", " + pixel.getZ() + ", leftClick: " + leftClick);
         
         // постоянно обновляемые
         background.update();
@@ -187,7 +188,7 @@ public class MenuScene implements Scene {
             mainMenu.update(pixel,leftClick);
             menuAction = mainMenu.getAction();
             if (leftClick) {
-                System.out.println("[MenuScene] Menu action: " + menuAction);
+                Logger.debug("[MenuScene] Menu action: " + menuAction);
             }
         }else if(menuAction == MainMenu.NEW_GAME_BUTTON){
             newGameAnimation();

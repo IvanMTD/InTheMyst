@@ -15,6 +15,7 @@ public class Input {
 
     private boolean[] keys;
     private boolean[] buttons;
+    private boolean[] previousKeys; // Для отслеживания нажатий (было/стало)
 
     private boolean cursorMove;
     private boolean click;
@@ -48,6 +49,7 @@ public class Input {
         scrollOffset = 0.0f;
         keys = new boolean[1024];
         buttons = new boolean[10];
+        previousKeys = new boolean[1024];
         
         // Скрываем системный курсор для использования кастомного курсора
         glfwSetInputMode(Window.getInstance().getWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -101,6 +103,8 @@ public class Input {
     }
 
     public void update(){
+        // Сохраняем предыдущее состояние клавиш перед опросом новых событий
+        System.arraycopy(keys, 0, previousKeys, 0, keys.length);
         cursorMove = false;
         setScrollOffset(0.0f);
         glfwPollEvents();
@@ -108,6 +112,11 @@ public class Input {
 
     public boolean isPressed(int index){
         return keys[index];
+    }
+
+    // Возвращает true только в том кадре, когда клавиша была нажата (переход из false в true)
+    public boolean isKeyPressed(int index){
+        return keys[index] && !previousKeys[index];
     }
 
     public boolean isMousePressed(int index){
@@ -120,6 +129,15 @@ public class Input {
 
     public boolean getCursorMove(){
         return cursorMove;
+    }
+
+    public boolean isMouseButtonDown(int button) {
+        if (buttons == null) return false;
+        return buttons[button];
+    }
+
+    public boolean isMouseButtonHold(int button) {
+        return isMouseButtonDown(button);
     }
 
     public Vector2f getCursorPosition(){

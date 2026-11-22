@@ -202,14 +202,12 @@ public class WindowConfig {
     }
 
     private void writeFile(List<String>param){
-        try {
-            FileWriter fw = new FileWriter(config.getAbsoluteFile());
+        try (FileWriter fw = new FileWriter(config.getAbsoluteFile())) {
             for(int i=0; i<param.size(); i+=2){
                 fw.write(param.get(i) + " " + param.get(i + 1) + "\n");
             }
-            fw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("Failed to write window config: " + e.getMessage());
         }
     }
 
@@ -217,18 +215,12 @@ public class WindowConfig {
 
         List<String> temp = new ArrayList<>();
 
-        try {
-            FileReader fr = new FileReader(config.getAbsoluteFile());
-            Scanner sc = new Scanner(fr);
-
+        try (Scanner sc = new Scanner(config.getAbsoluteFile())) {
             while (sc.hasNext()){
                 temp.add(sc.next());
             }
-
-            sc.close();
-            fr.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("Failed to read window config: " + e.getMessage());
         }
 
         return temp;
@@ -236,20 +228,15 @@ public class WindowConfig {
 
     private String getParam(String name){
         String param = null;
-        try {
-            FileReader fr = new FileReader(config.getAbsoluteFile());
-            Scanner sc = new Scanner(fr);
+        try (Scanner sc = new Scanner(config.getAbsoluteFile())) {
             while (sc.hasNext()) {
                 String temp = sc.next();
                 if (temp.equals(name)) {
                     param = sc.next();
                 }
             }
-
-            sc.close();
-            fr.close();
-        }catch (IOException e){
-            e.printStackTrace();
+        } catch (IOException e){
+            Logger.error("Failed to read parameter '" + name + "': " + e.getMessage());
         }
 
         return param;

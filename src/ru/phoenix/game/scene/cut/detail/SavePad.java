@@ -2,6 +2,7 @@ package ru.phoenix.game.scene.cut.detail;
 
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.texture.Texture;
@@ -10,6 +11,8 @@ import ru.phoenix.core.shader.Shader;
 import ru.phoenix.game.content.characters.Character;
 import ru.phoenix.game.datafile.PersonStruct;
 import ru.phoenix.game.datafile.SaveData;
+import ru.phoenix.game.datafile.SaveException;
+import ru.phoenix.game.datafile.Saves;
 import ru.phoenix.game.datafile.TimeElement;
 import ru.phoenix.game.hud.elements.HeadsUpDisplay;
 import ru.phoenix.game.hud.elements.strucet.Board;
@@ -17,10 +20,6 @@ import ru.phoenix.game.hud.elements.strucet.Button;
 import ru.phoenix.game.logic.generator.Generator;
 import ru.phoenix.game.property.GameController;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -116,22 +115,18 @@ public class SavePad {
     }
 
     private void setupSaveButtons(float w, float h, Vector3f position){
-        try {
-            saveBoxes = new ArrayList<>();
-            box1Position = new Vector3f(position).add(new Vector3f(-17.0f,-75.0f,0.0f));
-            save_box_1 = new SaveBox(position,box1Position,w,h,1,SAVE_BOX_1);
-            box2Position = new Vector3f(position).add(new Vector3f(-17.0f,-33.0f,0.0f));
-            save_box_2 = new SaveBox(position,box2Position,w,h,2,SAVE_BOX_2);
-            box3Position = new Vector3f(position).add(new Vector3f(-17.0f,9.0f,0.0f));
-            save_box_3 = new SaveBox(position,box3Position,w,h,3,SAVE_BOX_3);
-            box4Position = new Vector3f(position).add(new Vector3f(-17.0f,51.0f,0.0f));
-            save_box_4 = new SaveBox(position,box4Position,w,h,4,SAVE_BOX_4);
-            box5Position = new Vector3f(position).add(new Vector3f(-17.0f,93.0f,0.0f));
-            save_box_5 = new SaveBox(position,box5Position,w,h,5,SAVE_BOX_5);
-            saveBoxes.addAll(Arrays.asList(save_box_1,save_box_2,save_box_3,save_box_4,save_box_5));
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        saveBoxes = new ArrayList<>();
+        box1Position = new Vector3f(position).add(new Vector3f(-17.0f,-75.0f,0.0f));
+        save_box_1 = new SaveBox(position,box1Position,w,h,1,SAVE_BOX_1);
+        box2Position = new Vector3f(position).add(new Vector3f(-17.0f,-33.0f,0.0f));
+        save_box_2 = new SaveBox(position,box2Position,w,h,2,SAVE_BOX_2);
+        box3Position = new Vector3f(position).add(new Vector3f(-17.0f,9.0f,0.0f));
+        save_box_3 = new SaveBox(position,box3Position,w,h,3,SAVE_BOX_3);
+        box4Position = new Vector3f(position).add(new Vector3f(-17.0f,51.0f,0.0f));
+        save_box_4 = new SaveBox(position,box4Position,w,h,4,SAVE_BOX_4);
+        box5Position = new Vector3f(position).add(new Vector3f(-17.0f,93.0f,0.0f));
+        save_box_5 = new SaveBox(position,box5Position,w,h,5,SAVE_BOX_5);
+        saveBoxes.addAll(Arrays.asList(save_box_1,save_box_2,save_box_3,save_box_4,save_box_5));
     }
 
     public void update(Vector3f pixel, SaveData saveData, List<Character> allies){
@@ -174,34 +169,18 @@ public class SavePad {
                                     personStructList.add(personStruct);
                                 }
                                 Default.getCurrentData().setPersonStructs(personStructList);
-                                // запимываем текстуры ландшафта
-                                Texture texture = Generator.getHeightMap();
-                                texture.saveImage("cutSceneMap" + boxNumber +".png");
-
-                                File fileDirect = new File("./data/save/data");
-                                File saveFile = new File(fileDirect, "saveGame" + boxNumber + ".ser");
-                                if (saveFile.exists()) {
-                                    if (saveFile.delete()) {
-                                        FileOutputStream fileOutputStream = null;
-                                        try {
-                                            fileOutputStream = new FileOutputStream("./data/save/data/saveGame" + boxNumber + ".ser");
-                                            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                                            objectOutputStream.writeObject(Default.getCurrentData());
-                                            objectOutputStream.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                } else {
-                                    FileOutputStream fileOutputStream = null;
-                                    try {
-                                        fileOutputStream = new FileOutputStream("./data/save/data/saveGame" + boxNumber + ".ser");
-                                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                                        objectOutputStream.writeObject(Default.getCurrentData());
-                                        objectOutputStream.close();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                                // сохраняем состояние мира и карту высот в БД
+                                byte[] heightmap = null;
+                                try {
+                                    Texture texture = Generator.getHeightMap();
+                                    heightmap = texture == null ? null : texture.toPng();
+                                } catch (IllegalStateException e) {
+                                    Logger.error("Failed to export heightmap for slot " + boxNumber + ": " + e.getMessage());
+                                }
+                                try {
+                                    Saves.repository().save(boxNumber, Default.getCurrentData(), heightmap);
+                                } catch (SaveException e) {
+                                    Logger.error("Failed to save slot " + boxNumber, e);
                                 }
 
                                 for(SaveBox saveBox : saveBoxes){

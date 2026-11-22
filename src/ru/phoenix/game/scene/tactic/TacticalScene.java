@@ -4,7 +4,6 @@ import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.WindowConfig;
-import ru.phoenix.core.frame.BaseRenderFrame;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
@@ -31,25 +30,23 @@ import ru.phoenix.game.logic.movement.MousePicker;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.scene.Scene;
+import ru.phoenix.game.hud.inventory.InventoryHUD;
 
-import org.lwjgl.BufferUtils;
-
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_I;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.*;
 import static ru.phoenix.core.config.Constants.*;
 
 public class TacticalScene implements Scene {
 
     private List<Scene> scenes;
     private List<Character> allies;
+    private Character selectedCharacter; // постоянно выбранный персонаж (ЛКМ)
     private float currentHeight;
 
     private Skybox skybox;
@@ -165,30 +162,9 @@ public class TacticalScene implements Scene {
     }
 
     @Override
-    public void update(){
+    public void update(float deltaTime){
         GameController.getInstance().update();
-        
-        // Читаем пиксель из буфера КАЖДЫЙ КАДР (для наведения и клика)
-        glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
-        glReadBuffer(GL_COLOR_ATTACHMENT1);
-        
-        int[] viewport = new int[4];
-        glGetIntegerv(GL_VIEWPORT, viewport);
-        FloatBuffer data = BufferUtils.createFloatBuffer(4);
-        glReadPixels(
-                (int) Input.getInstance().getCursorPosition().getX(),
-                viewport[3] - (int) Input.getInstance().getCursorPosition().getY(),
-                1, 1, GL_RGBA, GL_FLOAT, data
-        );
-        
-        Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
-        Pixel.setPixel(pixelData);
-        
-        System.out.println("[TacticalScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
-        System.out.println("[TacticalScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
+
         Vector3f pixel = Pixel.getPixel();
         cursorHud.update(studyArea.getEnemies());
 
@@ -215,9 +191,40 @@ public class TacticalScene implements Scene {
                 Default.setShowAlpha(!Default.isShowAlpha());
             }
 
+            // Открытие/закрытие инвентаря по клавише I
+            if (Input.getInstance().isKeyPressed(GLFW_KEY_I)) {
+                Logger.info("[Inventory] I pressed, selected=" + (selectedCharacter != null ? selectedCharacter.getClass().getSimpleName() : "null") + ", isOpen=" + InventoryHUD.getInstance().isOpen());
+                if (InventoryHUD.getInstance().isOpen()) {
+                    InventoryHUD.getInstance().close();
+                    Logger.info("[Inventory] Closed");
+                } else if (selectedCharacter != null) {
+                    InventoryHUD.getInstance().open(selectedCharacter);
+                    Logger.info("[Inventory] Opened for " + selectedCharacter.getClass().getSimpleName());
+                } else {
+                    Logger.info("[Inventory] No selected character");
+                }
+            }
+
+            // Обновление инвентаря если открыт
+            if (InventoryHUD.getInstance().isOpen()) {
+                InventoryHUD.getInstance().update();
+            }
+
             Cell targetElement = null;
 
             if (GameController.getInstance().isLeftClick()) {
+                float pixelId = pixel.getX();
+                // Проверяем клик по персонажу
+                boolean clickedOnCharacter = false;
+                for (Character ally : allies) {
+                    if (ally.getId() == pixelId) {
+                        selectedCharacter = ally;
+                        clickedOnCharacter = true;
+                        break;
+                    }
+                }
+                
+                // Далее — стандартная обработка клика для движения
                 mousePicker.update(studyArea.getGrid());
                 Vector3f endPos = mousePicker.getCurrentTerrainPoint();
                 if (endPos.getX() < 0) endPos.setX(0);
@@ -228,6 +235,10 @@ public class TacticalScene implements Scene {
                 if (targetElement.isBlocked() || targetElement.isOccupied()) {
                     targetElement = null;
                 } else {
+                    // Клик в пустое место — сбрасываем выбор персонажа ТОЛЬКО если не кликнули по персонажу
+                    if (!clickedOnCharacter) {
+                        selectedCharacter = null;
+                    }
                     if (pixel.getX() == 0.0f && pixel.getY() == 0.0f && pixel.getZ() == 0.0f) {
                         graundAim.update(targetElement.getModifiedPosition(), targetElement.isBevel(), targetElement.getBevelAngle());
                         graundAim.setVisible(true);
@@ -430,6 +441,11 @@ public class TacticalScene implements Scene {
         }
 
         cursorHud.draw();
+
+        // Отрисовка инвентаря — рисуется через мировые координаты (аналогично SelfIndicators)
+        if (InventoryHUD.getInstance().isOpen()) {
+            InventoryHUD.getInstance().draw(shaderSprite);
+        }
     }
 
     private void drawElement(boolean battle, List<Cell> elements){
@@ -575,13 +591,19 @@ public class TacticalScene implements Scene {
     }
 
     private Vector3f findFirePlace(int x, int z){
-        if(studyArea.getGrid()[x][z].isGrass() || studyArea.getGrid()[x][z].isBlocked() ||studyArea.getGrid()[x][z].isWater() || studyArea.getGrid()[x][z].isRoad() || studyArea.getGrid()[x][z].isBevel()){
-            int newX = Math.round((float)(this.x-3) + ((float)Math.random() * 6.0f));
-            int newZ = Math.round((float)(this.z-3) + ((float)Math.random() * 6.0f));
-            return findFirePlace(newX,newZ);
-        }else{
-            return new Vector3f(studyArea.getGrid()[x][z].getModifiedPosition());
+        int maxAttempts = 100;
+        for (int i = 0; i < maxAttempts; i++) {
+            if (!studyArea.getGrid()[x][z].isGrass() && !studyArea.getGrid()[x][z].isBlocked() &&
+                !studyArea.getGrid()[x][z].isWater() && !studyArea.getGrid()[x][z].isRoad() &&
+                !studyArea.getGrid()[x][z].isBevel()) {
+                return new Vector3f(studyArea.getGrid()[x][z].getModifiedPosition());
+            }
+            x = Math.round((float)(this.x - 3) + ((float) Math.random() * 6.0f));
+            z = Math.round((float)(this.z - 3) + ((float) Math.random() * 6.0f));
         }
+        // Если не нашли подходящее место за 100 попыток, возвращаем текущую позицию
+        Logger.warn("[TacticalScene] Could not find suitable fire place after " + maxAttempts + " attempts");
+        return new Vector3f(studyArea.getGrid()[x][z].getModifiedPosition());
     }
 
     private int getAimDrawConfig(){

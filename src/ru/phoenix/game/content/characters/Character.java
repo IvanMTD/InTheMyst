@@ -5,6 +5,8 @@ import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.math.Projection;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.content.inventory.Backpack;
+import ru.phoenix.game.content.inventory.Equipment;
 import ru.phoenix.game.datafile.PersonStruct;
 import ru.phoenix.game.datafile.SaveGame;
 import ru.phoenix.game.logic.battle.BattleGround;
@@ -78,6 +80,9 @@ public interface Character {
     // характеристики
     Characteristic getCharacteristic();
     void setCharacteristic(Characteristic characteristic);
+    // инвентарь
+    Backpack getBackpack();
+    Equipment getEquipment();
     // контрль положения персонажа
     Vector3f getPosition();
     void setPosition(Vector3f position);

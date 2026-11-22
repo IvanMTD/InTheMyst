@@ -2,7 +2,6 @@ package ru.phoenix.game.content.object;
 
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.kernel.Camera;
-import ru.phoenix.core.kernel.CoreEngine;
 import ru.phoenix.core.kernel.Input;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.ImageAnimLoader;
@@ -366,25 +365,26 @@ public abstract class ObjectControl {
                 if (isBoard()) {
                     if (isActive()) {
                         if (!isJump() && !sprite.isBlock()) {
-                            if (counter > sprite.getCondition()) {
+                            if (counter > sprite.getCondition() / 60.0f) {
                                 sprite.nextFrame();
                                 counter = 0.0f;
                             }
                         }
                     } else {
-                        if (counter > 10.0f + Math.random() * 10.0f) {
+                        float threshold = (10.0f + (float) Math.random() * 10.0f) / 60.0f;
+                        if (counter > threshold) {
                             sprite.nextFrame();
                             counter = 0.0f;
                         }
                     }
                 } else {
-                    if (counter > 20.0f) {
+                    if (counter > 20.0f / 60.0f) {
                         sprite.nextFrame();
                         counter = 0.0f;
                     }
                 }
                 float tik = (float) glfwGetTime() - lastCount;
-                counter += (tik * CoreEngine.getFps());
+                counter += tik;
                 lastCount = (float) glfwGetTime();
             }
         }
@@ -446,25 +446,26 @@ public abstract class ObjectControl {
                 if (isBoard()) {
                     if (isActive()) {
                         if (!isJump() && !sprite.isBlock()) {
-                            if (counter > sprite.getCondition()) {
+                            if (counter > sprite.getCondition() / 60.0f) {
                                 sprite.nextFrame();
                                 counter = 0.0f;
                             }
                         }
                     } else {
-                        if (counter > 10.0f + Math.random() * 10.0f) {
+                        float threshold = (10.0f + (float) Math.random() * 10.0f) / 60.0f;
+                        if (counter > threshold) {
                             sprite.nextFrame();
                             counter = 0.0f;
                         }
                     }
                 } else {
-                    if (counter > 20.0f) {
+                    if (counter > 20.0f / 60.0f) {
                         sprite.nextFrame();
                         counter = 0.0f;
                     }
                 }
                 float tik = (float) glfwGetTime() - lastCount;
-                counter += (tik * CoreEngine.getFps());
+                counter += tik;
                 lastCount = (float) glfwGetTime();
             }
 

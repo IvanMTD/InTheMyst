@@ -6,16 +6,14 @@ import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.core.debug.Logger;
+import ru.phoenix.game.datafile.SaveException;
 import ru.phoenix.game.datafile.SaveGame;
+import ru.phoenix.game.datafile.Saves;
 import ru.phoenix.game.hud.elements.HeadsUpDisplay;
 import ru.phoenix.game.hud.elements.strucet.Button;
 import ru.phoenix.game.logic.element.Pixel;
 import ru.phoenix.game.property.TextDisplay;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
@@ -32,22 +30,10 @@ public class SaveBox {
     private boolean selected;
     private SaveGame saveGame;
 
-    public SaveBox(Vector3f butPos, Vector3f infPos, float width, float height, int number, float id) throws IOException, ClassNotFoundException {
+    public SaveBox(Vector3f butPos, Vector3f infPos, float width, float height, int number, float id) {
         size = 0.7f;
-        saveGame = new SaveGame();
-        File fileDirect = new File("./data/save/data");
-        File saveFile = new File(fileDirect,"saveGame" + number + ".ser");
-        boolean empty = !saveFile.exists();
-        if(saveFile.exists()){
-            FileInputStream fileInputStream = null;
-            fileInputStream = new FileInputStream("./data/save/data/saveGame" + number + ".ser");
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            saveGame = (SaveGame) objectInputStream.readObject();
-            objectInputStream.close();
-        }else{
-            saveGame = null;
-        }
-
+        saveGame = loadSaveGame(number);
+        boolean empty = saveGame == null;
         this.number = number;
         this.id = id;
         Texture texture = new Texture2D();
@@ -66,6 +52,15 @@ public class SaveBox {
             information.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
         }
         information.setPosition(new Vector3f(infPos).add(new Vector3f(0.0f,0.0f,0.01f)));
+    }
+
+    private static SaveGame loadSaveGame(int number) {
+        try {
+            return Saves.repository().load(number);
+        } catch (SaveException e) {
+            Logger.error("Failed to load save slot " + number + ": " + e.getMessage());
+            return null;
+        }
     }
 
     public void update(Vector3f pixel, boolean leftClick){

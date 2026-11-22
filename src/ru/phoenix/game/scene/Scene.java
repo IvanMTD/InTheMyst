@@ -11,7 +11,7 @@ public interface Scene {
     void reInit();
     void over();
     void preset(float currentHeight, List<Character> allies);
-    void update();
+    void update(float deltaTime);
     void draw();
     void draw(Shader shader, boolean isShadow);
     int getSceneId();

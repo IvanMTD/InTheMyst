@@ -12,7 +12,6 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengles.GLES30.GL_DRAW_FRAMEBUFFER;
 
 public class MapRenderFrame implements Framework {
     private FrameBufferObject multisample;
@@ -20,8 +19,8 @@ public class MapRenderFrame implements Framework {
     private Shader shader;
 
     public MapRenderFrame(){
-        multisample = new MultisampleFrameBuffer(2);
-        render = new OutputFrameBuffer(2);
+        multisample = new MultisampleFrameBuffer(1);
+        render = new OutputFrameBuffer(1);
         shader = new Shader();
     }
 
@@ -59,7 +58,7 @@ public class MapRenderFrame implements Framework {
         glBindFramebuffer(GL_FRAMEBUFFER,0);
 
         Default.setMapFrameStart(true);
-        Default.setMapTextureId(render.getTexture(1));
+        Default.setMapTextureId(render.getTexture());
     }
 
     @Override

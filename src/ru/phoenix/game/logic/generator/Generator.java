@@ -13,6 +13,10 @@ import ru.phoenix.game.datafile.SaveData;
 import ru.phoenix.game.logic.element.grid.Cell;
 import ru.phoenix.game.logic.generator.components.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,7 +100,7 @@ public class Generator {
         // определяем алгоритм генерации - конец
     }
 
-    public static RandomArena loadCutArea(SaveData saveData, int slot){
+    public static RandomArena loadCutArea(SaveData saveData, int slot, byte[] heightmapPng){
         checkElements();
 
         Mesh mesh;
@@ -107,8 +111,7 @@ public class Generator {
 
         grid = HeightMap.get(saveData);
 
-        heightMap = new Texture2D();
-        heightMap.setup(null,"./data/save/image/cutSceneMap" + slot + ".png", GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
+        heightMap = createHeightMap(slot, heightmapPng);
 
         mesh = ModelCreater.start((int)saveData.getBiom() - 6, grid, getTotalMapWidth(), getTotalMapHeight(), graundTexture);
         Reservoir waterReservoir = null;
@@ -123,6 +126,30 @@ public class Generator {
         sprites.addAll(trees);
         sprites.addAll(grasses);
         return new RandomArena(grid, model, waterReservoir, blocks, sprites, getTotalMapWidth(), getTotalMapHeight(),saveData.getBiom());
+    }
+
+    /**
+     * Карта высот сохранения берётся из БД (PNG-байты).
+     * Файл на диске используется только как аварийный путь для старых сохранений,
+     * которые не удалось импортировать.
+     */
+    private static Texture createHeightMap(int slot, byte[] png) {
+        Texture2D texture = new Texture2D();
+        if (png != null && png.length > 0) {
+            texture.setupPng(png, GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
+            return texture;
+        }
+        Path legacy = Paths.get("./data/save/image", "cutSceneMap" + slot + ".png");
+        Logger.warn("Heightmap of slot " + slot + " is missing in H2, fallback to " + legacy);
+        if (!Files.exists(legacy)) {
+            throw new IllegalStateException("Heightmap is missing for save slot " + slot);
+        }
+        try {
+            texture.setupPng(Files.readAllBytes(legacy), GL_SRGB_ALPHA, GL_CLAMP_TO_EDGE);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to read legacy heightmap for save slot " + slot, e);
+        }
+        return texture;
     }
 
     public static PreparedArena getPreparedArea(float currentHeight, int w, int h, SaveData saveData){

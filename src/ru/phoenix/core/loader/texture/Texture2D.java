@@ -4,12 +4,15 @@ import ru.phoenix.core.loader.ImageLoader;
 import ru.phoenix.core.math.Vector3f;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class Texture2D implements Texture {
@@ -31,16 +34,7 @@ public class Texture2D implements Texture {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //GL_SRGB_ALPHA
-        glTexImage2D(GL_TEXTURE_2D, 0, rgbaConfig, ImageLoader.getWidth(), ImageLoader.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, ImageLoader.getBuf());
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        setFilter(filter);
-
-        width = ImageLoader.getWidth();
-        height = ImageLoader.getHeight();
-
-        glBindTexture(GL_TEXTURE_2D, 0);
+        upload(rgbaConfig, filter);
     }
 
     @Override
@@ -52,17 +46,7 @@ public class Texture2D implements Texture {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //GL_SRGB_ALPHA
-        glTexImage2D(GL_TEXTURE_2D, 0, rgbaConfig, ImageLoader.getWidth(), ImageLoader.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, ImageLoader.getBuf());
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        setFilter(filter);
-
-        width = ImageLoader.getWidth();
-        height = ImageLoader.getHeight();
-        imageLine = ImageLoader.getImageLine();
-
-        glBindTexture(GL_TEXTURE_2D, 0);
+        upload(rgbaConfig, filter);
     }
 
     @Override
@@ -74,7 +58,24 @@ public class Texture2D implements Texture {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //GL_SRGB_ALPHA
+        upload(rgbaConfig, filter);
+    }
+
+    /**
+     * Создание текстуры из PNG в памяти (карта высот из H2).
+     * Запоминает пиксели, чтобы текстуру можно было снова сохранить при перезаписи слота.
+     */
+    public void setupPng(byte[] png, int rgbaConfig, int filter) {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        try {
+            ImageLoader.load(png);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load heightmap image", e);
+        }
+        upload(rgbaConfig, filter);
+    }
+
+    private void upload(int rgbaConfig, int filter) {
         glTexImage2D(GL_TEXTURE_2D, 0, rgbaConfig, ImageLoader.getWidth(), ImageLoader.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, ImageLoader.getBuf());
         glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -92,20 +93,33 @@ public class Texture2D implements Texture {
         File fileDirection = new File("./data/save/image");
         File saveData = new File(fileDirection,fileName);
 
-        BufferedImage bufferedImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+        try {
+            Files.write(saveData.toPath(), toPng());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public byte[] toPng() {
+        if (imageLine == null || width <= 0 || height <= 0) {
+            throw new IllegalStateException("Texture has no pixel data to export as PNG");
+        }
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int index = 0;
-        for(int h=0;h<height; h++){
+        for(int h=0; h<height; h++){
             for(int w=0; w<width; w++){
-                Color color = new Color((int)imageLine[index].getR(),(int)imageLine[index].getG(),(int)imageLine[index].getB());
-                bufferedImage.setRGB(w, h,color.getRGB());
-                index++;
+                Vector3f pixel = imageLine[index++];
+                Color color = new Color((int)pixel.getR(), (int)pixel.getG(), (int)pixel.getB());
+                bufferedImage.setRGB(w, h, color.getRGB());
             }
         }
 
-        try {
-            ImageIO.write(bufferedImage,"png",saveData);
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            ImageIO.write(bufferedImage, "png", out);
+            return out.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Failed to encode texture as PNG", e);
         }
     }
 
@@ -131,6 +145,32 @@ public class Texture2D implements Texture {
     public int getHeight() {
         return height;
     }
+
+    /** Создать текстуру из массивки пикселей (ARGB формат) */
+    public static Texture2D createTextureFromPixels(int[] pixels, int width, int height) {
+        Texture2D texture = new Texture2D();
+        texture.width = width;
+        texture.height = height;
+
+        // Конвертируем ARGB int[] в ByteBuffer
+        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(width * height * 4);
+        buffer.order(java.nio.ByteOrder.nativeOrder());
+        for (int pixel : pixels) {
+            buffer.put((byte) ((pixel >> 16) & 0xFF)); // R
+            buffer.put((byte) ((pixel >> 8) & 0xFF));  // G
+            buffer.put((byte) (pixel & 0xFF));          // B
+            buffer.put((byte) ((pixel >> 24) & 0xFF));  // A
+        }
+        buffer.flip();
+
+        glBindTexture(GL_TEXTURE_2D, texture.textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        return texture;
+    }
 }
-
-

@@ -51,6 +51,11 @@ public class TextureCubeMap implements Texture {
 
     }
 
+    @Override
+    public byte[] toPng() {
+        throw new UnsupportedOperationException("Cube map cannot be exported as PNG");
+    }
+
     private void setFilter(int filter) {
         // GL_REPEAT (повторение текстуры), GL_MIRRORED_REPEAT (зеркальное повторение текстуры), GL_CLAMP_TO_EDGE(обрезать у празрачных текстур края)
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, filter);

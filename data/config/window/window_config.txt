@@ -1,6 +1,6 @@
 full_screen false
-window_width 1280
-window_height 720
+window_width 1920
+window_height 1080
 samples 1
 gamma 2.2
 contrast 0.2

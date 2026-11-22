@@ -227,6 +227,8 @@ public class Camera {
                 }
             }
             // УПРОВЛЕНИЕ ПОВОРОТАМИ - НАЧАЛО
+            boolean yawChanged = (turn != 0.0f);
+
             float temp = turnCounter;
             turnCounter += turn;
             if(turnCounter >= 90.0f){
@@ -248,11 +250,18 @@ public class Camera {
                 turn = 0.0f;
                 turnButtonBlock = false;
             }
-            direction.setX((float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))));
-            direction.setY((float) Math.sin(Math.toRadians(pitch)));
-            direction.setZ((float) (Math.cos(Math.toRadians(pitch)) * Math.sin(Math.toRadians(yaw))));
-            pos = pos.add(front.normalize().mul(hypotenuse)).add(direction.normalize().mul(-hypotenuse));
-            front = direction.normalize();
+
+            if (yawChanged) {
+                direction.setX((float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))));
+                direction.setY((float) Math.sin(Math.toRadians(pitch)));
+                direction.setZ((float) (Math.cos(Math.toRadians(pitch)) * Math.sin(Math.toRadians(yaw))));
+
+                // Точка взгляда — куда камера смотрела ДО поворота
+                Vector3f target = new Vector3f(pos).add(new Vector3f(front).normalize().mul(hypotenuse));
+                // Новая позиция камеры: отодвигаемся от target в новом направлении
+                pos = new Vector3f(target).sub(new Vector3f(direction).mul(hypotenuse));
+                front = new Vector3f(direction).normalize();
+            }
             // УПРОВЛЕНИЕ ПОВОРОТАМИ - КОНЕЦ
             // КОНТРОЛЬ ОСТОНОВКИ КАМЕРЫ - НАЧАЛО
             if(getPos().add(getFront().mul(getHypotenuse())).getX() < minW){

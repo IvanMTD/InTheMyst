@@ -17,14 +17,21 @@ import static org.lwjgl.opengl.GL31.glUniformBlockBinding;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 public class Shader {
+    
+    /** Исключение при ошибке компиляции/линковки шейдера */
+    public static class ShaderCompilationException extends RuntimeException {
+        public ShaderCompilationException(String message) {
+            super(message);
+        }
+    }
+
     private int program;
     private Map<String, Integer> uniformLocationCache;
 
     public Shader(){
         program = glCreateProgram();
         if(program == 0){
-            System.err.println("Shader creation failed");
-            System.exit(1);
+            throw new ShaderCompilationException("Shader creation failed");
         }
         uniformLocationCache = new HashMap<>();
     }
@@ -52,8 +59,7 @@ public class Shader {
         int shader = glCreateShader(type);
 
         if(shader == 0) {
-            System.err.println(this.getClass().getName() + " Shader creation failed");
-            System.exit(1);
+            throw new ShaderCompilationException(this.getClass().getName() + " Shader creation failed");
         }
         glShaderSource(shader, text);
         glCompileShader(shader);
@@ -64,13 +70,13 @@ public class Shader {
     private void check(int data, boolean isProgram){
         if(isProgram){
             if(glGetProgrami(data,GL_LINK_STATUS) == 0){
-                System.err.println(glGetProgramInfoLog(program,1024));
-                System.exit(1);
+                String log = glGetProgramInfoLog(program,1024);
+                throw new ShaderCompilationException("Shader program link failed: " + log);
             }
         }else {
             if (glGetShaderi(data, GL_COMPILE_STATUS) == 0) {
-                System.err.println(glGetShaderInfoLog(data, 1024));
-                System.exit(1);
+                String log = glGetShaderInfoLog(data, 1024);
+                throw new ShaderCompilationException("Shader compile failed: " + log);
             }
         }
     }
@@ -124,27 +130,22 @@ public class Shader {
         glDeleteProgram(program);
         program = glCreateProgram();
         if(program == 0){
-            System.err.println("Shader creation failed");
-            System.exit(1);
+            throw new ShaderCompilationException("Shader creation failed");
         }
     }
 
     private static String ShaderLoader(String path){
 
         StringBuilder shaderSource = new StringBuilder();
-        BufferedReader shaderReader;
 
-        try {
-            shaderReader = new BufferedReader(new FileReader(path));
+        try (BufferedReader shaderReader = new BufferedReader(new FileReader(path))) {
             String line;
             while((line = shaderReader.readLine()) != null) {
                 shaderSource.append(line).append("\n");
             }
-            shaderReader.close();
         }
         catch(Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+            throw new ShaderCompilationException("Failed to load shader from " + path + ": " + e.getMessage());
         }
 
         return shaderSource.toString();

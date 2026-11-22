@@ -12,14 +12,18 @@ public class ImageAnimation {
     private int currentFrame;
     private int currentAnimation;
 
-    private int condition;
+    /** Время в секундах между сменой кадров (по умолчанию 0.33с ≈ 30 FPS анимации) */
+    private float frameInterval;
+    private float accumulatedTime;
+    
     private boolean block;
 
     public ImageAnimation(){
         frames = new ArrayList<>();
         currentFrame = 1;
         currentAnimation = 1;
-        condition = 20;
+        frameInterval = 0.33f; // ~30 FPS для анимации
+        accumulatedTime = 0.0f;
         block = false;
     }
 
@@ -31,6 +35,20 @@ public class ImageAnimation {
         currentAnimation = animation;
     }
 
+    /**
+     * Обновляет анимацию с учётом deltaTime.
+     * Автоматически переключает кадр когда накоплено достаточно времени.
+     */
+    public void update(float deltaTime) {
+        if (block) return;
+        accumulatedTime += deltaTime;
+        if (accumulatedTime >= frameInterval) {
+            accumulatedTime -= frameInterval;
+            nextFrame();
+        }
+    }
+
+    /** Переключает на следующий кадр (без учёта времени) */
     public void nextFrame(){
         int size = 0;
         for(ImageFrame frame : frames){
@@ -64,12 +82,24 @@ public class ImageAnimation {
         return frames.get(0).getVbo();
     }
 
+    /** Устанавливает интервал между кадрами в секундах */
     public void setCondition(int condition){
-        this.condition = condition;
+        // Обратная совместимость: condition — это количество кадров при ~60 FPS
+        // 60 FPS = 0.0167s на кадр, condition=20 → 20*0.0167 ≈ 0.33s
+        this.frameInterval = condition / 60.0f;
     }
 
     public int getCondition(){
-        return condition;
+        return (int)(frameInterval * 60.0f);
+    }
+
+    /** Устанавливает интервал между кадрами в секундах */
+    public void setFrameInterval(float interval) {
+        this.frameInterval = interval;
+    }
+
+    public float getFrameInterval() {
+        return frameInterval;
     }
 
     public boolean isBlock() {

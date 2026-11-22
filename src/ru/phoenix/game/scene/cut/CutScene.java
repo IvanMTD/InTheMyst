@@ -4,6 +4,7 @@ import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
 import ru.phoenix.core.config.WindowConfig;
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.texture.Skybox;
@@ -21,6 +22,7 @@ import ru.phoenix.game.content.object.fire.SimpleFire;
 import ru.phoenix.game.content.stage.StudyArea;
 import ru.phoenix.game.datafile.PersonStruct;
 import ru.phoenix.game.datafile.SaveData;
+import ru.phoenix.game.datafile.Saves;
 import ru.phoenix.game.datafile.TimeElement;
 import ru.phoenix.game.hud.assembled.Cursor;
 import ru.phoenix.game.logic.element.Pixel;
@@ -31,6 +33,7 @@ import ru.phoenix.game.property.GameController;
 import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.Scene;
 import ru.phoenix.game.scene.cut.detail.CampInterface;
+import ru.phoenix.game.hud.inventory.InventoryHUD;
 
 import org.lwjgl.BufferUtils;
 import java.nio.FloatBuffer;
@@ -39,6 +42,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_I;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -78,6 +82,8 @@ public class CutScene implements Scene {
     private Skybox skybox;
     private StudyArea studyArea;
     private Cursor cursor;
+
+    private Character selectedCharacter; // выбранный персонаж для инвентаря
 
     private float currentHeight;
     private boolean active;
@@ -261,7 +267,9 @@ public class CutScene implements Scene {
 
     private void load(){
         Default.setMapFrameStart(false);
-        studyArea = Generator.loadCutArea(Default.getCurrentData().getCampLocation(),Default.getSlot());
+        int slot = Default.getSlot();
+        studyArea = Generator.loadCutArea(Default.getCurrentData().getCampLocation(), slot,
+                Saves.repository().loadHeightmap(slot));
         if(currentInnerScene == CAMP_SCENE){
             Block campFire = new CampFire(0.1f);
             x = w / 2;
@@ -280,13 +288,17 @@ public class CutScene implements Scene {
     }
 
     private Vector3f findFirePlace(int x, int z){
-        if(studyArea.getGrid()[x][z].isGrass()){
-            int newX = Math.round((float)(this.x-3) + ((float)Math.random() * 6.0f));
-            int newZ = Math.round((float)(this.z-3) + ((float)Math.random() * 6.0f));
-            return findFirePlace(newX,newZ);
-        }else{
-            return new Vector3f(studyArea.getGrid()[x][z].getModifiedPosition());
+        int maxAttempts = 100;
+        for (int i = 0; i < maxAttempts; i++) {
+            if (!studyArea.getGrid()[x][z].isGrass()) {
+                return new Vector3f(studyArea.getGrid()[x][z].getModifiedPosition());
+            }
+            x = Math.round((float)(this.x - 3) + ((float) Math.random() * 6.0f));
+            z = Math.round((float)(this.z - 3) + ((float) Math.random() * 6.0f));
         }
+        // Если не нашли подходящее место за 100 попыток, возвращаем текущую позицию
+        Logger.warn("[CutScene] Could not find suitable fire place after " + maxAttempts + " attempts");
+        return new Vector3f(studyArea.getGrid()[x][z].getModifiedPosition());
     }
 
 
@@ -314,7 +326,7 @@ public class CutScene implements Scene {
     }
 
     @Override
-    public void update() {
+    public void update(float deltaTime) {
         GameController.getInstance().update();
         
         // Читаем пиксель из буфера КАЖДЫЙ КАДР (для наведения и клика)
@@ -332,16 +344,16 @@ public class CutScene implements Scene {
 
         Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
         Pixel.setPixel(pixelData);
-        
-        System.out.println("[CutScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
-        System.out.println("[CutScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
+
+        Logger.debug("[CutScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
+        Logger.debug("[CutScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
+
         Vector3f pixel = Pixel.getPixel();
         boolean leftClick = GameController.getInstance().isLeftClick();
-        
-        System.out.println("[CutScene] Current pixel: " + pixel.getX() + ", " + pixel.getY() + ", " + pixel.getZ() + ", leftClick: " + leftClick);
+
+        Logger.debug("[CutScene] Current pixel: " + pixel.getX() + ", " + pixel.getY() + ", " + pixel.getZ() + ", leftClick: " + leftClick);
         
         cursor.update(null);
 
@@ -487,6 +499,38 @@ public class CutScene implements Scene {
                 case 1:
                     Camera.getInstance().update(0.0f,w,0.0f,h,studyArea.getGrid());
                     campInterface.update(pixel,GameController.getInstance().isLeftClick(),saveData,allies);
+                    
+                    // Обработка клика по персонажам
+                    if (GameController.getInstance().isLeftClick()) {
+                        float pixelId = pixel.getX();
+                        for (Character ally : allies) {
+                            if (ally.getId() == pixelId) {
+                                selectedCharacter = ally;
+                                Logger.info("[CutScene] Selected character: " + ally.getClass().getSimpleName());
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Открытие/закрытие инвентаря по клавише I
+                    if (Input.getInstance().isKeyPressed(GLFW_KEY_I)) {
+                        Logger.info("[CutScene Inventory] I pressed, selected=" + (selectedCharacter != null ? selectedCharacter.getClass().getSimpleName() : "null") + ", isOpen=" + InventoryHUD.getInstance().isOpen());
+                        if (InventoryHUD.getInstance().isOpen()) {
+                            InventoryHUD.getInstance().close();
+                            Logger.info("[CutScene Inventory] Closed");
+                        } else if (selectedCharacter != null) {
+                            InventoryHUD.getInstance().open(selectedCharacter);
+                            Logger.info("[CutScene Inventory] Opened for " + selectedCharacter.getClass().getSimpleName());
+                        } else {
+                            Logger.info("[CutScene Inventory] No selected character");
+                        }
+                    }
+                    
+                    // Обновление инвентаря если открыт
+                    if (InventoryHUD.getInstance().isOpen()) {
+                        InventoryHUD.getInstance().update();
+                    }
+                    
                     float currentTime = (float)glfwGetTime();
                     float delta = currentTime - lastTime;
                     lastTime = currentTime;
@@ -564,6 +608,11 @@ public class CutScene implements Scene {
         }
 
         cursor.draw();
+        
+        // Отрисовка инвентаря
+        if (InventoryHUD.getInstance().isOpen()) {
+            InventoryHUD.getInstance().draw(shaderSprite);
+        }
     }
 
     @Override

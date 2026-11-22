@@ -96,7 +96,7 @@ public class LogoScene implements Scene {
     }
 
     @Override
-    public void update(){
+    public void update(float dt){
         float currentTime = (float)glfwGetTime();
         float deltaTime = currentTime - lastTime;
         lastTime = currentTime;

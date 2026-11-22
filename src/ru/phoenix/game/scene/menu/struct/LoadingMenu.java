@@ -2,10 +2,13 @@ package ru.phoenix.game.scene.menu.struct;
 
 import ru.phoenix.core.config.Default;
 import ru.phoenix.core.config.Time;
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.kernel.Window;
 import ru.phoenix.core.loader.text.SymbolStruct;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.datafile.SaveException;
+import ru.phoenix.game.datafile.Saves;
 import ru.phoenix.game.hud.elements.HeadsUpDisplay;
 import ru.phoenix.game.hud.elements.strucet.Board;
 import ru.phoenix.game.hud.elements.strucet.Button;
@@ -13,8 +16,6 @@ import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.menu.elements.LoadingElement;
 import ru.phoenix.game.scene.menu.storage.MainMenuTextures;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,11 +64,7 @@ public class LoadingMenu {
     private void initHudElements(){
         setupBackground();
         setupTitle();
-        try {
-            setupLoadingBox();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        setupLoadingBox();
         setupButtons();
     }
 
@@ -91,7 +88,7 @@ public class LoadingMenu {
         title.setTextColor(new Vector3f(0.0f,0.0f,1.0f));
     }
 
-    private void setupLoadingBox() throws IOException, ClassNotFoundException {
+    private void setupLoadingBox() {
         float x = Window.getInstance().getWidth() / 2.0f;
         float y = -(Window.getInstance().getHeight() - Window.getInstance().getHeight() / 2.0f);
         float z = -0.09f;
@@ -213,12 +210,11 @@ public class LoadingMenu {
     public void deleteSaveData(){
         for(LoadingElement box : boxes){
             if(box.isSelected()){
-                File fileDirect = new File("./data/save/data");
-                File saveData = new File(fileDirect,"saveGame" + box.getSaveNum() + ".ser");
-                if(saveData.exists()){
-                    if(saveData.delete()){
-                        box.updateInformation();
-                    }
+                try {
+                    Saves.repository().delete(box.getSaveNum());
+                    box.updateInformation();
+                } catch (SaveException e) {
+                    Logger.error("Failed to delete save slot " + box.getSaveNum(), e);
                 }
                 box.setSelected(false);
             }

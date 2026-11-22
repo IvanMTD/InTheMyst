@@ -1,16 +1,17 @@
 package ru.phoenix.game.scene.menu.elements;
 
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.loader.text.SymbolStruct;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.core.shader.Shader;
+import ru.phoenix.game.datafile.SaveException;
 import ru.phoenix.game.datafile.SaveGame;
+import ru.phoenix.game.datafile.Saves;
 import ru.phoenix.game.hud.elements.HeadsUpDisplay;
 import ru.phoenix.game.hud.elements.strucet.Button;
 import ru.phoenix.game.property.TextDisplay;
 import ru.phoenix.game.scene.menu.storage.MainMenuTextures;
-
-import java.io.*;
 
 import static ru.phoenix.core.config.Constants.TYPING_CENTER;
 
@@ -24,21 +25,10 @@ public class LoadingElement {
 
     private SaveGame saveGame;
 
-    public LoadingElement(Vector3f position, float width, float height, int num, float id) throws IOException, ClassNotFoundException {
+    public LoadingElement(Vector3f position, float width, float height, int num, float id) {
 
-        saveGame = new SaveGame();
-        File fileDirect = new File("./data/save/data");
-        File saveFile = new File(fileDirect,"saveGame" + num + ".ser");
-        boolean empty = !saveFile.exists();
-        if(saveFile.exists()){
-            FileInputStream fileInputStream = null;
-            fileInputStream = new FileInputStream("./data/save/data/saveGame" + num + ".ser");
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            saveGame = (SaveGame) objectInputStream.readObject();
-            objectInputStream.close();
-        }else{
-            saveGame = null;
-        }
+        saveGame = loadSaveGame(num);
+        boolean empty = saveGame == null;
 
         this.num = num;
         this.id = id;
@@ -56,6 +46,15 @@ public class LoadingElement {
             information.setTextColor(new Vector3f(0.0f,0.0f,0.0f));
         }
         information.setPosition(new Vector3f(position).add(new Vector3f(0.0f,0.0f,0.01f)));
+    }
+
+    private static SaveGame loadSaveGame(int num) {
+        try {
+            return Saves.repository().load(num);
+        } catch (SaveException e) {
+            Logger.error("Failed to load save slot " + num + ": " + e.getMessage());
+            return null;
+        }
     }
 
     public void update(Vector3f pixel, boolean leftClick){

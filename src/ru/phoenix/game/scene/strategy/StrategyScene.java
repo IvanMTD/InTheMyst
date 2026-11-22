@@ -1,8 +1,8 @@
 package ru.phoenix.game.scene.strategy;
 
-import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.Constants;
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.debug.Logger;
 import ru.phoenix.core.config.WindowConfig;
 import ru.phoenix.core.kernel.Camera;
 import ru.phoenix.core.kernel.Input;
@@ -222,7 +222,7 @@ public class StrategyScene implements Scene {
     }
 
     @Override
-    public void update() {
+    public void update(float deltaTime) {
         // Читаем пиксель из буфера КАЖДЫЙ КАДР (для наведения и клика)
         glBindFramebuffer(GL_FRAMEBUFFER, BaseRenderFrame.getInstance().getRenderFrameBuffer());
         glReadBuffer(GL_COLOR_ATTACHMENT1);
@@ -238,9 +238,9 @@ public class StrategyScene implements Scene {
 
         Vector3f pixelData = new Vector3f(data.get(0), data.get(1), data.get(2));
         Pixel.setPixel(pixelData);
-        
-        System.out.println("[StrategyScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
-        System.out.println("[StrategyScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
+
+        Logger.debug("[StrategyScene] Mouse pos: " + Input.getInstance().getCursorPosition().getX() + ", " + Input.getInstance().getCursorPosition().getY());
+        Logger.debug("[StrategyScene] Pixel read: " + pixelData.getX() + ", " + pixelData.getY() + ", " + pixelData.getZ());
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
@@ -321,9 +321,10 @@ public class StrategyScene implements Scene {
 
     private boolean checkEvent(){
         boolean check = false;
-        for(float point : eventList){
-            if((point - 0.1f) < m && m < (point + 0.1)){
-                eventList.remove(point);
+        for (int i = 0; i < eventList.size(); i++) {
+            float point = eventList.get(i);
+            if ((point - 0.1f) < m && m < (point + 0.1f)) {
+                eventList.remove(i);
                 check = true;
                 break;
             }

@@ -7,6 +7,8 @@ public interface Texture {
     void setup(float[][] heiMap, int rgbaConfig, int filter);
     void setup(Vector3f[][] heiMap, int rgbaConfig, int filter);
     void saveImage(String fileName);
+    /** Пиксели текстуры в PNG (для сохранения карты высот в БД). */
+    byte[] toPng();
     int getTextureID();
     int getWidth();
     int getHeight();

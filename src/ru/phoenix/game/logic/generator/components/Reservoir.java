@@ -3,8 +3,8 @@ package ru.phoenix.game.logic.generator.components;
 import ru.phoenix.core.buffer.vbo.MeshConfig;
 import ru.phoenix.core.buffer.vbo.VertexBufferObject;
 import ru.phoenix.core.config.Default;
+import ru.phoenix.core.config.Time;
 import ru.phoenix.core.kernel.Camera;
-import ru.phoenix.core.kernel.CoreEngine;
 import ru.phoenix.core.loader.texture.Texture;
 import ru.phoenix.core.loader.texture.Texture2D;
 import ru.phoenix.core.math.Projection;
@@ -38,7 +38,6 @@ public class Reservoir {
     private int column;
 
     private float counter;
-    private float lastCount;
 
     private int textureIndex;
 
@@ -463,7 +462,7 @@ public class Reservoir {
     }
 
     public void update(){
-        if (counter > 20.0f) {
+        if (counter > 20.0f / 60.0f) {
             textureIndex++;
             if(textureIndex >= textureCoordinates.size()){
                 textureIndex = 0;
@@ -473,9 +472,7 @@ public class Reservoir {
 
             counter = 0.0f;
         }
-        float tik = (float) glfwGetTime() - lastCount;
-        counter += (tik * CoreEngine.getFps());
-        lastCount = (float) glfwGetTime();
+        counter += Time.getDeltaTime();
     }
 
     public void draw(Shader shader){

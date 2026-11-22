@@ -8,6 +8,8 @@ import ru.phoenix.core.loader.text.SymbolStruct;
 import ru.phoenix.core.math.Matrix4f;
 import ru.phoenix.core.math.Vector3f;
 import ru.phoenix.game.content.characters.Character;
+import ru.phoenix.game.content.inventory.Backpack;
+import ru.phoenix.game.content.inventory.Equipment;
 import ru.phoenix.game.logic.movement.PathSearchAlgorithm;
 import ru.phoenix.game.property.Characteristic;
 import ru.phoenix.game.hud.assembled.SelfIndicators;
@@ -25,6 +27,9 @@ public abstract class HumanControl {
     private int type;
     // характеристики
     private Characteristic characteristic;
+    // инвентарь
+    private Backpack backpack;
+    private Equipment equipment;
     // управление анимацией персонажа
     private MotionAnimation motionAnimation;
     private List<Cell> wayPoints;
@@ -60,6 +65,9 @@ public abstract class HumanControl {
         this.type = type;
         // характеристики
         characteristic = new Characteristic();
+        // инвентарь
+        backpack = new Backpack();
+        equipment = new Equipment();
         // управление анимацией персонажа
         motionAnimation = new MotionAnimation();
         wayPoints = new ArrayList<>();
@@ -171,6 +179,15 @@ public abstract class HumanControl {
     // управление анимацией персонажа
     protected MotionAnimation getMotionAnimation() {
         return motionAnimation;
+    }
+
+    // инвентарь
+    public Backpack getBackpack() {
+        return backpack;
+    }
+
+    public Equipment getEquipment() {
+        return equipment;
     }
 
     protected List<Cell> getWayPoints() {

@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import ru.phoenix.core.buffer.ubo.ProjectionUniforms;
 import ru.phoenix.core.buffer.ubo.UniformBufferObject;
 import ru.phoenix.core.config.*;
+import ru.phoenix.core.db.Database;
 import ru.phoenix.core.debug.Logger;
 import ru.phoenix.game.loop.SceneControl;
 import ru.phoenix.game.scene.Scene;
@@ -23,6 +24,7 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 public class CoreEngine {
     private Render render;
     private UniformBufferObject uboProjection;
+    private GLFWErrorCallback errorCallback;
 
     private Scene logoScene;
     private Scene menuScene;
@@ -39,7 +41,8 @@ public class CoreEngine {
 
     public void createWindow(WindowConfig wc){
         // init glfw and window
-        GLFWErrorCallback.createPrint(System.err).set();
+        errorCallback = GLFWErrorCallback.createPrint(System.err);
+        errorCallback.set();
         if(!glfwInit()){
             Logger.error("Unable to initialize GLFW");
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -152,7 +155,7 @@ public class CoreEngine {
         Window.getInstance().titleUpdate(getFps(), Time.getCurrentTime());
         Input.getInstance().update();
         if (scene.isActive()) {
-            scene.update();
+            scene.update(Time.getDeltaTime());
         }
         uboProjection.totalUpdate();
     }
@@ -165,6 +168,10 @@ public class CoreEngine {
         Logger.info("Cleaning up engine resources...");
         Window.getInstance().dispose();
         glfwTerminate();
+        if (errorCallback != null) {
+            errorCallback.free();
+        }
+        Database.getInstance().close();
         Logger.shutdown();
     }
 

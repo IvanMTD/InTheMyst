@@ -3,8 +3,8 @@ package ru.phoenix.core.loader;
 import ru.phoenix.core.math.Vector3f;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -16,26 +16,26 @@ public class ImageLoader {
     private static int height;
 
     public static void load(String path) throws IOException {
-        BufferedImage img;
-        img = ImageIO.read(new File(path));
-
-        buf = null;
-        width = img.getWidth();
-        height = img.getHeight();
-        buf = ByteBuffer.allocateDirect(img.getHeight()*img.getWidth()*4);
-        buf.limit(img.getHeight()*img.getWidth()*4);
-
-        for(int y=0;y<img.getHeight();y++) {
-            for(int x=0;x<img.getWidth();x++) {
-                Object pixelIm = img.getRaster().getDataElements(x, y, null);
-                buf.put((byte)img.getColorModel().getRed(pixelIm));
-                buf.put((byte)img.getColorModel().getGreen(pixelIm));
-                buf.put((byte)img.getColorModel().getBlue(pixelIm));
-                buf.put((byte)img.getColorModel().getAlpha(pixelIm));
-            }
+        BufferedImage img = ImageIO.read(new File(path));
+        if (img == null) {
+            throw new IOException("Image not found or unsupported: " + path);
         }
+        fill(img, false);
+    }
 
-        buf.flip();
+    /**
+     * Загрузка изображения из памяти (например, карты высот сохранения из H2).
+     * В отличие от загрузки с диска, запоминает пиксели, чтобы текстуру можно было снова сохранить.
+     */
+    public static void load(byte[] png) throws IOException {
+        if (png == null || png.length == 0) {
+            throw new IOException("Empty image data");
+        }
+        BufferedImage img = ImageIO.read(new ByteArrayInputStream(png));
+        if (img == null) {
+            throw new IOException("Unsupported image data");
+        }
+        fill(img, true);
     }
 
     public static void load(float[][] heiMap) throws IOException {
@@ -56,6 +56,37 @@ public class ImageLoader {
                 buf.put((byte)color);
                 buf.put((byte)255);
                 imageLine[index++] = new Vector3f(color,color,color);
+            }
+        }
+
+        buf.flip();
+    }
+
+    private static void fill(BufferedImage img, boolean keepPixels) {
+        buf = null;
+        width = img.getWidth();
+        height = img.getHeight();
+        int pixels = width * height;
+        buf = ByteBuffer.allocateDirect(pixels * 4);
+        buf.limit(pixels * 4);
+        imageLine = keepPixels ? new Vector3f[pixels] : null;
+
+        int index = 0;
+        for(int y=0;y<height;y++) {
+            for(int x=0;x<width;x++) {
+                Object pixelIm = img.getRaster().getDataElements(x, y, null);
+                int r = img.getColorModel().getRed(pixelIm);
+                int g = img.getColorModel().getGreen(pixelIm);
+                int b = img.getColorModel().getBlue(pixelIm);
+                int a = img.getColorModel().getAlpha(pixelIm);
+                buf.put((byte)r);
+                buf.put((byte)g);
+                buf.put((byte)b);
+                buf.put((byte)a);
+                if (keepPixels) {
+                    imageLine[index] = new Vector3f(r, g, b);
+                }
+                index++;
             }
         }
 
